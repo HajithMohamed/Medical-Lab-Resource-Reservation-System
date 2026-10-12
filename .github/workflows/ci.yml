@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [develop, main]
+  push:
+    branches: [develop, main]
+
+# A newer push to the same branch cancels the older run.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Lint, type-check, test and build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      # Throwaway values for this CI job only. They are not secrets.
+      DATABASE_URL: postgresql://lab:lab@localhost:5432/lab_reservations_test
+      SESSION_SECRET: ci-only-session-secret-not-for-production-0001
+      APP_TIME_ZONE: Asia/Colombo
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run format:check
+      - run: npm run test:unit
+      - run: npm run build

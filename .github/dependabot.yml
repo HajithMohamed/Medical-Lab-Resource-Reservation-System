@@ -1,0 +1,26 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    target-branch: develop
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 3
+    groups:
+      minor-and-patch:
+        update-types: [minor, patch]
+    ignore:
+      # Next.js and Prisma stay on the tested versions; we update them by hand.
+      - dependency-name: "next"
+      - dependency-name: "@next/env"
+      - dependency-name: "eslint-config-next"
+      - dependency-name: "prisma"
+      - dependency-name: "@prisma/*"
+      # Major upgrades of everything else (TypeScript 7, ESLint 10...) too.
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+  - package-ecosystem: github-actions
+    directory: /
+    target-branch: develop
+    schedule:
+      interval: weekly
