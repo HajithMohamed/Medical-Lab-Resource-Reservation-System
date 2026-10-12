@@ -1,0 +1,13 @@
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "Prisma.prisma",
+    "bradlc.vscode-tailwindcss",
+    "vitest.explorer",
+    "EditorConfig.EditorConfig",
+    "yoavbls.pretty-ts-errors",
+    "bierner.markdown-mermaid",
+    "GitHub.vscode-pull-request-github"
+  ]
+}

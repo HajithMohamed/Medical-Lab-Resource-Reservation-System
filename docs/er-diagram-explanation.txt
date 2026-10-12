@@ -1,0 +1,182 @@
+ER DIAGRAM EXPLANATION
+Resource Reservation Management System - medical laboratories
+PrimeWave Lab (Pvt) Ltd, Software Engineering Internship technical assessment
+==============================================================================
+
+CONTENTS
+  1. Shapes used in the diagram
+  2. What the first version got right
+  3. The 6 entities
+  4. The 6 relationships
+  5. Why parts of the first version don't work
+
+
+------------------------------------------------------------------------------
+1. SHAPES USED IN THE DIAGRAM (Chen notation)
+------------------------------------------------------------------------------
+
+  Rectangle   = Entity: a thing we store (for example, RESOURCE)
+  Diamond     = Relationship between entities (for example, "Makes")
+  Oval        = Attribute of an entity (for example, name)
+  Underlined  = Key attribute: the unique id of each record
+  1 and N     = Cardinality: one and many
+
+
+------------------------------------------------------------------------------
+2. WHAT THE FIRST VERSION GOT RIGHT
+------------------------------------------------------------------------------
+
+  - Staff book resources over time.
+  - Managers block resources for maintenance.
+  - A booking needs a time.
+
+
+------------------------------------------------------------------------------
+3. THE 6 ENTITIES
+------------------------------------------------------------------------------
+
+Every entity has an id as its key (underlined in the diagram).
+
+SITE
+  What it is : A place where the lab works.
+  Example    : Main lab, Branch lab A.
+  Attributes : site_id (key), name, address
+  Why        : Staff at a branch can filter resources by site.
+
+SECTION
+  What it is : A lab section.
+  Example    : Haematology, Microbiology.
+  Attributes : section_id (key), name
+  Why        : Sections own resources and have staff.
+
+CATEGORY
+  What it is : A type of resource that shares the same rules.
+  Example    : Molecular instruments, Biosafety cabinets, Rooms, Vehicles.
+  Attributes : category_id (key), name, max_booking_minutes
+  Why        : The booking limit is stored once for the whole type.
+
+RESOURCE
+  What it is : One bookable thing.
+  Example    : PCR machine 1, Biosafety cabinet A, Training room,
+               Sample van 2.
+  Attributes : resource_id (key), name, location, capacity, status
+  Why        : location  = where it is inside the site.
+               capacity  = for rooms only.
+               status    = active, out of service or retired.
+                           "Out of service" blocks new bookings;
+                           "retired" keeps the booking history.
+
+STAFF
+  What it is : A person who uses the system.
+  Example    : A technologist, the lab manager.
+  Attributes : staff_id (key), name, email, role
+  Why        : email = unique, used to log in.
+               role  = staff or manager. Managers manage resources
+                       and block time for maintenance.
+
+RESERVATION
+  What it is : One booking or one maintenance block, for one resource,
+               for one time period.
+  Example    : PCR machine 1, Tue 10:00-12:00, booked by a technologist.
+  Attributes : reservation_id (key), kind, status, purpose, start_at,
+               end_at, cancel_reason
+  Why        : start_at, end_at = the time period.
+               kind   = booking or maintenance.
+               status = confirmed or cancelled.
+
+RESERVATION is the heart of the system. The rule "no two confirmed
+reservations for the same resource may overlap" lives here.
+
+
+------------------------------------------------------------------------------
+4. THE 6 RELATIONSHIPS
+------------------------------------------------------------------------------
+
+Located at     SITE 1 : N RESOURCE
+  Reads as : A site has many resources; each resource is at one site.
+  Why      : Staff can see what is at each site. Moving equipment means
+             changing its site.
+
+Groups         CATEGORY 1 : N RESOURCE
+  Reads as : A category groups many resources; each resource has one
+             category.
+  Why      : A resource takes its booking limit from its category.
+
+Owns           SECTION 1 : N RESOURCE
+  Reads as : A section owns many resources; each resource has one owning
+             section.
+  Why      : Shows who is responsible, and allows usage by section.
+
+Works in       SECTION 1 : N STAFF
+  Reads as : A section has many staff; each staff member works in one
+             section (a lab manager may not belong to one).
+  Why      : Shows which sections use which resources.
+
+Makes          STAFF 1 : N RESERVATION
+  Reads as : A staff member makes many reservations; each reservation is
+             made by one person.
+  Why      : The "My bookings" page is just the reservations you made.
+             A manager's maintenance blocks are also "made" by them.
+
+Is for         RESOURCE 1 : N RESERVATION
+  Reads as : A resource has many reservations over time; each reservation
+             is for one resource.
+  Why      : The clash rule compares reservations of the same resource.
+
+Note: Staff and resources are still many-to-many overall, because many
+people book many resources. RESERVATION sits in the middle and records
+each individual booking.
+
+
+------------------------------------------------------------------------------
+5. WHY PARTS OF THE FIRST VERSION DON'T WORK
+------------------------------------------------------------------------------
+
+1) "Request" as an M:N relationship with one "time" attribute
+   Problem : In ER rules, a relationship is identified only by the two
+             things it links. So "this technologist requests PCR machine 1"
+             can exist only once, and they could never book it again next
+             week. One "time" also can't hold a start and an end, and there
+             is nowhere to record that a booking was cancelled.
+   Fix     : A RESERVATION entity with its own id.
+
+2) "Rooms" as a separate entity, with its own 1:1 "Reserve" relationship
+   Problem : Rooms are booked by time with the same rules as instruments,
+             so a second booking path means writing the clash check twice.
+             The 1:1 also says each person could reserve only one room,
+             ever.
+   Fix     : Rooms are resources in a "Rooms" category, with capacity as a
+             resource attribute.
+
+3) "Manager" as a separate entity
+   Problem : A manager is a staff member with more rights. A separate
+             entity copies names, emails and logins, and promoting someone
+             would mean moving them between tables.
+   Fix     : A role attribute on STAFF.
+
+4) "Block" as a relationship, Resource M : 1 Manager
+   Problem : This means each resource could be blocked only once, by one
+             manager, but a machine needs calibration many times. A block
+             also needs a start, an end and a reason. If blocks lived apart
+             from bookings, the clash check would have to look in two
+             places.
+   Fix     : A block is a reservation with kind "maintenance", so the same
+             rule stops bookings during maintenance automatically.
+
+5) "My booking" as an entity, with a "See" relationship
+   Problem : "My bookings" is a page in the app, not stored data. Its
+             contents already exist as the reservations made by the
+             logged-in person, and storing a copy would let the two
+             disagree.
+   Fix     : Remove both.
+
+6) Section, site and category as attributes of Resource
+   Problem : They would be typed again for every resource, which leads to
+             typos and gives no list to choose from. The category also has
+             to hold the booking limit, and STAFF needs SECTION too.
+   Fix     : Separate entities, linked one-to-many.
+
+7) Notation
+   Problem : No key attributes were underlined, and STAFF was missing
+             email and role.
+   Fix     : Underline each entity's id, and add the missing attributes.
