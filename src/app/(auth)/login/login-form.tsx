@@ -19,7 +19,11 @@ import {
   Info,
 } from "lucide-react";
 
-export function LoginForm() {
+interface LoginFormProps {
+  defaultEmail?: string;
+}
+
+export function LoginForm({ defaultEmail }: LoginFormProps) {
   const [state, formAction, isPending] = useActionState<AuthActionState | undefined, FormData>(
     login,
     undefined,
@@ -55,6 +59,7 @@ export function LoginForm() {
             type="email"
             autoComplete="email"
             required
+            defaultValue={defaultEmail}
             placeholder="e.g. kasun.silva@lab.example"
             disabled={isPending}
             className="h-11 pl-10 pr-3 text-sm bg-card border-input rounded-xl focus-visible:ring-ring"

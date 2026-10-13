@@ -34,3 +34,38 @@ export function canManageSite(user: UserLike, siteId?: string | null): boolean {
   }
   return false;
 }
+
+/**
+ * Returns the list of roles the actor is permitted to create:
+ * - ADMIN -> ["STAFF", "MANAGER", "ADMIN"]
+ * - MANAGER -> ["STAFF"]
+ * - STAFF -> []
+ */
+export function rolesActorCanCreate(actor: UserLike): Role[] {
+  if (actor.role === "ADMIN") {
+    return ["STAFF", "MANAGER", "ADMIN"];
+  }
+  if (actor.role === "MANAGER") {
+    return ["STAFF"];
+  }
+  return [];
+}
+
+/**
+ * Returns true if the actor is permitted to manage the target user:
+ * - ADMIN -> true
+ * - MANAGER -> target.role is STAFF and target.siteId === actor.siteId
+ * - STAFF -> false
+ */
+export function canManageUser(actor: UserLike, target: UserLike): boolean {
+  if (actor.role === "ADMIN") {
+    return true;
+  }
+  if (actor.role === "MANAGER") {
+    return (
+      target.role === "STAFF" &&
+      Boolean(actor.siteId && target.siteId && actor.siteId === target.siteId)
+    );
+  }
+  return false;
+}
