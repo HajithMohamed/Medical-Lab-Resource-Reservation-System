@@ -57,3 +57,11 @@ Each entry records an architectural choice, why it was made, and what trade-offs
 - **Context:** Newly created laboratory accounts or manager-initiated password resets require a starting password. Common initial passwords violate NIST SP 800-63B guidelines and create credential guessing risks.
 - **Decision:** Generate unique temporary passwords per account using `crypto.randomInt` over a 30-character unambiguous alphabet (`abcdefghjkmnpqrstuvwxyz23456789`, excluding confusing characters 0/O and 1/l/I) in 4 groups of 4 characters (e.g., `k7mq-x4tr-9hwz-3pfd`), requiring an immediate password change (`mustChangePassword: true`) upon initial login.
 - **Consequences:** Maximizes initial account security while making temporary passwords easy to read aloud to laboratory staff without transcription errors.
+
+## D8: In-use prevention before deletion with foreign key safety net
+
+- **Date:** 2026-10-13
+- **Status:** accepted
+- **Context:** Deleting master data records (sites, sections, categories) that are still referenced by resources or users causes data loss or unhandled foreign key database errors.
+- **Decision:** Check usage counts in the application layer before attempting deletion, providing a clear count-specific refusal message (e.g., "This site still has 7 resources and 5 users. Move or retire them first."). Wrap deletion in database try/catch to catch foreign key violations (`P2003`) as an extra safety net. Keep the delete confirmation dialog open on refusal to display the error inline.
+- **Consequences:** Prevents dangling references and broken foreign keys while providing friendly, actionable instructions to administrators without raw database error codes.
