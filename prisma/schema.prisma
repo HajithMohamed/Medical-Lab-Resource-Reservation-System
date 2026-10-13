@@ -1,0 +1,167 @@
+// Database schema: tables and relations.
+// Rules Prisma cannot express (the clash rule and the CHECK rules) are
+// written in SQL at the end of prisma/migrations/<timestamp>_init/migration.sql.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  STAFF
+  MANAGER
+  ADMIN
+
+  @@map("user_role")
+}
+
+enum ResourceStatus {
+  ACTIVE
+  OUT_OF_SERVICE
+  RETIRED
+
+  @@map("resource_status")
+}
+
+enum ReservationKind {
+  BOOKING
+  MAINTENANCE
+
+  @@map("reservation_kind")
+}
+
+enum ReservationStatus {
+  CONFIRMED
+  CANCELLED
+
+  @@map("reservation_status")
+}
+
+/// A place where the lab works, e.g. the main lab or a branch lab.
+model Site {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name      String   @unique
+  address   String?
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  resources Resource[]
+  users     User[]
+
+  @@map("sites")
+}
+
+/// A lab section, e.g. Haematology. Owns resources and has staff.
+model Section {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name      String   @unique
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  resources Resource[]
+  users     User[]
+
+  @@map("sections")
+}
+
+/// A type of resource with one booking limit, e.g. Biosafety cabinets.
+model Category {
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name              String   @unique
+  maxBookingMinutes Int      @map("max_booking_minutes")
+  /// Which icon the app shows; one of CATEGORY_ICON_KEYS in src/config/category-icons.ts.
+  iconKey           String   @default("other") @map("icon_key")
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  resources Resource[]
+
+  @@map("categories")
+}
+
+/// One bookable thing: an instrument, cabinet, room or vehicle.
+model Resource {
+  id         String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name       String
+  categoryId String         @map("category_id") @db.Uuid
+  siteId     String         @map("site_id") @db.Uuid
+  sectionId  String         @map("section_id") @db.Uuid
+  location   String?
+  /// Number of seats, for rooms. Empty for instruments.
+  capacity   Int?
+  status     ResourceStatus @default(ACTIVE)
+  createdAt  DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt  DateTime       @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  category     Category      @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  site         Site          @relation(fields: [siteId], references: [id], onDelete: Restrict)
+  section      Section       @relation(fields: [sectionId], references: [id], onDelete: Restrict)
+  reservations Reservation[]
+
+  @@unique([siteId, name])
+  @@index([categoryId])
+  @@index([sectionId])
+  @@map("resources")
+}
+
+/// A person who signs in: staff member, site manager or admin.
+model User {
+  id                 String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name               String
+  /// Always lowercase (CHECK users_email_lowercase).
+  email              String    @unique
+  passwordHash       String    @map("password_hash")
+  role               Role      @default(STAFF)
+  /// Required for STAFF and MANAGER, empty for ADMIN (CHECK users_site_required_unless_admin).
+  siteId             String?   @map("site_id") @db.Uuid
+  sectionId          String?   @map("section_id") @db.Uuid
+  isActive           Boolean   @default(true) @map("is_active")
+  mustChangePassword Boolean   @default(true) @map("must_change_password")
+  failedLoginCount   Int       @default(0) @map("failed_login_count")
+  lockedUntil        DateTime? @map("locked_until") @db.Timestamptz(6)
+  /// Increase it to sign the user out everywhere.
+  sessionVersion     Int       @default(1) @map("session_version")
+  lastLoginAt        DateTime? @map("last_login_at") @db.Timestamptz(6)
+  createdAt          DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt          DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  site                  Site?         @relation(fields: [siteId], references: [id], onDelete: Restrict)
+  section               Section?      @relation(fields: [sectionId], references: [id], onDelete: Restrict)
+  reservationsMade      Reservation[] @relation("ReservationCreatedBy")
+  reservationsCancelled Reservation[] @relation("ReservationCancelledBy")
+
+  @@index([siteId])
+  @@map("users")
+}
+
+/// One booking or one maintenance block, for one resource and one period.
+model Reservation {
+  id            String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  resourceId    String            @map("resource_id") @db.Uuid
+  createdById   String            @map("created_by_id") @db.Uuid
+  kind          ReservationKind   @default(BOOKING)
+  status        ReservationStatus @default(CONFIRMED)
+  /// What it is for, e.g. "HbA1c batch"; for maintenance, the reason.
+  purpose       String
+  /// Number of people, only for resources with a capacity (rooms).
+  attendeeCount Int?              @map("attendee_count")
+  startAt       DateTime          @map("start_at") @db.Timestamptz(6)
+  endAt         DateTime          @map("end_at") @db.Timestamptz(6)
+  cancelReason  String?           @map("cancel_reason")
+  cancelledAt   DateTime?         @map("cancelled_at") @db.Timestamptz(6)
+  cancelledById String?           @map("cancelled_by_id") @db.Uuid
+  createdAt     DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime          @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  resource    Resource @relation(fields: [resourceId], references: [id], onDelete: Restrict)
+  createdBy   User     @relation("ReservationCreatedBy", fields: [createdById], references: [id], onDelete: Restrict)
+  cancelledBy User?    @relation("ReservationCancelledBy", fields: [cancelledById], references: [id], onDelete: Restrict)
+
+  @@index([resourceId, startAt])
+  @@index([createdById, startAt])
+  @@map("reservations")
+}
