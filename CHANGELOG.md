@@ -19,3 +19,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - App shell with responsive sidebar, accessible breadcrumb, role-filtered navigation, and user menu.
 - Shared components: PageHeader, ResourceStatusTag, CategoryIcon, EmptyState, ConfirmAction, NoticeToast, FilterBar, SummaryStrip, and UtilisationBar.
 - Styleguide route (`/styleguide`) showcasing controls, pills, alerts, status tags, and calendar grid against design reference.
+- Stateless JWT session management with `jose` stored in Secure, HttpOnly cookies (`src/lib/session.ts`).
+- Data Access Layer in `src/lib/auth.ts` (`getCurrentUser`, `requireUser`, `requireRole`) with React `cache()`.
+- Password hashing with `bcryptjs`, NIST SP 800-63B-4 validation, common password list, and temporary password generator (`src/lib/password.ts`).
+- Pure permission helpers in `src/lib/permissions.ts` (`isAdmin`, `isManagerOrAdmin`, `canManageSite`).
+- Authentication service with brute-force mitigation, account lockout after 5 failed attempts, and row-level locking.
+- Server Actions for login, logout, and password change (`src/actions/auth.ts`).
+- Optimistic authentication proxy (`src/proxy.ts`).
+- Two-column sign-in screen matching design reference, forced password change screen with live character counter, and authenticated AppShell integration.
+- Unit and integration test suites covering password rules, role permissions, and lockout scenarios.

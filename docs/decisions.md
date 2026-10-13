@@ -41,3 +41,19 @@ Each entry records an architectural choice, why it was made, and what trade-offs
 - **Context:** The application serves laboratory staff, scientists, and managers requiring rapid, legible, and accessible resource scheduling on bench PCs and mobile devices.
 - **Decision:** UI: shadcn/ui on Radix with our tokens; Atkinson Hyperlegible Next for legibility; Studio Admin (MIT) used as a layout reference only. Self-host the variable font via Fontsource for reliable offline builds. Map design tokens in `globals.css` using Tailwind CSS `@theme inline` without raw hex values in components.
 - **Consequences:** Eliminates external network dependencies at build time. Maintains WCAG 2.2 AA contrast with 40px touch targets, visible focus rings, accessible status hang tags, and clear role-based navigation.
+
+## D6: Own session code (the Next.js guide pattern) instead of an auth library
+
+- **Date:** 2026-10-13
+- **Status:** accepted
+- **Context:** The application requires stateless session management, role enforcement, and account lockout for a closed laboratory staff network without third-party OAuth or public sign-ups. External auth libraries add schema complexity and unnecessary runtime overhead.
+- **Decision:** Implement stateless sessions following the official Next.js App Router Data Access Layer pattern: signed JWTs using `jose` with HS256 stored in HttpOnly, secure, SameSite=Lax cookies, paired with a React `cache()` Data Access Layer in `src/lib/auth.ts`. Authenticate via server-only services using `bcryptjs` and row-level locking (`SELECT ... FOR UPDATE`) to protect against brute-force attacks and race conditions.
+- **Consequences:** Eliminates external authentication provider dependencies and schema churn while keeping session checks lightweight, testable, and strictly bound to the database user state (including session versioning and account lockout).
+
+## D7: A unique temporary password per account instead of a common starting password
+
+- **Date:** 2026-10-13
+- **Status:** accepted
+- **Context:** Newly created laboratory accounts or manager-initiated password resets require a starting password. Common initial passwords violate NIST SP 800-63B guidelines and create credential guessing risks.
+- **Decision:** Generate unique temporary passwords per account using `crypto.randomInt` over a 30-character unambiguous alphabet (`abcdefghjkmnpqrstuvwxyz23456789`, excluding confusing characters 0/O and 1/l/I) in 4 groups of 4 characters (e.g., `k7mq-x4tr-9hwz-3pfd`), requiring an immediate password change (`mustChangePassword: true`) upon initial login.
+- **Consequences:** Maximizes initial account security while making temporary passwords easy to read aloud to laboratory staff without transcription errors.
