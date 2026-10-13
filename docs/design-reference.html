@@ -1,0 +1,556 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BenchBook design reference</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- The mock loads the font from Google Fonts only so it can be viewed on its own.
+     The app self-hosts the same font with Fontsource (no Google requests). -->
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@200..800&display=swap" rel="stylesheet">
+<!--
+  Design reference for the Resource Reservation Management System ("BenchBook").
+  A static picture of the target UI for people and coding agents. It is NOT app code:
+  rebuild these screens with Tailwind and shadcn/ui using the same tokens, sizes and
+  states. The tokens below match docs/design-system.md and src/app/globals.css.
+  A few shades here (borders of tags and alerts, the dark "mine" edge) are not
+  separate tokens: in the app, use the token with opacity, e.g. border-tag-red/40.
+-->
+<style>
+  :root {
+    /* Colour tokens (light theme) */
+    --ink: #10242e;          /* main text */
+    --muted: #5b6b73;        /* secondary text, 5.1:1 on paper */
+    --paper: #f4f7f8;        /* app background */
+    --surface: #ffffff;      /* panels, tables, forms */
+    --navy: #0b3d52;         /* sidebar, brand */
+    --navy-raised: #12506a;  /* active item on the sidebar */
+    --sidebar-text: #e6eef1;
+    --sidebar-muted: #9db5c0;
+    --teal: #0e6a85;         /* primary action, bookings */
+    --teal-hover: #0b5870;   /* --primary-hover */
+    --teal-tint: #dceef4;
+    --teal-ink: #0b4f64;
+    --amber: #b4541a;        /* maintenance: blocked time */
+    --amber-ink: #8f3f10;
+    --amber-tint: #fbeee5;
+    --amber-tint-2: #f4dbc8;
+    --red: #b42318;          /* out of service, destructive */
+    --red-tint: #fdecea;
+    --green: #1f7a4d;        /* active, success */
+    --green-tint: #e6f4ec;
+    --grey-tint: #eef1f3;
+    --grey-tint-2: #e2e8eb;
+    --line: #d9e1e5;         /* hairlines */
+    --line-strong: #c5d0d6;  /* light borders (tags) */
+    --input: #7f8f98;        /* input, checkbox, radio borders: 3:1 */
+    --ring: #3a8fa8;         /* focus ring: 3:1 on white, paper and navy */
+    --destructive-ink: #7a1a12;
+    --mine-foreground: #ffffff;
+
+    /* Shape: radius follows hierarchy, not one value everywhere */
+    --r-tag: 4px;
+    --r-block: 6px;
+    --r-control: 8px;
+    --r-panel: 12px;
+
+    --font: "Atkinson Hyperlegible Next", "Atkinson Hyperlegible Next Variable", system-ui, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: #e9eef0;
+    color: var(--ink);
+    font-family: var(--font);
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  .num { font-variant-numeric: tabular-nums; }
+
+  /* Page that holds the reference frames */
+  .doc { max-width: 1360px; margin: 0 auto; padding: 40px 24px 80px; }
+  .doc > header h1 { font-size: 32px; line-height: 1.2; margin: 0 0 8px; letter-spacing: -0.01em; }
+  .doc > header p { margin: 0; color: var(--muted); max-width: 72ch; }
+  .frame-title { font-size: 18px; font-weight: 700; margin: 48px 0 12px; }
+  .frame-note { color: var(--muted); margin: -6px 0 14px; max-width: 80ch; font-size: 15px; }
+  .frame {
+    background: var(--paper);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--r-panel);
+    overflow: hidden;
+  }
+
+  /* ---------- Tokens sheet ---------- */
+  .tokens { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; padding: 20px; }
+  .swatch { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-control); overflow: hidden; }
+  .swatch .chip { height: 56px; }
+  .swatch .meta { padding: 10px 12px; font-size: 14px; }
+  .swatch .meta b { display: block; font-size: 15px; }
+  .swatch .meta span { color: var(--muted); }
+  .type-scale { padding: 4px 20px 20px; display: grid; gap: 6px; }
+  .type-scale div { display: flex; gap: 16px; align-items: baseline; border-top: 1px solid var(--line); padding-top: 8px; }
+  .type-scale small { width: 150px; color: var(--muted); font-size: 13px; flex: none; }
+
+  /* ---------- Shared controls ---------- */
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    height: 38px; padding: 0 16px;
+    border-radius: var(--r-control);
+    border: 1px solid transparent;
+    font: 600 15px/1 var(--font);
+    cursor: pointer; text-decoration: none; white-space: nowrap;
+  }
+  .btn-primary { background: var(--teal); color: #fff; }
+  .btn-primary:hover { background: var(--teal-hover); }
+  .btn-secondary { background: var(--surface); color: var(--ink); border-color: var(--line-strong); }
+  .btn-danger { background: var(--red); color: #fff; }
+  .btn-sm { height: 32px; padding: 0 12px; font-size: 14px; }
+  .btn:focus-visible, a:focus-visible, .input:focus-visible { outline: 3px solid var(--ring); outline-offset: 2px; }
+
+  .field { display: grid; gap: 6px; }
+  .field label { font-weight: 600; font-size: 15px; }
+  .field .hint { color: var(--muted); font-size: 14px; }
+  .input {
+    height: 40px; width: 100%;
+    border: 1px solid var(--input); border-radius: var(--r-control);
+    background: var(--surface); padding: 0 12px;
+    font: 400 16px var(--font); color: var(--ink);
+  }
+  .input.select { appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%); background-position: calc(100% - 18px) 17px, calc(100% - 13px) 17px; background-size: 5px 5px; background-repeat: no-repeat; padding-right: 32px; display: flex; align-items: center; }
+
+  .alert { display: grid; grid-template-columns: 20px 1fr; gap: 10px; padding: 12px 14px; border-radius: var(--r-control); border: 1px solid; font-size: 15px; }
+  .alert-error { background: var(--red-tint); border-color: #f1b8b2; color: var(--destructive-ink); }
+  .alert-info { background: var(--teal-tint); border-color: #b4dbe8; color: var(--teal-ink); }
+  .alert svg { margin-top: 2px; }
+
+  /* Status: equipment hang tags (the real labels labs hang on broken equipment) */
+  .tag {
+    position: relative;
+    display: inline-flex; align-items: center;
+    padding: 2px 9px 2px 21px;
+    border: 1px solid; border-radius: var(--r-tag);
+    font-size: 13px; font-weight: 700; line-height: 18px;
+    white-space: nowrap;
+  }
+  .tag::before { /* punched hole */
+    content: ""; position: absolute; left: 7px; top: 50%;
+    width: 7px; height: 7px; margin-top: -3.5px;
+    border-radius: 50%; background: var(--surface);
+    box-shadow: inset 0 0 0 1.5px currentColor;
+  }
+  .tag-out { color: var(--red); background: var(--red-tint); border-color: #eeb1aa; }
+  .tag-retired { color: var(--muted); background: var(--grey-tint); border-color: var(--line-strong); }
+  .status-active { display: inline-flex; align-items: center; gap: 7px; font-size: 14px; color: var(--green); font-weight: 600; }
+  .status-active::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
+  .pill { display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 999px; font-size: 13px; font-weight: 700; }
+  .pill-busy { background: var(--teal); color: #fff; }
+  .pill-idle { background: var(--grey-tint); color: var(--muted); border: 1px solid var(--line-strong); }
+
+  /* ---------- App shell ---------- */
+  .app { display: grid; grid-template-columns: 240px 1fr; min-height: 760px; }
+  .sidebar { background: var(--navy); color: var(--sidebar-text); padding: 16px 12px; display: flex; flex-direction: column; gap: 4px; }
+  .brand { display: flex; align-items: center; gap: 10px; padding: 6px 8px 18px; font-weight: 700; font-size: 18px; color: #fff; }
+  .brand small { display: block; font-weight: 400; font-size: 12px; color: var(--sidebar-muted); margin-top: -2px; }
+  .nav-group { font-size: 13px; color: var(--sidebar-muted); padding: 14px 10px 6px; }
+  .nav a {
+    display: flex; align-items: center; gap: 10px;
+    height: 38px; padding: 0 10px; border-radius: var(--r-control);
+    color: var(--sidebar-text); text-decoration: none; font-size: 15px;
+  }
+  .nav a:hover { background: rgba(255, 255, 255, 0.07); }
+  .nav a[aria-current="page"] { background: var(--navy-raised); color: #fff; font-weight: 600; box-shadow: inset 3px 0 0 #7cc4d8; }
+  .nav svg { flex: none; opacity: 0.9; }
+  .sidebar .me { margin-top: auto; border-top: 1px solid rgba(255, 255, 255, 0.12); padding: 14px 8px 2px; display: flex; gap: 10px; align-items: center; font-size: 14px; }
+  .avatar { width: 34px; height: 34px; border-radius: 50%; background: #2c6f88; color: #fff; display: grid; place-items: center; font-weight: 700; font-size: 13px; flex: none; }
+  .me b { display: block; font-size: 14px; }
+  .me span { color: var(--sidebar-muted); font-size: 13px; }
+
+  .main { display: flex; flex-direction: column; min-width: 0; }
+  .topbar { height: 56px; background: var(--surface); border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 12px; padding: 0 20px; }
+  .crumbs { font-size: 14px; color: var(--muted); }
+  .crumbs b { color: var(--ink); font-weight: 600; }
+  .topbar .spacer { flex: 1; }
+  .content { padding: 24px; display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+  .page-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  .page-head h2 { margin: 0; font-size: 24px; line-height: 1.25; letter-spacing: -0.01em; }
+  .page-head p { margin: 4px 0 0; color: var(--muted); font-size: 15px; }
+
+  /* Calendar controls */
+  .toolbar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .seg { display: inline-flex; border: 1px solid var(--line-strong); border-radius: var(--r-control); overflow: hidden; background: var(--surface); }
+  .seg a { padding: 0 14px; height: 36px; display: inline-flex; align-items: center; font-size: 14px; font-weight: 600; color: var(--muted); text-decoration: none; }
+  .seg a[aria-current="true"] { background: var(--teal-tint); color: var(--teal-ink); }
+  .seg a + a { border-left: 1px solid var(--line-strong); }
+  .datebox { display: inline-flex; align-items: center; gap: 4px; }
+  .iconbtn { width: 36px; height: 36px; border: 1px solid var(--line-strong); border-radius: var(--r-control); background: var(--surface); display: grid; place-items: center; color: var(--ink); }
+  .date-label { font-weight: 700; font-size: 16px; padding: 0 8px; }
+  .toolbar .input { height: 36px; width: auto; font-size: 15px; }
+
+  /* ---------- Bench sheet (calendar grid) ---------- */
+  .sheet { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-panel); overflow: auto; }
+  .grid {
+    --row: 26px;
+    display: grid;
+    grid-template-columns: 64px repeat(6, minmax(156px, 1fr));
+    grid-template-rows: 64px repeat(20, var(--row));
+    position: relative;
+    min-width: 1000px;
+  }
+  .colhead {
+    grid-row: 1; position: sticky; top: 0; z-index: 3;
+    background: var(--surface); border-bottom: 1px solid var(--line-strong); border-left: 1px solid var(--line);
+    padding: 9px 12px; display: flex; flex-direction: column; justify-content: center; gap: 2px;
+  }
+  .colhead b { font-size: 15px; line-height: 1.2; }
+  .colhead span { font-size: 13px; color: var(--muted); display: inline-flex; align-items: center; gap: 6px; }
+  .corner { grid-row: 1; grid-column: 1; position: sticky; top: 0; left: 0; z-index: 4; background: var(--surface); border-bottom: 1px solid var(--line-strong); }
+  .ruler { grid-column: 1; position: sticky; left: 0; z-index: 2; background: var(--surface); font-size: 12px; color: var(--muted); text-align: right; padding: 3px 10px 0 0; border-top: 1px solid var(--line); }
+  .cell { border-left: 1px solid var(--line); border-top: 1px solid #edf1f3; }
+  .cell.hour { border-top-color: var(--line); }
+  .cell.off { background: #f8fafb; }                   /* outside standard hours */
+  .cell.free:hover { background: var(--teal-tint); }
+  .cell.oos {                                             /* out-of-service column */
+    background: repeating-linear-gradient(135deg, var(--grey-tint) 0 7px, var(--grey-tint-2) 7px 14px);
+  }
+
+  .block {
+    position: relative; z-index: 1; margin: 2px 6px 2px 4px;
+    border-radius: var(--r-block); padding: 5px 9px;
+    font-size: 13px; line-height: 1.3; overflow: hidden;
+    text-decoration: none; color: inherit; display: block;
+  }
+  .block b { display: block; font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .block .who { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .b-mine b { padding-right: 34px; }  /* room for the "You" chip */
+  .block.tall b { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }  /* 90 min or longer: title may wrap to 2 lines */
+  .block .t { display: block; margin-top: 2px; }
+  .b-booking { background: var(--teal-tint); color: var(--teal-ink); box-shadow: inset 3px 0 0 var(--teal); }
+  .b-mine { background: var(--teal); color: var(--mine-foreground); box-shadow: inset 3px 0 0 #073a4a; }
+  .b-mine .you { position: absolute; top: 5px; right: 7px; font-size: 11px; font-weight: 700; background: #fff; color: var(--teal); padding: 0 6px; border-radius: 999px; }
+  .b-maint {
+    color: var(--amber-ink);
+    background: repeating-linear-gradient(135deg, var(--amber-tint) 0 8px, var(--amber-tint-2) 8px 16px);
+    box-shadow: inset 3px 0 0 var(--amber), inset 0 0 0 1px #e9c3a6;
+  }
+  .now { grid-column: 2 / -1; z-index: 2; border-top: 2px solid var(--teal); position: relative; pointer-events: none; }
+  .now span { position: absolute; left: -62px; top: -12px; background: var(--teal); color: #fff; font-size: 12px; font-weight: 700; padding: 2px 6px; border-radius: 4px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 18px; font-size: 14px; color: var(--muted); align-items: center; }
+  .legend i { display: inline-block; width: 22px; height: 14px; border-radius: 3px; vertical-align: -2px; margin-right: 6px; }
+
+  /* ---------- Tables ---------- */
+  .table-wrap { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-panel); overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th { text-align: left; font-size: 14px; color: var(--muted); font-weight: 600; padding: 11px 14px; border-bottom: 1px solid var(--line); background: #fafbfc; white-space: nowrap; }
+  td { padding: 12px 14px; border-bottom: 1px solid #edf1f3; vertical-align: middle; }
+  tr:last-child td { border-bottom: 0; }
+  .res { display: flex; align-items: center; gap: 10px; }
+  .res .ico { width: 30px; height: 30px; border-radius: var(--r-control); background: var(--teal-tint); color: var(--teal-ink); display: grid; place-items: center; flex: none; }
+  .res b { font-weight: 700; }
+  .muted { color: var(--muted); }
+  .filters { display: flex; gap: 8px; flex-wrap: wrap; }
+  .filters .input { width: auto; height: 36px; font-size: 15px; }
+
+  /* ---------- Sign in ---------- */
+  .signin { display: grid; grid-template-columns: 1fr 1fr; min-height: 640px; }
+  .signin .panel { background: var(--navy); color: var(--sidebar-text); padding: 48px; display: flex; flex-direction: column; gap: 28px; }
+  .signin .panel h3 { font-size: 32px; line-height: 1.2; margin: 0; color: #fff; max-width: 18ch; letter-spacing: -0.01em; }
+  .signin .panel p { margin: 0; color: var(--sidebar-muted); max-width: 46ch; }
+  .glance { background: #0f4a63; border: 1px solid rgba(255, 255, 255, 0.14); border-radius: var(--r-panel); padding: 16px; display: grid; gap: 10px; }
+  .glance-row { display: grid; grid-template-columns: 132px 1fr; align-items: center; gap: 12px; font-size: 13px; }
+  .glance-row b { color: #fff; font-size: 14px; font-weight: 600; }
+  .track { position: relative; height: 30px; background: rgba(255, 255, 255, 0.06); border-radius: var(--r-block); }
+  .track > div { position: absolute; top: 3px; bottom: 3px; border-radius: 4px; font-size: 12px; font-weight: 700; padding: 0 7px; display: flex; align-items: center; white-space: nowrap; overflow: hidden; }
+  .g-booking { background: #cfe8f0; color: var(--teal-ink); }
+  .g-maint { background: repeating-linear-gradient(135deg, #fbe3d1 0 6px, #f1c9ab 6px 12px); color: var(--amber-ink); }
+  .g-oos { inset: 3px 3px; background: repeating-linear-gradient(135deg, rgba(255,255,255,.10) 0 6px, rgba(255,255,255,.04) 6px 12px); color: #ffd5cf; }
+  .signin .formside { display: grid; place-items: center; padding: 40px; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-panel); padding: 32px; width: 100%; max-width: 400px; display: grid; gap: 18px; }
+  .card h4 { margin: 0; font-size: 24px; letter-spacing: -0.01em; }
+  .card .note { font-size: 14px; color: var(--muted); margin: 0; }
+
+  /* ---------- Small panels row ---------- */
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 20px; }
+  .panel-white { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-panel); padding: 20px; display: grid; gap: 14px; align-content: start; }
+  .panel-white h5 { margin: 0; font-size: 18px; }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .booking-item { border: 1px solid var(--line); border-radius: var(--r-control); padding: 12px 14px; display: grid; gap: 2px; }
+  .booking-item.cancelled { border-left: 4px solid var(--red); background: #fffafa; }
+  .booking-item .when { font-weight: 700; }
+  .booking-item .why { margin-top: 6px; font-size: 14px; color: var(--destructive-ink); }
+
+  .summary { display: grid; grid-template-columns: repeat(4, 1fr); background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-panel); }
+  .summary > div { padding: 14px 18px; }
+  .summary > div + div { border-left: 1px solid var(--line); }
+  .summary b { display: block; font-size: 26px; line-height: 1.2; }
+  .summary span { font-size: 14px; color: var(--muted); }
+  .bar { height: 10px; background: var(--grey-tint); border-radius: 999px; overflow: hidden; width: 160px; }
+  .bar > i { display: block; height: 100%; background: var(--teal); border-radius: 999px; }
+
+  @media (max-width: 900px) {
+    .app { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .signin { grid-template-columns: 1fr; }
+    .two { grid-template-columns: 1fr; }
+    .summary { grid-template-columns: 1fr 1fr; }
+    .summary > div:nth-child(3) { border-left: 0; }
+  }
+</style>
+</head>
+<body>
+<div class="doc">
+  <header>
+    <h1>BenchBook design reference</h1>
+    <p>Target look for the Resource Reservation Management System. Rebuild these screens with Tailwind CSS and shadcn/ui using the same tokens. Data shown is the demo seed: today is Tuesday 13 October 2026 and the viewer is Kasun Silva (staff, Main Laboratory, Colombo).</p>
+  </header>
+
+  <!-- ======================= TOKENS ======================= -->
+  <div class="frame-title">1. Tokens</div>
+  <p class="frame-note">One accent (teal) means "you can act here". Amber and red only ever mean "blocked". Text never relies on colour alone.</p>
+  <div class="frame">
+    <div class="tokens">
+      <div class="swatch"><div class="chip" style="background:#10242e"></div><div class="meta"><b>Bench ink</b>#10242E <span>main text</span></div></div>
+      <div class="swatch"><div class="chip" style="background:#f4f7f8;border-bottom:1px solid #d9e1e5"></div><div class="meta"><b>Lab paper</b>#F4F7F8 <span>app background</span></div></div>
+      <div class="swatch"><div class="chip" style="background:#0b3d52"></div><div class="meta"><b>Network navy</b>#0B3D52 <span>sidebar, brand</span></div></div>
+      <div class="swatch"><div class="chip" style="background:#0e6a85"></div><div class="meta"><b>Reagent teal</b>#0E6A85 <span>actions, bookings</span></div></div>
+      <div class="swatch"><div class="chip" style="background:repeating-linear-gradient(135deg,#fbeee5 0 8px,#f4dbc8 8px 16px)"></div><div class="meta"><b>Caution amber</b>#B4541A <span>maintenance</span></div></div>
+      <div class="swatch"><div class="chip" style="background:#b42318"></div><div class="meta"><b>Tag red</b>#B42318 <span>out of service, delete</span></div></div>
+      <div class="swatch"><div class="chip" style="background:#1f7a4d"></div><div class="meta"><b>Pass green</b>#1F7A4D <span>active, success</span></div></div>
+      <div class="swatch"><div class="chip" style="background:#5b6b73"></div><div class="meta"><b>Muted</b>#5B6B73 <span>secondary text</span></div></div>
+    </div>
+    <div class="type-scale">
+      <div><small>Page title 24/700</small><span style="font-size:24px;font-weight:700">Calendar</span></div>
+      <div><small>Section 18/700</small><span style="font-size:18px;font-weight:700">Upcoming bookings</span></div>
+      <div><small>Body 16/400</small><span>Book a free slot by clicking it in the calendar.</span></div>
+      <div><small>Table 15/400</small><span style="font-size:15px">Molecular lab, room 2.14</span></div>
+      <div><small>Times 13 tabular</small><span class="num" style="font-size:13px">08:00 08:30 11:00 13:00 14:00</span></div>
+      <div><small>Status</small><span style="display:flex;gap:10px;flex-wrap:wrap"><span class="status-active">Active</span><span class="tag tag-out">Out of service</span><span class="tag tag-retired">Retired</span><span class="pill pill-busy">Busy</span><span class="pill pill-idle">Idle</span></span></div>
+      <div><small>Buttons</small><span style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn btn-primary" href="#">Book</a><a class="btn btn-secondary" href="#">Cancel booking</a><a class="btn btn-danger" href="#">Mark out of service</a></span></div>
+    </div>
+  </div>
+
+  <!-- ======================= SIGN IN ======================= -->
+  <div class="frame-title">2. Sign in</div>
+  <p class="frame-note">The left panel shows the product itself: a small "today" strip drawn with the same blocks as the calendar. No stock photos. On phones the panel becomes a short band above the form.</p>
+  <div class="frame">
+    <div class="signin">
+      <div class="panel">
+        <div class="brand" style="padding:0">
+          <svg width="36" height="36" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#ffffff" fill-opacity=".12"/><path d="M9 7v18M16 7v18M23 7v18" stroke="#e6eef1" stroke-width="2" stroke-linecap="round"/><rect x="13" y="15" width="6" height="8" rx="2" fill="#5fb3cc"/></svg>
+          <div>BenchBook<small>Lab resource reservations</small></div>
+        </div>
+        <h3>One schedule for every instrument, cabinet, room and van.</h3>
+        <p>See what is free across the main lab and branch labs, book it in a minute, and know straight away when something is blocked for service.</p>
+        <div class="glance" aria-label="Example of today's schedule">
+          <div class="glance-row"><b>PCR machine 1</b><div class="track"><div class="g-booking" style="left:0;width:44%">qPCR run</div><div class="g-booking" style="left:45%;width:28%">Kandy samples</div></div></div>
+          <div class="glance-row"><b>HPLC system</b><div class="track"><div class="g-booking" style="left:5%;width:40%">HbA1c batch</div><div class="g-maint" style="left:60%;width:22%">Calibration</div></div></div>
+          <div class="glance-row"><b>Flow cytometer</b><div class="track"><div class="g-oos">Out of service</div></div></div>
+        </div>
+      </div>
+      <div class="formside">
+        <form class="card" onsubmit="return false">
+          <h4>Sign in</h4>
+          <div class="field"><label for="e">Email</label><input class="input" id="e" type="email" value="kasun.silva@lab.example"></div>
+          <div class="field"><label for="p">Password</label><input class="input" id="p" type="password" value="green-hill-cloud-2026"></div>
+          <button class="btn btn-primary" style="justify-content:center;width:100%;height:42px">Sign in</button>
+          <p class="note">Accounts are created by your lab manager. Forgot your password? Ask your manager to reset it.</p>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================= CALENDAR ======================= -->
+  <div class="frame-title">3. Calendar, day view (the signature screen)</div>
+  <p class="frame-note">A bench sheet: resources across, time down, hours in tabular figures. Teal blocks are bookings (solid teal = yours), hatched amber is maintenance, a hatched grey column with a red hang tag is out of service. Hovering a free slot tints it; every free slot is a keyboard-focusable link to the booking form. The real grid shows 24 hours and opens scrolled to 07:00.</p>
+  <div class="frame">
+    <div class="app">
+      <aside class="sidebar" aria-label="Main navigation">
+        <div class="brand">
+          <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#ffffff" fill-opacity=".12"/><path d="M9 7v18M16 7v18M23 7v18" stroke="#e6eef1" stroke-width="2" stroke-linecap="round"/><rect x="13" y="15" width="6" height="8" rx="2" fill="#5fb3cc"/></svg>
+          <div>BenchBook<small>Main Laboratory, Colombo</small></div>
+        </div>
+        <nav class="nav">
+          <a href="#" aria-current="page"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Calendar</a>
+          <a href="#"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-9V3"/></svg>Resources</a>
+          <a href="#"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>My bookings</a>
+        </nav>
+        <div class="me"><div class="avatar">KS</div><div><b>Kasun Silva</b><span>Staff, Molecular Diagnostics</span></div></div>
+      </aside>
+      <div class="main">
+        <div class="topbar">
+          <a class="iconbtn" href="#" aria-label="Collapse sidebar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/></svg></a>
+          <div class="crumbs"><b>Calendar</b></div>
+          <div class="spacer"></div>
+          <span class="muted" style="font-size:14px">Updated at <span class="num">10:40</span></span>
+        </div>
+        <div class="content">
+          <div class="page-head">
+            <div><h2>Calendar</h2><p>Click a free slot to book it. Times are Colombo time.</p></div>
+            <a class="btn btn-primary" href="#">Book a resource</a>
+          </div>
+          <div class="toolbar">
+            <div class="seg" role="group" aria-label="View"><a href="#" aria-current="true">Day</a><a href="#">Week</a></div>
+            <div class="datebox">
+              <a class="iconbtn" href="#" aria-label="Previous day"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 18l-6-6 6-6"/></svg></a>
+              <a class="btn btn-secondary btn-sm" href="#">Today</a>
+              <a class="iconbtn" href="#" aria-label="Next day"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 6l6 6-6 6"/></svg></a>
+              <span class="date-label">Tuesday 13 October 2026</span>
+            </div>
+            <div style="flex:1"></div>
+            <span class="input select">Main Laboratory, Colombo</span>
+            <span class="input select">All categories</span>
+          </div>
+
+          <div class="sheet">
+            <div class="grid">
+              <div class="corner"></div>
+              <div class="colhead" style="grid-column:2"><b>Real-time PCR machine 1</b><span>Molecular instruments</span></div>
+              <div class="colhead" style="grid-column:3"><b>Real-time PCR machine 2</b><span>Molecular instruments</span></div>
+              <div class="colhead" style="grid-column:4"><b>HPLC system</b><span>Analytical instruments</span></div>
+              <div class="colhead" style="grid-column:5"><b>Flow cytometer</b><span><span class="tag tag-out">Out of service</span></span></div>
+              <div class="colhead" style="grid-column:6"><b>Biosafety cabinet A</b><span>Biosafety cabinets</span></div>
+              <div class="colhead" style="grid-column:7"><b>Biosafety cabinet B</b><span>Biosafety cabinets</span></div>
+
+              <!-- time ruler: rows 2..21 = 07:00..16:30 -->
+              <div class="ruler num" style="grid-row:2">07:00</div>
+              <div class="ruler num" style="grid-row:4">08:00</div>
+              <div class="ruler num" style="grid-row:6">09:00</div>
+              <div class="ruler num" style="grid-row:8">10:00</div>
+              <div class="ruler num" style="grid-row:10">11:00</div>
+              <div class="ruler num" style="grid-row:12">12:00</div>
+              <div class="ruler num" style="grid-row:14">13:00</div>
+              <div class="ruler num" style="grid-row:16">14:00</div>
+              <div class="ruler num" style="grid-row:18">15:00</div>
+              <div class="ruler num" style="grid-row:20">16:00</div>
+
+              <!-- background cells (generated in the app; a few shown here as whole columns) -->
+              <div class="cell off" style="grid-column:2/8;grid-row:2/4"></div>
+              <div class="cell free" style="grid-column:2;grid-row:4/22"></div>
+              <div class="cell free" style="grid-column:3;grid-row:4/22"></div>
+              <div class="cell free" style="grid-column:4;grid-row:4/22"></div>
+              <div class="cell oos" style="grid-column:5;grid-row:2/22"></div>
+              <div class="cell free" style="grid-column:6;grid-row:4/22"></div>
+              <div class="cell free" style="grid-column:7;grid-row:4/22"></div>
+
+              <!-- PCR machine 1 -->
+              <a class="block b-mine tall" href="#" style="grid-column:2;grid-row:4/10"><span class="you">You</span><b>qPCR run, respiratory panel</b><span class="t num">08:00 to 11:00</span></a>
+              <a class="block b-booking tall" href="#" style="grid-column:2;grid-row:10/14"><b>qPCR run, samples from Kandy</b><span class="who">Chamari Herath, Kandy</span><span class="t num">11:00 to 13:00</span></a>
+              <a class="block b-mine" href="#" style="grid-column:2;grid-row:14/16"><span class="you">You</span><b>Plate set-up</b><span class="t num">13:00 to 14:00</span></a>
+              <!-- PCR machine 2 -->
+              <a class="block b-mine tall" href="#" style="grid-column:3;grid-row:16/20"><span class="you">You</span><b>Extraction check</b><span class="t num">14:00 to 16:00</span></a>
+              <!-- HPLC -->
+              <a class="block b-booking tall" href="#" style="grid-column:4;grid-row:5/13"><b>HbA1c batch</b><span class="who">Dilani Fernando</span><span class="t num">08:30 to 12:30</span></a>
+              <a class="block b-maint tall" href="#" style="grid-column:4;grid-row:16/20"><b>Maintenance</b><span class="who">Annual calibration (service engineer)</span><span class="t num">14:00 to 16:00</span></a>
+              <!-- Biosafety cabinet A: back-to-back -->
+              <a class="block b-booking tall" href="#" style="grid-column:6;grid-row:4/8"><b>Culture plate work</b><span class="who">Kavitha Rajendran</span><span class="t num">08:00 to 10:00</span></a>
+              <a class="block b-booking tall" href="#" style="grid-column:6;grid-row:8/12"><b>Blood culture subculture</b><span class="who">Mohamed Naleem</span><span class="t num">10:00 to 12:00</span></a>
+              <!-- Biosafety cabinet B -->
+              <a class="block b-mine" href="#" style="grid-column:7;grid-row:11/13"><span class="you">You</span><b>Sample prep for PCR</b><span class="t num">11:30 to 12:30</span></a>
+
+              <!-- now line at 10:40 (row 9 is 10:30-11:00; 2/3 down) -->
+              <div class="now" style="grid-row:9;margin-top:17px"><span class="num">10:40</span></div>
+            </div>
+          </div>
+          <div class="legend">
+            <span><i style="background:#dceef4;box-shadow:inset 3px 0 0 #0e6a85"></i>Booking</span>
+            <span><i style="background:#0e6a85"></i>Your booking</span>
+            <span><i style="background:repeating-linear-gradient(135deg,#fbeee5 0 5px,#f4dbc8 5px 10px);box-shadow:inset 3px 0 0 #b4541a"></i>Maintenance</span>
+            <span><i style="background:repeating-linear-gradient(135deg,#eef1f3 0 5px,#e2e8eb 5px 10px)"></i>Out of service</span>
+            <span><i style="background:#f8fafb;border:1px solid #d9e1e5"></i>Outside standard hours</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================= REGISTER ======================= -->
+  <div class="frame-title">4. Resource register (manager view: "Add resource" is hidden for staff)</div>
+  <p class="frame-note">Plain table, hairline rows, one icon per category. Status reads like the tag on the machine. Filters are a GET form, so a filtered view can be bookmarked.</p>
+  <div class="frame" style="padding:20px;display:grid;gap:14px">
+    <div class="page-head">
+      <div><h2>Resources</h2><p>Every shared instrument, cabinet, room and van in the network.</p></div>
+      <a class="btn btn-secondary" href="#">Add resource</a>
+    </div>
+    <div class="filters">
+      <input class="input" style="width:260px" placeholder="Search by name" aria-label="Search by name">
+      <span class="input select">All sites</span>
+      <span class="input select">All categories</span>
+      <span class="input select">All sections</span>
+      <span class="input select">Active and out of service</span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Resource</th><th>Site</th><th>Owning section</th><th>Location</th><th>Status</th><th><span style="position:absolute;left:-9999px">Actions</span></th></tr></thead>
+        <tbody>
+          <tr><td><div class="res"><span class="ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 3c0 6 10 6 10 12s-10 6-10 6M17 3c0 6-10 6-10 12M8 7h8M8 17h8"/></svg></span><div><b>Real-time PCR machine 1</b><div class="muted" style="font-size:14px">Molecular instruments, up to 4 h</div></div></div></td><td>Main Laboratory, Colombo</td><td>Molecular Diagnostics</td><td>Molecular lab, room 2.14</td><td><span class="status-active">Active</span></td><td><a class="btn btn-primary btn-sm" href="#">Book</a></td></tr>
+          <tr><td><div class="res"><span class="ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-9V3"/></svg></span><div><b>HPLC system</b><div class="muted" style="font-size:14px">Analytical instruments, up to 12 h</div></div></div></td><td>Main Laboratory, Colombo</td><td>Clinical Biochemistry</td><td>Biochemistry lab, bench 4</td><td><span class="status-active">Active</span></td><td><a class="btn btn-primary btn-sm" href="#">Book</a></td></tr>
+          <tr><td><div class="res"><span class="ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-9V3"/></svg></span><div><b>Flow cytometer</b><div class="muted" style="font-size:14px">Analytical instruments, up to 12 h</div></div></div></td><td>Main Laboratory, Colombo</td><td>Haematology</td><td>Haematology lab</td><td><span class="tag tag-out">Out of service</span></td><td></td></tr>
+          <tr><td><div class="res"><span class="ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 21h18M5 21V4a1 1 0 0 1 1-1h9l4 4v14M14 12h.01"/></svg></span><div><b>Training room</b><div class="muted" style="font-size:14px">Rooms, up to 8 h, 20 seats</div></div></div></td><td>Main Laboratory, Colombo</td><td>Administration</td><td>Ground floor</td><td><span class="status-active">Active</span></td><td><a class="btn btn-primary btn-sm" href="#">Book</a></td></tr>
+          <tr><td><div class="res"><span class="ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 17V6h11v11M14 9h4l3 4v4h-7M7 17a2 2 0 1 0 0 .01M17 17a2 2 0 1 0 0 .01"/></svg></span><div><b>Sample transport van 2</b><div class="muted" style="font-size:14px">Vehicles, up to 10 h</div></div></div></td><td>Kandy Branch Laboratory</td><td>Administration</td><td class="muted">Not set</td><td><span class="status-active">Active</span></td><td><a class="btn btn-primary btn-sm" href="#">Book</a></td></tr>
+          <tr><td><div class="res"><span class="ico" style="background:#eef1f3;color:#5b6b73"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-9V3"/></svg></span><div><b>UV-Vis spectrophotometer (old)</b><div class="muted" style="font-size:14px">Analytical instruments</div></div></div></td><td>Galle Branch Laboratory</td><td>Clinical Biochemistry</td><td class="muted">Not set</td><td><span class="tag tag-retired">Retired</span></td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ======================= FORM + MY BOOKINGS ======================= -->
+  <div class="frame-title">5. Booking form and My bookings</div>
+  <p class="frame-note">Errors say what happened and what to do next, naming the clashing booking. A booking someone else cancelled is marked with a red edge and the reason, so the person notices it.</p>
+  <div class="frame">
+    <div class="two">
+      <form class="panel-white" onsubmit="return false">
+        <h5>Book a resource</h5>
+        <div class="alert alert-error" role="alert">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16.5v.5"/></svg>
+          <div>This time clashes with Chamari Herath's booking, Tue 13 Oct, 11:00 to 13:00. Choose another time or see the calendar.</div>
+        </div>
+        <div class="field"><label>Resource</label><span class="input select">Real-time PCR machine 1 (Main Laboratory, Colombo)</span><span class="hint">Molecular instruments can be booked for up to 4 hours.</span></div>
+        <div class="row2">
+          <div class="field"><label>Start date</label><input class="input num" value="13/10/2026"></div>
+          <div class="field"><label>Start time</label><input class="input num" value="10:30"></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label>End date</label><input class="input num" value="13/10/2026"></div>
+          <div class="field"><label>End time</label><input class="input num" value="12:00"></div>
+        </div>
+        <div class="field"><label>Purpose</label><input class="input" value="qPCR run, HBV viral load"></div>
+        <div style="display:flex;gap:8px"><button class="btn btn-primary">Book</button><button class="btn btn-secondary">Cancel</button></div>
+      </form>
+      <div class="panel-white">
+        <h5>My bookings</h5>
+        <div class="muted" style="font-size:14px;font-weight:600">Upcoming</div>
+        <div class="booking-item"><span class="when num">Tue 13 Oct, 14:00 to 16:00</span><span>Real-time PCR machine 2, Main Laboratory</span><span class="muted">Extraction check</span></div>
+        <div class="muted" style="font-size:14px;font-weight:600;margin-top:6px">Cancelled in the last 30 days</div>
+        <div class="booking-item cancelled"><span class="when num">Wed 14 Oct, 13:00 to 15:00</span><span>Flow cytometer, Main Laboratory</span><span class="why">Cancelled by Nadeesha Perera. Reason: Resource out of service: laser fault, engineer visit pending.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================= USAGE ======================= -->
+  <div class="frame-title">6. Usage dashboard (manager view)</div>
+  <p class="frame-note">One summary strip instead of a grid of floating cards; the table carries the detail. Bars are plain CSS.</p>
+  <div class="frame" style="padding:20px;display:grid;gap:14px">
+    <div class="page-head"><div><h2>Usage</h2><p>Main Laboratory, Colombo. 15 September to 12 October 2026.</p></div></div>
+    <div class="summary">
+      <div><b class="num">412 h</b><span>Booked</span></div>
+      <div><b class="num">34%</b><span>Average utilisation</span></div>
+      <div><b class="num">9 h</b><span>Maintenance</span></div>
+      <div><b class="num">6</b><span>Cancelled bookings</span></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Resource</th><th>Booked in standard hours</th><th>Utilisation</th><th></th></tr></thead>
+        <tbody>
+          <tr><td><b>Real-time PCR machine 1</b></td><td class="num">156 h</td><td><div style="display:flex;align-items:center;gap:10px"><div class="bar"><i style="width:78%"></i></div><span class="num">78%</span></div></td><td><span class="pill pill-busy">Busy</span></td></tr>
+          <tr><td><b>HPLC system</b></td><td class="num">80 h</td><td><div style="display:flex;align-items:center;gap:10px"><div class="bar"><i style="width:40%"></i></div><span class="num">40%</span></div></td><td></td></tr>
+          <tr><td><b>Training room</b></td><td class="num">12 h</td><td><div style="display:flex;align-items:center;gap:10px"><div class="bar"><i style="width:6%"></i></div><span class="num">6%</span></div></td><td><span class="pill pill-idle">Idle</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="muted" style="margin:0;font-size:14px">Utilisation = booked time within standard hours (Monday to Friday, 08:00 to 18:00) divided by the standard hours in the period.</p>
+  </div>
+</div>
+</body>
+</html>
