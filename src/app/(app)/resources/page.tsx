@@ -21,9 +21,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
+import { SummaryStrip } from "@/components/summary-strip";
+
 export const metadata = {
-  title: "Resources | BenchBook",
-  description: "Every shared instrument, cabinet, room and van in the network.",
+  title: "Resource Registry | BenchBook Pro",
+  description:
+    "Precision Clinical Operations — Registry of shared instruments, cabinets, and rooms.",
 };
 
 interface ResourcesPageProps {
@@ -68,21 +71,60 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
   const resources = resourcesResult.ok ? resourcesResult.data : [];
   const canAddResource = user.role === "MANAGER" || user.role === "ADMIN";
 
+  const totalUnits = resources.length;
+  const activeUnits = resources.filter((r) => r.status === "ACTIVE").length;
+  const lockoutUnits = resources.filter((r) => r.status === "OUT_OF_SERVICE").length;
+  const operationalPct = totalUnits > 0 ? Math.round((activeUnits / totalUnits) * 100) : 0;
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <PageHeader
-        title="Resources"
-        description="Every shared instrument, cabinet, room and van in the network."
+        title="Resource Registry"
+        description="Core diagnostic instruments, biosafety units, and clinical laboratory suites."
         actions={
           canAddResource ? (
-            <Button asChild variant="secondary" className="gap-2">
+            <Button
+              asChild
+              size="sm"
+              className="h-9 px-3 gap-1.5 bg-primary text-primary-foreground font-semibold text-xs hover:brightness-110 shadow-xs"
+            >
               <Link href="/resources/new">
-                <Plus className="size-4" />
-                <span>Add resource</span>
+                <Plus className="size-4 stroke-[2.5]" />
+                <span>Add Instrument</span>
               </Link>
             </Button>
           ) : undefined
         }
+      />
+
+      {/* 4-Column Operational Summary Metrics Strip */}
+      <SummaryStrip
+        items={[
+          {
+            label: "Operational Instruments",
+            value: `${activeUnits} / ${totalUnits}`,
+            hint: `${operationalPct}% Operational • ${activeUnits} Ready`,
+            dotColor: "primary",
+          },
+          {
+            label: "Registry Total",
+            value: `${totalUnits} Units`,
+            hint: "Precision diagnostic grid",
+            dotColor: "secondary",
+          },
+          {
+            label: "Operational Health",
+            value: lockoutUnits === 0 ? "Optimal" : "Degraded",
+            hint: lockoutUnits === 0 ? "All certified online" : `${lockoutUnits} pending repair`,
+            dotColor: lockoutUnits === 0 ? "primary" : "tertiary",
+          },
+          {
+            label: "Fault Lockout",
+            value: `${lockoutUnits} ${lockoutUnits === 1 ? "Unit" : "Units"}`,
+            hint: lockoutUnits > 0 ? "Safety lockout active" : "Zero lockout incidents",
+            dotColor: lockoutUnits > 0 ? "error" : "primary",
+          },
+        ]}
       />
 
       <ResourceFilters
@@ -106,21 +148,31 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
       ) : (
         <>
           {/* Desktop & Tablet Table (md and above) */}
-          <div className="hidden md:block rounded-xl border border-border bg-card overflow-hidden shadow-xs">
+          <div className="hidden md:block rounded-lg border border-outline-variant bg-surface-container overflow-hidden shadow-xs">
             <Table>
               <TableHeader>
-                <TableRow className="bg-muted/40 hover:bg-muted/40">
-                  <TableHead className="w-[320px]">Resource</TableHead>
-                  <TableHead>Site</TableHead>
-                  <TableHead>Owning section</TableHead>
-                  <TableHead>Location</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">
+                <TableRow className="border-b border-outline-variant bg-surface-container-lowest hover:bg-surface-container-lowest">
+                  <TableHead className="w-[320px] font-mono text-[10px] text-on-surface-variant uppercase tracking-wider">
+                    Instrument / Resource
+                  </TableHead>
+                  <TableHead className="font-mono text-[10px] text-on-surface-variant uppercase tracking-wider">
+                    Site
+                  </TableHead>
+                  <TableHead className="font-mono text-[10px] text-on-surface-variant uppercase tracking-wider">
+                    Owning section
+                  </TableHead>
+                  <TableHead className="font-mono text-[10px] text-on-surface-variant uppercase tracking-wider">
+                    Location
+                  </TableHead>
+                  <TableHead className="font-mono text-[10px] text-on-surface-variant uppercase tracking-wider">
+                    Status
+                  </TableHead>
+                  <TableHead className="text-right font-mono text-[10px] text-on-surface-variant uppercase tracking-wider">
                     <span className="sr-only">Actions</span>
                   </TableHead>
                 </TableRow>
               </TableHeader>
-              <TableBody>
+              <TableBody className="divide-y divide-outline-variant/40">
                 {resources.map((resource) => {
                   const isRoom = resource.category.iconKey === "room";
                   const capacityText =
@@ -128,7 +180,10 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
                   const subtitle = `${resource.category.name}, up to ${formatMinutes(resource.category.maxBookingMinutes)}${capacityText}`;
 
                   return (
-                    <TableRow key={resource.id} className="hover:bg-muted/20">
+                    <TableRow
+                      key={resource.id}
+                      className="hover:bg-surface-container-high/60 border-outline-variant/40 transition-colors"
+                    >
                       <TableCell>
                         <div className="flex items-center gap-3">
                           <CategoryIcon
@@ -138,27 +193,27 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
                           <div className="min-w-0">
                             <Link
                               href={`/resources/${resource.id}`}
-                              className="font-bold text-sm text-foreground hover:underline truncate block"
+                              className="font-semibold text-xs text-on-surface hover:text-primary transition-colors truncate block"
                             >
                               {resource.name}
                             </Link>
-                            <span className="text-xs text-muted-foreground block truncate">
+                            <span className="font-mono text-[10.5px] text-on-surface-variant block truncate">
                               {subtitle}
                             </span>
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell className="text-sm font-medium text-foreground">
+                      <TableCell className="text-xs font-medium text-on-surface">
                         {resource.site.name}
                       </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
+                      <TableCell className="text-xs font-mono text-on-surface-variant">
                         {resource.section.name}
                       </TableCell>
-                      <TableCell className="text-sm">
+                      <TableCell className="text-xs">
                         {resource.location ? (
-                          <span className="text-foreground">{resource.location}</span>
+                          <span className="text-on-surface">{resource.location}</span>
                         ) : (
-                          <span className="text-muted-foreground italic">Not set</span>
+                          <span className="text-on-surface-variant/60 italic">Not set</span>
                         )}
                       </TableCell>
                       <TableCell>
@@ -166,15 +221,19 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
                       </TableCell>
                       <TableCell className="text-right">
                         {resource.status === "ACTIVE" ? (
-                          <Button asChild size="sm" className="h-8 px-3 font-semibold text-xs">
-                            <Link href={`/bookings/new?resourceId=${resource.id}`}>Book</Link>
+                          <Button
+                            asChild
+                            size="sm"
+                            className="h-7.5 px-3 bg-primary text-primary-foreground font-semibold text-xs hover:brightness-110 active:scale-[0.98] transition-all shadow-2xs"
+                          >
+                            <Link href={`/bookings/new?resourceId=${resource.id}`}>Reserve</Link>
                           </Button>
                         ) : (
                           <Button
                             asChild
                             variant="ghost"
                             size="sm"
-                            className="h-8 px-3 text-xs text-muted-foreground hover:text-foreground"
+                            className="h-7.5 px-3 text-xs text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high"
                           >
                             <Link href={`/resources/${resource.id}`}>View</Link>
                           </Button>

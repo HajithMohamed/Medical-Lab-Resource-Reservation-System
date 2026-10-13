@@ -60,16 +60,16 @@ export default async function LoginPage() {
             </div>
             <div>
               <div className="text-white font-bold text-base tracking-tight leading-tight">
-                BenchBook
+                BenchBook Pro
               </div>
               <div className="text-sidebar-muted text-[10.5px] font-bold tracking-[1.2px] uppercase">
-                LAB RESOURCE RESERVATIONS
+                PRECISION CLINICAL OPS
               </div>
             </div>
           </div>
 
           <div className="pt-2">
-            <span className="text-[11px] font-bold tracking-[2.2px] uppercase text-chart-4">
+            <span className="text-[11px] font-bold tracking-[2.2px] uppercase text-primary">
               MEDICAL LAB RESOURCE RESERVATION
             </span>
             <h1 className="text-2xl sm:text-3xl lg:text-[32px] font-extrabold tracking-tight text-white leading-tight mt-1">
@@ -78,7 +78,7 @@ export default async function LoginPage() {
               More time for discovery.
             </h1>
             <p className="text-sidebar-muted text-xs sm:text-[13.5px] leading-relaxed mt-1.5 max-w-sm">
-              A single place to reserve equipment, facilities, and shared laboratory resources.
+              Precision instrument allocation, collision prevention, and compliance tracking.
             </p>
           </div>
         </div>
@@ -105,7 +105,7 @@ export default async function LoginPage() {
                 <Check className="size-2.5 text-secondary-foreground stroke-[3]" />
               </div>
               <span className="text-[11px] font-medium leading-tight truncate">
-                Clear booking requests
+                Zero conflict runs
               </span>
             </div>
 
@@ -114,13 +114,13 @@ export default async function LoginPage() {
                 <Check className="size-2.5 text-secondary-foreground stroke-[3]" />
               </div>
               <span className="text-[11px] font-medium leading-tight truncate">
-                One shared workspace
+                Clinical compliance
               </span>
             </div>
           </div>
 
           <p className="text-[11px] text-sidebar-muted">
-            Designed for a safer, more organized lab experience.
+            Designed for high-throughput diagnostic and research laboratories.
           </p>
         </div>
       </section>
@@ -183,7 +183,7 @@ export default async function LoginPage() {
 
         {/* Bottom footer text */}
         <div className="text-center text-[11px] text-muted-foreground">
-          BenchBook · Medical Lab Resource Reservation Management System
+          BenchBook Pro • Precision Clinical Operations Console
         </div>
       </section>
     </main>

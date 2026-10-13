@@ -127,32 +127,52 @@ export default async function ResourceDetailPage({ params }: ResourceDetailPageP
 
       {/* Manager Actions Row */}
       {isManagerOrAdmin && (
-        <div className="flex flex-wrap items-center gap-2.5 p-3 rounded-xl border border-border bg-card shadow-xs">
-          <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground mr-1">
-            Manage:
+        <div className="flex flex-wrap items-center gap-2 p-3 rounded-lg border border-outline-variant bg-surface-container shadow-xs">
+          <span className="text-[11px] font-mono uppercase tracking-wider text-on-surface-variant mr-1">
+            Actions:
           </span>
-          <Button asChild variant="outline" size="sm" className="gap-1.5 h-8">
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="gap-1.5 h-7.5 border-outline-variant bg-surface-container-low text-xs hover:bg-surface-container-high"
+          >
             <Link href={`/resources/${resource.id}/edit`}>
               <Pencil className="size-3.5" />
               <span>Edit</span>
             </Link>
           </Button>
-          <Button asChild variant="outline" size="sm" className="gap-1.5 h-8">
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="gap-1.5 h-7.5 border-outline-variant bg-surface-container-low text-xs hover:bg-surface-container-high"
+          >
             <Link href={`/resources/${resource.id}/status`}>
               <AlertOctagon className="size-3.5" />
-              <span>Change status</span>
+              <span>Status</span>
             </Link>
           </Button>
-          <Button asChild variant="outline" size="sm" className="gap-1.5 h-8">
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="gap-1.5 h-7.5 border-outline-variant bg-surface-container-low text-xs hover:bg-surface-container-high"
+          >
             <Link href={`/maintenance/new?resourceId=${resource.id}`}>
               <Wrench className="size-3.5" />
-              <span>Block time</span>
+              <span>Block Maintenance</span>
             </Link>
           </Button>
-          <Button asChild variant="outline" size="sm" className="gap-1.5 h-8">
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="gap-1.5 h-7.5 border-error/40 text-error bg-surface-container-low text-xs hover:bg-error-container/20"
+          >
             <Link href={`/maintenance/new?resourceId=${resource.id}&breakdown=1`}>
               <ShieldAlert className="size-3.5" />
-              <span>Report breakdown</span>
+              <span>Report Lockout</span>
             </Link>
           </Button>
         </div>
@@ -160,76 +180,80 @@ export default async function ResourceDetailPage({ params }: ResourceDetailPageP
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column: Details panel */}
-        <div className="lg:col-span-1 space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base font-bold">Details</CardTitle>
+        <div className="lg:col-span-1 space-y-5">
+          <Card className="rounded-lg bg-surface-container border border-outline-variant shadow-xs">
+            <CardHeader className="pb-3 border-b border-outline-variant/60">
+              <CardTitle className="text-xs font-mono uppercase tracking-wider text-on-surface-variant">
+                Instrument Specifications
+              </CardTitle>
             </CardHeader>
-            <CardContent>
-              <dl className="divide-y divide-border/60 text-sm">
-                <div className="py-2.5">
-                  <dt className="text-xs text-muted-foreground font-medium">Category & limit</dt>
-                  <dd className="font-semibold text-foreground mt-0.5">
-                    {resource.category.name} (up to{" "}
+            <CardContent className="pt-3">
+              <dl className="divide-y divide-outline-variant/40 text-xs font-mono">
+                <div className="py-2.5 flex flex-col gap-0.5">
+                  <dt className="text-on-surface-variant text-[11px]">Category & Limit</dt>
+                  <dd className="font-semibold text-on-surface">
+                    {resource.category.name} (max{" "}
                     {formatMinutes(resource.category.maxBookingMinutes)})
                   </dd>
                 </div>
-                <div className="py-2.5">
-                  <dt className="text-xs text-muted-foreground font-medium">Laboratory site</dt>
-                  <dd className="font-semibold text-foreground mt-0.5">{resource.site.name}</dd>
+                <div className="py-2.5 flex flex-col gap-0.5">
+                  <dt className="text-on-surface-variant text-[11px]">Laboratory Site</dt>
+                  <dd className="font-semibold text-on-surface">{resource.site.name}</dd>
                 </div>
-                <div className="py-2.5">
-                  <dt className="text-xs text-muted-foreground font-medium">Owning section</dt>
-                  <dd className="font-semibold text-foreground mt-0.5">{resource.section.name}</dd>
+                <div className="py-2.5 flex flex-col gap-0.5">
+                  <dt className="text-on-surface-variant text-[11px]">Owning Section</dt>
+                  <dd className="font-semibold text-on-surface">{resource.section.name}</dd>
                 </div>
-                <div className="py-2.5">
-                  <dt className="text-xs text-muted-foreground font-medium">Location</dt>
-                  <dd className="font-semibold text-foreground mt-0.5">
+                <div className="py-2.5 flex flex-col gap-0.5">
+                  <dt className="text-on-surface-variant text-[11px]">Physical Location</dt>
+                  <dd className="font-semibold text-on-surface">
                     {resource.location ?? (
-                      <span className="text-muted-foreground italic">Not set</span>
+                      <span className="text-on-surface-variant/60 italic font-sans">Not set</span>
                     )}
                   </dd>
                 </div>
-                <div className="py-2.5">
-                  <dt className="text-xs text-muted-foreground font-medium">Capacity</dt>
-                  <dd className="font-semibold text-foreground mt-0.5">{capacityText}</dd>
+                <div className="py-2.5 flex flex-col gap-0.5">
+                  <dt className="text-on-surface-variant text-[11px]">Capacity</dt>
+                  <dd className="font-semibold text-on-surface">{capacityText}</dd>
                 </div>
               </dl>
             </CardContent>
           </Card>
 
           {/* Recent Maintenance */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base font-bold flex items-center gap-2">
-                <Wrench className="size-4 text-amber-600" />
-                <span>Recent maintenance</span>
+          <Card className="rounded-lg bg-surface-container border border-outline-variant shadow-xs">
+            <CardHeader className="pb-3 border-b border-outline-variant/60">
+              <CardTitle className="text-xs font-mono uppercase tracking-wider text-tertiary flex items-center gap-2">
+                <Wrench className="size-3.5" />
+                <span>Recent Maintenance Logs</span>
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pt-3">
               {resource.recentMaintenance.length === 0 ? (
-                <p className="text-sm text-muted-foreground italic">
+                <p className="text-xs text-on-surface-variant/70 italic">
                   No maintenance blocks recorded.
                 </p>
               ) : (
-                <div className="space-y-3">
+                <div className="space-y-2.5">
                   {resource.recentMaintenance.map((m) => (
                     <div
                       key={m.id}
-                      className="p-3 rounded-lg border border-border/80 bg-muted/20 text-xs space-y-1"
+                      className="p-3 rounded-lg border border-tertiary/40 hazard-hatch-pattern text-xs space-y-1 bg-surface-container-low"
                     >
                       <div className="flex items-center justify-between gap-2">
-                        <span className="font-bold text-foreground truncate">{m.purpose}</span>
-                        <span className="text-muted-foreground shrink-0 tabular-nums">
+                        <span className="font-semibold text-tertiary truncate">{m.purpose}</span>
+                        <span className="text-on-surface-variant shrink-0 font-mono text-[11px] tabular-nums">
                           {formatDateDay(m.startAt)}
                         </span>
                       </div>
-                      <p className="text-muted-foreground">
-                        {formatTime(m.startAt)} to {formatTime(m.endAt)} &bull; logged by{" "}
+                      <p className="text-on-surface-variant text-[11px]">
+                        {formatTime(m.startAt)} – {formatTime(m.endAt)} • logged by{" "}
                         {m.createdBy.name}
                       </p>
                       {m.cancelReason && (
-                        <p className="text-destructive font-medium">Cancelled: {m.cancelReason}</p>
+                        <p className="text-error font-medium text-[11px]">
+                          Cancelled: {m.cancelReason}
+                        </p>
                       )}
                     </div>
                   ))}
@@ -240,34 +264,34 @@ export default async function ResourceDetailPage({ params }: ResourceDetailPageP
         </div>
 
         {/* Right Column: Next 7 days schedule */}
-        <div className="lg:col-span-2 space-y-6">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-3">
-              <CardTitle className="text-base font-bold flex items-center gap-2">
-                <Calendar className="size-4 text-primary" />
-                <span>Next 7 days</span>
+        <div className="lg:col-span-2 space-y-5">
+          <Card className="rounded-lg bg-surface-container border border-outline-variant shadow-xs">
+            <CardHeader className="flex flex-row items-center justify-between pb-3 border-b border-outline-variant/60">
+              <CardTitle className="text-xs font-mono uppercase tracking-wider text-on-surface flex items-center gap-2">
+                <Calendar className="size-3.5 text-primary" />
+                <span>Next 7 Days Schedule Matrix</span>
               </CardTitle>
-              <span className="text-xs text-muted-foreground">
+              <span className="font-mono text-[11px] text-on-surface-variant">
                 {resource.reservationsNext7Days.length}{" "}
-                {resource.reservationsNext7Days.length === 1 ? "booking" : "bookings"}
+                {resource.reservationsNext7Days.length === 1 ? "run" : "runs"}
               </span>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pt-3">
               {resource.reservationsNext7Days.length === 0 ? (
-                <div className="py-8 text-center border border-dashed border-border rounded-xl bg-card">
-                  <Clock className="size-8 text-muted-foreground/50 mx-auto mb-2" />
-                  <p className="text-sm font-semibold text-foreground">
-                    No bookings in the next 7 days
+                <div className="py-8 text-center border border-dashed border-outline-variant rounded-lg bg-surface-container-low">
+                  <Clock className="size-8 text-outline mx-auto mb-2" />
+                  <p className="text-sm font-semibold text-on-surface">
+                    No confirmed runs in the next 7 days
                   </p>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    This resource is free for reservations throughout the upcoming week.
+                  <p className="text-xs text-on-surface-variant mt-0.5">
+                    This resource is available for reservation slots across the upcoming week.
                   </p>
                 </div>
               ) : (
-                <div className="space-y-6">
+                <div className="space-y-4">
                   {Array.from(reservationsByDay.entries()).map(([dayString, dayReservations]) => (
                     <div key={dayString} className="space-y-2">
-                      <div className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-1">
+                      <div className="text-[11px] font-mono font-bold text-on-surface-variant uppercase tracking-wider px-1">
                         {dayString}
                       </div>
 
@@ -278,36 +302,34 @@ export default async function ResourceDetailPage({ params }: ResourceDetailPageP
                           return (
                             <div
                               key={item.id}
-                              className={`p-3 rounded-lg border text-sm flex items-start justify-between gap-3 ${
+                              className={`p-3 rounded-lg border text-xs flex items-start justify-between gap-3 ${
                                 isMaint
-                                  ? "border-amber-600/40 bg-amber-500/10 text-amber-950 dark:text-amber-200"
-                                  : "border-border bg-card hover:bg-muted/30"
+                                  ? "border-l-2 border-l-tertiary border-tertiary/40 hazard-hatch-pattern bg-surface-container-low text-tertiary"
+                                  : "border-l-2 border-l-primary border-outline-variant bg-surface-container-low hover:bg-surface-container-high transition-colors"
                               }`}
                             >
                               <div className="space-y-1 min-w-0">
                                 <div className="flex items-center gap-2">
                                   {isMaint ? (
-                                    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-bold bg-amber-600 text-white shrink-0">
-                                      <Wrench className="size-3" />
-                                      <span>Maintenance</span>
+                                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-tertiary text-on-tertiary shrink-0">
+                                      <Wrench className="size-2.5" />
+                                      <span>MAINT</span>
                                     </span>
                                   ) : null}
-                                  <span className="font-bold text-foreground truncate">
+                                  <span className="font-semibold text-on-surface truncate">
                                     {item.purpose}
                                   </span>
                                 </div>
-                                <p className="text-xs text-muted-foreground">
-                                  Booked by {item.createdBy.name}
+                                <p className="text-[11px] text-on-surface-variant">
+                                  Reserved by {item.createdBy.name}
                                   {item.createdBy.site ? ` (${item.createdBy.site.name})` : ""}
-                                  {item.attendeeCount
-                                    ? ` &bull; ${item.attendeeCount} attendees`
-                                    : ""}
+                                  {item.attendeeCount ? ` • ${item.attendeeCount} attendees` : ""}
                                 </p>
                               </div>
 
                               <div className="text-right shrink-0">
-                                <span className="font-mono text-xs font-bold text-foreground tabular-nums">
-                                  {formatTime(item.startAt)} &ndash; {formatTime(item.endAt)}
+                                <span className="font-mono text-xs font-bold text-primary tabular-nums">
+                                  {formatTime(item.startAt)} – {formatTime(item.endAt)}
                                 </span>
                               </div>
                             </div>
