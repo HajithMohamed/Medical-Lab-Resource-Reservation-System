@@ -28,3 +28,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Optimistic authentication proxy (`src/proxy.ts`).
 - Two-column sign-in screen matching design reference, forced password change screen with live character counter, and authenticated AppShell integration.
 - Unit and integration test suites covering password rules, role permissions, and lockout scenarios.
+- Admin Settings management service in `src/services/settings.ts` (`server-only`) for Sites, Sections, and Categories with strict Admin-only authorization, Zod validation, unique constraint handling (P2002), and in-use delete prevention with P2003 safety net.
+- Pure booking rule helper `checkCategoryLimit(minutes)` in `src/lib/booking-rules.ts` and duration formatter `formatMinutes(minutes)` in `src/lib/format.ts`.
+- Server Actions in `src/actions/settings.ts` enforcing `requireRole("ADMIN")`, path revalidation, and status messages.
+- Settings hub (`/settings`) with single overview panel displaying total counts, and full CRUD list and edit pages for Sites, Sections, and Categories with modal Add dialogs, live duration hints, and `ConfirmAction` delete protection.
+- Unit tests for category limit rules and minute formatting, plus integration tests for admin CRUD, duplicate names, in-use delete prevention, and role rejection.
