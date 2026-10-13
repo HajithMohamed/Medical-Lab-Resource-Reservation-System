@@ -8,10 +8,18 @@ export const metadata = {
   title: "Change password",
 };
 
-export default async function ChangePasswordPage() {
+interface ChangePasswordPageProps {
+  searchParams?: Promise<{ email?: string }>;
+}
+
+export default async function ChangePasswordPage({ searchParams }: ChangePasswordPageProps) {
+  const resolvedSearchParams = searchParams ? await searchParams : undefined;
   const user = await getCurrentUser();
   if (!user) {
-    redirect("/login");
+    const emailParam = resolvedSearchParams?.email
+      ? `?email=${encodeURIComponent(resolvedSearchParams.email)}&fromChange=1`
+      : "";
+    redirect(`/login${emailParam}`);
   }
 
   return (

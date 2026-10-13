@@ -11,7 +11,12 @@ export const metadata = {
     "Medical Lab Resource Reservation System — Sign in to access laboratory equipment and facilities.",
 };
 
-export default async function LoginPage() {
+interface LoginPageProps {
+  searchParams?: Promise<{ email?: string; fromChange?: string }>;
+}
+
+export default async function LoginPage({ searchParams }: LoginPageProps) {
+  const resolvedSearchParams = searchParams ? await searchParams : undefined;
   const user = await getCurrentUser();
   if (user) {
     redirect("/calendar");
@@ -170,14 +175,16 @@ export default async function LoginPage() {
 
             <div>
               <h2 className="text-2xl font-extrabold tracking-tight text-foreground leading-tight">
-                Welcome back
+                {resolvedSearchParams?.fromChange ? "Complete account setup" : "Welcome back"}
               </h2>
               <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
-                Sign in to continue to your lab workspace.
+                {resolvedSearchParams?.fromChange
+                  ? "Sign in with your temporary password to create your personal password."
+                  : "Sign in to continue to your lab workspace."}
               </p>
             </div>
 
-            <LoginForm />
+            <LoginForm defaultEmail={resolvedSearchParams?.email} />
           </div>
         </div>
 
