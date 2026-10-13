@@ -27,6 +27,9 @@ export interface SendEmailResult {
 /**
  * Escapes HTML characters to prevent XSS / formatting corruption in email clients.
  */
+import fs from "node:fs";
+import path from "node:path";
+
 function escapeHtml(unsafe: string): string {
   return unsafe
     .replace(/&/g, "&amp;")
@@ -37,21 +40,60 @@ function escapeHtml(unsafe: string): string {
 }
 
 /**
+ * Resolves the Resend API key with runtime fallbacks to disk (.env / .env.local).
+ * This ensures that when developers paste keys into .env without restarting next dev,
+ * the key is picked up immediately.
+ */
+export function resolveApiKey(): string | undefined {
+  if (process.env.RESEND_API_KEY && process.env.RESEND_API_KEY.trim() !== "") {
+    const key = process.env.RESEND_API_KEY.trim();
+    if (!key.startsWith("replace-with")) return key;
+  }
+
+  if (env.RESEND_API_KEY && env.RESEND_API_KEY.trim() !== "") {
+    const key = env.RESEND_API_KEY.trim();
+    if (!key.startsWith("replace-with")) return key;
+  }
+
+  try {
+    const cwd = process.cwd();
+    for (const file of [".env.local", ".env.development.local", ".env"]) {
+      const filePath = path.join(cwd, file);
+      if (fs.existsSync(filePath)) {
+        const content = fs.readFileSync(filePath, "utf-8");
+        const match = content.match(/^RESEND_API_KEY\s*=\s*["']?([^"'\r\n]+)["']?/m);
+        if (match && match[1] && match[1].trim() !== "") {
+          const key = match[1].trim();
+          if (!key.startsWith("replace-with")) {
+            process.env.RESEND_API_KEY = key;
+            return key;
+          }
+        }
+      }
+    }
+  } catch {
+    // ignore disk read errors
+  }
+
+  return undefined;
+}
+
+/**
  * Resolves the Resend client if a valid API key is present.
  */
 function getResendClient(): Resend | null {
-  const apiKey = env.RESEND_API_KEY;
-  if (!apiKey || apiKey.trim() === "" || apiKey.startsWith("replace-with")) {
+  const apiKey = resolveApiKey();
+  if (!apiKey) {
     return null;
   }
-  return new Resend(apiKey.trim());
+  return new Resend(apiKey);
 }
 
 /**
  * Resolves the base application URL for deep-links in emails.
  */
 function getAppBaseUrl(): string {
-  const url = env.APP_BASE_URL || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const url = process.env.APP_BASE_URL || env.APP_BASE_URL || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
   return url.replace(/\/+$/, "");
 }
 
@@ -432,7 +474,7 @@ export async function sendUserWelcomeEmail(params: WelcomeEmailParams): Promise<
     );
     return {
       ok: false,
-      error: "RESEND_API_KEY is not configured in .env",
+      error: "RESEND_API_KEY is not configured or not saved in .env",
     };
   }
 
@@ -501,7 +543,7 @@ export async function sendPasswordResetEmail(
     );
     return {
       ok: false,
-      error: "RESEND_API_KEY is not configured in .env",
+      error: "RESEND_API_KEY is not configured or not saved in .env",
     };
   }
 
