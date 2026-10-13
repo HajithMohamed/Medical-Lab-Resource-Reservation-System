@@ -8,13 +8,23 @@ import { generateTemporaryPassword, hashPassword } from "@/lib/password";
 import { Role } from "@/generated/prisma/client";
 
 export type ServiceResult<T = void> =
-  | { ok: true; data: T; message?: string }
+  | {
+      ok: true;
+      data: T;
+      message?: string;
+      totalCount?: number;
+      page?: number;
+      pageSize?: number;
+      totalPages?: number;
+    }
   | { ok: false; error: string; fieldErrors?: Record<string, string[]> };
 
 export interface UserFilterOptions {
   siteId?: string;
   role?: Role;
   status?: "ACTIVE" | "LOCKED" | "MUST_CHANGE_PASSWORD" | "INACTIVE";
+  page?: number;
+  pageSize?: number;
 }
 
 export interface UserListItem {
@@ -145,9 +155,18 @@ export async function listUsers(
     }
   }
 
+  const shouldPaginate = filters.page !== undefined || filters.pageSize !== undefined;
+  const page = Math.max(1, filters.page ?? 1);
+  const pageSize = Math.max(1, filters.pageSize ?? 10);
+
+  const totalCount = await db.user.count({ where });
+  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+
   const users = await db.user.findMany({
     where,
     orderBy: { name: "asc" },
+    skip: shouldPaginate ? (page - 1) * pageSize : undefined,
+    take: shouldPaginate ? pageSize : undefined,
     select: {
       id: true,
       name: true,
@@ -175,7 +194,14 @@ export async function listUsers(
     },
   });
 
-  return { ok: true, data: users };
+  return {
+    ok: true,
+    data: users,
+    totalCount,
+    page: shouldPaginate ? page : 1,
+    pageSize: shouldPaginate ? pageSize : totalCount,
+    totalPages: shouldPaginate ? totalPages : 1,
+  };
 }
 
 /**

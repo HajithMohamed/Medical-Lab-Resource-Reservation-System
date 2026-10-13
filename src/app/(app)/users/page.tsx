@@ -1,11 +1,11 @@
 import * as React from "react";
 import Link from "next/link";
-import { UserPlus, Users as UsersIcon } from "lucide-react";
+import { Users as UsersIcon } from "lucide-react";
 import { requireRole } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { rolesActorCanCreate } from "@/lib/permissions";
 import { listUsers, getUpcomingBookingsCountMap } from "@/services/users";
 import { PageHeader } from "@/components/page-header";
-import { FilterBar } from "@/components/filter-bar";
 import { EmptyState } from "@/components/empty-state";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -19,6 +19,10 @@ import {
 } from "@/components/ui/table";
 import { UserStatusPill } from "@/components/users/user-status-pill";
 import { UserRowActions } from "@/components/users/user-row-actions";
+import { UserFilterBar } from "@/components/users/user-filter-bar";
+import { UserCreateDialog } from "@/components/users/user-create-dialog";
+import { UserEditDialog } from "@/components/users/user-edit-dialog";
+import { PaginationControls } from "@/components/pagination-controls";
 import { formatLabDate, formatLabTime, formatRelative } from "@/lib/time";
 import { Role } from "@/generated/prisma/client";
 
@@ -27,6 +31,8 @@ interface UsersPageProps {
     siteId?: string;
     role?: string;
     status?: string;
+    page?: string;
+    pageSize?: string;
   }>;
 }
 
@@ -42,6 +48,10 @@ export default async function UsersPage({ searchParams }: UsersPageProps) {
   const params = await searchParams;
 
   const isAdmin = actor.role === Role.ADMIN;
+  const allowedRoles = rolesActorCanCreate(actor);
+
+  const page = Math.max(1, Number(params.page) || 1);
+  const pageSize = Math.max(1, Number(params.pageSize) || 10);
 
   const validRoles = [Role.STAFF, Role.MANAGER, Role.ADMIN];
   const roleFilter = validRoles.find((r) => r === params.role);
@@ -49,20 +59,35 @@ export default async function UsersPage({ searchParams }: UsersPageProps) {
   const validStatuses = ["ACTIVE", "LOCKED", "MUST_CHANGE_PASSWORD", "INACTIVE"] as const;
   const statusFilter = validStatuses.find((s) => s === params.status);
 
-  const result = await listUsers(actor, {
-    siteId: params.siteId || undefined,
-    role: roleFilter,
-    status: statusFilter,
-  });
+  const [result, sites, sections, actorSite] = await Promise.all([
+    listUsers(actor, {
+      siteId: params.siteId || undefined,
+      role: roleFilter,
+      status: statusFilter,
+      page,
+      pageSize,
+    }),
+    isAdmin
+      ? db.site.findMany({
+          select: { id: true, name: true },
+          orderBy: { name: "asc" },
+        })
+      : [],
+    db.section.findMany({
+      select: { id: true, name: true },
+      orderBy: { name: "asc" },
+    }),
+    actor.siteId
+      ? db.site.findUnique({
+          where: { id: actor.siteId },
+          select: { name: true },
+        })
+      : null,
+  ]);
 
   const users = result.ok ? result.data : [];
-
-  const sites = isAdmin
-    ? await db.site.findMany({
-        select: { id: true, name: true },
-        orderBy: { name: "asc" },
-      })
-    : [];
+  const totalCount = result.ok ? (result.totalCount ?? users.length) : 0;
+  const totalPages = result.ok ? (result.totalPages ?? 1) : 1;
 
   const now = new Date();
   const upcomingCountsMap = await getUpcomingBookingsCountMap(users.map((u) => u.id));
@@ -75,80 +100,24 @@ export default async function UsersPage({ searchParams }: UsersPageProps) {
         title="Users"
         description={isAdmin ? "Everyone in the network" : "People who can sign in at your site"}
         actions={
-          <Button asChild className="gap-2">
-            <Link href="/users/new">
-              <UserPlus className="size-4" />
-              <span>Add user</span>
-            </Link>
-          </Button>
+          <UserCreateDialog
+            actorRole={actor.role}
+            actorSiteId={actor.siteId}
+            actorSiteName={actorSite?.name}
+            allowedRoles={allowedRoles}
+            sites={sites}
+            sections={sections}
+          />
         }
       />
 
       {isAdmin && (
-        <FilterBar action="/users" hasActiveFilters={hasActiveFilters} clearHref="/users">
-          <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
-            <label
-              htmlFor="filter-site"
-              className="text-xs font-semibold text-muted-foreground uppercase tracking-wider"
-            >
-              Site
-            </label>
-            <select
-              id="filter-site"
-              name="siteId"
-              defaultValue={params.siteId ?? ""}
-              className="h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-            >
-              <option value="">All sites</option>
-              {sites.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
-            <label
-              htmlFor="filter-role"
-              className="text-xs font-semibold text-muted-foreground uppercase tracking-wider"
-            >
-              Role
-            </label>
-            <select
-              id="filter-role"
-              name="role"
-              defaultValue={params.role ?? ""}
-              className="h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-            >
-              <option value="">All roles</option>
-              <option value={Role.STAFF}>Staff</option>
-              <option value={Role.MANAGER}>Site Manager</option>
-              <option value={Role.ADMIN}>Administrator</option>
-            </select>
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
-            <label
-              htmlFor="filter-status"
-              className="text-xs font-semibold text-muted-foreground uppercase tracking-wider"
-            >
-              Status
-            </label>
-            <select
-              id="filter-status"
-              name="status"
-              defaultValue={params.status ?? ""}
-              className="h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-            >
-              <option value="">All statuses</option>
-              <option value="ACTIVE">Active</option>
-              <option value="MUST_CHANGE_PASSWORD">Must change password</option>
-              <option value="LOCKED">Locked</option>
-              <option value="INACTIVE">Inactive</option>
-            </select>
-          </div>
-        </FilterBar>
+        <UserFilterBar
+          sites={sites}
+          currentSiteId={params.siteId}
+          currentRole={params.role}
+          currentStatus={params.status}
+        />
       )}
 
       {users.length === 0 ? (
@@ -166,104 +135,134 @@ export default async function UsersPage({ searchParams }: UsersPageProps) {
                 <Link href="/users">Clear filters</Link>
               </Button>
             ) : (
-              <Button asChild className="gap-2">
-                <Link href="/users/new">
-                  <UserPlus className="size-4" />
-                  <span>Add user</span>
-                </Link>
-              </Button>
+              <UserCreateDialog
+                actorRole={actor.role}
+                actorSiteId={actor.siteId}
+                actorSiteName={actorSite?.name}
+                allowedRoles={allowedRoles}
+                sites={sites}
+                sections={sections}
+              />
             )
           }
         />
       ) : (
-        <div className="rounded-xl border border-border bg-card shadow-xs overflow-hidden">
-          <Table>
-            <TableHeader>
-              <TableRow className="hover:bg-transparent">
-                <TableHead className="w-[30%]">Person</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead>Site</TableHead>
-                <TableHead>Section</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Last sign-in</TableHead>
-                <TableHead className="w-[50px] text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {users.map((user) => {
-                const upcomingCount = upcomingCountsMap.get(user.id) ?? 0;
-                const lastLoginTitle = user.lastLoginAt
-                  ? `${formatLabDate(user.lastLoginAt)} ${formatLabTime(user.lastLoginAt)}`
-                  : "Never signed in";
+        <div className="space-y-3">
+          <div className="rounded-xl border border-border bg-card shadow-xs overflow-hidden">
+            <Table>
+              <TableHeader>
+                <TableRow className="hover:bg-transparent">
+                  <TableHead className="w-[30%]">Person</TableHead>
+                  <TableHead>Role</TableHead>
+                  <TableHead>Site</TableHead>
+                  <TableHead>Section</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Last sign-in</TableHead>
+                  <TableHead className="w-[90px] text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {users.map((user) => {
+                  const upcomingCount = upcomingCountsMap.get(user.id) ?? 0;
+                  const lastLoginTitle = user.lastLoginAt
+                    ? `${formatLabDate(user.lastLoginAt)} ${formatLabTime(user.lastLoginAt)}`
+                    : "Never signed in";
 
-                return (
-                  <TableRow key={user.id}>
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        <Avatar className="size-9 bg-secondary text-secondary-foreground font-semibold text-xs shrink-0">
-                          <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
-                        </Avatar>
-                        <div className="min-w-0">
-                          <div className="font-medium text-foreground truncate">
-                            <Link
-                              href={`/users/${user.id}`}
-                              className="hover:underline focus-visible:underline"
-                            >
-                              {user.name}
-                            </Link>
+                  return (
+                    <TableRow key={user.id}>
+                      <TableCell>
+                        <div className="flex items-center gap-3">
+                          <Avatar className="size-9 bg-secondary text-secondary-foreground font-semibold text-xs shrink-0">
+                            <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
+                          </Avatar>
+                          <div className="min-w-0">
+                            <UserEditDialog
+                              user={user}
+                              actorId={actor.id}
+                              actorRole={actor.role}
+                              upcomingBookingsCount={upcomingCount}
+                              sites={sites}
+                              sections={sections}
+                              trigger={
+                                <button
+                                  type="button"
+                                  className="font-medium text-foreground text-left truncate hover:underline focus-visible:underline cursor-pointer block"
+                                >
+                                  {user.name}
+                                </button>
+                              }
+                            />
+                            <div className="text-xs text-muted-foreground truncate">
+                              {user.email}
+                            </div>
                           </div>
-                          <div className="text-xs text-muted-foreground truncate">{user.email}</div>
                         </div>
-                      </div>
-                    </TableCell>
+                      </TableCell>
 
-                    <TableCell>
-                      <span className="text-sm font-medium">
-                        {user.role === Role.STAFF
-                          ? "Staff"
-                          : user.role === Role.MANAGER
-                            ? "Site Manager"
-                            : "Administrator"}
-                      </span>
-                    </TableCell>
+                      <TableCell>
+                        <span className="text-sm font-medium">
+                          {user.role === Role.STAFF
+                            ? "Staff"
+                            : user.role === Role.MANAGER
+                              ? "Site Manager"
+                              : "Administrator"}
+                        </span>
+                      </TableCell>
 
-                    <TableCell>
-                      <span className="text-sm text-muted-foreground">
-                        {user.site?.name ?? "Network wide"}
-                      </span>
-                    </TableCell>
+                      <TableCell>
+                        <span className="text-sm text-muted-foreground">
+                          {user.site?.name ?? "Network wide"}
+                        </span>
+                      </TableCell>
 
-                    <TableCell>
-                      <span className="text-sm text-muted-foreground">
-                        {user.section?.name ?? "—"}
-                      </span>
-                    </TableCell>
+                      <TableCell>
+                        <span className="text-sm text-muted-foreground">
+                          {user.section?.name ?? "—"}
+                        </span>
+                      </TableCell>
 
-                    <TableCell>
-                      <UserStatusPill user={user} />
-                    </TableCell>
+                      <TableCell>
+                        <UserStatusPill user={user} />
+                      </TableCell>
 
-                    <TableCell>
-                      <span
-                        className="text-sm text-muted-foreground cursor-default"
-                        title={lastLoginTitle}
-                      >
-                        {formatRelative(user.lastLoginAt, now)}
-                      </span>
-                    </TableCell>
+                      <TableCell>
+                        <span
+                          className="text-sm text-muted-foreground cursor-default"
+                          title={lastLoginTitle}
+                        >
+                          {formatRelative(user.lastLoginAt, now)}
+                        </span>
+                      </TableCell>
 
-                    <TableCell className="text-right">
-                      <UserRowActions
-                        user={user}
-                        isSelf={user.id === actor.id}
-                        upcomingBookingsCount={upcomingCount}
-                      />
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
+                      <TableCell className="text-right">
+                        <UserRowActions
+                          user={user}
+                          actorId={actor.id}
+                          actorRole={actor.role}
+                          upcomingBookingsCount={upcomingCount}
+                          sites={sites}
+                          sections={sections}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </div>
+
+          <PaginationControls
+            currentPage={page}
+            totalPages={totalPages}
+            totalCount={totalCount}
+            pageSize={pageSize}
+            basePath="/users"
+            queryParams={{
+              siteId: params.siteId,
+              role: params.role,
+              status: params.status,
+            }}
+          />
         </div>
       )}
     </div>

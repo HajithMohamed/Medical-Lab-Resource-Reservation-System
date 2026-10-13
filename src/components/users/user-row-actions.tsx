@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { MoreHorizontal, Pencil, KeyRound, UserMinus, UserCheck } from "lucide-react";
@@ -24,22 +23,44 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { TemporaryPasswordPanel } from "@/components/users/temporary-password-panel";
+import { UserEditDialog } from "@/components/users/user-edit-dialog";
 import { resetPasswordAction, setActiveAction } from "@/actions/users";
 import { cn } from "@/lib/utils";
+import type { Role } from "@/generated/prisma/client";
 
 interface UserRowActionsProps {
   user: {
     id: string;
     name: string;
+    email: string;
+    role: Role;
+    siteId: string | null;
+    sectionId: string | null;
     isActive: boolean;
+    mustChangePassword: boolean;
+    lockedUntil: Date | null;
+    site?: { id: string; name: string } | null;
+    section?: { id: string; name: string } | null;
   };
-  isSelf: boolean;
+  actorId: string;
+  actorRole: Role;
   upcomingBookingsCount: number;
+  sites: Array<{ id: string; name: string }>;
+  sections: Array<{ id: string; name: string }>;
 }
 
-export function UserRowActions({ user, isSelf, upcomingBookingsCount }: UserRowActionsProps) {
+export function UserRowActions({
+  user,
+  actorId,
+  actorRole,
+  upcomingBookingsCount,
+  sites,
+  sections,
+}: UserRowActionsProps) {
   const router = useRouter();
+  const isSelf = actorId === user.id;
 
+  const [editDialogOpen, setEditDialogOpen] = React.useState(false);
   const [resetDialogOpen, setResetDialogOpen] = React.useState(false);
   const [deactivateDialogOpen, setDeactivateDialogOpen] = React.useState(false);
   const [reactivateDialogOpen, setReactivateDialogOpen] = React.useState(false);
@@ -110,66 +131,87 @@ export function UserRowActions({ user, isSelf, upcomingBookingsCount }: UserRowA
 
   return (
     <>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="size-8 p-0 text-muted-foreground hover:text-foreground"
-          >
-            <MoreHorizontal className="size-4" />
-            <span className="sr-only">Actions for {user.name}</span>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-48">
-          <DropdownMenuItem asChild>
-            <Link href={`/users/${user.id}`} className="cursor-pointer">
+      <div className="flex items-center justify-end gap-1">
+        <UserEditDialog
+          user={user}
+          actorId={actorId}
+          actorRole={actorRole}
+          upcomingBookingsCount={upcomingBookingsCount}
+          sites={sites}
+          sections={sections}
+          open={editDialogOpen}
+          onOpenChange={setEditDialogOpen}
+          trigger={
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-8 p-0 text-muted-foreground hover:text-foreground"
+            >
+              <Pencil className="size-4" />
+              <span className="sr-only">Edit {user.name}</span>
+            </Button>
+          }
+        />
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-8 p-0 text-muted-foreground hover:text-foreground"
+            >
+              <MoreHorizontal className="size-4" />
+              <span className="sr-only">Actions for {user.name}</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuItem onSelect={() => setEditDialogOpen(true)} className="cursor-pointer">
               <Pencil className="size-4 mr-2" />
               <span>Edit</span>
-            </Link>
-          </DropdownMenuItem>
-
-          <DropdownMenuItem
-            onSelect={() => {
-              setActionError(null);
-              setResetDialogOpen(true);
-            }}
-            className="cursor-pointer"
-          >
-            <KeyRound className="size-4 mr-2" />
-            <span>Reset password</span>
-          </DropdownMenuItem>
-
-          <DropdownMenuSeparator />
-
-          {user.isActive ? (
-            <DropdownMenuItem
-              disabled={isSelf}
-              onSelect={() => {
-                if (!isSelf) {
-                  setActionError(null);
-                  setDeactivateDialogOpen(true);
-                }
-              }}
-              className="cursor-pointer text-destructive focus:text-destructive"
-            >
-              <UserMinus className="size-4 mr-2" />
-              <span>Deactivate</span>
             </DropdownMenuItem>
-          ) : (
+
             <DropdownMenuItem
               onSelect={() => {
                 setActionError(null);
-                setReactivateDialogOpen(true);
+                setResetDialogOpen(true);
               }}
-              className="cursor-pointer text-pass focus:text-pass"
+              className="cursor-pointer"
             >
-              <UserCheck className="size-4 mr-2" />
-              <span>Reactivate</span>
+              <KeyRound className="size-4 mr-2" />
+              <span>Reset password</span>
             </DropdownMenuItem>
-          )}
-        </DropdownMenuContent>
-      </DropdownMenu>
+
+            <DropdownMenuSeparator />
+
+            {user.isActive ? (
+              <DropdownMenuItem
+                disabled={isSelf}
+                onSelect={() => {
+                  if (!isSelf) {
+                    setActionError(null);
+                    setDeactivateDialogOpen(true);
+                  }
+                }}
+                className="cursor-pointer text-destructive focus:text-destructive"
+              >
+                <UserMinus className="size-4 mr-2" />
+                <span>Deactivate</span>
+              </DropdownMenuItem>
+            ) : (
+              <DropdownMenuItem
+                onSelect={() => {
+                  setActionError(null);
+                  setReactivateDialogOpen(true);
+                }}
+                className="cursor-pointer text-pass focus:text-pass"
+              >
+                <UserCheck className="size-4 mr-2" />
+                <span>Reactivate</span>
+              </DropdownMenuItem>
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
 
       {/* Reset Password Alert Dialog */}
       <AlertDialog
