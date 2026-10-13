@@ -6,6 +6,7 @@ import { type UserLike, rolesActorCanCreate, canManageUser } from "@/lib/permiss
 import { isUniqueError } from "@/lib/db-errors";
 import { generateTemporaryPassword, hashPassword } from "@/lib/password";
 import { Role } from "@/generated/prisma/client";
+import { sendUserWelcomeEmail, sendPasswordResetEmail } from "@/lib/email";
 
 export type ServiceResult<T = void> =
   | {
@@ -320,7 +321,10 @@ export async function createUser(
   ServiceResult<{
     userId: string;
     name: string;
+    email: string;
     temporaryPassword: string;
+    emailSent?: boolean;
+    emailError?: string;
   }>
 > {
   const parsed = createUserSchema.safeParse(rawInput);
@@ -389,17 +393,52 @@ export async function createUser(
       select: {
         id: true,
         name: true,
+        email: true,
+        role: true,
+        site: {
+          select: {
+            name: true,
+          },
+        },
       },
     });
+
+    let emailSent = false;
+    let emailError: string | undefined;
+
+    try {
+      const emailResult = await sendUserWelcomeEmail({
+        to: user.email,
+        name: user.name,
+        temporaryPassword,
+        role: user.role,
+        siteName: user.site?.name ?? null,
+      });
+
+      emailSent = emailResult.ok;
+      if (!emailResult.ok) {
+        emailError = emailResult.error;
+      }
+    } catch (err) {
+      emailError = err instanceof Error ? err.message : "Failed to send email";
+      console.error("[createUser] Failed to send welcome email:", err);
+    }
 
     return {
       ok: true,
       data: {
         userId: user.id,
         name: user.name,
+        email: user.email,
         temporaryPassword,
+        emailSent,
+        emailError,
       },
-      message: "User created",
+      message: emailSent
+        ? "User created and welcome email sent"
+        : emailError
+          ? `User created (email not sent: ${emailError})`
+          : "User created",
     };
   } catch (error) {
     if (isUniqueError(error)) {
@@ -509,11 +548,19 @@ export async function updateUser(
 export async function resetPassword(
   actor: UserLike,
   id: string,
-): Promise<ServiceResult<{ temporaryPassword: string }>> {
+): Promise<
+  ServiceResult<{
+    temporaryPassword: string;
+    emailSent?: boolean;
+    emailError?: string;
+  }>
+> {
   const targetUser = await db.user.findUnique({
     where: { id },
     select: {
       id: true,
+      name: true,
+      email: true,
       role: true,
       siteId: true,
     },
@@ -537,10 +584,37 @@ export async function resetPassword(
     },
   });
 
+  let emailSent = false;
+  let emailError: string | undefined;
+
+  try {
+    const emailResult = await sendPasswordResetEmail({
+      to: targetUser.email,
+      name: targetUser.name,
+      temporaryPassword,
+    });
+
+    emailSent = emailResult.ok;
+    if (!emailResult.ok) {
+      emailError = emailResult.error;
+    }
+  } catch (err) {
+    emailError = err instanceof Error ? err.message : "Failed to send email";
+    console.error("[resetPassword] Failed to send password reset email:", err);
+  }
+
   return {
     ok: true,
-    data: { temporaryPassword },
-    message: "Password reset",
+    data: {
+      temporaryPassword,
+      emailSent,
+      emailError,
+    },
+    message: emailSent
+      ? "Password reset and email sent"
+      : emailError
+        ? `Password reset (email not sent: ${emailError})`
+        : "Password reset",
   };
 }
 

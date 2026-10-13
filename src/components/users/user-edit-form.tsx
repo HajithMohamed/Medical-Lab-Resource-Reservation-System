@@ -75,6 +75,8 @@ export function UserEditForm({
   const [successMessage, setSuccessMessage] = React.useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = React.useState<Record<string, string[]>>({});
   const [temporaryPassword, setTemporaryPassword] = React.useState<string | null>(null);
+  const [resetEmailSent, setResetEmailSent] = React.useState<boolean | undefined>(undefined);
+  const [resetEmailError, setResetEmailError] = React.useState<string | undefined>(undefined);
 
   const isAdmin = actorRole === "ADMIN";
   const isSelf = actorId === user.id;
@@ -122,7 +124,10 @@ export function UserEditForm({
       <div className="max-w-[640px]">
         <TemporaryPasswordPanel
           userName={user.name}
+          userEmail={user.email}
           temporaryPassword={temporaryPassword}
+          emailSent={resetEmailSent}
+          emailError={resetEmailError}
           title="New temporary password generated"
         />
       </div>
@@ -323,6 +328,8 @@ export function UserEditForm({
                 }
                 if (res.temporaryPassword) {
                   setTemporaryPassword(res.temporaryPassword);
+                  setResetEmailSent(res.emailSent);
+                  setResetEmailError(res.emailError);
                 }
                 return { ok: true };
               }}

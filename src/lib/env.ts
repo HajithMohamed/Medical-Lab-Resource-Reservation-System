@@ -22,6 +22,9 @@ const envSchema = z
       },
       { message: "Must be a valid IANA time zone" },
     ),
+    RESEND_API_KEY: z.string().optional(),
+    EMAIL_FROM: z.string().default("BenchBook <onboarding@resend.dev>"),
+    APP_BASE_URL: z.string().default("http://localhost:3000"),
   })
   .superRefine((data, ctx) => {
     if (data.NODE_ENV === "production") {
@@ -51,6 +54,9 @@ function loadEnv(): Env {
       DATABASE_URL: process.env.DATABASE_URL || "postgresql://mock:mock@localhost:5432/mock",
       SESSION_SECRET: process.env.SESSION_SECRET || "mock-secret-at-least-32-characters-long",
       APP_TIME_ZONE: process.env.APP_TIME_ZONE || "Asia/Colombo",
+      RESEND_API_KEY: process.env.RESEND_API_KEY,
+      EMAIL_FROM: process.env.EMAIL_FROM || "BenchBook <onboarding@resend.dev>",
+      APP_BASE_URL: process.env.APP_BASE_URL || "http://localhost:3000",
     };
   }
 

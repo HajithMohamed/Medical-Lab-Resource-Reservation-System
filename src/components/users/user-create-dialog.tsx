@@ -60,7 +60,10 @@ export function UserCreateDialog({
   const [fieldErrors, setFieldErrors] = React.useState<Record<string, string[]>>({});
   const [createdResult, setCreatedResult] = React.useState<{
     name: string;
+    email: string;
     temporaryPassword: string;
+    emailSent?: boolean;
+    emailError?: string;
   } | null>(null);
 
   const isAdmin = actorRole === "ADMIN";
@@ -116,7 +119,10 @@ export function UserCreateDialog({
     if (result.temporaryPassword) {
       setCreatedResult({
         name,
+        email: result.userEmail ?? email,
         temporaryPassword: result.temporaryPassword,
+        emailSent: result.emailSent,
+        emailError: result.emailError,
       });
       router.refresh();
     }
@@ -154,7 +160,10 @@ export function UserCreateDialog({
 
             <TemporaryPasswordPanel
               userName={createdResult.name}
+              userEmail={createdResult.email}
               temporaryPassword={createdResult.temporaryPassword}
+              emailSent={createdResult.emailSent}
+              emailError={createdResult.emailError}
               onAddAnother={handleAddAnother}
             />
 

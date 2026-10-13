@@ -68,6 +68,8 @@ export function UserRowActions({
   const [isPending, setIsPending] = React.useState(false);
   const [actionError, setActionError] = React.useState<string | null>(null);
   const [temporaryPassword, setTemporaryPassword] = React.useState<string | null>(null);
+  const [resetEmailSent, setResetEmailSent] = React.useState<boolean | undefined>(undefined);
+  const [resetEmailError, setResetEmailError] = React.useState<string | undefined>(undefined);
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -85,6 +87,8 @@ export function UserRowActions({
     setResetDialogOpen(false);
     if (res.temporaryPassword) {
       setTemporaryPassword(res.temporaryPassword);
+      setResetEmailSent(res.emailSent);
+      setResetEmailError(res.emailError);
     }
   };
 
@@ -355,7 +359,10 @@ export function UserRowActions({
           {temporaryPassword && (
             <TemporaryPasswordPanel
               userName={user.name}
+              userEmail={user.email}
               temporaryPassword={temporaryPassword}
+              emailSent={resetEmailSent}
+              emailError={resetEmailError}
               title="Temporary password generated"
             />
           )}

@@ -10,6 +10,9 @@ export interface UserActionResult {
   message?: string;
   error?: string;
   temporaryPassword?: string;
+  userEmail?: string;
+  emailSent?: boolean;
+  emailError?: string;
   fieldErrors?: Record<string, string[]>;
   cancelledBookingsCount?: number;
 }
@@ -47,6 +50,9 @@ export async function createUserAction(
     ok: true,
     message: result.message ?? "User created",
     temporaryPassword: result.data.temporaryPassword,
+    userEmail: result.data.email,
+    emailSent: result.data.emailSent,
+    emailError: result.data.emailError,
   };
 }
 
@@ -102,6 +108,8 @@ export async function resetPasswordAction(id: string): Promise<UserActionResult>
     ok: true,
     message: result.message ?? "Password reset",
     temporaryPassword: result.data.temporaryPassword,
+    emailSent: result.data.emailSent,
+    emailError: result.data.emailError,
   };
 }
 
