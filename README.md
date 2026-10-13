@@ -155,7 +155,57 @@ The sources show the pressures labs face, what the standards require and the cos
 
 ## Getting started
 
-Setup and run instructions will be added with the first working version of the app.
+### Prerequisites
+
+- **Node.js**: 24 LTS (or 22.12+)
+- **npm**: v10+
+- **Docker Desktop** (or a local **PostgreSQL 17** instance)
+
+### Setup and Run Steps
+
+1. **Clone the repository:**
+   ```bash
+   git clone <repo-url>
+   cd Medical-Lab-Resource-Reservation-System
+   ```
+2. **Install dependencies** (also generates the Prisma client via `postinstall`):
+   ```bash
+   npm install
+   ```
+3. **Start the database container:**
+   ```bash
+   npm run db:up
+   ```
+4. **Apply database migrations:**
+   ```bash
+   npm run db:deploy
+   ```
+5. **Seed the database:**
+   ```bash
+   npm run db:seed
+   ```
+   > **Note:** Demo user accounts and credentials are configured in `.env.development`.
+6. **Start the development server:**
+   ```bash
+   npm run dev
+   ```
+7. Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+### Useful scripts
+
+| Script                | Description                                            |
+| --------------------- | ------------------------------------------------------ |
+| `npm run db:up`       | Start the local PostgreSQL 17 Docker container         |
+| `npm run db:down`     | Stop the local PostgreSQL container                    |
+| `npm run db:migrate`  | Create and apply development migrations locally        |
+| `npm run db:deploy`   | Apply migrations in production or CI without prompt    |
+| `npm run db:generate` | Generate the Prisma client into `src/generated/prisma` |
+| `npm run db:seed`     | Seed database users and demo laboratory network        |
+| `npm run db:reset`    | Reset database and re-run seed (interactive/dev only)  |
+| `npm run db:studio`   | Open Prisma Studio GUI in the browser                  |
+| `npm run test`        | Run both unit tests and integration tests              |
+| `npm run check`       | Run linter, typecheck, format check, and all tests     |
+| `npm run build`       | Build the production Next.js application               |
 
 ## References
 

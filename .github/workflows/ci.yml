@@ -19,6 +19,20 @@ jobs:
     name: Lint, type-check, test and build
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: lab
+          POSTGRES_PASSWORD: lab
+          POSTGRES_DB: lab_reservations_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U lab -d lab_reservations_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     env:
       # Throwaway values for this CI job only. They are not secrets.
       DATABASE_URL: postgresql://lab:lab@localhost:5432/lab_reservations_test
@@ -30,9 +44,12 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
-      - run: npm ci
+      - name: Install dependencies (also generates the Prisma client)
+        run: npm ci
       - run: npm run lint
       - run: npm run typecheck
       - run: npm run format:check
       - run: npm run test:unit
+      - name: Integration tests (applies migrations to the CI database first)
+        run: npm run test:integration
       - run: npm run build
