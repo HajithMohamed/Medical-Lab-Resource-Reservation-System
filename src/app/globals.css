@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -44,6 +46,22 @@
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
 
+  --color-surface-container-lowest: #060e1d;
+  --color-surface-container-low: #141c2b;
+  --color-surface-container: #18202f;
+  --color-surface-container-high: #222a3a;
+  --color-surface-container-highest: #2d3545;
+  --color-surface: #0b1322;
+  --color-on-surface: #dbe2f8;
+  --color-on-surface-variant: #bcc9c6;
+  --color-outline: #879390;
+  --color-outline-variant: #3d4947;
+  --color-primary-container: #29a195;
+  --color-tertiary: #ffb77d;
+  --color-tertiary-container: #d97707;
+  --color-error: #ffb4ab;
+  --color-error-container: #93000a;
+
   --color-booking: var(--booking);
   --color-booking-ink: var(--booking-ink);
   --color-booking-edge: var(--booking-edge);
@@ -68,69 +86,101 @@
 }
 
 :root {
-  --background: #f4f7f8;
-  --foreground: #10242e;
-  --card: #ffffff;
-  --card-foreground: #10242e;
-  --popover: #ffffff;
-  --popover-foreground: #10242e;
-  --primary: #0e6a85;
-  --primary-foreground: #ffffff;
-  --primary-hover: #0b5870;
-  --secondary: #dceef4;
-  --secondary-foreground: #0b4f64;
-  --muted: #eef1f3;
-  --muted-foreground: #5b6b73;
-  --accent: #dceef4;
-  --accent-foreground: #0b4f64;
-  --destructive: #b42318;
-  --destructive-foreground: #ffffff;
-  --destructive-ink: #7a1a12;
-  --border: #d9e1e5;
-  --input: #7f8f98;
-  --ring: #3a8fa8;
+  --background: #0b1322;
+  --foreground: #dbe2f8;
+  --card: #18202f;
+  --card-foreground: #dbe2f8;
+  --popover: #18202f;
+  --popover-foreground: #dbe2f8;
+  --primary: #6cd8cb;
+  --primary-foreground: #003732;
+  --primary-hover: #5ec4b7;
+  --secondary: #222a3a;
+  --secondary-foreground: #7bd0ff;
+  --muted: #141c2b;
+  --muted-foreground: #bcc9c6;
+  --accent: #222a3a;
+  --accent-foreground: #6cd8cb;
+  --destructive: #ffb4ab;
+  --destructive-foreground: #690005;
+  --destructive-ink: #ffdad6;
+  --border: #2d3545;
+  --input: #3d4947;
+  --ring: #6cd8cb;
   --radius: 0.5rem;
 
-  --sidebar: #0b3d52;
-  --sidebar-foreground: #e6eef1;
-  --sidebar-muted: #9db5c0;
-  --sidebar-primary: #12506a;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #134960;
-  --sidebar-accent-foreground: #ffffff;
-  --sidebar-border: #1d5670;
-  --sidebar-ring: #3a8fa8;
+  --sidebar: #141c2b;
+  --sidebar-foreground: #dbe2f8;
+  --sidebar-muted: #879390;
+  --sidebar-primary: #222a3a;
+  --sidebar-primary-foreground: #6cd8cb;
+  --sidebar-accent: #18202f;
+  --sidebar-accent-foreground: #dbe2f8;
+  --sidebar-border: #2d3545;
+  --sidebar-ring: #6cd8cb;
 
-  --chart-1: #0e6a85;
-  --chart-2: #12506a;
-  --chart-3: #3a8fa8;
-  --chart-4: #5fb3cc;
-  --chart-5: #0b3d52;
+  --chart-1: #6cd8cb;
+  --chart-2: #7bd0ff;
+  --chart-3: #ffb77d;
+  --chart-4: #29a195;
+  --chart-5: #00a6e0;
 
-  --booking: #dceef4;
-  --booking-ink: #0b4f64;
-  --booking-edge: #0e6a85;
-  --mine: #0e6a85;
-  --mine-foreground: #ffffff;
-  --maint: #fbeee5;
-  --maint-2: #f4dbc8;
-  --maint-ink: #8f3f10;
-  --maint-edge: #b4541a;
-  --oos: #eef1f3;
-  --oos-2: #e2e8eb;
-  --tag-red: #b42318;
-  --tag-red-bg: #fdecea;
-  --pass: #1f7a4d;
-  --pass-bg: #e6f4ec;
-  --off-hours: #f8fafb;
+  --booking: #18202f;
+  --booking-ink: #7bd0ff;
+  --booking-edge: #6cd8cb;
+  --mine: #222a3a;
+  --mine-foreground: #6cd8cb;
+  --maint: rgba(217, 119, 6, 0.15);
+  --maint-2: rgba(217, 119, 6, 0.25);
+  --maint-ink: #ffb77d;
+  --maint-edge: #d97707;
+  --oos: rgba(239, 68, 68, 0.1);
+  --oos-2: rgba(239, 68, 68, 0.2);
+  --tag-red: #ffb4ab;
+  --tag-red-bg: rgba(147, 0, 10, 0.35);
+  --pass: #6cd8cb;
+  --pass-bg: rgba(41, 161, 149, 0.2);
+  --off-hours: #060e1d;
 }
 
 @utility hatch-maint {
-  background-image: repeating-linear-gradient(135deg, var(--maint) 0 8px, var(--maint-2) 8px 16px);
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(217, 119, 6, 0.12),
+    rgba(217, 119, 6, 0.12) 8px,
+    rgba(217, 119, 6, 0.22) 8px,
+    rgba(217, 119, 6, 0.22) 16px
+  );
 }
 
 @utility hatch-oos {
-  background-image: repeating-linear-gradient(135deg, var(--oos) 0 7px, var(--oos-2) 7px 14px);
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgba(239, 68, 68, 0.08),
+    rgba(239, 68, 68, 0.08) 12px,
+    rgba(239, 68, 68, 0.16) 12px,
+    rgba(239, 68, 68, 0.16) 24px
+  );
+}
+
+@utility hazard-hatch-pattern {
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(217, 119, 6, 0.12),
+    rgba(217, 119, 6, 0.12) 8px,
+    rgba(217, 119, 6, 0.22) 8px,
+    rgba(217, 119, 6, 0.22) 16px
+  );
+}
+
+@utility out-of-service-stripes {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgba(239, 68, 68, 0.08),
+    rgba(239, 68, 68, 0.08) 12px,
+    rgba(239, 68, 68, 0.16) 12px,
+    rgba(239, 68, 68, 0.16) 24px
+  );
 }
 
 @layer components {

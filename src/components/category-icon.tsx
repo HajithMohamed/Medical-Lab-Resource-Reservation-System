@@ -79,7 +79,7 @@ export function CategoryIcon({ iconKey, className, iconClassName }: CategoryIcon
   return (
     <div
       className={cn(
-        "size-[30px] rounded-lg bg-secondary text-secondary-foreground flex items-center justify-center shrink-0",
+        "size-8 rounded-lg bg-surface-container-high border border-outline-variant text-primary flex items-center justify-center shrink-0 shadow-2xs",
         className,
       )}
       aria-hidden="true"

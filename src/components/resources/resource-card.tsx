@@ -16,7 +16,7 @@ export function ResourceCard({ resource }: ResourceCardProps) {
   const subtitle = `${resource.category.name}, up to ${formatMinutes(resource.category.maxBookingMinutes)}${capacityText}`;
 
   return (
-    <div className="rounded-xl border border-border bg-card p-4 space-y-3 shadow-xs">
+    <div className="rounded-lg border border-outline-variant bg-surface-container p-3.5 space-y-3 shadow-xs">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-start gap-3 min-w-0">
           <CategoryIcon
@@ -26,43 +26,52 @@ export function ResourceCard({ resource }: ResourceCardProps) {
           <div className="min-w-0">
             <Link
               href={`/resources/${resource.id}`}
-              className="font-bold text-base text-foreground hover:underline truncate block"
+              className="font-semibold text-sm text-on-surface hover:text-primary transition-colors truncate block"
             >
               {resource.name}
             </Link>
-            <p className="text-xs text-muted-foreground">{subtitle}</p>
+            <p className="font-mono text-[10.5px] text-on-surface-variant truncate">{subtitle}</p>
           </div>
         </div>
         <ResourceStatusTag status={resource.status} className="shrink-0" />
       </div>
 
-      <div className="grid grid-cols-2 gap-2 text-xs pt-1 border-t border-border/60">
+      <div className="grid grid-cols-2 gap-2 text-xs pt-2 border-t border-outline-variant/60">
         <div>
-          <span className="text-muted-foreground block">Site:</span>
-          <span className="font-medium text-foreground">{resource.site.name}</span>
+          <span className="text-on-surface-variant text-[11px] block">Site:</span>
+          <span className="font-medium text-on-surface text-xs">{resource.site.name}</span>
         </div>
         <div>
-          <span className="text-muted-foreground block">Section:</span>
-          <span className="font-medium text-foreground">{resource.section.name}</span>
+          <span className="text-on-surface-variant text-[11px] block">Section:</span>
+          <span className="font-mono text-on-surface text-xs">{resource.section.name}</span>
         </div>
         <div className="col-span-2">
-          <span className="text-muted-foreground block">Location:</span>
+          <span className="text-on-surface-variant text-[11px] block">Location:</span>
           {resource.location ? (
-            <span className="font-medium text-foreground">{resource.location}</span>
+            <span className="font-medium text-on-surface text-xs">{resource.location}</span>
           ) : (
-            <span className="text-muted-foreground italic">Not set</span>
+            <span className="text-on-surface-variant/60 italic text-xs">Not set</span>
           )}
         </div>
       </div>
 
       <div className="flex items-center justify-between gap-2 pt-1">
-        <Button asChild variant="outline" size="sm" className="h-8 text-xs">
-          <Link href={`/resources/${resource.id}`}>View details</Link>
+        <Button
+          asChild
+          variant="outline"
+          size="sm"
+          className="h-7.5 px-3 text-xs border-outline-variant hover:bg-surface-container-high"
+        >
+          <Link href={`/resources/${resource.id}`}>Details</Link>
         </Button>
 
         {resource.status === "ACTIVE" && (
-          <Button asChild size="sm" className="h-8 text-xs font-semibold">
-            <Link href={`/bookings/new?resourceId=${resource.id}`}>Book</Link>
+          <Button
+            asChild
+            size="sm"
+            className="h-7.5 px-3 text-xs bg-primary text-primary-foreground font-semibold hover:brightness-110 shadow-2xs"
+          >
+            <Link href={`/bookings/new?resourceId=${resource.id}`}>Reserve</Link>
           </Button>
         )}
       </div>
