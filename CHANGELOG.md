@@ -33,4 +33,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Server Actions in `src/actions/settings.ts` enforcing `requireRole("ADMIN")`, path revalidation, and status messages.
 - Settings hub (`/settings`) with single overview panel displaying total counts, and full CRUD list and edit pages for Sites, Sections, and Categories with modal Add dialogs, live duration hints, and `ConfirmAction` delete protection.
 - Unit tests for category limit rules and minute formatting, plus integration tests for admin CRUD, duplicate names, in-use delete prevention, and role rejection.
-
+- Timezone-aware lab date and time helpers in `src/lib/time.ts` (`server-only`) supporting dynamic time zones (default `Asia/Colombo`), slot calculations, and relative formatting.
+- Pure permission helpers `rolesActorCanCreate(actor)` and `canManageUser(actor, target)` in `src/lib/permissions.ts`.
+- User management service in `src/services/users.ts` (`server-only`) supporting site-scoped manager access, NIST temporary password generation, password resets, and transaction-safe deactivation with booking cancellation and last-admin protections.
+- Server Actions in `src/actions/users.ts` enforcing `requireRole("MANAGER", "ADMIN")`, path revalidations, and secure temporary password delivery.
+- User management interface: `/users` directory table with avatar initials, relative last sign-in, status pills (`Active`, `Must change password`, `Locked`, `Inactive`), admin FilterBar, and row action menu; `/users/new` with temporary password reveal panel; `/users/[id]` with edit form and `ConfirmAction` password reset and deactivation dialogs.
+- Unit tests for timezone conversions and role permissions; integration tests for manager site isolation, role promotions, duplicate emails, password resets, and deactivation cascades.
+- Resource register and management service in `src/services/resources.ts` (`server-only`) with site-scoped manager permissions, 7-day schedule view, and 5-block maintenance history.
+- Bookmarkable resource register page (`/resources`) with search, site, category, section, and status filters, responsive desktop table, and mobile card view.
+- Resource details page (`/resources/[id]`) with capacity display, category booking limits, manager quick actions, grouped 7-day schedule with diagonal hatch pattern for maintenance, and recent maintenance logs.
+- Resource creation (`/resources/new`) and editing (`/resources/[id]/edit`) with manager site-locking, target-site permission verification, and duplicate name prevention per site.
+- Resource status transition flow (`/resources/[id]/status`) that atomically cancels future confirmed bookings with recorded reason when transitioning to OUT_OF_SERVICE or RETIRED inside a single database transaction.
+- Server Actions in `src/actions/resources.ts` with manager role verification, Zod input validation, and Next.js path cache revalidation.
+- Integration tests in `tests/integration/resources.test.ts` covering manager site scoping, duplicate name handling, site migration permissions, atomic status cancellation, and multi-field resource filtering.

@@ -1,4 +1,4 @@
-# Architecture Decision Records
+# Architectural Decision Records (ADRs)
 
 Each entry records an architectural choice, why it was made, and what trade-offs were accepted.
 
@@ -66,4 +66,22 @@ Each entry records an architectural choice, why it was made, and what trade-offs
 - **Decision:** Check usage counts in the application layer before attempting deletion, providing a clear count-specific refusal message (e.g., "This site still has 7 resources and 5 users. Move or retire them first."). Wrap deletion in database try/catch to catch foreign key violations (`P2003`) as an extra safety net. Keep the delete confirmation dialog open on refusal to display the error inline.
 - **Consequences:** Prevents dangling references and broken foreign keys while providing friendly, actionable instructions to administrators without raw database error codes.
 
+## D9: Site-scoped managers
 
+- **Date:** 2026-10-13
+- **Status:** accepted
+- **Context:** Laboratory operations require delegating user onboarding and account management to on-site managers without risking network-wide privilege escalation or leaking personnel details between sites.
+- **Decision:** Establish three explicit roles (`STAFF`, `MANAGER`, `ADMIN`) with site-scoped authority:
+  - `MANAGER` users can only create and manage `STAFF` assigned to their own site (`canManageUser(actor, target)`). Lookup queries for users outside their site return `null` (`not found`), ensuring IDs from other sites reveal nothing.
+  - `ADMIN` users operate network-wide, can create all roles, and can transfer staff or promote managers. When a user becomes an `ADMIN`, their `siteId` is cleared; converting an `ADMIN` to `STAFF` or `MANAGER` mandates assigning a valid site.
+  - Accounts use NIST-compliant temporary passwords generated on demand and shown only once. Deactivation executes as a single transaction: immediately incrementing `sessionVersion` to revoke active JWT tokens, setting `isActive: false`, and cancelling only future `CONFIRMED` bookings with an audit reason, while preserving past bookings and resource maintenance records.
+  - Protection guards prevent self-deactivation and ensure the last active administrator cannot be demoted or deactivated.
+- **Consequences:** Provides granular site autonomy, prevents privilege escalation, and enforces robust security boundaries across multi-site laboratory networks.
+
+## D10: Cancelling upcoming confirmed bookings atomically inside the status transaction
+
+- **Date:** 2026-10-14
+- **Status:** accepted
+- **Context:** When a resource transitions out of service (`OUT_OF_SERVICE`) or is retired (`RETIRED`), existing future confirmed bookings would become invalid and leave users expecting unavailable equipment. If status update and booking cancellation are executed separately, a failure in between would leave an inconsistent state or ghost bookings on unavailable equipment.
+- **Decision:** Execute resource status changes and booking cancellations atomically within a single Prisma transaction (`prisma.$transaction`). When transitioning to `OUT_OF_SERVICE` or `RETIRED`, identify future confirmed bookings (`status = "CONFIRMED"` and `startAt > now`), update the resource status, and transition those bookings to `CANCELLED` with a structured reason recorded in `cancelReason` (e.g., `"Resource taken out of service: <reason>"` or `"Resource retired: <reason>"`). Maintenance reservations, past bookings, and bookings on other resources remain intact.
+- **Consequences:** Guarantees database consistency with zero ghost active bookings on offline resources. The status transition page displays the exact number of bookings that will be cancelled before the manager confirms the change.
