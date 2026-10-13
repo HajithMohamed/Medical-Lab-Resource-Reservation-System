@@ -1,11 +1,14 @@
 import * as React from "react";
 import Link from "next/link";
-import { Tag, ChevronRight, ArrowLeft } from "lucide-react";
+import { Tag, ArrowLeft } from "lucide-react";
 import { requireRole } from "@/lib/auth";
 import { listCategories } from "@/services/settings";
+import { deleteCategoryAction } from "@/actions/settings";
 import { formatMinutes } from "@/lib/format";
 import { PageHeader } from "@/components/page-header";
 import { CategoryDialog } from "@/components/settings/category-dialog";
+import { EditCategoryDialog } from "@/components/settings/edit-category-dialog";
+import { DeleteRowButton } from "@/components/settings/delete-row-button";
 import { CategoryIcon } from "@/components/category-icon";
 import { EmptyState } from "@/components/empty-state";
 import {
@@ -61,56 +64,45 @@ export default async function CategoriesPage() {
                 <TableHead className="font-semibold text-foreground text-right">
                   Resources
                 </TableHead>
-                <TableHead className="w-12 text-right sr-only">Edit</TableHead>
+                <TableHead className="w-28 text-right font-semibold text-foreground pr-4">
+                  Actions
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {categories.map((category) => (
-                <TableRow key={category.id} className="group cursor-pointer hover:bg-muted/50">
+                <TableRow key={category.id} className="hover:bg-muted/30">
                   <TableCell className="w-12 pl-4 pr-0 py-3.5">
-                    <Link
-                      href={`/settings/categories/${category.id}`}
-                      className="block focus-visible:outline-none"
-                    >
-                      <CategoryIcon
-                        iconKey={category.iconKey}
-                        className="size-8 rounded-md"
-                        iconClassName="size-4"
-                      />
-                    </Link>
+                    <CategoryIcon
+                      iconKey={category.iconKey}
+                      className="size-8 rounded-md"
+                      iconClassName="size-4"
+                    />
                   </TableCell>
                   <TableCell className="font-medium text-foreground py-3.5">
                     <Link
                       href={`/settings/categories/${category.id}`}
-                      className="block focus-visible:outline-none focus-visible:underline"
+                      className="hover:underline focus-visible:outline-none focus-visible:underline"
                     >
                       {category.name}
                     </Link>
                   </TableCell>
                   <TableCell className="tabular-nums text-muted-foreground py-3.5">
-                    <Link
-                      href={`/settings/categories/${category.id}`}
-                      className="block focus-visible:outline-none"
-                    >
-                      {formatMinutes(category.maxBookingMinutes)}
-                    </Link>
+                    {formatMinutes(category.maxBookingMinutes)}
                   </TableCell>
                   <TableCell className="text-right tabular-nums text-muted-foreground py-3.5">
-                    <Link
-                      href={`/settings/categories/${category.id}`}
-                      className="block focus-visible:outline-none"
-                    >
-                      {category._count.resources}
-                    </Link>
+                    {category._count.resources}
                   </TableCell>
-                  <TableCell className="text-right py-3.5">
-                    <Link
-                      href={`/settings/categories/${category.id}`}
-                      className="inline-flex items-center text-muted-foreground group-hover:text-foreground"
-                    >
-                      <ChevronRight className="size-4" />
-                      <span className="sr-only">Edit {category.name}</span>
-                    </Link>
+                  <TableCell className="text-right py-3.5 pr-4">
+                    <div className="flex items-center justify-end gap-1.5">
+                      <EditCategoryDialog category={category} />
+                      <DeleteRowButton
+                        id={category.id}
+                        name={category.name}
+                        entityType="category"
+                        deleteAction={deleteCategoryAction}
+                      />
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}

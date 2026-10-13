@@ -1,10 +1,13 @@
 import * as React from "react";
 import Link from "next/link";
-import { Layers, ChevronRight, ArrowLeft } from "lucide-react";
+import { Layers, ArrowLeft } from "lucide-react";
 import { requireRole } from "@/lib/auth";
 import { listSections } from "@/services/settings";
+import { deleteSectionAction } from "@/actions/settings";
 import { PageHeader } from "@/components/page-header";
 import { SectionDialog } from "@/components/settings/section-dialog";
+import { EditSectionDialog } from "@/components/settings/edit-section-dialog";
+import { DeleteRowButton } from "@/components/settings/delete-row-button";
 import { EmptyState } from "@/components/empty-state";
 import {
   Table,
@@ -58,44 +61,38 @@ export default async function SectionsPage() {
                   Resources
                 </TableHead>
                 <TableHead className="font-semibold text-foreground text-right">Users</TableHead>
-                <TableHead className="w-12 text-right sr-only">Edit</TableHead>
+                <TableHead className="w-28 text-right font-semibold text-foreground pr-4">
+                  Actions
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {sections.map((section) => (
-                <TableRow key={section.id} className="group cursor-pointer hover:bg-muted/50">
+                <TableRow key={section.id} className="hover:bg-muted/30">
                   <TableCell className="font-medium text-foreground py-3.5">
                     <Link
                       href={`/settings/sections/${section.id}`}
-                      className="block focus-visible:outline-none focus-visible:underline"
+                      className="hover:underline focus-visible:outline-none focus-visible:underline"
                     >
                       {section.name}
                     </Link>
                   </TableCell>
                   <TableCell className="text-right tabular-nums text-muted-foreground py-3.5">
-                    <Link
-                      href={`/settings/sections/${section.id}`}
-                      className="block focus-visible:outline-none"
-                    >
-                      {section._count.resources}
-                    </Link>
+                    {section._count.resources}
                   </TableCell>
                   <TableCell className="text-right tabular-nums text-muted-foreground py-3.5">
-                    <Link
-                      href={`/settings/sections/${section.id}`}
-                      className="block focus-visible:outline-none"
-                    >
-                      {section._count.users}
-                    </Link>
+                    {section._count.users}
                   </TableCell>
-                  <TableCell className="text-right py-3.5">
-                    <Link
-                      href={`/settings/sections/${section.id}`}
-                      className="inline-flex items-center text-muted-foreground group-hover:text-foreground"
-                    >
-                      <ChevronRight className="size-4" />
-                      <span className="sr-only">Edit {section.name}</span>
-                    </Link>
+                  <TableCell className="text-right py-3.5 pr-4">
+                    <div className="flex items-center justify-end gap-1.5">
+                      <EditSectionDialog section={section} />
+                      <DeleteRowButton
+                        id={section.id}
+                        name={section.name}
+                        entityType="section"
+                        deleteAction={deleteSectionAction}
+                      />
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}

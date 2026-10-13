@@ -1,10 +1,13 @@
 import * as React from "react";
 import Link from "next/link";
-import { Building2, ChevronRight, ArrowLeft } from "lucide-react";
+import { Building2, ArrowLeft } from "lucide-react";
 import { requireRole } from "@/lib/auth";
 import { listSites } from "@/services/settings";
+import { deleteSiteAction } from "@/actions/settings";
 import { PageHeader } from "@/components/page-header";
 import { SiteDialog } from "@/components/settings/site-dialog";
+import { EditSiteDialog } from "@/components/settings/edit-site-dialog";
+import { DeleteRowButton } from "@/components/settings/delete-row-button";
 import { EmptyState } from "@/components/empty-state";
 import {
   Table,
@@ -59,52 +62,41 @@ export default async function SitesPage() {
                   Resources
                 </TableHead>
                 <TableHead className="font-semibold text-foreground text-right">Users</TableHead>
-                <TableHead className="w-12 text-right sr-only">Edit</TableHead>
+                <TableHead className="w-28 text-right font-semibold text-foreground pr-4">
+                  Actions
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {sites.map((site) => (
-                <TableRow key={site.id} className="group cursor-pointer hover:bg-muted/50">
+                <TableRow key={site.id} className="hover:bg-muted/30">
                   <TableCell className="font-medium text-foreground py-3.5">
                     <Link
                       href={`/settings/sites/${site.id}`}
-                      className="block focus-visible:outline-none focus-visible:underline"
+                      className="hover:underline focus-visible:outline-none focus-visible:underline"
                     >
                       {site.name}
                     </Link>
                   </TableCell>
                   <TableCell className="text-muted-foreground py-3.5">
-                    <Link
-                      href={`/settings/sites/${site.id}`}
-                      className="block focus-visible:outline-none"
-                    >
-                      {site.address || "—"}
-                    </Link>
+                    {site.address || "—"}
                   </TableCell>
                   <TableCell className="text-right tabular-nums text-muted-foreground py-3.5">
-                    <Link
-                      href={`/settings/sites/${site.id}`}
-                      className="block focus-visible:outline-none"
-                    >
-                      {site._count.resources}
-                    </Link>
+                    {site._count.resources}
                   </TableCell>
                   <TableCell className="text-right tabular-nums text-muted-foreground py-3.5">
-                    <Link
-                      href={`/settings/sites/${site.id}`}
-                      className="block focus-visible:outline-none"
-                    >
-                      {site._count.users}
-                    </Link>
+                    {site._count.users}
                   </TableCell>
-                  <TableCell className="text-right py-3.5">
-                    <Link
-                      href={`/settings/sites/${site.id}`}
-                      className="inline-flex items-center text-muted-foreground group-hover:text-foreground"
-                    >
-                      <ChevronRight className="size-4" />
-                      <span className="sr-only">Edit {site.name}</span>
-                    </Link>
+                  <TableCell className="text-right py-3.5 pr-4">
+                    <div className="flex items-center justify-end gap-1.5">
+                      <EditSiteDialog site={site} />
+                      <DeleteRowButton
+                        id={site.id}
+                        name={site.name}
+                        entityType="site"
+                        deleteAction={deleteSiteAction}
+                      />
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
