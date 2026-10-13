@@ -39,3 +39,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Server Actions in `src/actions/users.ts` enforcing `requireRole("MANAGER", "ADMIN")`, path revalidations, and secure temporary password delivery.
 - User management interface: `/users` directory table with avatar initials, relative last sign-in, status pills (`Active`, `Must change password`, `Locked`, `Inactive`), admin FilterBar, and row action menu; `/users/new` with temporary password reveal panel; `/users/[id]` with edit form and `ConfirmAction` password reset and deactivation dialogs.
 - Unit tests for timezone conversions and role permissions; integration tests for manager site isolation, role promotions, duplicate emails, password resets, and deactivation cascades.
+- Resource register and management service in `src/services/resources.ts` (`server-only`) with site-scoped manager permissions, 7-day schedule view, and 5-block maintenance history.
+- Bookmarkable resource register page (`/resources`) with search, site, category, section, and status filters, responsive desktop table, and mobile card view.
+- Resource details page (`/resources/[id]`) with capacity display, category booking limits, manager quick actions, grouped 7-day schedule with diagonal hatch pattern for maintenance, and recent maintenance logs.
+- Resource creation (`/resources/new`) and editing (`/resources/[id]/edit`) with manager site-locking, target-site permission verification, and duplicate name prevention per site.
+- Resource status transition flow (`/resources/[id]/status`) that atomically cancels future confirmed bookings with recorded reason when transitioning to OUT_OF_SERVICE or RETIRED inside a single database transaction.
+- Server Actions in `src/actions/resources.ts` with manager role verification, Zod input validation, and Next.js path cache revalidation.
+- Integration tests in `tests/integration/resources.test.ts` covering manager site scoping, duplicate name handling, site migration permissions, atomic status cancellation, and multi-field resource filtering.
