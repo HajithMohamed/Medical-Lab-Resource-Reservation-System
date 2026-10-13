@@ -93,7 +93,11 @@ function getResendClient(): Resend | null {
  * Resolves the base application URL for deep-links in emails.
  */
 function getAppBaseUrl(): string {
-  const url = process.env.APP_BASE_URL || env.APP_BASE_URL || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const url =
+    process.env.APP_BASE_URL ||
+    env.APP_BASE_URL ||
+    process.env.NEXT_PUBLIC_APP_URL ||
+    "http://localhost:3000";
   return url.replace(/\/+$/, "");
 }
 
