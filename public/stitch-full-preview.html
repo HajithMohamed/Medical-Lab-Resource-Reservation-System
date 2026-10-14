@@ -1,0 +1,1944 @@
+<!doctype html>
+
+<html class="dark" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>BenchBook Pro - Clinical Resource Ops</title>
+    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap"
+      rel="stylesheet"
+    />
+    <!-- Material Symbols Outlined -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary-fixed-dim": "#6cd8cb",
+              "surface-container": "#18202f",
+              "inverse-surface": "#dbe2f8",
+              "secondary-container": "#00a6e0",
+              "primary-fixed": "#89f5e7",
+              "surface-container-low": "#141c2b",
+              "primary-container": "#29a195",
+              "on-secondary": "#00354a",
+              "surface-container-high": "#222a3a",
+              "on-surface-variant": "#bcc9c6",
+              surface: "#0b1322",
+              outline: "#879390",
+              "on-background": "#dbe2f8",
+              "on-tertiary-fixed": "#2f1500",
+              primary: "#6cd8cb",
+              "tertiary-container": "#d97707",
+              error: "#ffb4ab",
+              "error-container": "#93000a",
+              "tertiary-fixed-dim": "#ffb77d",
+              "secondary-fixed-dim": "#7bd0ff",
+              "surface-dim": "#0b1322",
+              "secondary-fixed": "#c4e7ff",
+              "on-surface": "#dbe2f8",
+              "on-error": "#690005",
+              "surface-bright": "#31394a",
+              "surface-variant": "#2d3545",
+              "on-primary-fixed": "#00201d",
+              "inverse-primary": "#006a61",
+              background: "#0b1322",
+              "on-secondary-fixed": "#001e2c",
+              "surface-container-lowest": "#060e1d",
+              "on-tertiary-fixed-variant": "#6e3900",
+              "on-tertiary-container": "#432100",
+              secondary: "#7bd0ff",
+              "surface-tint": "#6cd8cb",
+              "tertiary-fixed": "#ffdcc3",
+              "on-secondary-fixed-variant": "#004c69",
+              "inverse-on-surface": "#293041",
+              tertiary: "#ffb77d",
+              "surface-container-highest": "#2d3545",
+              "on-error-container": "#ffdad6",
+              "on-primary": "#003732",
+              "outline-variant": "#3d4947",
+              "on-tertiary": "#4d2600",
+              "on-primary-container": "#00302b",
+              "on-secondary-container": "#00374d",
+              "on-primary-fixed-variant": "#005049",
+            },
+            borderRadius: {
+              DEFAULT: "0.125rem",
+              lg: "0.25rem",
+              xl: "0.5rem",
+              full: "0.75rem",
+            },
+            spacing: {
+              "space-xl": "1.5rem",
+              gutter: "1rem",
+              "space-lg": "1rem",
+              "space-xs": "0.25rem",
+              "space-sm": "0.5rem",
+              "space-md": "0.75rem",
+              margin: "1.5rem",
+            },
+            fontFamily: {
+              "headline-sm": ["Inter"],
+              "label-md": ["JetBrains Mono"],
+              "headline-md": ["Inter"],
+              "body-lg": ["Inter"],
+              "label-lg": ["JetBrains Mono"],
+              "headline-lg": ["Inter"],
+              "body-sm": ["Inter"],
+              "headline-xl": ["Inter"],
+              "body-md": ["Inter"],
+              "label-sm": ["JetBrains Mono"],
+            },
+            fontSize: {
+              "headline-sm": [
+                "1rem",
+                { lineHeight: "1.5rem", letterSpacing: "-0.01em", fontWeight: "600" },
+              ],
+              "label-md": [
+                "0.75rem",
+                { lineHeight: "1rem", letterSpacing: "0.025em", fontWeight: "500" },
+              ],
+              "headline-md": [
+                "1.25rem",
+                { lineHeight: "1.75rem", letterSpacing: "-0.015em", fontWeight: "600" },
+              ],
+              "body-lg": ["1rem", { lineHeight: "1.5rem", fontWeight: "400" }],
+              "label-lg": [
+                "0.875rem",
+                { lineHeight: "1.25rem", letterSpacing: "0.02em", fontWeight: "500" },
+              ],
+              "headline-lg": [
+                "1.5rem",
+                { lineHeight: "2rem", letterSpacing: "-0.02em", fontWeight: "600" },
+              ],
+              "body-sm": ["0.75rem", { lineHeight: "1rem", fontWeight: "400" }],
+              "headline-xl": [
+                "2rem",
+                { lineHeight: "2.5rem", letterSpacing: "-0.025em", fontWeight: "600" },
+              ],
+              "body-md": ["0.875rem", { lineHeight: "125rem", fontWeight: "400" }],
+              "label-sm": [
+                "0.6875rem",
+                { lineHeight: "0.875rem", letterSpacing: "0.03em", fontWeight: "500" },
+              ],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      /* Operational Texture Hatching for Maintenance States */
+      .hatch-maintenance {
+        background-image: repeating-linear-gradient(
+          45deg,
+          transparent,
+          transparent 8px,
+          rgba(217, 119, 6, 0.15) 8px,
+          rgba(217, 119, 6, 0.15) 16px
+        );
+      }
+
+      /* Scrollbar ergonomics */
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #0b1322;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #334155;
+        border-radius: 3px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #475569;
+      }
+
+      /* Modal Backdrop Blur */
+      .clinical-modal-backdrop {
+        backdrop-filter: blur(4px);
+      }
+    </style>
+  </head>
+  <body
+    class="bg-background text-on-surface font-body-md antialiased min-h-screen flex selection:bg-primary-container selection:text-on-primary"
+  >
+    <!-- ========================================================================= -->
+    <!-- SIDE NAVIGATION (Shared Component: SideNavBar)                            -->
+    <!-- ========================================================================= -->
+    <aside
+      class="h-screen w-64 fixed left-0 top-0 flex flex-col bg-surface-container dark:bg-surface-container border-r border-outline-variant dark:border-outline-variant z-40"
+    >
+      <div class="flex flex-col justify-between h-full p-space-md">
+        <!-- Top Section: Brand & Navigation -->
+        <div class="flex flex-col gap-5">
+          <!-- Brand Header -->
+          <div class="flex items-center gap-3 px-2 pt-1 pb-2 border-b border-outline-variant/40">
+            <div
+              class="w-8 h-8 rounded-lg bg-surface-container-high border border-outline-variant flex items-center justify-center text-primary shadow-inner"
+            >
+              <span class="material-symbols-outlined text-[20px]" data-icon="biotech">biotech</span>
+            </div>
+            <div class="flex flex-col">
+              <span
+                class="text-headline-sm font-headline-sm font-bold text-on-surface dark:text-on-surface tracking-tight"
+                >BenchBook Pro</span
+              >
+              <span
+                class="text-label-sm font-label-sm text-on-surface-variant flex items-center gap-1.5"
+              >
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                Clinical Resource Ops
+              </span>
+            </div>
+          </div>
+          <!-- Quick Book CTA Button -->
+          <button
+            class="w-full bg-primary-container hover:bg-inverse-primary text-on-surface font-headline-sm text-label-md py-2 px-3 rounded-lg flex items-center justify-center gap-2 border border-primary/30 transition-all duration-150 active:scale-[0.98] shadow-sm"
+          >
+            <span class="material-symbols-outlined text-[16px]" data-icon="add_circle"
+              >add_circle</span
+            >
+            <span>Quick Book</span>
+          </button>
+          <!-- Primary Navigation List -->
+          <nav class="flex flex-col gap-1" id="main-sidebar-nav">
+            <!-- 1. Dashboard -->
+            <a
+              class="nav-item flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:text-on-surface dark:hover:text-on-surface hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors duration-150 active:scale-[0.99]"
+              data-target="dashboard"
+              href="#dashboard"
+              onclick="switchMainView('dashboard', event)"
+            >
+              <span class="material-symbols-outlined text-[20px]" data-icon="dashboard"
+                >dashboard</span
+              >
+              <span class="text-label-md font-label-md">Dashboard</span>
+            </a>
+            <!-- 2. Resources (Active initially) -->
+            <a
+              class="nav-item flex items-center gap-3 px-3 py-2 rounded-lg bg-surface-container-high dark:bg-surface-container-high text-primary dark:text-primary font-medium border-l-2 border-primary dark:border-primary transition-colors duration-150 active:scale-[0.99]"
+              data-target="resources"
+              href="#resources"
+              onclick="switchMainView('resources', event)"
+            >
+              <span class="material-symbols-outlined text-[20px]" data-icon="biotech">biotech</span>
+              <span class="text-label-md font-label-md">Resources</span>
+              <span
+                class="ml-auto text-label-sm px-1.5 py-0.5 rounded bg-surface-container-low text-primary border border-outline-variant/40"
+                >14</span
+              >
+            </a>
+            <!-- 3. Reservations / Users Registry -->
+            <a
+              class="nav-item flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:text-on-surface dark:hover:text-on-surface hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors duration-150 active:scale-[0.99]"
+              data-target="users"
+              href="#users"
+              onclick="switchMainView('users', event)"
+            >
+              <span class="material-symbols-outlined text-[20px]" data-icon="calendar_month"
+                >calendar_month</span
+              >
+              <span class="text-label-md font-label-md">Reservations</span>
+            </a>
+            <!-- 4. Maintenance / Sites Registry -->
+            <a
+              class="nav-item flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:text-on-surface dark:hover:text-on-surface hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors duration-150 active:scale-[0.99]"
+              data-target="sites"
+              href="#sites"
+              onclick="switchMainView('sites', event)"
+            >
+              <span class="material-symbols-outlined text-[20px]" data-icon="build">build</span>
+              <span class="text-label-md font-label-md">Maintenance</span>
+              <span class="ml-auto w-2 h-2 rounded-full bg-amber-500"></span>
+            </a>
+            <!-- 5. Admin / Master Settings -->
+            <a
+              class="nav-item flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:text-on-surface dark:hover:text-on-surface hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors duration-150 active:scale-[0.99]"
+              data-target="settings"
+              href="#settings"
+              onclick="switchMainView('settings', event)"
+            >
+              <span class="material-symbols-outlined text-[20px]" data-icon="admin_panel_settings"
+                >admin_panel_settings</span
+              >
+              <span class="text-label-md font-label-md">Admin</span>
+            </a>
+          </nav>
+        </div>
+        <!-- Footer Section: Settings & Account Profile -->
+        <div class="flex flex-col gap-1 pt-4 border-t border-outline-variant/40">
+          <a
+            class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:text-on-surface dark:hover:text-on-surface hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors duration-150 active:scale-[0.99]"
+            href="#settings"
+            onclick="switchMainView('settings', event)"
+          >
+            <span class="material-symbols-outlined text-[18px]" data-icon="settings">settings</span>
+            <span class="text-label-md font-label-md">Settings</span>
+          </a>
+          <div
+            class="flex items-center gap-3 px-2 py-2.5 rounded-lg bg-surface-container-low border border-outline-variant/60 mt-1"
+          >
+            <div
+              class="w-8 h-8 rounded-full bg-primary/20 border border-primary/40 text-primary flex items-center justify-center font-bold text-label-md"
+            >
+              AS
+            </div>
+            <div class="flex flex-col min-w-0 flex-1">
+              <span class="text-label-md font-label-md text-on-surface truncate"
+                >Dr. A. Silva (Admin)</span
+              >
+              <span class="text-label-sm font-label-sm text-primary/80 truncate"
+                >Colombo Central Bio</span
+              >
+            </div>
+            <span
+              class="material-symbols-outlined text-outline text-[18px]"
+              data-icon="account_circle"
+              >account_circle</span
+            >
+          </div>
+        </div>
+      </div>
+    </aside>
+    <!-- ========================================================================= -->
+    <!-- MAIN WORKSPACE CONTAINER                                                  -->
+    <!-- ========================================================================= -->
+    <div class="pl-64 flex-1 flex flex-col min-w-0 bg-background min-h-screen">
+      <!-- TopNavBar (Shared Component: TopNavBar) -->
+      <header
+        class="docked full-width top-0 sticky z-30 flex justify-between items-center h-14 px-space-lg w-full bg-surface dark:bg-surface border-b border-outline-variant dark:border-outline-variant"
+      >
+        <!-- Search on Left & Facility Breadcrumb -->
+        <div class="flex items-center gap-4 flex-1 max-w-xl">
+          <div class="relative w-72">
+            <span
+              class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[18px]"
+              data-icon="search"
+              >search</span
+            >
+            <input
+              class="w-full bg-surface-container-low border border-outline-variant rounded-lg pl-9 pr-3 py-1.5 text-label-md text-on-surface placeholder:text-outline focus:outline-none focus:border-primary transition-colors"
+              placeholder="Search instruments, tests, IDs..."
+              type="text"
+            />
+          </div>
+          <div class="h-4 w-px bg-outline-variant hidden sm:block"></div>
+          <div class="flex items-center gap-1.5 text-label-md text-on-surface-variant">
+            <span class="material-symbols-outlined text-[16px] text-primary" data-icon="domain"
+              >domain</span
+            >
+            <span class="text-primary font-semibold">Main Laboratory, Colombo</span>
+            <span class="text-outline text-xs">/</span>
+            <span class="text-on-surface-variant font-label-sm" id="active-breadcrumb-label"
+              >Resources Register</span
+            >
+          </div>
+        </div>
+        <!-- Trailing Action Cluster -->
+        <div class="flex items-center gap-3">
+          <!-- Interactive View Switcher for the 4 core reference screens from prompt -->
+          <div
+            class="hidden lg:flex items-center bg-surface-container-low border border-outline-variant p-0.5 rounded-lg text-label-sm font-label-sm"
+          >
+            <button
+              class="px-2.5 py-1 rounded bg-surface-container-high text-primary font-semibold transition-all"
+              id="tab-btn-resources"
+              onclick="switchMainView('resources', event)"
+            >
+              1. Resources
+            </button>
+            <button
+              class="px-2.5 py-1 rounded text-on-surface-variant hover:text-on-surface transition-all"
+              id="tab-btn-users"
+              onclick="switchMainView('users', event)"
+            >
+              2. Users
+            </button>
+            <button
+              class="px-2.5 py-1 rounded text-on-surface-variant hover:text-on-surface transition-all"
+              id="tab-btn-settings"
+              onclick="switchMainView('settings', event)"
+            >
+              3. Settings Hub
+            </button>
+            <button
+              class="px-2.5 py-1 rounded text-on-surface-variant hover:text-on-surface transition-all"
+              id="tab-btn-sites"
+              onclick="switchMainView('sites', event)"
+            >
+              4. Sites &amp; Edit
+            </button>
+          </div>
+          <div class="flex items-center gap-1 text-on-surface-variant">
+            <button
+              class="p-1.5 rounded-lg hover:bg-surface-container hover:text-on-surface active:scale-[0.98] relative"
+              title="Operational Alerts"
+            >
+              <span class="material-symbols-outlined text-[20px]" data-icon="notifications"
+                >notifications</span
+              >
+              <span class="w-1.5 h-1.5 bg-tertiary rounded-full absolute top-1.5 right-1.5"></span>
+            </button>
+            <button
+              class="p-1.5 rounded-lg hover:bg-surface-container hover:text-on-surface active:scale-[0.98]"
+              title="Shift Schedule"
+            >
+              <span class="material-symbols-outlined text-[20px]" data-icon="schedule"
+                >schedule</span
+              >
+            </button>
+            <button
+              class="p-1.5 rounded-lg hover:bg-surface-container hover:text-on-surface active:scale-[0.98]"
+              title="High Contrast Dark Theme"
+            >
+              <span class="material-symbols-outlined text-[20px]" data-icon="dark_mode"
+                >dark_mode</span
+              >
+            </button>
+          </div>
+          <button
+            class="bg-primary hover:bg-primary-container text-on-primary font-headline-sm text-label-md px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 transition-all shadow-sm active:scale-[0.98]"
+            onclick="openEditModal('New Resource', 'Main Laboratory, Colombo')"
+          >
+            <span class="material-symbols-outlined text-[18px]" data-icon="add">add</span>
+            <span>New Reservation</span>
+          </button>
+        </div>
+      </header>
+      <!-- CONTENT CANVAS -->
+      <main class="flex-1 p-gutter overflow-y-auto max-w-[1720px] w-full mx-auto">
+        <!-- =================================================================== -->
+        <!-- VIEW 1: RESOURCES REGISTER (Elevated Clinical Data Grid)             -->
+        <!-- =================================================================== -->
+        <section class="view-panel flex flex-col gap-5" id="view-resources">
+          <!-- Header & Action Ribbon -->
+          <div
+            class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-outline-variant/40"
+          >
+            <div>
+              <div class="flex items-center gap-2">
+                <h1 class="text-headline-lg font-headline-lg text-on-surface">Resources</h1>
+                <span
+                  class="text-label-sm font-label-sm px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20"
+                >
+                  14 Active Assets
+                </span>
+              </div>
+              <p class="text-body-sm font-body-sm text-on-surface-variant mt-0.5">
+                Every shared instrument, biosafety cabinet, cold-chain van, and automated analytical
+                bench across the network.
+              </p>
+            </div>
+            <div class="flex items-center gap-2.5">
+              <button
+                class="bg-surface-container border border-outline-variant text-on-surface px-3 py-1.5 rounded-lg text-label-md font-label-md flex items-center gap-2 hover:bg-surface-container-high transition-colors"
+              >
+                <span class="material-symbols-outlined text-[16px]" data-icon="download"
+                  >download</span
+                >
+                <span>Telemetry CSV</span>
+              </button>
+              <button
+                class="bg-primary hover:bg-primary-container text-on-primary px-3.5 py-1.5 rounded-lg text-label-md font-label-md flex items-center gap-2 transition-all font-semibold active:scale-[0.98]"
+                onclick="openEditModal('Add Resource', 'Main Laboratory, Colombo')"
+              >
+                <span class="material-symbols-outlined text-[18px]" data-icon="add">add</span>
+                <span>Add resource</span>
+              </button>
+            </div>
+          </div>
+          <!-- Metric Quick-Bento Strip -->
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div
+              class="bg-surface-container-low border border-outline-variant p-3 rounded-lg flex items-center justify-between"
+            >
+              <div class="flex flex-col">
+                <span class="text-label-sm font-label-sm text-on-surface-variant"
+                  >Active Instruments</span
+                >
+                <span class="text-headline-md font-headline-md text-primary font-bold mt-0.5"
+                  >12 / 14</span
+                >
+              </div>
+              <div
+                class="w-9 h-9 rounded bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400"
+              >
+                <span class="material-symbols-outlined text-[20px]" data-icon="check_circle"
+                  >check_circle</span
+                >
+              </div>
+            </div>
+            <div
+              class="bg-surface-container-low border border-outline-variant p-3 rounded-lg flex items-center justify-between"
+            >
+              <div class="flex flex-col">
+                <span class="text-label-sm font-label-sm text-on-surface-variant"
+                  >Scheduled Calibration</span
+                >
+                <span class="text-headline-md font-headline-md text-amber-400 font-bold mt-0.5"
+                  >1 Unit</span
+                >
+              </div>
+              <div
+                class="w-9 h-9 rounded bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400"
+              >
+                <span class="material-symbols-outlined text-[20px]" data-icon="build">build</span>
+              </div>
+            </div>
+            <div
+              class="bg-surface-container-low border border-outline-variant p-3 rounded-lg flex items-center justify-between"
+            >
+              <div class="flex flex-col">
+                <span class="text-label-sm font-label-sm text-on-surface-variant"
+                  >Critical Out of Service</span
+                >
+                <span class="text-headline-md font-headline-md text-rose-400 font-bold mt-0.5"
+                  >1 Flow Cytometer</span
+                >
+              </div>
+              <div
+                class="w-9 h-9 rounded bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400"
+              >
+                <span class="material-symbols-outlined text-[20px]" data-icon="warning"
+                  >warning</span
+                >
+              </div>
+            </div>
+            <div
+              class="bg-surface-container-low border border-outline-variant p-3 rounded-lg flex items-center justify-between"
+            >
+              <div class="flex flex-col">
+                <span class="text-label-sm font-label-sm text-on-surface-variant"
+                  >Daily Reservation Rate</span
+                >
+                <span class="text-headline-md font-headline-md text-secondary font-bold mt-0.5"
+                  >87.4%</span
+                >
+              </div>
+              <div
+                class="w-9 h-9 rounded bg-secondary/10 border border-secondary/20 flex items-center justify-center text-secondary"
+              >
+                <span class="material-symbols-outlined text-[20px]" data-icon="insights"
+                  >insights</span
+                >
+              </div>
+            </div>
+          </div>
+          <!-- Filter & Query Control Bar -->
+          <div
+            class="bg-surface-container border border-outline-variant p-3 rounded-lg flex flex-wrap items-center gap-3"
+          >
+            <div class="relative flex-1 min-w-[220px]">
+              <span
+                class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[18px]"
+                data-icon="search"
+                >search</span
+              >
+              <input
+                class="w-full bg-surface-container-lowest border border-outline-variant/80 rounded pl-9 pr-3 py-1.5 text-label-md text-on-surface placeholder:text-outline focus:border-primary focus:outline-none"
+                placeholder="Search by name, ID or manufacturer..."
+                type="text"
+              />
+            </div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <select
+                class="bg-surface-container-lowest border border-outline-variant/80 rounded px-3 py-1.5 text-label-md text-on-surface focus:border-primary focus:outline-none"
+              >
+                <option>All sites (3)</option>
+                <option>Main Laboratory, Colombo</option>
+                <option>Galle Branch Laboratory</option>
+                <option>Kandy Branch Laboratory</option>
+              </select>
+              <select
+                class="bg-surface-container-lowest border border-outline-variant/80 rounded px-3 py-1.5 text-label-md text-on-surface focus:border-primary focus:outline-none"
+              >
+                <option>All categories</option>
+                <option>Microscopy</option>
+                <option>Sterilisation</option>
+                <option>Biosafety cabinets</option>
+                <option>Molecular instruments</option>
+                <option>Analytical instruments</option>
+                <option>Vehicles</option>
+              </select>
+              <select
+                class="bg-surface-container-lowest border border-outline-variant/80 rounded px-3 py-1.5 text-label-md text-on-surface focus:border-primary focus:outline-none"
+              >
+                <option>All sections</option>
+                <option>Histopathology</option>
+                <option>Microbiology</option>
+                <option>Molecular Diagnostics</option>
+                <option>Haematology</option>
+                <option>Clinical Biochemistry</option>
+                <option>Administration</option>
+              </select>
+              <select
+                class="bg-surface-container-lowest border border-outline-variant/80 rounded px-3 py-1.5 text-label-md text-on-surface focus:border-primary focus:outline-none"
+              >
+                <option>Active and out of service</option>
+                <option>Active only</option>
+                <option>Maintenance only</option>
+                <option>Out of service only</option>
+              </select>
+              <button
+                class="bg-primary/10 hover:bg-primary/20 text-primary border border-primary/30 px-3.5 py-1.5 rounded text-label-md font-semibold transition-colors"
+              >
+                Apply
+              </button>
+              <button class="text-outline hover:text-on-surface text-label-sm px-2 py-1">
+                Reset
+              </button>
+            </div>
+          </div>
+          <!-- Redesigned High-Ergonomics Resource Matrix Table -->
+          <div
+            class="bg-surface-container-low border border-outline-variant rounded-lg overflow-hidden shadow-sm"
+          >
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr
+                    class="bg-surface-container-highest/60 border-b border-outline-variant text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider"
+                  >
+                    <th class="py-3 px-4 font-semibold">Resource Details</th>
+                    <th class="py-3 px-4 font-semibold">Site / Campus</th>
+                    <th class="py-3 px-4 font-semibold">Owning Section</th>
+                    <th class="py-3 px-4 font-semibold">Clinical Room</th>
+                    <th class="py-3 px-4 font-semibold">Real-Time Status</th>
+                    <th class="py-3 px-4 font-semibold text-right">Quick Allocation</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-outline-variant/40 font-body-sm text-on-surface">
+                  <!-- Row 1: Microscope (Galle) -->
+                  <tr class="hover:bg-surface-container-high/40 transition-colors group">
+                    <td class="py-3 px-4">
+                      <div class="flex items-center gap-3">
+                        <div
+                          class="w-9 h-9 rounded bg-surface-container border border-outline-variant flex items-center justify-center text-primary"
+                        >
+                          <span class="material-symbols-outlined text-[20px]" data-icon="microscope"
+                            >smb_share</span
+                          >
+                        </div>
+                        <div>
+                          <div
+                            class="font-headline-sm font-semibold text-on-surface group-hover:text-primary transition-colors"
+                          >
+                            Microscope (Leica DM2500)
+                          </div>
+                          <div class="text-label-sm font-label-sm text-on-surface-variant">
+                            Microscopy • Max slot: 3 h
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="py-3 px-4 font-medium text-on-surface">Galle Branch Laboratory</td>
+                    <td class="py-3 px-4">
+                      <span
+                        class="px-2 py-0.5 rounded text-label-sm font-label-sm bg-surface-container text-on-surface-variant border border-outline-variant/50"
+                        >Histopathology</span
+                      >
+                    </td>
+                    <td class="py-3 px-4 text-on-surface-variant italic font-label-sm">Not set</td>
+                    <td class="py-3 px-4">
+                      <span
+                        class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-label-sm font-label-sm font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/30"
+                      >
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                        Active
+                      </span>
+                    </td>
+                    <td class="py-3 px-4 text-right">
+                      <button
+                        class="bg-primary/20 hover:bg-primary text-primary hover:text-on-primary text-label-sm font-label-sm font-semibold px-3 py-1 rounded border border-primary/30 transition-all active:scale-95"
+                      >
+                        Book Slot
+                      </button>
+                    </td>
+                  </tr>
+                  <!-- Row 2: Flow cytometer (Main Lab - OUT OF SERVICE) -->
+                  <tr
+                    class="hover:bg-surface-container-high/40 transition-colors bg-rose-950/10 group"
+                  >
+                    <td class="py-3 px-4">
+                      <div class="flex items-center gap-3">
+                        <div
+                          class="w-9 h-9 rounded bg-surface-container border border-rose-500/40 flex items-center justify-center text-rose-400"
+                        >
+                          <span class="material-symbols-outlined text-[20px]" data-icon="science"
+                            >science</span
+                          >
+                        </div>
+                        <div>
+                          <div
+                            class="font-headline-sm font-semibold text-on-surface group-hover:text-rose-300 transition-colors"
+                          >
+                            Flow cytometer (BD FACSCanto II)
+                          </div>
+                          <div class="text-label-sm font-label-sm text-on-surface-variant">
+                            Analytical instruments • Max: 12 h
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="py-3 px-4 font-semibold text-on-surface">
+                      Main Laboratory, Colombo
+                    </td>
+                    <td class="py-3 px-4">
+                      <span
+                        class="px-2 py-0.5 rounded text-label-sm font-label-sm bg-surface-container text-on-surface-variant border border-outline-variant/50"
+                        >Haematology</span
+                      >
+                    </td>
+                    <td class="py-3 px-4 font-label-sm text-on-surface">
+                      Haematology lab (Level 2)
+                    </td>
+                    <td class="py-3 px-4">
+                      <span
+                        class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-label-sm font-label-sm font-medium bg-rose-500/15 text-rose-300 border border-rose-500/40"
+                      >
+                        <span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span>
+                        Out of service (Laser fault)
+                      </span>
+                    </td>
+                    <td class="py-3 px-4 text-right">
+                      <button
+                        class="bg-surface-container hover:bg-surface-container-high text-on-surface text-label-sm font-label-sm font-semibold px-3 py-1 rounded border border-outline-variant transition-all"
+                        onclick="openDiagnosticsModal('Flow cytometer')"
+                      >
+                        Diagnostics
+                      </button>
+                    </td>
+                  </tr>
+                  <!-- Row 3: Biosafety cabinet A (Main Lab) -->
+                  <tr class="hover:bg-surface-container-high/40 transition-colors group">
+                    <td class="py-3 px-4">
+                      <div class="flex items-center gap-3">
+                        <div
+                          class="w-9 h-9 rounded bg-surface-container border border-outline-variant flex items-center justify-center text-primary"
+                        >
+                          <span class="material-symbols-outlined text-[20px]" data-icon="shield"
+                            >shield</span
+                          >
+                        </div>
+                        <div>
+                          <div
+                            class="font-headline-sm font-semibold text-on-surface group-hover:text-primary transition-colors"
+                          >
+                            Biosafety cabinet A (Class II)
+                          </div>
+                          <div class="text-label-sm font-label-sm text-on-surface-variant">
+                            HEPA Filter Grade A • Up to 4 h
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="py-3 px-4 font-medium text-on-surface">Main Laboratory, Colombo</td>
+                    <td class="py-3 px-4">
+                      <span
+                        class="px-2 py-0.5 rounded text-label-sm font-label-sm bg-surface-container text-on-surface-variant border border-outline-variant/50"
+                        >Microbiology</span
+                      >
+                    </td>
+                    <td class="py-3 px-4 font-label-sm text-on-surface">
+                      Microbiology lab, room 1.08
+                    </td>
+                    <td class="py-3 px-4">
+                      <span
+                        class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-label-sm font-label-sm font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/30"
+                      >
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                        Active • In Use (Dr. Silva)
+                      </span>
+                    </td>
+                    <td class="py-3 px-4 text-right">
+                      <button
+                        class="bg-primary/20 hover:bg-primary text-primary hover:text-on-primary text-label-sm font-label-sm font-semibold px-3 py-1 rounded border border-primary/30 transition-all active:scale-95"
+                      >
+                        Book Slot
+                      </button>
+                    </td>
+                  </tr>
+                  <!-- Row 4: Real-time PCR machine 1 (Main Lab) -->
+                  <tr class="hover:bg-surface-container-high/40 transition-colors group">
+                    <td class="py-3 px-4">
+                      <div class="flex items-center gap-3">
+                        <div
+                          class="w-9 h-9 rounded bg-surface-container border border-outline-variant flex items-center justify-center text-primary"
+                        >
+                          <span class="material-symbols-outlined text-[20px]" data-icon="water_drop"
+                            >water_drop</span
+                          >
+                        </div>
+                        <div>
+                          <div
+                            class="font-headline-sm font-semibold text-on-surface group-hover:text-primary transition-colors"
+                          >
+                            Real-time PCR machine 1 (QuantStudio 5)
+                          </div>
+                          <div class="text-label-sm font-label-sm text-on-surface-variant">
+                            96-Well Fast Block • Up to 4 h
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="py-3 px-4 font-medium text-on-surface">Main Laboratory, Colombo</td>
+                    <td class="py-3 px-4">
+                      <span
+                        class="px-2 py-0.5 rounded text-label-sm font-label-sm bg-surface-container text-on-surface-variant border border-outline-variant/50"
+                        >Molecular Diagnostics</span
+                      >
+                    </td>
+                    <td class="py-3 px-4 font-label-sm text-on-surface">
+                      Molecular lab, room 2.14
+                    </td>
+                    <td class="py-3 px-4">
+                      <span
+                        class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-label-sm font-label-sm font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/30"
+                      >
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                        Active
+                      </span>
+                    </td>
+                    <td class="py-3 px-4 text-right">
+                      <button
+                        class="bg-primary/20 hover:bg-primary text-primary hover:text-on-primary text-label-sm font-label-sm font-semibold px-3 py-1 rounded border border-primary/30 transition-all active:scale-95"
+                      >
+                        Book Slot
+                      </button>
+                    </td>
+                  </tr>
+                  <!-- Row 5: Sample transport van 2 (Kandy - Maintenance state hatching) -->
+                  <tr
+                    class="hover:bg-surface-container-high/40 transition-colors group hatch-maintenance"
+                  >
+                    <td class="py-3 px-4">
+                      <div class="flex items-center gap-3">
+                        <div
+                          class="w-9 h-9 rounded bg-surface-container border border-amber-500/40 flex items-center justify-center text-amber-400"
+                        >
+                          <span
+                            class="material-symbols-outlined text-[20px]"
+                            data-icon="local_shipping"
+                            >local_shipping</span
+                          >
+                        </div>
+                        <div>
+                          <div class="font-headline-sm font-semibold text-on-surface">
+                            Sample transport van 2
+                          </div>
+                          <div class="text-label-sm font-label-sm text-on-surface-variant">
+                            Refrigerated Logistics • Max 10 h
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="py-3 px-4 font-medium text-on-surface">Kandy Branch Laboratory</td>
+                    <td class="py-3 px-4">
+                      <span
+                        class="px-2 py-0.5 rounded text-label-sm font-label-sm bg-surface-container text-on-surface-variant border border-outline-variant/50"
+                        >Administration</span
+                      >
+                    </td>
+                    <td class="py-3 px-4 font-label-sm text-on-surface">Fleet Bay 03</td>
+                    <td class="py-3 px-4">
+                      <span
+                        class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-label-sm font-label-sm font-medium bg-amber-500/20 text-amber-300 border border-amber-500/40"
+                      >
+                        <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                        Scheduled Service (Coolant check)
+                      </span>
+                    </td>
+                    <td class="py-3 px-4 text-right">
+                      <button
+                        class="bg-surface-container text-on-surface-variant hover:text-on-surface text-label-sm font-label-sm font-semibold px-3 py-1 rounded border border-outline-variant transition-all"
+                      >
+                        Logs
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <!-- Table Footer Pagination -->
+            <div
+              class="p-3 bg-surface-container border-t border-outline-variant flex items-center justify-between text-label-sm font-label-sm text-on-surface-variant"
+            >
+              <span
+                >Showing <strong class="text-on-surface font-semibold">1-5</strong> of 14 network
+                resources</span
+              >
+              <div class="flex items-center gap-2">
+                <button
+                  class="px-2.5 py-1 rounded bg-surface-container-low border border-outline-variant/60 text-outline hover:text-on-surface disabled:opacity-50"
+                  disabled=""
+                >
+                  Previous
+                </button>
+                <span class="px-2 text-primary font-semibold">Page 1 of 3</span>
+                <button
+                  class="px-2.5 py-1 rounded bg-surface-container-low border border-outline-variant/60 text-on-surface hover:bg-surface-container-high"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+        <!-- =================================================================== -->
+        <!-- VIEW 2: TEAM & ACCESS REGISTRY (Elevated Users Directory)           -->
+        <!-- =================================================================== -->
+        <section class="view-panel hidden flex flex-col gap-5" id="view-users">
+          <div
+            class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-outline-variant/40"
+          >
+            <div>
+              <div class="flex items-center gap-2">
+                <h1 class="text-headline-lg font-headline-lg text-on-surface">
+                  Personnel &amp; Access Control
+                </h1>
+                <span
+                  class="text-label-sm font-label-sm px-2 py-0.5 rounded-full bg-secondary/15 text-secondary border border-secondary/30"
+                >
+                  17 Registered Members
+                </span>
+              </div>
+              <p class="text-body-sm font-body-sm text-on-surface-variant mt-0.5">
+                Role permissions, multi-site credentials, safety certifications, and sign-in
+                telemetry.
+              </p>
+            </div>
+            <div class="flex items-center gap-2.5">
+              <button
+                class="bg-primary hover:bg-primary-container text-on-primary px-3.5 py-1.5 rounded-lg text-label-md font-label-md flex items-center gap-2 transition-all font-semibold active:scale-[0.98]"
+              >
+                <span class="material-symbols-outlined text-[18px]" data-icon="person_add"
+                  >person_add</span
+                >
+                <span>Add User</span>
+              </button>
+            </div>
+          </div>
+          <!-- Filter bar -->
+          <div
+            class="bg-surface-container border border-outline-variant p-3 rounded-lg flex flex-wrap items-center gap-3"
+          >
+            <div class="flex items-center gap-2">
+              <span class="text-label-sm text-on-surface-variant font-label-sm uppercase"
+                >Site</span
+              >
+              <select
+                class="bg-surface-container-lowest border border-outline-variant rounded px-2.5 py-1 text-label-md text-on-surface focus:outline-none focus:border-primary"
+              >
+                <option>All sites (Network wide)</option>
+                <option>Main Laboratory, Colombo</option>
+                <option>Galle Branch Laboratory</option>
+                <option>Kandy Branch Laboratory</option>
+              </select>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-label-sm text-on-surface-variant font-label-sm uppercase"
+                >Role</span
+              >
+              <select
+                class="bg-surface-container-lowest border border-outline-variant rounded px-2.5 py-1 text-label-md text-on-surface focus:outline-none focus:border-primary"
+              >
+                <option>All roles</option>
+                <option>Administrator</option>
+                <option>Site Manager</option>
+                <option>Clinical Staff</option>
+                <option>External Researcher</option>
+              </select>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-label-sm text-on-surface-variant font-label-sm uppercase"
+                >Status</span
+              >
+              <select
+                class="bg-surface-container-lowest border border-outline-variant rounded px-2.5 py-1 text-label-md text-on-surface focus:outline-none focus:border-primary"
+              >
+                <option>All statuses</option>
+                <option>Active</option>
+                <option>Must change password</option>
+                <option>Suspended</option>
+              </select>
+            </div>
+          </div>
+          <!-- Re-designed Personnel Cards/Rows Grid -->
+          <div
+            class="bg-surface-container-low border border-outline-variant rounded-lg overflow-hidden"
+          >
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr
+                  class="bg-surface-container-highest/60 border-b border-outline-variant text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider"
+                >
+                  <th class="py-3 px-4 font-semibold">Team Member</th>
+                  <th class="py-3 px-4 font-semibold">System Role</th>
+                  <th class="py-3 px-4 font-semibold">Assigned Site</th>
+                  <th class="py-3 px-4 font-semibold">Department Section</th>
+                  <th class="py-3 px-4 font-semibold">Account State</th>
+                  <th class="py-3 px-4 font-semibold">Last Authenticated</th>
+                  <th class="py-3 px-4 font-semibold text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-outline-variant/40 font-body-sm">
+                <!-- User 1: Administrator -->
+                <tr class="hover:bg-surface-container-high/40 transition-colors">
+                  <td class="py-3 px-4">
+                    <div class="flex items-center gap-3">
+                      <div
+                        class="w-8 h-8 rounded-full bg-primary/20 border border-primary/40 text-primary flex items-center justify-center font-bold text-label-md"
+                      >
+                        LA
+                      </div>
+                      <div>
+                        <div class="font-headline-sm font-semibold text-on-surface">
+                          Lab Administrator
+                        </div>
+                        <div class="text-label-sm font-label-sm text-on-surface-variant">
+                          admin@lab.example
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-3 px-4">
+                    <span
+                      class="px-2 py-0.5 rounded text-label-sm font-label-sm bg-purple-500/10 text-purple-300 border border-purple-500/30 font-medium"
+                      >Administrator</span
+                    >
+                  </td>
+                  <td class="py-3 px-4 font-medium text-on-surface">Network wide</td>
+                  <td class="py-3 px-4 text-outline font-label-sm">—</td>
+                  <td class="py-3 px-4">
+                    <span
+                      class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-label-sm font-label-sm bg-emerald-500/10 text-emerald-400 border border-emerald-500/30"
+                    >
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                      Active
+                    </span>
+                  </td>
+                  <td class="py-3 px-4 font-label-sm text-on-surface font-semibold text-primary">
+                    3 minutes ago
+                  </td>
+                  <td class="py-3 px-4 text-right">
+                    <div class="inline-flex items-center gap-1">
+                      <button
+                        class="p-1.5 rounded hover:bg-surface-container hover:text-primary transition-colors text-on-surface-variant"
+                        title="Edit Profile"
+                      >
+                        <span class="material-symbols-outlined text-[18px]" data-icon="edit"
+                          >edit</span
+                        >
+                      </button>
+                      <button
+                        class="p-1.5 rounded hover:bg-surface-container hover:text-on-surface transition-colors text-on-surface-variant"
+                        title="More Options"
+                      >
+                        <span class="material-symbols-outlined text-[18px]" data-icon="more_horiz"
+                          >more_horiz</span
+                        >
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <!-- User 2: Dilani Fernando -->
+                <tr class="hover:bg-surface-container-high/40 transition-colors">
+                  <td class="py-3 px-4">
+                    <div class="flex items-center gap-3">
+                      <div
+                        class="w-8 h-8 rounded-full bg-surface-container border border-outline-variant text-on-surface flex items-center justify-center font-bold text-label-md"
+                      >
+                        DF
+                      </div>
+                      <div>
+                        <div class="font-headline-sm font-semibold text-on-surface">
+                          Dilani Fernando
+                        </div>
+                        <div class="text-label-sm font-label-sm text-on-surface-variant">
+                          dilani.fernando@lab.example
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-3 px-4">
+                    <span
+                      class="px-2 py-0.5 rounded text-label-sm font-label-sm bg-surface-container text-on-surface-variant border border-outline-variant"
+                      >Staff</span
+                    >
+                  </td>
+                  <td class="py-3 px-4 font-medium text-on-surface">Main Laboratory, Colombo</td>
+                  <td class="py-3 px-4 font-label-sm text-on-surface">Clinical Biochemistry</td>
+                  <td class="py-3 px-4">
+                    <span
+                      class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-label-sm font-label-sm bg-emerald-500/10 text-emerald-400 border border-emerald-500/30"
+                    >
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                      Active
+                    </span>
+                  </td>
+                  <td class="py-3 px-4 font-label-sm text-on-surface-variant italic">Never</td>
+                  <td class="py-3 px-4 text-right">
+                    <div class="inline-flex items-center gap-1">
+                      <button
+                        class="p-1.5 rounded hover:bg-surface-container hover:text-primary transition-colors text-on-surface-variant"
+                      >
+                        <span class="material-symbols-outlined text-[18px]" data-icon="edit"
+                          >edit</span
+                        >
+                      </button>
+                      <button
+                        class="p-1.5 rounded hover:bg-surface-container hover:text-on-surface transition-colors text-on-surface-variant"
+                      >
+                        <span class="material-symbols-outlined text-[18px]" data-icon="more_horiz"
+                          >more_horiz</span
+                        >
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <!-- User 3: Fathima Rizvi (Site Manager) -->
+                <tr class="hover:bg-surface-container-high/40 transition-colors">
+                  <td class="py-3 px-4">
+                    <div class="flex items-center gap-3">
+                      <div
+                        class="w-8 h-8 rounded-full bg-secondary-container/20 border border-secondary-container/40 text-secondary flex items-center justify-center font-bold text-label-md"
+                      >
+                        FR
+                      </div>
+                      <div>
+                        <div class="font-headline-sm font-semibold text-on-surface">
+                          Fathima Rizvi
+                        </div>
+                        <div class="text-label-sm font-label-sm text-on-surface-variant">
+                          fathima.rizvi@lab.example
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-3 px-4">
+                    <span
+                      class="px-2 py-0.5 rounded text-label-sm font-label-sm bg-teal-500/10 text-teal-300 border border-teal-500/30 font-medium"
+                      >Site Manager</span
+                    >
+                  </td>
+                  <td class="py-3 px-4 font-medium text-on-surface">Galle Branch Laboratory</td>
+                  <td class="py-3 px-4 text-outline font-label-sm">—</td>
+                  <td class="py-3 px-4">
+                    <span
+                      class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-label-sm font-label-sm bg-emerald-500/10 text-emerald-400 border border-emerald-500/30"
+                    >
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                      Active
+                    </span>
+                  </td>
+                  <td class="py-3 px-4 font-label-sm text-on-surface">about 22 hours ago</td>
+                  <td class="py-3 px-4 text-right">
+                    <div class="inline-flex items-center gap-1">
+                      <button
+                        class="p-1.5 rounded hover:bg-surface-container hover:text-primary transition-colors text-on-surface-variant"
+                      >
+                        <span class="material-symbols-outlined text-[18px]" data-icon="edit"
+                          >edit</span
+                        >
+                      </button>
+                      <button
+                        class="p-1.5 rounded hover:bg-surface-container hover:text-on-surface transition-colors text-on-surface-variant"
+                      >
+                        <span class="material-symbols-outlined text-[18px]" data-icon="more_horiz"
+                          >more_horiz</span
+                        >
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <!-- User 4: Mohamed Hajith (Needs password reset) -->
+                <tr class="hover:bg-surface-container-high/40 transition-colors">
+                  <td class="py-3 px-4">
+                    <div class="flex items-center gap-3">
+                      <div
+                        class="w-8 h-8 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 flex items-center justify-center font-bold text-label-md"
+                      >
+                        MH
+                      </div>
+                      <div>
+                        <div class="font-headline-sm font-semibold text-on-surface">
+                          Mohamed Hajith
+                        </div>
+                        <div class="text-label-sm font-label-sm text-on-surface-variant">
+                          devilew80@gmail.com
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-3 px-4">
+                    <span
+                      class="px-2 py-0.5 rounded text-label-sm font-label-sm bg-surface-container text-on-surface-variant border border-outline-variant"
+                      >Staff</span
+                    >
+                  </td>
+                  <td class="py-3 px-4 font-medium text-on-surface">Kandy Branch Laboratory</td>
+                  <td class="py-3 px-4 font-label-sm text-on-surface">Molecular Diagnostics</td>
+                  <td class="py-3 px-4">
+                    <span
+                      class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-label-sm font-label-sm bg-amber-500/10 text-amber-300 border border-amber-500/30"
+                    >
+                      <span class="material-symbols-outlined text-[14px]" data-icon="key">key</span>
+                      Must change password
+                    </span>
+                  </td>
+                  <td class="py-3 px-4 font-label-sm text-on-surface-variant italic">Never</td>
+                  <td class="py-3 px-4 text-right">
+                    <div class="inline-flex items-center gap-1">
+                      <button
+                        class="p-1.5 rounded hover:bg-surface-container hover:text-primary transition-colors text-on-surface-variant"
+                      >
+                        <span class="material-symbols-outlined text-[18px]" data-icon="edit"
+                          >edit</span
+                        >
+                      </button>
+                      <button
+                        class="p-1.5 rounded hover:bg-surface-container hover:text-on-surface transition-colors text-on-surface-variant"
+                      >
+                        <span class="material-symbols-outlined text-[18px]" data-icon="more_horiz"
+                          >more_horiz</span
+                        >
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <div
+              class="p-3 bg-surface-container border-t border-outline-variant flex items-center justify-between text-label-sm font-label-sm text-on-surface-variant"
+            >
+              <span
+                >Showing <strong class="text-on-surface font-semibold">1-4</strong> of 17 active
+                personnel records</span
+              >
+              <div class="flex items-center gap-2">
+                <button
+                  class="px-2.5 py-1 rounded bg-surface-container-low border border-outline-variant/60 text-outline hover:text-on-surface disabled:opacity-50"
+                  disabled=""
+                >
+                  Previous
+                </button>
+                <span class="px-2 text-primary font-semibold">Page 1 of 2</span>
+                <button
+                  class="px-2.5 py-1 rounded bg-surface-container-low border border-outline-variant/60 text-on-surface hover:bg-surface-container-high"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+        <!-- =================================================================== -->
+        <!-- VIEW 3: SETTINGS HUB (Master Registry Configuration)                -->
+        <!-- =================================================================== -->
+        <section class="view-panel hidden flex flex-col gap-6" id="view-settings">
+          <div class="flex flex-col gap-1 pb-3 border-b border-outline-variant/40">
+            <h1 class="text-headline-lg font-headline-lg text-on-surface">
+              Settings &amp; System Registries
+            </h1>
+            <p class="text-body-sm font-body-sm text-on-surface-variant">
+              Manage master registries, organizational departmental hierarchy, laboratory sites, and
+              constraint rules for the clinical network.
+            </p>
+          </div>
+          <!-- Bento Grid Architectural Modules (Replacing sterile white cards) -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <!-- Card 1: Sites & Infrastructure -->
+            <div
+              class="bg-surface-container-low border border-outline-variant hover:border-primary/50 transition-all rounded-lg p-5 flex flex-col justify-between group shadow-sm"
+            >
+              <div class="flex flex-col gap-4">
+                <!-- Illustration Blueprint Area -->
+                <div
+                  class="h-36 rounded-md bg-surface-container border border-outline-variant/60 flex items-center justify-center relative overflow-hidden"
+                >
+                  <div
+                    class="absolute inset-0 bg-gradient-to-tr from-primary/5 via-transparent to-transparent"
+                  ></div>
+                  <div class="flex items-center gap-3">
+                    <div
+                      class="w-14 h-14 rounded-lg bg-surface-container-high border border-outline-variant flex items-center justify-center text-primary group-hover:scale-105 transition-transform"
+                    >
+                      <span class="material-symbols-outlined text-[32px]" data-icon="domain"
+                        >domain</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1.5">
+                      <div class="w-20 h-2 bg-outline-variant/80 rounded"></div>
+                      <div class="w-12 h-2 bg-primary/40 rounded"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <div
+                      class="w-7 h-7 rounded bg-primary/10 text-primary flex items-center justify-center border border-primary/20"
+                    >
+                      <span class="material-symbols-outlined text-[16px]" data-icon="apartment"
+                        >apartment</span
+                      >
+                    </div>
+                    <h3 class="text-headline-md font-headline-md text-on-surface">Sites</h3>
+                  </div>
+                  <span
+                    class="text-label-sm font-label-sm px-2 py-0.5 rounded bg-surface-container-high text-primary border border-outline-variant/40"
+                  >
+                    3 sites
+                  </span>
+                </div>
+                <div>
+                  <span class="text-label-sm font-label-sm text-primary uppercase tracking-wider"
+                    >Laboratories &amp; Facilities</span
+                  >
+                  <p class="text-body-sm font-body-sm text-on-surface-variant mt-1">
+                    Manage physical locations, laboratory branches, address registries, and
+                    multi-campus infrastructure.
+                  </p>
+                </div>
+              </div>
+              <div class="pt-5 mt-4 border-t border-outline-variant/40">
+                <button
+                  class="w-full bg-primary/20 hover:bg-primary text-primary hover:text-on-primary border border-primary/30 font-headline-sm text-label-md py-2 px-3 rounded flex items-center justify-center gap-2 transition-all active:scale-[0.99]"
+                  onclick="switchMainView('sites', event)"
+                >
+                  <span>Manage Sites</span>
+                  <span class="material-symbols-outlined text-[16px]" data-icon="arrow_forward"
+                    >arrow_forward</span
+                  >
+                </button>
+              </div>
+            </div>
+            <!-- Card 2: Sections & Departments -->
+            <div
+              class="bg-surface-container-low border border-outline-variant hover:border-primary/50 transition-all rounded-lg p-5 flex flex-col justify-between group shadow-sm"
+            >
+              <div class="flex flex-col gap-4">
+                <!-- Illustration Blueprint Area -->
+                <div
+                  class="h-36 rounded-md bg-surface-container border border-outline-variant/60 flex items-center justify-center relative overflow-hidden"
+                >
+                  <div
+                    class="absolute inset-0 bg-gradient-to-tr from-secondary/5 via-transparent to-transparent"
+                  ></div>
+                  <div class="flex items-center gap-3">
+                    <div
+                      class="w-10 h-14 rounded bg-surface-container-high border border-outline-variant flex flex-col justify-center items-center gap-1.5 p-1.5"
+                    >
+                      <div class="w-full h-1.5 bg-secondary/50 rounded"></div>
+                      <div class="w-full h-1.5 bg-outline-variant rounded"></div>
+                    </div>
+                    <div
+                      class="w-10 h-14 rounded bg-surface-container-high border border-outline-variant flex flex-col justify-center items-center gap-1.5 p-1.5"
+                    >
+                      <div class="w-full h-1.5 bg-secondary/80 rounded"></div>
+                      <div class="w-full h-1.5 bg-outline-variant rounded"></div>
+                    </div>
+                    <div
+                      class="w-10 h-14 rounded bg-surface-container-high border border-outline-variant flex flex-col justify-center items-center gap-1.5 p-1.5"
+                    >
+                      <div class="w-full h-1.5 bg-secondary rounded"></div>
+                      <div class="w-full h-1.5 bg-outline-variant rounded"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <div
+                      class="w-7 h-7 rounded bg-secondary/10 text-secondary flex items-center justify-center border border-secondary/20"
+                    >
+                      <span class="material-symbols-outlined text-[16px]" data-icon="layers"
+                        >layers</span
+                      >
+                    </div>
+                    <h3 class="text-headline-md font-headline-md text-on-surface">Sections</h3>
+                  </div>
+                  <span
+                    class="text-label-sm font-label-sm px-2 py-0.5 rounded bg-surface-container-high text-secondary border border-outline-variant/40"
+                  >
+                    6 sections
+                  </span>
+                </div>
+                <div>
+                  <span class="text-label-sm font-label-sm text-secondary uppercase tracking-wider"
+                    >Lab Departments</span
+                  >
+                  <p class="text-body-sm font-body-sm text-on-surface-variant mt-1">
+                    Manage functional divisions such as Haematology, Molecular Diagnostics, Clinical
+                    Biochemistry, and Histopathology.
+                  </p>
+                </div>
+              </div>
+              <div class="pt-5 mt-4 border-t border-outline-variant/40">
+                <button
+                  class="w-full bg-surface-container hover:bg-surface-container-high text-on-surface border border-outline-variant font-headline-sm text-label-md py-2 px-3 rounded flex items-center justify-center gap-2 transition-all active:scale-[0.99]"
+                >
+                  <span>Manage Sections</span>
+                  <span class="material-symbols-outlined text-[16px]" data-icon="arrow_forward"
+                    >arrow_forward</span
+                  >
+                </button>
+              </div>
+            </div>
+            <!-- Card 3: Categories & Rules -->
+            <div
+              class="bg-surface-container-low border border-outline-variant hover:border-primary/50 transition-all rounded-lg p-5 flex flex-col justify-between group shadow-sm"
+            >
+              <div class="flex flex-col gap-4">
+                <!-- Illustration Blueprint Area -->
+                <div
+                  class="h-36 rounded-md bg-surface-container border border-outline-variant/60 flex items-center justify-center relative overflow-hidden"
+                >
+                  <div class="flex items-center gap-4">
+                    <div
+                      class="w-9 h-9 rounded-full bg-surface-container-high border border-outline-variant flex items-center justify-center text-primary"
+                    >
+                      <span class="material-symbols-outlined text-[18px]" data-icon="sell"
+                        >sell</span
+                      >
+                    </div>
+                    <div
+                      class="w-9 h-9 rounded-md bg-surface-container-high border border-outline-variant flex items-center justify-center text-secondary"
+                    >
+                      <span class="material-symbols-outlined text-[18px]" data-icon="category"
+                        >category</span
+                      >
+                    </div>
+                    <div
+                      class="w-9 h-9 rounded-full bg-surface-container-high border border-outline-variant flex items-center justify-center text-tertiary"
+                    >
+                      <span class="material-symbols-outlined text-[18px]" data-icon="lock_clock"
+                        >lock_clock</span
+                      >
+                    </div>
+                  </div>
+                </div>
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <div
+                      class="w-7 h-7 rounded bg-tertiary/10 text-tertiary flex items-center justify-center border border-tertiary/20"
+                    >
+                      <span class="material-symbols-outlined text-[16px]" data-icon="tune"
+                        >tune</span
+                      >
+                    </div>
+                    <h3 class="text-headline-md font-headline-md text-on-surface">Categories</h3>
+                  </div>
+                  <span
+                    class="text-label-sm font-label-sm px-2 py-0.5 rounded bg-surface-container-high text-tertiary border border-outline-variant/40"
+                  >
+                    7 categories
+                  </span>
+                </div>
+                <div>
+                  <span class="text-label-sm font-label-sm text-tertiary uppercase tracking-wider"
+                    >Equipment Rules &amp; Icons</span
+                  >
+                  <p class="text-body-sm font-body-sm text-on-surface-variant mt-1">
+                    Configure instrument classes, maximum reservation intervals, approval barriers,
+                    and telemetry logging profiles.
+                  </p>
+                </div>
+              </div>
+              <div class="pt-5 mt-4 border-t border-outline-variant/40">
+                <button
+                  class="w-full bg-surface-container hover:bg-surface-container-high text-on-surface border border-outline-variant font-headline-sm text-label-md py-2 px-3 rounded flex items-center justify-center gap-2 transition-all active:scale-[0.99]"
+                >
+                  <span>Manage Categories</span>
+                  <span class="material-symbols-outlined text-[16px]" data-icon="arrow_forward"
+                    >arrow_forward</span
+                  >
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+        <!-- =================================================================== -->
+        <!-- VIEW 4: SITES MANAGEMENT (Sites Data Grid + Integrated Edit Trigger) -->
+        <!-- =================================================================== -->
+        <section class="view-panel hidden flex flex-col gap-5" id="view-sites">
+          <!-- Breadcrumb Header -->
+          <div class="flex items-center gap-2 text-label-sm font-label-sm text-on-surface-variant">
+            <button
+              class="hover:text-primary flex items-center gap-1 transition-colors"
+              onclick="switchMainView('settings', event)"
+            >
+              <span class="material-symbols-outlined text-[16px]" data-icon="arrow_back"
+                >arrow_back</span
+              >
+              <span>Back to Settings</span>
+            </button>
+            <span>/</span>
+            <span class="text-on-surface font-semibold">Sites Registry</span>
+          </div>
+          <div
+            class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-outline-variant/40"
+          >
+            <div>
+              <h1 class="text-headline-lg font-headline-lg text-on-surface">Sites</h1>
+              <p class="text-body-sm font-body-sm text-on-surface-variant mt-0.5">
+                Manage laboratory branches, biological containment levels, and physical locations
+                across the network.
+              </p>
+            </div>
+            <div class="flex items-center gap-2.5">
+              <button
+                class="bg-primary hover:bg-primary-container text-on-primary px-3.5 py-1.5 rounded-lg text-label-md font-label-md flex items-center gap-2 transition-all font-semibold active:scale-[0.98]"
+                onclick="openEditModal('Add Site', '')"
+              >
+                <span class="material-symbols-outlined text-[18px]" data-icon="add">add</span>
+                <span>Add site</span>
+              </button>
+            </div>
+          </div>
+          <!-- Sites Elevated Data Grid (Replaces plain table with interactive card rows) -->
+          <div
+            class="bg-surface-container-low border border-outline-variant rounded-lg overflow-hidden shadow-sm"
+          >
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr
+                  class="bg-surface-container-highest/60 border-b border-outline-variant text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider"
+                >
+                  <th class="py-3 px-4 font-semibold">Laboratory Site</th>
+                  <th class="py-3 px-4 font-semibold">Physical Postal Address</th>
+                  <th class="py-3 px-4 font-semibold">Connected Resources</th>
+                  <th class="py-3 px-4 font-semibold">Authorized Personnel</th>
+                  <th class="py-3 px-4 font-semibold text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-outline-variant/40 font-body-sm">
+                <!-- Site 1: Galle -->
+                <tr class="hover:bg-surface-container-high/40 transition-colors group">
+                  <td class="py-3.5 px-4">
+                    <div class="flex items-center gap-3">
+                      <div
+                        class="w-8 h-8 rounded bg-surface-container border border-outline-variant flex items-center justify-center text-primary"
+                      >
+                        <span class="material-symbols-outlined text-[18px]" data-icon="domain"
+                          >domain</span
+                        >
+                      </div>
+                      <div>
+                        <div
+                          class="font-headline-sm font-semibold text-on-surface group-hover:text-primary transition-colors"
+                        >
+                          Galle Branch Laboratory
+                        </div>
+                        <div class="text-label-sm font-label-sm text-on-surface-variant">
+                          BSL-2 Diagnostic Center
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-3.5 px-4 font-label-sm text-on-surface">Galle</td>
+                  <td class="py-3.5 px-4">
+                    <span
+                      class="px-2 py-0.5 rounded text-label-sm font-label-sm bg-surface-container text-primary border border-outline-variant/60 font-semibold"
+                    >
+                      3 resources
+                    </span>
+                  </td>
+                  <td class="py-3.5 px-4">
+                    <span
+                      class="px-2 py-0.5 rounded text-label-sm font-label-sm bg-surface-container text-on-surface-variant border border-outline-variant/60"
+                    >
+                      4 users
+                    </span>
+                  </td>
+                  <td class="py-3.5 px-4 text-right">
+                    <div class="inline-flex items-center gap-1.5">
+                      <button
+                        class="bg-surface-container hover:bg-surface-container-high text-on-surface text-label-sm font-label-sm font-medium px-2.5 py-1 rounded border border-outline-variant flex items-center gap-1 transition-colors"
+                        onclick="
+                          openEditModal('Edit site', 'Galle Branch Laboratory', 'Galle', 3, 4)
+                        "
+                      >
+                        <span
+                          class="material-symbols-outlined text-[16px] text-primary"
+                          data-icon="edit"
+                          >edit</span
+                        >
+                        <span>Edit</span>
+                      </button>
+                      <button
+                        class="p-1.5 rounded hover:bg-rose-500/10 text-on-surface-variant hover:text-rose-400 border border-transparent hover:border-rose-500/30 transition-colors"
+                        title="Decommission Site"
+                      >
+                        <span class="material-symbols-outlined text-[16px]" data-icon="delete"
+                          >delete</span
+                        >
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <!-- Site 2: Kandy -->
+                <tr class="hover:bg-surface-container-high/40 transition-colors group">
+                  <td class="py-3.5 px-4">
+                    <div class="flex items-center gap-3">
+                      <div
+                        class="w-8 h-8 rounded bg-surface-container border border-outline-variant flex items-center justify-center text-primary"
+                      >
+                        <span class="material-symbols-outlined text-[18px]" data-icon="domain"
+                          >domain</span
+                        >
+                      </div>
+                      <div>
+                        <div
+                          class="font-headline-sm font-semibold text-on-surface group-hover:text-primary transition-colors"
+                        >
+                          Kandy Branch Laboratory
+                        </div>
+                        <div class="text-label-sm font-label-sm text-on-surface-variant">
+                          Central Hill Country Hub
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-3.5 px-4 font-label-sm text-on-surface">Kandy</td>
+                  <td class="py-3.5 px-4">
+                    <span
+                      class="px-2 py-0.5 rounded text-label-sm font-label-sm bg-surface-container text-primary border border-outline-variant/60 font-semibold"
+                    >
+                      4 resources
+                    </span>
+                  </td>
+                  <td class="py-3.5 px-4">
+                    <span
+                      class="px-2 py-0.5 rounded text-label-sm font-label-sm bg-surface-container text-on-surface-variant border border-outline-variant/60"
+                    >
+                      5 users
+                    </span>
+                  </td>
+                  <td class="py-3.5 px-4 text-right">
+                    <div class="inline-flex items-center gap-1.5">
+                      <button
+                        class="bg-surface-container hover:bg-surface-container-high text-on-surface text-label-sm font-label-sm font-medium px-2.5 py-1 rounded border border-outline-variant flex items-center gap-1 transition-colors"
+                        onclick="
+                          openEditModal('Edit site', 'Kandy Branch Laboratory', 'Kandy', 4, 5)
+                        "
+                      >
+                        <span
+                          class="material-symbols-outlined text-[16px] text-primary"
+                          data-icon="edit"
+                          >edit</span
+                        >
+                        <span>Edit</span>
+                      </button>
+                      <button
+                        class="p-1.5 rounded hover:bg-rose-500/10 text-on-surface-variant hover:text-rose-400 border border-transparent hover:border-rose-500/30 transition-colors"
+                        title="Decommission Site"
+                      >
+                        <span class="material-symbols-outlined text-[16px]" data-icon="delete"
+                          >delete</span
+                        >
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <!-- Site 3: Colombo Main -->
+                <tr class="hover:bg-surface-container-high/40 transition-colors group">
+                  <td class="py-3.5 px-4">
+                    <div class="flex items-center gap-3">
+                      <div
+                        class="w-8 h-8 rounded bg-primary/10 border border-primary/30 flex items-center justify-center text-primary"
+                      >
+                        <span class="material-symbols-outlined text-[18px]" data-icon="hub"
+                          >hub</span
+                        >
+                      </div>
+                      <div>
+                        <div
+                          class="font-headline-sm font-semibold text-on-surface group-hover:text-primary transition-colors"
+                        >
+                          Main Laboratory, Colombo
+                        </div>
+                        <div class="text-label-sm font-label-sm text-primary">
+                          Primary Reference Headquarters
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-3.5 px-4 font-label-sm text-on-surface">Colombo 08</td>
+                  <td class="py-3.5 px-4">
+                    <span
+                      class="px-2 py-0.5 rounded text-label-sm font-label-sm bg-surface-container text-primary border border-outline-variant/60 font-semibold"
+                    >
+                      10 resources
+                    </span>
+                  </td>
+                  <td class="py-3.5 px-4">
+                    <span
+                      class="px-2 py-0.5 rounded text-label-sm font-label-sm bg-surface-container text-on-surface-variant border border-outline-variant/60"
+                    >
+                      7 users
+                    </span>
+                  </td>
+                  <td class="py-3.5 px-4 text-right">
+                    <div class="inline-flex items-center gap-1.5">
+                      <button
+                        class="bg-surface-container hover:bg-surface-container-high text-on-surface text-label-sm font-label-sm font-medium px-2.5 py-1 rounded border border-outline-variant flex items-center gap-1 transition-colors"
+                        onclick="
+                          openEditModal(
+                            'Edit site',
+                            'Main Laboratory, Colombo',
+                            'Colombo 08',
+                            10,
+                            7,
+                          )
+                        "
+                      >
+                        <span
+                          class="material-symbols-outlined text-[16px] text-primary"
+                          data-icon="edit"
+                          >edit</span
+                        >
+                        <span>Edit</span>
+                      </button>
+                      <button
+                        class="p-1.5 rounded hover:bg-rose-500/10 text-on-surface-variant hover:text-rose-400 border border-transparent hover:border-rose-500/30 transition-colors"
+                        title="Decommission Site"
+                      >
+                        <span class="material-symbols-outlined text-[16px]" data-icon="delete"
+                          >delete</span
+                        >
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+    <!-- ========================================================================= -->
+    <!-- MODAL: EDIT SITE / HIGH-ERGONOMICS CLINICAL DIALOG (Prompt Screen 5)      -->
+    <!-- ========================================================================= -->
+    <div
+      class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 clinical-modal-backdrop bg-black/60"
+      id="edit-site-modal"
+    >
+      <div
+        class="w-full max-w-lg bg-surface-container-low border border-outline rounded-lg shadow-2xl overflow-hidden transform transition-all duration-200"
+      >
+        <!-- Modal Header -->
+        <div
+          class="flex items-center justify-between px-5 py-4 border-b border-outline-variant/60 bg-surface-container"
+        >
+          <div class="flex flex-col">
+            <h2 class="text-headline-md font-headline-md text-on-surface" id="modal-title">
+              Edit site
+            </h2>
+            <span class="text-label-sm font-label-sm text-on-surface-variant"
+              >Update name and physical address for this laboratory site.</span
+            >
+          </div>
+          <button
+            class="w-7 h-7 rounded-md hover:bg-surface-container-high flex items-center justify-center text-outline hover:text-on-surface transition-colors"
+            onclick="closeEditModal()"
+          >
+            <span class="material-symbols-outlined text-[20px]" data-icon="close">close</span>
+          </button>
+        </div>
+        <!-- Modal Body -->
+        <form
+          class="p-5 flex flex-col gap-4"
+          id="edit-site-form"
+          onsubmit="handleFormSubmit(event)"
+        >
+          <!-- Name Field -->
+          <div class="flex flex-col gap-1.5">
+            <label
+              class="text-label-sm font-label-sm uppercase font-semibold text-on-surface-variant"
+              for="modal-input-name"
+              >Site Name</label
+            >
+            <input
+              class="w-full bg-surface-container-lowest border border-outline-variant rounded px-3 py-2 text-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-all"
+              id="modal-input-name"
+              type="text"
+              value="Galle Branch Laboratory"
+            />
+          </div>
+          <!-- Address Field -->
+          <div class="flex flex-col gap-1.5">
+            <div class="flex items-center justify-between">
+              <label
+                class="text-label-sm font-label-sm uppercase font-semibold text-on-surface-variant"
+                for="modal-input-address"
+                >Address</label
+              >
+              <span class="text-label-sm text-outline font-label-sm">(optional)</span>
+            </div>
+            <input
+              class="w-full bg-surface-container-lowest border border-outline-variant rounded px-3 py-2 text-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-all"
+              id="modal-input-address"
+              type="text"
+              value="Galle"
+            />
+          </div>
+          <!-- Telemetry Stats Callout (Upgraded from prompt's plain text) -->
+          <div
+            class="p-3 bg-surface-container border border-outline-variant/60 rounded-md flex items-center justify-between"
+          >
+            <div class="flex items-center gap-3">
+              <span class="material-symbols-outlined text-primary text-[20px]" data-icon="info"
+                >info</span
+              >
+              <span
+                class="text-label-sm font-label-sm text-on-surface-variant"
+                id="modal-associations-text"
+              >
+                Associated with
+                <strong class="text-on-surface font-semibold">3 resources</strong> and
+                <strong class="text-on-surface font-semibold">4 users</strong>.
+              </span>
+            </div>
+            <span
+              class="text-label-sm font-label-sm px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+              >Operational</span
+            >
+          </div>
+          <!-- Modal Footer Actions -->
+          <div
+            class="flex items-center justify-end gap-3 pt-3 border-t border-outline-variant/40 mt-2"
+          >
+            <button
+              class="px-4 py-2 rounded text-label-md font-label-md text-on-surface hover:bg-surface-container-high transition-colors"
+              onclick="closeEditModal()"
+              type="button"
+            >
+              Cancel
+            </button>
+            <button
+              class="bg-primary hover:bg-primary-container text-on-primary font-headline-sm text-label-md px-5 py-2 rounded transition-all font-semibold active:scale-[0.98]"
+              type="submit"
+            >
+              Save changes
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <!-- ========================================================================= -->
+    <!-- JAVASCRIPT: VIEW SWITCHING & INTERACTIVE LOGIC                            -->
+    <!-- ========================================================================= -->
+    <script>
+      // Tab and Screen switcher to display all 5 redesigned references
+      function switchMainView(viewName, event) {
+        if (event) event.preventDefault();
+
+        // Hide all panels
+        const panels = document.querySelectorAll(".view-panel");
+        panels.forEach((panel) => panel.classList.add("hidden"));
+
+        // Show target panel
+        const targetPanel = document.getElementById("view-" + viewName);
+        if (targetPanel) {
+          targetPanel.classList.remove("hidden");
+        }
+
+        // Update Breadcrumb label
+        const breadcrumb = document.getElementById("active-breadcrumb-label");
+        const breadcrumbMap = {
+          resources: "Resources Register",
+          users: "Personnel Directory",
+          settings: "Settings Master Hub",
+          sites: "Sites Management",
+        };
+        if (breadcrumb && breadcrumbMap[viewName]) {
+          breadcrumb.textContent = breadcrumbMap[viewName];
+        }
+
+        // Update Sidebar Active Class
+        const sideNavItems = document.querySelectorAll("#main-sidebar-nav .nav-item");
+        sideNavItems.forEach((item) => {
+          const itemTarget = item.getAttribute("data-target");
+          if (itemTarget === viewName || (viewName === "sites" && itemTarget === "sites")) {
+            item.className =
+              "nav-item flex items-center gap-3 px-3 py-2 rounded-lg bg-surface-container-high dark:bg-surface-container-high text-primary dark:text-primary font-medium border-l-2 border-primary dark:border-primary transition-colors duration-150 active:scale-[0.99]";
+          } else {
+            item.className =
+              "nav-item flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:text-on-surface dark:hover:text-on-surface hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors duration-150 active:scale-[0.99]";
+          }
+        });
+
+        // Update Top Nav Switcher Active State
+        const topTabButtons = ["resources", "users", "settings", "sites"];
+        topTabButtons.forEach((btnId) => {
+          const btn = document.getElementById("tab-btn-" + btnId);
+          if (btn) {
+            if (btnId === viewName) {
+              btn.className =
+                "px-2.5 py-1 rounded bg-surface-container-high text-primary font-semibold transition-all";
+            } else {
+              btn.className =
+                "px-2.5 py-1 rounded text-on-surface-variant hover:text-on-surface transition-all";
+            }
+          }
+        });
+      }
+
+      // Modal Control
+      function openEditModal(title, name, address = "", resources = 3, users = 4) {
+        const modal = document.getElementById("edit-site-modal");
+        const titleEl = document.getElementById("modal-title");
+        const nameInput = document.getElementById("modal-input-name");
+        const addrInput = document.getElementById("modal-input-address");
+        const assocText = document.getElementById("modal-associations-text");
+
+        if (titleEl) titleEl.textContent = title;
+        if (nameInput) nameInput.value = name;
+        if (addrInput) addrInput.value = address;
+        if (assocText) {
+          assocText.innerHTML = `Associated with <strong class="text-on-surface font-semibold">${resources} resources</strong> and <strong class="text-on-surface font-semibold">${users} users</strong>.`;
+        }
+
+        if (modal) modal.classList.remove("hidden");
+      }
+
+      function closeEditModal() {
+        const modal = document.getElementById("edit-site-modal");
+        if (modal) modal.classList.add("hidden");
+      }
+
+      function handleFormSubmit(e) {
+        e.preventDefault();
+        closeEditModal();
+      }
+
+      function openDiagnosticsModal(instrumentName) {
+        alert(
+          `Diagnostics telematic console opened for: ${instrumentName}. Optical alignment error code: E-409.`,
+        );
+      }
+
+      // Keyboard support for ESC key
+      document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") {
+          closeEditModal();
+        }
+      });
+    </script>
+  </body>
+</html>

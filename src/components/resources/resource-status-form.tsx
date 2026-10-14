@@ -104,8 +104,8 @@ export function ResourceStatusForm({ resource, upcomingBookingsCount }: Resource
               <label
                 className={`flex items-start gap-3 p-3.5 rounded-xl border cursor-pointer transition-colors ${
                   selectedStatus === "ACTIVE"
-                    ? "border-primary bg-secondary/30 ring-1 ring-primary"
-                    : "border-border hover:bg-muted/30"
+                    ? "border-[#6cd8cb] bg-[#6cd8cb]/10 ring-1 ring-[#6cd8cb]"
+                    : "border-[#334155] bg-[#18202f] hover:bg-[#222a3a]"
                 }`}
               >
                 <input
@@ -114,14 +114,14 @@ export function ResourceStatusForm({ resource, upcomingBookingsCount }: Resource
                   value="ACTIVE"
                   checked={selectedStatus === "ACTIVE"}
                   onChange={() => setSelectedStatus("ACTIVE")}
-                  className="mt-1 size-4 text-primary focus:ring-ring"
+                  className="mt-1 size-4 accent-[#6cd8cb]"
                 />
                 <div className="space-y-0.5">
                   <div className="flex items-center gap-2">
-                    <span className="size-2 rounded-full bg-pass shrink-0" />
-                    <span className="font-bold text-sm text-foreground">Active</span>
+                    <span className="size-2 rounded-full bg-emerald-400 shrink-0" />
+                    <span className="font-bold text-sm text-slate-100">Active</span>
                   </div>
-                  <p className="text-xs text-muted-foreground">Can be booked.</p>
+                  <p className="text-xs text-slate-400">Can be booked.</p>
                 </div>
               </label>
 
@@ -129,8 +129,8 @@ export function ResourceStatusForm({ resource, upcomingBookingsCount }: Resource
               <label
                 className={`flex items-start gap-3 p-3.5 rounded-xl border cursor-pointer transition-colors ${
                   selectedStatus === "OUT_OF_SERVICE"
-                    ? "border-destructive bg-tag-red-bg/40 ring-1 ring-destructive"
-                    : "border-border hover:bg-muted/30"
+                    ? "border-rose-500 bg-rose-500/10 ring-1 ring-rose-500"
+                    : "border-[#334155] bg-[#18202f] hover:bg-[#222a3a]"
                 }`}
               >
                 <input
@@ -139,14 +139,14 @@ export function ResourceStatusForm({ resource, upcomingBookingsCount }: Resource
                   value="OUT_OF_SERVICE"
                   checked={selectedStatus === "OUT_OF_SERVICE"}
                   onChange={() => setSelectedStatus("OUT_OF_SERVICE")}
-                  className="mt-1 size-4 text-destructive focus:ring-destructive"
+                  className="mt-1 size-4 accent-rose-500"
                 />
                 <div className="space-y-0.5">
                   <div className="flex items-center gap-2">
-                    <span className="size-2 rounded-full bg-destructive shrink-0" />
-                    <span className="font-bold text-sm text-foreground">Out of service</span>
+                    <span className="size-2 rounded-full bg-rose-500 shrink-0" />
+                    <span className="font-bold text-sm text-slate-100">Out of service</span>
                   </div>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-slate-400">
                     Cannot be booked until it is set back to active. Upcoming bookings are
                     cancelled.
                   </p>
@@ -157,8 +157,8 @@ export function ResourceStatusForm({ resource, upcomingBookingsCount }: Resource
               <label
                 className={`flex items-start gap-3 p-3.5 rounded-xl border cursor-pointer transition-colors ${
                   selectedStatus === "RETIRED"
-                    ? "border-foreground bg-muted ring-1 ring-foreground"
-                    : "border-border hover:bg-muted/30"
+                    ? "border-slate-400 bg-slate-800/60 ring-1 ring-slate-400"
+                    : "border-[#334155] bg-[#18202f] hover:bg-[#222a3a]"
                 }`}
               >
                 <input
@@ -167,16 +167,14 @@ export function ResourceStatusForm({ resource, upcomingBookingsCount }: Resource
                   value="RETIRED"
                   checked={selectedStatus === "RETIRED"}
                   onChange={() => setSelectedStatus("RETIRED")}
-                  className="mt-1 size-4 text-foreground focus:ring-ring"
+                  className="mt-1 size-4 accent-slate-400"
                 />
                 <div className="space-y-0.5">
                   <div className="flex items-center gap-2">
-                    <span className="size-2 rounded-full bg-muted-foreground shrink-0" />
-                    <span className="font-bold text-sm text-foreground">Retired</span>
+                    <span className="size-2 rounded-full bg-slate-400 shrink-0" />
+                    <span className="font-bold text-sm text-slate-100">Retired</span>
                   </div>
-                  <p className="text-xs text-muted-foreground">
-                    Removed for good. History is kept.
-                  </p>
+                  <p className="text-xs text-slate-400">Removed for good. History is kept.</p>
                 </div>
               </label>
             </div>
@@ -236,7 +234,10 @@ export function ResourceStatusForm({ resource, upcomingBookingsCount }: Resource
 
         <CardFooter className="flex items-center justify-between pt-2">
           <Button asChild variant="ghost" type="button" disabled={isPending}>
-            <Link href={`/resources/${resource.id}`} className="text-muted-foreground">
+            <Link
+              href={`/resources/${resource.id}`}
+              className="text-slate-400 hover:text-slate-100"
+            >
               Keep as it is
             </Link>
           </Button>

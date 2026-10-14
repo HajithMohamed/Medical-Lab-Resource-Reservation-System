@@ -1,7 +1,7 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-export type ResourceStatusString = "ACTIVE" | "OUT_OF_SERVICE" | "RETIRED";
+export type ResourceStatusString = "ACTIVE" | "OUT_OF_SERVICE" | "MAINTENANCE" | "RETIRED";
 
 export interface ResourceStatusTagProps {
   status: ResourceStatusString | string;
@@ -13,15 +13,15 @@ export function ResourceStatusTag({ status, className }: ResourceStatusTagProps)
     return (
       <span
         className={cn(
-          "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/25 font-mono text-[11px] font-bold tracking-wider shadow-2xs",
+          "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/30",
           className,
         )}
       >
         <span
-          className="size-1.5 rounded-full bg-primary animate-pulse shrink-0"
+          className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0"
           aria-hidden="true"
         />
-        <span>ACTIVE</span>
+        <span>Active</span>
       </span>
     );
   }
@@ -30,12 +30,26 @@ export function ResourceStatusTag({ status, className }: ResourceStatusTagProps)
     return (
       <span
         className={cn(
-          "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-destructive/15 text-destructive border border-destructive/40 font-mono text-[11px] font-bold tracking-wider shadow-2xs out-of-service-stripes",
+          "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-rose-500/15 text-rose-300 border border-rose-500/40",
           className,
         )}
       >
-        <span className="size-1.5 rounded-full bg-destructive shrink-0" aria-hidden="true" />
-        <span>LOCKOUT</span>
+        <span className="w-1.5 h-1.5 rounded-full bg-rose-400 shrink-0" aria-hidden="true" />
+        <span>Out of service</span>
+      </span>
+    );
+  }
+
+  if (status === "MAINTENANCE") {
+    return (
+      <span
+        className={cn(
+          "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-amber-500/20 text-amber-300 border border-amber-500/40",
+          className,
+        )}
+      >
+        <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" aria-hidden="true" />
+        <span>Scheduled Service</span>
       </span>
     );
   }
@@ -44,15 +58,12 @@ export function ResourceStatusTag({ status, className }: ResourceStatusTagProps)
     return (
       <span
         className={cn(
-          "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-surface-container-highest text-muted-foreground border border-border font-mono text-[11px] font-medium tracking-wider",
+          "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-[#18202f] text-[#94a3b8] border border-[#334155]",
           className,
         )}
       >
-        <span
-          className="size-1.5 rounded-full bg-muted-foreground/60 shrink-0"
-          aria-hidden="true"
-        />
-        <span>RETIRED</span>
+        <span className="w-1.5 h-1.5 rounded-full bg-[#94a3b8]/60 shrink-0" aria-hidden="true" />
+        <span>Retired</span>
       </span>
     );
   }
@@ -60,7 +71,7 @@ export function ResourceStatusTag({ status, className }: ResourceStatusTagProps)
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-surface-container-highest text-muted-foreground border border-border font-mono text-[11px] font-medium tracking-wider",
+        "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-[#18202f] text-[#94a3b8] border border-[#334155]",
         className,
       )}
     >

@@ -5,8 +5,9 @@
 @import "shadcn/tailwind.css";
 
 @theme inline {
-  --font-sans: "Atkinson Hyperlegible Next Variable", system-ui, sans-serif;
-  --font-heading: "Atkinson Hyperlegible Next Variable", system-ui, sans-serif;
+  --font-sans: "Inter", "Atkinson Hyperlegible Next Variable", system-ui, sans-serif;
+  --font-heading: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -40,12 +41,6 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
-
   --color-surface-container-lowest: #060e1d;
   --color-surface-container-low: #141c2b;
   --color-surface-container: #18202f;
@@ -55,7 +50,10 @@
   --color-on-surface: #dbe2f8;
   --color-on-surface-variant: #bcc9c6;
   --color-outline: #879390;
-  --color-outline-variant: #3d4947;
+  --color-outline-variant: #334155;
+  --color-teal-primary: #6cd8cb;
+  --color-teal-dark: #003732;
+  --color-teal-hover: #29a195;
   --color-primary-container: #29a195;
   --color-tertiary: #ffb77d;
   --color-tertiary-container: #d97707;
@@ -85,27 +83,28 @@
   --radius-xl: calc(var(--radius) * 1.4);
 }
 
-:root {
+:root,
+.dark {
   --background: #0b1322;
-  --foreground: #dbe2f8;
+  --foreground: #f1f5f9;
   --card: #18202f;
-  --card-foreground: #dbe2f8;
+  --card-foreground: #f1f5f9;
   --popover: #18202f;
-  --popover-foreground: #dbe2f8;
+  --popover-foreground: #f1f5f9;
   --primary: #6cd8cb;
   --primary-foreground: #003732;
-  --primary-hover: #5ec4b7;
+  --primary-hover: #29a195;
   --secondary: #222a3a;
   --secondary-foreground: #7bd0ff;
   --muted: #141c2b;
-  --muted-foreground: #bcc9c6;
+  --muted-foreground: #94a3b8;
   --accent: #222a3a;
   --accent-foreground: #6cd8cb;
-  --destructive: #ffb4ab;
-  --destructive-foreground: #690005;
-  --destructive-ink: #ffdad6;
-  --border: #2d3545;
-  --input: #3d4947;
+  --destructive: #f87171;
+  --destructive-foreground: #450a0a;
+  --destructive-ink: #fecaca;
+  --border: #334155;
+  --input: #334155;
   --ring: #6cd8cb;
   --radius: 0.5rem;
 
@@ -116,7 +115,7 @@
   --sidebar-primary-foreground: #6cd8cb;
   --sidebar-accent: #18202f;
   --sidebar-accent-foreground: #dbe2f8;
-  --sidebar-border: #2d3545;
+  --sidebar-border: #334155;
   --sidebar-ring: #6cd8cb;
 
   --chart-1: #6cd8cb;
@@ -134,13 +133,23 @@
   --maint-2: rgba(217, 119, 6, 0.25);
   --maint-ink: #ffb77d;
   --maint-edge: #d97707;
-  --oos: rgba(239, 68, 68, 0.1);
-  --oos-2: rgba(239, 68, 68, 0.2);
+  --oos: rgba(239, 68, 68, 0.12);
+  --oos-2: rgba(239, 68, 68, 0.22);
   --tag-red: #ffb4ab;
   --tag-red-bg: rgba(147, 0, 10, 0.35);
   --pass: #6cd8cb;
   --pass-bg: rgba(41, 161, 149, 0.2);
   --off-hours: #060e1d;
+}
+
+@utility hatch-maintenance {
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 8px,
+    rgba(217, 119, 6, 0.12) 8px,
+    rgba(217, 119, 6, 0.12) 16px
+  );
 }
 
 @utility hatch-maint {
@@ -183,6 +192,10 @@
   );
 }
 
+@utility modal-backdrop {
+  backdrop-filter: blur(4px);
+}
+
 @layer components {
   /* Equipment hang tag: rectangle with a punched hole (status labels) */
   .status-tag {
@@ -216,11 +229,13 @@
     @apply border-border;
   }
   *:focus-visible {
-    outline: 3px solid var(--ring);
+    outline: 2px solid var(--ring);
     outline-offset: 2px;
   }
+  html,
   body {
-    @apply bg-background text-foreground;
+    background-color: #0b1322;
+    color: #f1f5f9;
     font-family: var(--font-sans);
   }
 }

@@ -135,7 +135,7 @@ export function UserRowActions({
 
   return (
     <>
-      <div className="flex items-center justify-end gap-1">
+      <div className="flex items-center justify-end gap-1.5">
         <UserEditDialog
           user={user}
           actorId={actorId}
@@ -147,12 +147,12 @@ export function UserRowActions({
           onOpenChange={setEditDialogOpen}
           trigger={
             <Button
-              variant="ghost"
-              size="icon"
-              className="size-8 p-0 text-muted-foreground hover:text-foreground"
+              variant="outline"
+              size="sm"
+              className="inline-flex items-center gap-1 px-2 py-1 rounded bg-[#18202f] hover:bg-[#222a3a] text-xs font-mono font-medium text-[#dbe2f8] hover:text-white border border-[#334155] hover:border-[#6cd8cb]/50 transition-all duration-150 active:scale-[0.98]"
             >
-              <Pencil className="size-4" />
-              <span className="sr-only">Edit {user.name}</span>
+              <Pencil className="size-3 text-[#6cd8cb]" />
+              <span>Edit</span>
             </Button>
           }
         />
@@ -162,16 +162,22 @@ export function UserRowActions({
             <Button
               variant="ghost"
               size="icon"
-              className="size-8 p-0 text-muted-foreground hover:text-foreground"
+              className="size-7 p-0 rounded bg-[#18202f] hover:bg-[#222a3a] text-[#94a3b8] hover:text-white border border-[#334155]"
             >
-              <MoreHorizontal className="size-4" />
+              <MoreHorizontal className="size-3.5" />
               <span className="sr-only">Actions for {user.name}</span>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48">
-            <DropdownMenuItem onSelect={() => setEditDialogOpen(true)} className="cursor-pointer">
-              <Pencil className="size-4 mr-2" />
-              <span>Edit</span>
+          <DropdownMenuContent
+            align="end"
+            className="w-48 bg-[#18202f] border-[#334155] text-[#dbe2f8] shadow-xl rounded-lg"
+          >
+            <DropdownMenuItem
+              onSelect={() => setEditDialogOpen(true)}
+              className="cursor-pointer hover:bg-[#222a3a] focus:bg-[#222a3a]"
+            >
+              <Pencil className="size-3.5 mr-2 text-[#6cd8cb]" />
+              <span className="font-mono text-xs">Edit</span>
             </DropdownMenuItem>
 
             <DropdownMenuItem
@@ -179,13 +185,13 @@ export function UserRowActions({
                 setActionError(null);
                 setResetDialogOpen(true);
               }}
-              className="cursor-pointer"
+              className="cursor-pointer hover:bg-[#222a3a] focus:bg-[#222a3a]"
             >
-              <KeyRound className="size-4 mr-2" />
-              <span>Reset password</span>
+              <KeyRound className="size-3.5 mr-2 text-[#6cd8cb]" />
+              <span className="font-mono text-xs">Reset password</span>
             </DropdownMenuItem>
 
-            <DropdownMenuSeparator />
+            <DropdownMenuSeparator className="bg-[#334155]/60" />
 
             {user.isActive ? (
               <DropdownMenuItem
@@ -196,10 +202,10 @@ export function UserRowActions({
                     setDeactivateDialogOpen(true);
                   }
                 }}
-                className="cursor-pointer text-destructive focus:text-destructive"
+                className="cursor-pointer text-rose-400 hover:text-rose-300 focus:text-rose-300 hover:bg-[#222a3a] focus:bg-[#222a3a]"
               >
-                <UserMinus className="size-4 mr-2" />
-                <span>Deactivate</span>
+                <UserMinus className="size-3.5 mr-2" />
+                <span className="font-mono text-xs">Deactivate</span>
               </DropdownMenuItem>
             ) : (
               <DropdownMenuItem
@@ -207,10 +213,10 @@ export function UserRowActions({
                   setActionError(null);
                   setReactivateDialogOpen(true);
                 }}
-                className="cursor-pointer text-pass focus:text-pass"
+                className="cursor-pointer text-emerald-400 hover:text-emerald-300 focus:text-emerald-300 hover:bg-[#222a3a] focus:bg-[#222a3a]"
               >
-                <UserCheck className="size-4 mr-2" />
-                <span>Reactivate</span>
+                <UserCheck className="size-3.5 mr-2" />
+                <span className="font-mono text-xs">Reactivate</span>
               </DropdownMenuItem>
             )}
           </DropdownMenuContent>

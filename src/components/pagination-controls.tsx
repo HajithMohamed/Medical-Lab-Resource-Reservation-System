@@ -3,7 +3,6 @@
 import * as React from "react";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export interface PaginationControlsProps {
@@ -24,10 +23,11 @@ export function PaginationControls({
   pageSize,
   basePath,
   queryParams = {},
-  itemLabel = "users",
+  itemLabel = "items",
+  alwaysShow = true,
   className,
-}: PaginationControlsProps) {
-  if (totalCount === 0 || totalPages <= 1) {
+}: PaginationControlsProps & { alwaysShow?: boolean }) {
+  if (totalCount === 0 || (!alwaysShow && totalPages <= 1)) {
     return null;
   }
 
@@ -51,47 +51,59 @@ export function PaginationControls({
   return (
     <div
       className={cn(
-        "flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 py-3 px-1 text-sm text-muted-foreground",
+        "p-3 bg-[#18202f] border-t border-[#334155] rounded-b-lg flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-mono text-[#94a3b8]",
         className,
       )}
     >
       <div>
-        Showing <span className="font-semibold text-foreground">{start}</span>–
-        <span className="font-semibold text-foreground">{end}</span> of{" "}
-        <span className="font-semibold text-foreground">{totalCount}</span> {itemLabel}
+        Showing{" "}
+        <strong className="text-white font-semibold">
+          {start}-{end}
+        </strong>{" "}
+        of <strong className="text-white font-semibold">{totalCount}</strong> {itemLabel}
       </div>
 
-      <div className="flex items-center gap-1.5 self-end sm:self-auto">
+      <div className="flex items-center gap-2 self-end sm:self-auto">
         {currentPage > 1 ? (
-          <Button asChild variant="outline" size="sm" className="h-8 gap-1 px-2.5">
-            <Link href={getPageUrl(currentPage - 1)}>
-              <ChevronLeft className="size-4" />
-              <span>Previous</span>
-            </Link>
-          </Button>
-        ) : (
-          <Button variant="outline" size="sm" className="h-8 gap-1 px-2.5" disabled>
-            <ChevronLeft className="size-4" />
+          <Link
+            href={getPageUrl(currentPage - 1)}
+            className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-[#141c2b] border border-[#334155]/60 text-[#dbe2f8] hover:bg-[#222a3a] hover:text-white transition-colors"
+          >
+            <ChevronLeft className="size-3.5" />
             <span>Previous</span>
-          </Button>
+          </Link>
+        ) : (
+          <button
+            type="button"
+            disabled
+            className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-[#141c2b] border border-[#334155]/60 text-[#879390] opacity-50 cursor-not-allowed"
+          >
+            <ChevronLeft className="size-3.5" />
+            <span>Previous</span>
+          </button>
         )}
 
-        <div className="flex items-center px-2 text-xs font-medium">
+        <span className="px-2 text-[#6cd8cb] font-semibold">
           Page {currentPage} of {totalPages}
-        </div>
+        </span>
 
         {currentPage < totalPages ? (
-          <Button asChild variant="outline" size="sm" className="h-8 gap-1 px-2.5">
-            <Link href={getPageUrl(currentPage + 1)}>
-              <span>Next</span>
-              <ChevronRight className="size-4" />
-            </Link>
-          </Button>
-        ) : (
-          <Button variant="outline" size="sm" className="h-8 gap-1 px-2.5" disabled>
+          <Link
+            href={getPageUrl(currentPage + 1)}
+            className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-[#141c2b] border border-[#334155]/60 text-[#dbe2f8] hover:bg-[#222a3a] hover:text-white transition-colors"
+          >
             <span>Next</span>
-            <ChevronRight className="size-4" />
-          </Button>
+            <ChevronRight className="size-3.5" />
+          </Link>
+        ) : (
+          <button
+            type="button"
+            disabled
+            className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-[#141c2b] border border-[#334155]/60 text-[#879390] opacity-50 cursor-not-allowed"
+          >
+            <span>Next</span>
+            <ChevronRight className="size-3.5" />
+          </button>
         )}
       </div>
     </div>

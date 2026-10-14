@@ -13,9 +13,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { NAV_ITEMS } from "@/config/navigation";
-
-import { MapPin, Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { MapPin } from "lucide-react";
 
 export function TopBar() {
   const pathname = usePathname();
@@ -79,24 +77,26 @@ export function TopBar() {
   }, [segments]);
 
   return (
-    <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center justify-between border-b border-border bg-card/95 px-4 backdrop-blur-md">
+    <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center justify-between border-b border-[#334155] bg-[#141c2b]/95 px-4 backdrop-blur-md">
       {/* Left: Sidebar trigger & breadcrumbs */}
       <div className="flex items-center gap-3 min-w-0">
-        <SidebarTrigger className="-ml-1" />
-        <div className="h-4 w-px bg-border shrink-0" />
+        <SidebarTrigger className="-ml-1 text-[#dbe2f8] hover:text-white" />
+        <div className="h-4 w-px bg-[#334155] shrink-0" />
         <Breadcrumb className="truncate">
           <BreadcrumbList>
             {breadcrumbs.map((bc, idx) => (
               <React.Fragment key={bc.href}>
-                {idx > 0 && <BreadcrumbSeparator />}
+                {idx > 0 && <BreadcrumbSeparator className="text-[#94a3b8]" />}
                 <BreadcrumbItem>
                   {bc.isLast ? (
-                    <BreadcrumbPage className="font-semibold text-foreground truncate">
+                    <BreadcrumbPage className="font-semibold text-white truncate">
                       {bc.label}
                     </BreadcrumbPage>
                   ) : (
                     <BreadcrumbLink asChild>
-                      <Link href={bc.href}>{bc.label}</Link>
+                      <Link href={bc.href} className="text-[#94a3b8] hover:text-white">
+                        {bc.label}
+                      </Link>
                     </BreadcrumbLink>
                   )}
                 </BreadcrumbItem>
@@ -107,37 +107,26 @@ export function TopBar() {
       </div>
 
       {/* Center: Live Asia/Colombo Precision Chronometer */}
-      <div className="hidden lg:flex items-center gap-2 px-3 py-1 rounded bg-surface-container-lowest border border-border font-mono text-xs shadow-2xs">
-        <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-        <span className="text-muted-foreground">{colomboTime?.dateStr ?? "Asia/Colombo"}</span>
-        <span className="text-border">•</span>
-        <span className="text-primary font-bold tabular-nums tracking-wider">
+      <div className="hidden lg:flex items-center gap-2 px-3 py-1 rounded bg-[#060e1d] border border-[#334155] font-mono text-xs shadow-2xs">
+        <span className="w-2 h-2 rounded-full bg-[#6cd8cb] animate-pulse" />
+        <span className="text-[#94a3b8]">{colomboTime?.dateStr ?? "Asia/Colombo"}</span>
+        <span className="text-[#334155]">•</span>
+        <span className="text-[#6cd8cb] font-bold tabular-nums tracking-wider">
           {colomboTime?.timeStr ?? "--:--:--"}
         </span>
-        <span className="text-muted-foreground text-[10px]">Colombo (UTC+5:30)</span>
+        <span className="text-[#94a3b8] text-[10px]">Colombo (UTC+5:30)</span>
       </div>
 
-      {/* Right: Location & Quick Action CTA */}
+      {/* Right: Location & Context */}
       <div className="flex items-center gap-3 shrink-0">
-        <div className="hidden xl:flex items-center gap-2 text-xs text-muted-foreground">
-          <MapPin className="size-3.5 text-primary shrink-0" />
-          <span className="font-medium text-foreground">Main Lab</span>
-          <span className="text-border">/</span>
-          <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-surface-container-high text-primary border border-primary/20">
+        <div className="flex items-center gap-2 text-xs text-[#94a3b8]">
+          <MapPin className="size-3.5 text-[#6cd8cb] shrink-0" />
+          <span className="font-medium text-white">Main Lab</span>
+          <span className="text-[#334155]">/</span>
+          <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-[#222a3a] text-[#6cd8cb] border border-[#6cd8cb]/30">
             Core Grid
           </span>
         </div>
-
-        <Button
-          asChild
-          size="sm"
-          className="h-8 px-3 gap-1.5 bg-primary text-primary-foreground font-semibold text-xs hover:brightness-110 active:scale-[0.98] transition-all shadow-xs"
-        >
-          <Link href="/resources">
-            <Plus className="size-3.5 stroke-[2.5]" />
-            <span>New Reservation</span>
-          </Link>
-        </Button>
       </div>
     </header>
   );

@@ -33,9 +33,9 @@ export default async function SettingsPage() {
       count: `${counts.sitesCount} ${counts.sitesCount === 1 ? "site" : "sites"}`,
       href: "/settings/sites",
       icon: Building2,
-      accentColor: "from-[#0E6A85]/20 to-[#0B3D52]/10",
-      iconBg: "bg-primary text-primary-foreground",
-      badgeClass: "bg-primary/10 text-primary border-primary/20",
+      accentColor: "from-[#6cd8cb]/20 to-[#141c2b]/80",
+      iconBg: "bg-[#18202f] text-[#6cd8cb] border border-[#334155]",
+      badgeClass: "bg-[#6cd8cb]/10 text-[#6cd8cb] border-[#6cd8cb]/30",
       illustration: (
         <svg
           className="w-full h-28"
@@ -43,11 +43,11 @@ export default async function SettingsPage() {
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
-          <rect width="240" height="100" rx="8" fill="#F4F7F8" />
+          <rect width="240" height="100" rx="8" fill="#060e1d" stroke="#334155" />
           <path
             d="M20 85L20 45L55 25L90 45L90 85H20Z"
-            fill="#DCEEF4"
-            stroke="#0E6A85"
+            fill="#18202f"
+            stroke="#6cd8cb"
             strokeWidth="2"
           />
           <rect
@@ -56,8 +56,8 @@ export default async function SettingsPage() {
             width="12"
             height="16"
             rx="2"
-            fill="#FFFFFF"
-            stroke="#0E6A85"
+            fill="#222a3a"
+            stroke="#6cd8cb"
             strokeWidth="1.5"
           />
           <rect
@@ -66,19 +66,19 @@ export default async function SettingsPage() {
             width="12"
             height="16"
             rx="2"
-            fill="#FFFFFF"
-            stroke="#0E6A85"
+            fill="#222a3a"
+            stroke="#6cd8cb"
             strokeWidth="1.5"
           />
-          <path d="M50 85V72H60V85" stroke="#0E6A85" strokeWidth="2" fill="#FFFFFF" />
+          <path d="M50 85V72H60V85" stroke="#6cd8cb" strokeWidth="2" fill="#222a3a" />
           <rect
             x="105"
             y="35"
             width="115"
             height="50"
             rx="4"
-            fill="#FFFFFF"
-            stroke="#D9E1E5"
+            fill="#18202f"
+            stroke="#334155"
             strokeWidth="1.5"
           />
           <line
@@ -86,7 +86,7 @@ export default async function SettingsPage() {
             y1="50"
             x2="205"
             y2="50"
-            stroke="#0E6A85"
+            stroke="#6cd8cb"
             strokeWidth="2"
             strokeLinecap="round"
           />
@@ -95,7 +95,7 @@ export default async function SettingsPage() {
             y1="62"
             x2="185"
             y2="62"
-            stroke="#5B6B73"
+            stroke="#94a3b8"
             strokeWidth="1.5"
             strokeLinecap="round"
           />
@@ -104,11 +104,11 @@ export default async function SettingsPage() {
             y1="72"
             x2="165"
             y2="72"
-            stroke="#9DB5C0"
+            stroke="#475569"
             strokeWidth="1.5"
             strokeLinecap="round"
           />
-          <circle cx="205" cy="62" r="5" fill="#1F7A4D" />
+          <circle cx="205" cy="62" r="5" fill="#10b981" />
         </svg>
       ),
     },
@@ -120,9 +120,9 @@ export default async function SettingsPage() {
       count: `${counts.sectionsCount} ${counts.sectionsCount === 1 ? "section" : "sections"}`,
       href: "/settings/sections",
       icon: Layers,
-      accentColor: "from-[#12506A]/20 to-[#DCEEF4]/30",
-      iconBg: "bg-[#0B3D52] text-white",
-      badgeClass: "bg-[#0B3D52]/10 text-[#0B3D52] border-[#0B3D52]/20",
+      accentColor: "from-[#6cd8cb]/20 to-[#141c2b]/80",
+      iconBg: "bg-[#18202f] text-[#6cd8cb] border border-[#334155]",
+      badgeClass: "bg-[#6cd8cb]/10 text-[#6cd8cb] border-[#6cd8cb]/30",
       illustration: (
         <svg
           className="w-full h-28"
@@ -130,15 +130,15 @@ export default async function SettingsPage() {
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
-          <rect width="240" height="100" rx="8" fill="#F4F7F8" />
+          <rect width="240" height="100" rx="8" fill="#060e1d" stroke="#334155" />
           <rect
             x="30"
             y="25"
             width="45"
             height="60"
             rx="6"
-            fill="#DCEEF4"
-            stroke="#0E6A85"
+            fill="#18202f"
+            stroke="#6cd8cb"
             strokeWidth="1.5"
           />
           <rect
@@ -147,8 +147,8 @@ export default async function SettingsPage() {
             width="45"
             height="60"
             rx="6"
-            fill="#FFFFFF"
-            stroke="#0E6A85"
+            fill="#18202f"
+            stroke="#6cd8cb"
             strokeWidth="1.5"
           />
           <rect
@@ -157,24 +157,24 @@ export default async function SettingsPage() {
             width="60"
             height="60"
             rx="6"
-            fill="#FFFFFF"
-            stroke="#D9E1E5"
+            fill="#18202f"
+            stroke="#334155"
             strokeWidth="1.5"
           />
           <path
             d="M45 40H60M45 52H60M45 64H55"
-            stroke="#0E6A85"
+            stroke="#6cd8cb"
             strokeWidth="2"
             strokeLinecap="round"
           />
           <path
             d="M105 40H120M105 52H120M105 64H115"
-            stroke="#0B4F64"
+            stroke="#7bd0ff"
             strokeWidth="2"
             strokeLinecap="round"
           />
-          <circle cx="170" cy="55" r="8" fill="#DCEEF4" stroke="#0E6A85" strokeWidth="1.5" />
-          <path d="M168 55L173 51" stroke="#0E6A85" strokeWidth="1.5" strokeLinecap="round" />
+          <circle cx="170" cy="55" r="8" fill="#222a3a" stroke="#6cd8cb" strokeWidth="1.5" />
+          <path d="M168 55L173 51" stroke="#6cd8cb" strokeWidth="1.5" strokeLinecap="round" />
         </svg>
       ),
     },
@@ -186,9 +186,9 @@ export default async function SettingsPage() {
       count: `${counts.categoriesCount} ${counts.categoriesCount === 1 ? "category" : "categories"}`,
       href: "/settings/categories",
       icon: Tag,
-      accentColor: "from-[#3A8FA8]/20 to-[#0E6A85]/10",
-      iconBg: "bg-[#3A8FA8] text-white",
-      badgeClass: "bg-[#3A8FA8]/15 text-[#0B4F64] border-[#3A8FA8]/30",
+      accentColor: "from-[#6cd8cb]/20 to-[#141c2b]/80",
+      iconBg: "bg-[#18202f] text-[#6cd8cb] border border-[#334155]",
+      badgeClass: "bg-[#6cd8cb]/10 text-[#6cd8cb] border-[#6cd8cb]/30",
       illustration: (
         <svg
           className="w-full h-28"
@@ -196,26 +196,26 @@ export default async function SettingsPage() {
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
-          <rect width="240" height="100" rx="8" fill="#F4F7F8" />
-          <circle cx="45" cy="50" r="22" fill="#DCEEF4" stroke="#0E6A85" strokeWidth="1.5" />
+          <rect width="240" height="100" rx="8" fill="#060e1d" stroke="#334155" />
+          <circle cx="45" cy="50" r="22" fill="#18202f" stroke="#6cd8cb" strokeWidth="1.5" />
           <path
             d="M38 52C40 45 50 45 52 52"
-            stroke="#0E6A85"
+            stroke="#6cd8cb"
             strokeWidth="2"
             strokeLinecap="round"
           />
-          <circle cx="45" cy="42" r="3" fill="#0E6A85" />
-          <circle cx="105" cy="50" r="22" fill="#FFFFFF" stroke="#0E6A85" strokeWidth="1.5" />
-          <path d="M98 56L105 40L112 56H98Z" fill="#DCEEF4" stroke="#0E6A85" strokeWidth="1.5" />
-          <circle cx="165" cy="50" r="22" fill="#FFFFFF" stroke="#D9E1E5" strokeWidth="1.5" />
+          <circle cx="45" cy="42" r="3" fill="#6cd8cb" />
+          <circle cx="105" cy="50" r="22" fill="#18202f" stroke="#6cd8cb" strokeWidth="1.5" />
+          <path d="M98 56L105 40L112 56H98Z" fill="#222a3a" stroke="#6cd8cb" strokeWidth="1.5" />
+          <circle cx="165" cy="50" r="22" fill="#18202f" stroke="#334155" strokeWidth="1.5" />
           <rect
             x="155"
             y="42"
             width="20"
             height="16"
             rx="2"
-            fill="#EEF1F3"
-            stroke="#5B6B73"
+            fill="#222a3a"
+            stroke="#94a3b8"
             strokeWidth="1.5"
           />
         </svg>
@@ -236,10 +236,12 @@ export default async function SettingsPage() {
           return (
             <Card
               key={item.href}
-              className="group flex flex-col justify-between overflow-hidden border-border transition-all duration-200 hover:shadow-md hover:border-primary/40"
+              className="group flex flex-col justify-between overflow-hidden border-[#334155] bg-[#141c2b] transition-all duration-200 hover:shadow-lg hover:border-[#6cd8cb]/40"
             >
               <div>
-                <div className="p-4 bg-muted/30 border-b border-border/50">{item.illustration}</div>
+                <div className="p-4 bg-[#060e1d] border-b border-[#334155]">
+                  {item.illustration}
+                </div>
 
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between mb-2">
@@ -254,23 +256,24 @@ export default async function SettingsPage() {
                       {item.count}
                     </span>
                   </div>
-                  <CardTitle className="text-xl font-bold tracking-tight text-foreground">
+                  <CardTitle className="text-xl font-bold tracking-tight text-slate-100">
                     {item.title}
                   </CardTitle>
-                  <CardDescription className="text-xs font-medium text-muted-foreground">
+                  <CardDescription className="text-xs font-medium text-slate-400">
                     {item.subtitle}
                   </CardDescription>
                 </CardHeader>
 
                 <CardContent className="pt-0 pb-4">
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    {item.description}
-                  </p>
+                  <p className="text-sm text-slate-400 leading-relaxed">{item.description}</p>
                 </CardContent>
               </div>
 
-              <CardFooter className="pt-0 border-t border-border/40 bg-card">
-                <Button asChild className="w-full gap-2 mt-3 group-hover:bg-primary-hover">
+              <CardFooter className="pt-0 border-t border-[#334155] bg-[#18202f]/60">
+                <Button
+                  asChild
+                  className="w-full gap-2 mt-3 bg-[#6cd8cb] text-[#003732] hover:bg-[#29a195] font-bold shadow-xs"
+                >
                   <Link href={item.href}>
                     <span>Manage {item.title}</span>
                     <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />

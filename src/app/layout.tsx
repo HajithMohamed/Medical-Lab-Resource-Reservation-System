@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: BRAND_COLORS.surface,
+  themeColor: BRAND_COLORS.navy,
 };
 
 export default function RootLayout({
@@ -24,10 +24,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark h-full antialiased font-sans">
-      <body className="min-h-full flex flex-col bg-background text-foreground selection:bg-primary/20 selection:text-primary">
+    <html lang="en" className="h-full antialiased font-sans dark bg-[#0b1322] text-[#f1f5f9]">
+      <body className="min-h-full flex flex-col bg-[#0b1322] text-[#f1f5f9]">
         <TooltipProvider>{children}</TooltipProvider>
-        <Toaster theme="dark" position="bottom-right" richColors />
+        <Toaster theme="dark" />
       </body>
     </html>
   );

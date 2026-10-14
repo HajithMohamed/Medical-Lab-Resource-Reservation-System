@@ -100,7 +100,7 @@ export function UserEditDialog({
 
   const handleOpenChange = (nextOpen: boolean) => {
     setOpen(nextOpen);
-    if (nextOpen) {
+    if (!nextOpen) {
       setName(user.name);
       setRole(user.role);
       setSiteId(user.siteId ?? sites[0]?.id ?? "");
@@ -108,10 +108,6 @@ export function UserEditDialog({
       setError(null);
       setFieldErrors({});
       setTemporaryPassword(null);
-    } else {
-      if (temporaryPassword) {
-        router.refresh();
-      }
     }
   };
 
@@ -125,7 +121,7 @@ export function UserEditDialog({
     formData.set("name", name);
     if (canEditRoleAndSite) {
       formData.set("role", role);
-      if (role !== "ADMIN") {
+      if (role !== "ADMIN" && siteId) {
         formData.set("siteId", siteId);
       }
     }
@@ -139,14 +135,14 @@ export function UserEditDialog({
     setIsPending(false);
 
     if (!result.ok) {
-      setError(result.error ?? "Failed to update user.");
+      setError(result.error ?? "Failed to save changes.");
       if (result.fieldErrors) {
         setFieldErrors(result.fieldErrors);
       }
       return;
     }
 
-    toast.success("User details updated");
+    toast.success(result.message ?? "User profile updated");
     setOpen(false);
     router.refresh();
   };
@@ -176,7 +172,7 @@ export function UserEditDialog({
               title="Temporary password generated"
             />
 
-            <DialogFooter className="pt-2">
+            <DialogFooter className="pt-3 border-t border-[#334155]/40">
               <Button
                 type="button"
                 onClick={() => {
@@ -184,6 +180,7 @@ export function UserEditDialog({
                   setOpen(false);
                   router.refresh();
                 }}
+                className="bg-[#6cd8cb] hover:bg-[#29a195] text-[#003732] font-semibold text-xs font-mono px-5 py-2 rounded-lg"
               >
                 Done
               </Button>
@@ -195,7 +192,7 @@ export function UserEditDialog({
               <div className="flex items-start justify-between gap-3 pr-6">
                 <div>
                   <DialogTitle>Edit user</DialogTitle>
-                  <DialogDescription className="mt-1">{user.email}</DialogDescription>
+                  <DialogDescription className="mt-1 font-mono">{user.email}</DialogDescription>
                 </div>
                 <UserStatusPill user={user} />
               </div>
@@ -207,9 +204,14 @@ export function UserEditDialog({
               </Alert>
             )}
 
-            <div className="space-y-3.5">
+            <div className="space-y-4">
               <div className="space-y-1.5">
-                <Label htmlFor={`edit-user-name-${user.id}`}>Full name</Label>
+                <Label
+                  htmlFor={`edit-user-name-${user.id}`}
+                  className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                >
+                  Full name
+                </Label>
                 <Input
                   id={`edit-user-name-${user.id}`}
                   name="name"
@@ -220,46 +222,80 @@ export function UserEditDialog({
                   maxLength={80}
                 />
                 {fieldErrors.name && (
-                  <p className="text-xs text-destructive">{fieldErrors.name[0]}</p>
+                  <p className="text-xs font-mono text-rose-400">{fieldErrors.name[0]}</p>
                 )}
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor={`edit-user-email-${user.id}`}>Email address</Label>
+                <Label
+                  htmlFor={`edit-user-email-${user.id}`}
+                  className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                >
+                  Email address
+                </Label>
                 <Input
                   id={`edit-user-email-${user.id}`}
                   value={user.email}
                   disabled
-                  className="bg-muted text-muted-foreground cursor-not-allowed"
+                  className="bg-[#141c2b] text-[#94a3b8] cursor-not-allowed font-mono text-xs"
                 />
               </div>
 
               {canEditRoleAndSite ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <Label htmlFor={`edit-user-role-${user.id}`}>Role</Label>
+                    <Label
+                      htmlFor={`edit-user-role-${user.id}`}
+                      className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                    >
+                      Role
+                    </Label>
                     <Select value={role} onValueChange={(val) => setRole(val as Role)}>
-                      <SelectTrigger id={`edit-user-role-${user.id}`} className="w-full">
+                      <SelectTrigger
+                        id={`edit-user-role-${user.id}`}
+                        className="w-full bg-[#060e1d] border-[#334155] text-white"
+                      >
                         <SelectValue placeholder="Select role" />
                       </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="STAFF">Staff</SelectItem>
-                        <SelectItem value="MANAGER">Site Manager</SelectItem>
-                        <SelectItem value="ADMIN">Administrator</SelectItem>
+                      <SelectContent className="bg-[#18202f] border-[#334155] text-white">
+                        <SelectItem value="STAFF" className="hover:bg-[#222a3a] focus:bg-[#222a3a]">
+                          Staff
+                        </SelectItem>
+                        <SelectItem
+                          value="MANAGER"
+                          className="hover:bg-[#222a3a] focus:bg-[#222a3a]"
+                        >
+                          Site Manager
+                        </SelectItem>
+                        <SelectItem value="ADMIN" className="hover:bg-[#222a3a] focus:bg-[#222a3a]">
+                          Administrator
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
 
                   {showSiteSelect && (
                     <div className="space-y-1.5">
-                      <Label htmlFor={`edit-user-site-${user.id}`}>Site</Label>
+                      <Label
+                        htmlFor={`edit-user-site-${user.id}`}
+                        className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                      >
+                        Site
+                      </Label>
                       <Select value={siteId} onValueChange={(val) => setSiteId(val)}>
-                        <SelectTrigger id={`edit-user-site-${user.id}`} className="w-full">
+                        <SelectTrigger
+                          id={`edit-user-site-${user.id}`}
+                          className="w-full bg-[#060e1d] border-[#334155] text-white"
+                        >
                           <SelectValue placeholder="Select site" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="bg-[#18202f] border-[#334155] text-white">
                           {sites.map((s) => (
-                            <SelectItem key={s.id} value={s.id}>
+                            <SelectItem
+                              key={s.id}
+                              value={s.id}
+                              className="hover:bg-[#222a3a] focus:bg-[#222a3a]"
+                            >
                               {s.name}
                             </SelectItem>
                           ))}
@@ -269,10 +305,10 @@ export function UserEditDialog({
                   )}
                 </div>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm bg-muted/40 p-3 rounded-lg border border-border">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-mono bg-[#18202f] p-3 rounded-lg border border-[#334155]/60">
                   <div>
-                    <span className="text-muted-foreground block text-xs font-medium">Role</span>
-                    <span className="font-medium">
+                    <span className="text-[#94a3b8] block uppercase text-[10px]">Role</span>
+                    <span className="font-semibold text-white">
                       {user.role === "STAFF"
                         ? "Staff"
                         : user.role === "MANAGER"
@@ -281,24 +317,41 @@ export function UserEditDialog({
                     </span>
                   </div>
                   <div>
-                    <span className="text-muted-foreground block text-xs font-medium">Site</span>
-                    <span className="font-medium">{user.site?.name ?? "Network wide"}</span>
+                    <span className="text-[#94a3b8] block uppercase text-[10px]">Site</span>
+                    <span className="font-semibold text-white">
+                      {user.site?.name ?? "Network wide"}
+                    </span>
                   </div>
                 </div>
               )}
 
               <div className="space-y-1.5">
-                <Label htmlFor={`edit-user-section-${user.id}`}>
-                  Section <span className="text-muted-foreground font-normal">(optional)</span>
-                </Label>
+                <div className="flex items-center justify-between">
+                  <Label
+                    htmlFor={`edit-user-section-${user.id}`}
+                    className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                  >
+                    Section
+                  </Label>
+                  <span className="text-xs font-mono text-[#879390]">(optional)</span>
+                </div>
                 <Select value={sectionId} onValueChange={(val) => setSectionId(val)}>
-                  <SelectTrigger id={`edit-user-section-${user.id}`} className="w-full">
+                  <SelectTrigger
+                    id={`edit-user-section-${user.id}`}
+                    className="w-full bg-[#060e1d] border-[#334155] text-white"
+                  >
                     <SelectValue placeholder="No assigned section" />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">None / Unassigned</SelectItem>
+                  <SelectContent className="bg-[#18202f] border-[#334155] text-white">
+                    <SelectItem value="none" className="hover:bg-[#222a3a] focus:bg-[#222a3a]">
+                      None / Unassigned
+                    </SelectItem>
                     {sections.map((sec) => (
-                      <SelectItem key={sec.id} value={sec.id}>
+                      <SelectItem
+                        key={sec.id}
+                        value={sec.id}
+                        className="hover:bg-[#222a3a] focus:bg-[#222a3a]"
+                      >
                         {sec.name}
                       </SelectItem>
                     ))}
@@ -307,8 +360,8 @@ export function UserEditDialog({
               </div>
 
               {/* Security & Action Shortcuts inside Dialog */}
-              <div className="rounded-lg border border-border bg-muted/30 p-3 space-y-2.5">
-                <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              <div className="rounded-lg border border-[#334155]/60 bg-[#18202f] p-3 space-y-2.5">
+                <div className="text-[11px] font-mono font-semibold text-[#94a3b8] uppercase tracking-wider">
                   Account security & status
                 </div>
 
@@ -319,9 +372,9 @@ export function UserEditDialog({
                         type="button"
                         variant="outline"
                         size="sm"
-                        className="gap-1.5 text-xs h-8"
+                        className="gap-1.5 text-xs font-mono h-8 bg-[#141c2b] text-[#dbe2f8] border-[#334155] hover:bg-[#222a3a]"
                       >
-                        <KeyRound className="size-3.5" />
+                        <KeyRound className="size-3.5 text-[#6cd8cb]" />
                         <span>Reset password</span>
                       </Button>
                     }
@@ -347,7 +400,7 @@ export function UserEditDialog({
                           type="button"
                           variant="destructive"
                           size="sm"
-                          className="gap-1.5 text-xs h-8"
+                          className="gap-1.5 text-xs font-mono h-8"
                         >
                           <UserMinus className="size-3.5" />
                           <span>Deactivate</span>
@@ -377,7 +430,7 @@ export function UserEditDialog({
                           type="button"
                           variant="outline"
                           size="sm"
-                          className="gap-1.5 text-xs h-8 border-pass-border text-pass hover:bg-pass-bg"
+                          className="gap-1.5 text-xs font-mono h-8 border-emerald-500/30 text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20"
                         >
                           <UserCheck className="size-3.5" />
                           <span>Reactivate</span>
@@ -402,16 +455,21 @@ export function UserEditDialog({
               </div>
             </div>
 
-            <DialogFooter className="pt-2">
+            <DialogFooter className="pt-3 border-t border-[#334155]/40">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => handleOpenChange(false)}
                 disabled={isPending}
+                className="text-[#dbe2f8] hover:bg-[#222a3a]"
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={isPending}>
+              <Button
+                type="submit"
+                disabled={isPending}
+                className="bg-[#6cd8cb] hover:bg-[#29a195] text-[#003732] font-semibold text-xs font-mono px-5 py-2 rounded-lg transition-all duration-150 active:scale-[0.98]"
+              >
                 {isPending ? "Saving..." : "Save changes"}
               </Button>
             </DialogFooter>

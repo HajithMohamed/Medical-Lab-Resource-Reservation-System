@@ -16,5 +16,5 @@ export const BRAND_COLORS = {
   navy: "#0b1322",
   teal: "#6cd8cb",
   slot: "#7bd0ff",
-  line: "#2d3545",
+  line: "#334155",
 } as const;
