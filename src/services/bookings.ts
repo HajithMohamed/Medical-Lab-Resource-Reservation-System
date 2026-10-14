@@ -3,7 +3,7 @@ import "server-only";
 import { subDays, addDays, differenceInCalendarDays } from "date-fns";
 import { db } from "@/lib/db";
 import { env } from "@/lib/env";
-import { checkBookingTimes, checkAttendees } from "@/lib/booking-rules";
+import { checkBookingTimes, checkAttendees, checkCalibrationDue } from "@/lib/booking-rules";
 import {
   canBook,
   canCancelBooking,
@@ -113,6 +113,17 @@ export async function createBooking(
   });
   if (timeError) {
     return { ok: false, error: timeError };
+  }
+
+  // Check calibration due day (ISO 15189:2022 6.4.6)
+  const calibError = checkCalibrationDue({
+    resourceName: resource.name,
+    nextCalibrationDueOn: resource.nextCalibrationDueOn,
+    endAt: input.endAt,
+    timeZone: env.APP_TIME_ZONE,
+  });
+  if (calibError) {
+    return { ok: false, error: calibError };
   }
 
   // Check attendees

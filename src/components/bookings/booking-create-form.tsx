@@ -6,8 +6,11 @@ import { useActionState } from "react";
 import { AlertCircle, Calendar, ArrowRight, Loader2, ArrowLeft } from "lucide-react";
 import { createBookingAction } from "@/actions/bookings";
 import { CategoryIcon } from "@/components/category-icon";
+import { format } from "date-fns";
 import { formatMinutes } from "@/lib/format";
-import { SLOT_MINUTES } from "@/config/rules";
+import { SLOT_MINUTES, CALIBRATION_DUE_SOON_DAYS } from "@/config/rules";
+import { dbToDay } from "@/lib/equipment-dates";
+import { trackerStatus, formatEquipmentDay } from "@/lib/equipment-status";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,6 +30,8 @@ export interface ResourceOption {
   name: string;
   capacity: number | null;
   siteId: string;
+  nextCalibrationDueOn?: Date | string | null;
+  calibrationIntervalDays?: number | null;
   site: {
     id: string;
     name: string;
@@ -108,6 +113,24 @@ export function BookingCreateForm({ resources, prefilled }: BookingCreateFormPro
   const calendarLink = selectedResource
     ? `/calendar?date=${startDate || prefilled.date || ""}&site=${selectedResource.siteId}`
     : `/calendar`;
+
+  const calibrationDueSoonText = React.useMemo(() => {
+    if (!selectedResource?.nextCalibrationDueOn) return null;
+    const dueDay =
+      typeof selectedResource.nextCalibrationDueOn === "string"
+        ? selectedResource.nextCalibrationDueOn.slice(0, 10)
+        : dbToDay(selectedResource.nextCalibrationDueOn);
+    const today = format(new Date(), "yyyy-MM-dd");
+    const status = trackerStatus({
+      dueOn: dueDay,
+      today,
+      dueSoonDays: CALIBRATION_DUE_SOON_DAYS,
+    });
+    if (status === "DUE_SOON" || status === "DUE_TODAY") {
+      return `Calibrated until ${formatEquipmentDay(dueDay)}`;
+    }
+    return null;
+  }, [selectedResource]);
 
   // Calculated duration in minutes to handle suggestion clicks cleanly
   const durationMinutes = React.useMemo(() => {
@@ -252,6 +275,13 @@ export function BookingCreateForm({ resources, prefilled }: BookingCreateFormPro
                 </span>
               </div>
 
+              {calibrationDueSoonText && (
+                <div className="pt-2 border-t border-[#334155]/60 flex items-center gap-1.5 text-xs font-mono text-amber-400 font-semibold">
+                  <AlertCircle className="size-3.5 shrink-0" />
+                  <span>{calibrationDueSoonText}</span>
+                </div>
+              )}
+
               {/* Hidden inputs for date and time fields */}
               <input type="hidden" name="startDate" value={startDate} />
               <input type="hidden" name="startTime" value={startTime} />
@@ -322,6 +352,12 @@ export function BookingCreateForm({ resources, prefilled }: BookingCreateFormPro
                         Holds up to {selectedResource.capacity} people.
                       </p>
                     ) : null}
+                    {calibrationDueSoonText && (
+                      <p className="text-amber-400 font-semibold flex items-center gap-1.5 pt-0.5">
+                        <AlertCircle className="size-3.5 shrink-0" />
+                        <span>{calibrationDueSoonText}</span>
+                      </p>
+                    )}
                   </div>
                 )}
                 {state?.fieldErrors?.resourceId && (

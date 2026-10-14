@@ -613,5 +613,46 @@ describe("Bookings Service (Integration)", () => {
       expect(res?.createdBy.name).toBe(staffUser1.name);
       expect(res?.resource.site.name).toBe(fixture.site.name);
     });
+
+    it("calibration rule: booking ending <= endOfLabDay(due) accepted, ending later refused", async () => {
+      const futureDate = addDays(new Date(), 5);
+      const dueDay = futureDate.toISOString().slice(0, 10);
+      await db.resource.update({
+        where: { id: fixture.resource1.id },
+        data: {
+          nextCalibrationDueOn: new Date(`${dueDay}T00:00:00.000Z`),
+          calibrationIntervalDays: 365,
+        },
+      });
+
+      // 1. Booking on dueDay ending at 16:00 (<= endOfLabDay(dueDay)): accepted
+      const startAtValid = parseLabDateTime(dueDay, "14:00", zone);
+      const endAtValid = parseLabDateTime(dueDay, "16:00", zone);
+      const validRes = await createBooking(staffUser1, {
+        resourceId: fixture.resource1.id,
+        startAt: startAtValid,
+        endAt: endAtValid,
+        purpose: "Valid run within calibration period",
+      });
+      expect(validRes.ok).toBe(true);
+
+      // 2. Booking ending past dueDay (e.g. next day): refused with exact calibration error
+      const nextDay = addDays(futureDate, 1).toISOString().slice(0, 10);
+      const startAtPast = parseLabDateTime(nextDay, "10:00", zone);
+      const endAtPast = parseLabDateTime(nextDay, "11:00", zone);
+      const pastRes = await createBooking(staffUser1, {
+        resourceId: fixture.resource1.id,
+        startAt: startAtPast,
+        endAt: endAtPast,
+        purpose: "Uncalibrated run attempt",
+      });
+      expect(pastRes.ok).toBe(false);
+      if (!pastRes.ok) {
+        expect(pastRes.error).toContain("is calibrated only until");
+        expect(pastRes.error).toContain(
+          "Book up to the end of that day, or ask the site manager to record the calibration.",
+        );
+      }
+    });
   });
 });

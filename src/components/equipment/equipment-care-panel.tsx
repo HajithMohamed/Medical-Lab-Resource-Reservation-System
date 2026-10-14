@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { format } from "date-fns";
 import { ShieldCheck } from "lucide-react";
 import { EquipmentStatusTag } from "./equipment-status-tag";
 import { RecordEquipmentDialog } from "./record-equipment-dialog";

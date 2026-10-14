@@ -311,4 +311,37 @@ describe("Availability / Find a Slot Service (Integration)", () => {
       expect(res2.error).toContain(fixture.staffUser.name);
     }
   });
+
+  it("sets CALIBRATION state when requested booking ends after nextCalibrationDueOn", async () => {
+    const dueDay = testDate;
+    await db.resource.update({
+      where: { id: fixture.resource1.id },
+      data: {
+        nextCalibrationDueOn: new Date(`${dueDay}T00:00:00.000Z`),
+        calibrationIntervalDays: 365,
+      },
+    });
+
+    // Booking on dueDay is allowed (ends <= endOfLabDay(dueDay))
+    const sameDayResult = await findSlots(staffUser, {
+      date: dueDay,
+      start: "10:00",
+      duration: 60,
+      siteId: fixture.site.id,
+    });
+    const sameDayItem = sameDayResult.items.find((i) => i.id === fixture.resource1.id);
+    expect(sameDayItem?.state).not.toBe("CALIBRATION");
+
+    // Booking on day after dueDay ends after endOfLabDay(dueDay) -> CALIBRATION
+    const nextDay = addLabDays(dueDay, 1, zone);
+    const nextDayResult = await findSlots(staffUser, {
+      date: nextDay,
+      start: "10:00",
+      duration: 60,
+      siteId: fixture.site.id,
+    });
+    const nextDayItem = nextDayResult.items.find((i) => i.id === fixture.resource1.id);
+    expect(nextDayItem?.state).toBe("CALIBRATION");
+    expect(nextDayItem?.stateReason).toContain("Calibrated only until");
+  });
 });
