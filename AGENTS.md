@@ -26,6 +26,7 @@ Scope of v1.0. Keep it focused; do not add features that are not listed.
 3. Clash-free booking
 4. Maintenance and breakdowns
 5. Usage dashboard
+6. Equipment care: calibration, maintenance, replacement review
 plus sign-in with three roles (STAFF, MANAGER, ADMIN).
 Out of scope: patient data, test orders and results (that is a LIMS),
 analyser connections, stock, rosters or attendance, approval workflows,
@@ -158,22 +159,37 @@ Browser -> src/app (pages) -> src/actions (Server Actions)
 
 ## 5. Data model (prisma/schema.prisma is the source of truth)
 
-Tables: sites, sections, categories, resources, users, reservations.
+Tables: sites, sections, categories, resources, users, reservations, equipment_records.
 Enums: Role (STAFF, MANAGER, ADMIN), ResourceStatus (ACTIVE,
 OUT_OF_SERVICE, RETIRED), ReservationKind (BOOKING, MAINTENANCE),
-ReservationStatus (CONFIRMED, CANCELLED).
+ReservationStatus (CONFIRMED, CANCELLED), EquipmentRecordKind (CALIBRATION,
+PREVENTIVE_MAINTENANCE, PERFORMANCE_CHECK, REPAIR, REPLACEMENT_REVIEW),
+EquipmentOutcome (PASS, FAIL, NOT_DONE, KEEP_IN_SERVICE, REPLACE).
 
+- `resources` has equipment identity and schedule columns: manufacturer, model,
+  serial_number, in_service_on, expected_service_life_years, replacement_review_due_on,
+  calibration_interval_days, next_calibration_due_on, maintenance_interval_days,
+  next_maintenance_due_on.
+- `equipment_records` is append-only (ISO 15189 6.4.7): results can be added,
+  but records are never edited or deleted. A mistake is corrected by recording a new result.
 - A maintenance block is a reservation with kind MAINTENANCE, so the same
   clash rule protects it.
 - Nothing is deleted: reservations are cancelled (reason, who, when),
   users are deactivated, resources are retired.
-- Rules written by hand in the init migration (Prisma cannot express them):
+- Rules written by hand in the migrations (Prisma cannot express them):
     reservations_no_overlap  EXCLUDE USING gist (resource_id WITH =,
       tstzrange(start_at, end_at, '[)') WITH &&) WHERE (status = 'CONFIRMED')
     CHECK: reservations_time_order, reservations_cancel_fields,
       reservations_attendee_count_positive, resources_capacity_positive,
       categories_max_booking_minutes_positive, users_email_lowercase,
-      users_site_required_unless_admin, users_failed_login_count_not_negative
+      users_site_required_unless_admin, users_failed_login_count_not_negative,
+      resources_expected_service_life_years_range,
+      resources_calibration_interval_days_range,
+      resources_maintenance_interval_days_range,
+      equipment_records_performed_by_not_blank,
+      equipment_records_notes_for_fail_replace_not_done,
+      equipment_records_next_due_for_replacement_review,
+      equipment_records_next_due_after_performed
 - New migrations: `npx prisma migrate dev --name <name> --create-only`, then
   READ the SQL. If it drops any rule above or the btree_gist extension,
   delete those lines. Then run `npx prisma migrate dev` and
@@ -213,6 +229,17 @@ ReservationStatus (CONFIRMED, CANCELLED).
 - Setting a resource OUT_OF_SERVICE or RETIRED cancels its bookings that
   have not started, in one transaction, with the reason recorded.
   Maintenance blocks are not changed.
+- Calibration booking rule: bookings cannot run past the resource's calibration
+  due day (`endAt <= endOfLabDay(nextCalibrationDueOn)`). A booking ending past the
+  due day is refused.
+- Failed check rule (ISO 15189 6.4.5 c): recording a FAIL outcome for calibration,
+  preventive maintenance, or performance check on an ACTIVE resource immediately takes
+  it OUT_OF_SERVICE and cancels its future unstarted bookings with the reason.
+- Back-to-ACTIVE rule: changing a resource's status back to ACTIVE is refused if
+  its calibration is OVERDUE or its latest check FAILED, until a passing calibration
+  or performance check is recorded.
+- Repeated repairs rule: recording a 3rd REPAIR within 365 days automatically sets
+  replacementReviewDueOn to today.
 - Maintenance block: only the site's manager or an admin; no maximum
   length. EVERY confirmed booking that overlaps the block, including one
   already in progress, is listed first and cancelled only after the
@@ -275,7 +302,7 @@ Follow node_modules/next/dist/docs/01-app/02-guides/authentication.md
   feat(scope): ..., fix(scope): ..., test(scope): ..., refactor(scope): ...,
   docs: ..., chore: ..., ci: ...
   Scopes: setup, db, auth, settings, users, resources, bookings, calendar,
-  maintenance, usage, access, docs, release.
+  maintenance, equipment, usage, access, docs, release.
 - Never commit .env.local, .env.*.local, .env.production, secrets,
   src/generated or coverage output.
 - When you add a feature or make a decision, update CHANGELOG.md

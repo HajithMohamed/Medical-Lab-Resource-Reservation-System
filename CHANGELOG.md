@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Equipment care database models and migration (`equipment_records` table, enums `EquipmentRecordKind` and `EquipmentOutcome`, resource equipment fields, and 7 PostgreSQL check constraints).
+- Pure equipment care rules and helpers in `src/config/equipment.ts`, `src/lib/equipment-dates.ts`, `src/lib/equipment-status.ts`, and `src/lib/booking-rules.ts`.
+- Equipment care service (`src/services/equipment.ts`) and Server Actions (`src/actions/equipment.ts`) supporting append-only history, task completion (`markDone`), deferral (`markNotDone`), and overview queries.
+- Shared equipment onboarding fields (`src/components/resources/equipment-fields.tsx`) integrated into resource creation and editing dialogs/forms with category-based part visibility and overdue warnings.
+- Equipment Care dashboard (`/equipment`) featuring a site-scoped "Today" task list for overdue and due tasks, summary strip, filter bar, and paginated overview table.
+- Resource page Equipment Care panel (`/resources/[id]`) with live calibration/maintenance tracker tags, due-day banners, quick-action dialogs, and ISO 15189 append-only history audit trail.
+- "Block time" shortcut button (`src/components/equipment/block-time-button.tsx`) linking due items to maintenance block creation for authorized site managers and administrators.
+- Calibration booking rule enforcing that bookings cannot run past the resource's calibration due day (`endAt <= endOfLabDay(nextCalibrationDueOn)`), with amber banner warnings on booking forms and slot finder search.
+- Defective instrument isolation rule: recording a `FAIL` outcome on an active resource automatically transitions it to `OUT_OF_SERVICE`, cancels unstarted future bookings with reason, and prevents returning to `ACTIVE` until a passing check is recorded.
+- Comprehensive unit and integration test suites covering equipment config, date calculations, tracker statuses, permission matrix, seed dataset, and equipment care service operations.
+
 - Project setup: TypeScript, Tailwind CSS, ESLint, Prettier, Vitest, environment files, local PostgreSQL (Docker) and CI.
 - Database schema with Prisma ORM 7.10.0, models, enums and relationships.
 - Hand-written PostgreSQL exclusion constraint (`reservations_no_overlap`) for clash-free reservations and database CHECK constraints.
