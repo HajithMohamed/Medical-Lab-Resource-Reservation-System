@@ -9,7 +9,9 @@ import {
   RotateCcw,
   AlertTriangle,
 } from "lucide-react";
+import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth";
+import { canBook } from "@/lib/permissions";
 import { db } from "@/lib/db";
 import { env } from "@/lib/env";
 import { findSlots, type FindSlotsQueryInput } from "@/services/availability";
@@ -31,6 +33,9 @@ interface FindSlotPageProps {
 
 export default async function FindSlotPage({ searchParams }: FindSlotPageProps) {
   const user = await requireUser();
+  if (!canBook(user)) {
+    redirect("/bookings/manage");
+  }
   const rawParams = searchParams ? await searchParams : {};
 
   // Extract clean string parameters

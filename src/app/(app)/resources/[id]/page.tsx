@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { requireUser } from "@/lib/auth";
 import { getResource } from "@/services/resources";
-import { canManageSite } from "@/lib/permissions";
+import { canBook, canManageResource, canChangeResourceStatus } from "@/lib/permissions";
 import { CategoryIcon } from "@/components/category-icon";
 import { ResourceStatusTag } from "@/components/resource-status-tag";
 import { Button } from "@/components/ui/button";
@@ -47,9 +47,9 @@ export default async function ResourceDetailPage({ params }: ResourceDetailPageP
   }
 
   const resource = result.data;
-  const isManagerOrAdmin = canManageSite(user, resource.siteId);
+  const canManage = canManageResource(user, resource);
 
-  const [sites, categories, sections] = isManagerOrAdmin
+  const [sites, categories, sections] = canManage
     ? await Promise.all([
         db.site.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } }),
         db.category.findMany({
@@ -126,7 +126,7 @@ export default async function ResourceDetailPage({ params }: ResourceDetailPageP
           </div>
 
           {/* Primary Action: Book this resource */}
-          {resource.status === "ACTIVE" && (
+          {canBook(user) && resource.status === "ACTIVE" && (
             <Button
               asChild
               size="lg"
@@ -142,7 +142,7 @@ export default async function ResourceDetailPage({ params }: ResourceDetailPageP
       </div>
 
       {/* Manager Actions Row */}
-      {isManagerOrAdmin && (
+      {canManage && (
         <div className="flex flex-wrap items-center gap-2.5 p-3 rounded-xl border border-[#334155] bg-[#141c2b] shadow-xs">
           <span className="text-xs font-bold uppercase tracking-wider text-slate-400 mr-1">
             Manage:
@@ -155,17 +155,19 @@ export default async function ResourceDetailPage({ params }: ResourceDetailPageP
             categories={categories}
             sections={sections}
           />
-          <Button
-            asChild
-            variant="outline"
-            size="sm"
-            className="gap-1.5 h-8 border-[#334155] bg-[#18202f] hover:bg-[#222a3a] text-xs"
-          >
-            <Link href={`/resources/${resource.id}/status`}>
-              <AlertOctagon className="size-3.5" />
-              <span>Status</span>
-            </Link>
-          </Button>
+          {canChangeResourceStatus(user, resource) && (
+            <Button
+              asChild
+              variant="outline"
+              size="sm"
+              className="gap-1.5 h-8 border-[#334155] bg-[#18202f] hover:bg-[#222a3a] text-xs"
+            >
+              <Link href={`/resources/${resource.id}/status`}>
+                <AlertOctagon className="size-3.5" />
+                <span>Status</span>
+              </Link>
+            </Button>
+          )}
           <Button
             asChild
             variant="outline"

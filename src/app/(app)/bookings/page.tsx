@@ -1,7 +1,9 @@
 import * as React from "react";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { Plus } from "lucide-react";
 import { requireUser } from "@/lib/auth";
+import { canBook } from "@/lib/permissions";
 import { listMyBookings } from "@/services/bookings";
 import { db } from "@/lib/db";
 import { formatLabRange } from "@/lib/time";
@@ -18,6 +20,9 @@ export const metadata = {
 
 export default async function BookingsPage() {
   const user = await requireUser();
+  if (!canBook(user)) {
+    redirect("/bookings/manage");
+  }
   const [{ upcoming, past, cancelled }, resources] = await Promise.all([
     listMyBookings(user),
     db.resource.findMany({

@@ -1,5 +1,7 @@
 import * as React from "react";
+import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth";
+import { canBook } from "@/lib/permissions";
 import { db } from "@/lib/db";
 import { BookingCreateForm, type ResourceOption } from "@/components/bookings/booking-create-form";
 
@@ -18,7 +20,10 @@ interface NewBookingPageProps {
 }
 
 export default async function NewBookingPage({ searchParams }: NewBookingPageProps) {
-  await requireUser();
+  const user = await requireUser();
+  if (!canBook(user)) {
+    redirect("/bookings/manage");
+  }
   const resolvedParams = searchParams ? await searchParams : {};
 
   const resources = await db.resource.findMany({

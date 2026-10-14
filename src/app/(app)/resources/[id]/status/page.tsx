@@ -4,7 +4,7 @@ import { notFound, redirect } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { requireRole } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { canManageSite } from "@/lib/permissions";
+import { canChangeResourceStatus } from "@/lib/permissions";
 import { countUpcomingBookings } from "@/services/resources";
 import { PageHeader } from "@/components/page-header";
 import { ResourceStatusForm } from "@/components/resources/resource-status-form";
@@ -50,7 +50,7 @@ export default async function ResourceStatusPage({ params }: ResourceStatusPageP
     notFound();
   }
 
-  if (!canManageSite(actor, resource.siteId)) {
+  if (!canChangeResourceStatus(actor, resource)) {
     redirect("/no-access");
   }
 
