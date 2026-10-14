@@ -14,7 +14,7 @@ import { isOverlapError } from "@/lib/db-errors";
 import {
   formatLabRange,
   labDayStart,
-  labDayEnd,
+  endOfLabDay,
   labDateString,
   labTimeString,
   labToday,
@@ -405,20 +405,20 @@ export async function listBookingsForOversight(
       : labDateString(addDays(now, 7), zone);
 
   const fromDate = labDayStart(fromStr, zone);
-  let toDate = labDayEnd(toStr, zone);
+  let toDate = endOfLabDay(toStr, zone);
 
   // Clamp date range: at most USAGE_MAX_DAYS apart, and toDate >= fromDate
   const daysDiff = differenceInCalendarDays(toDate, fromDate);
   if (daysDiff < 0 || daysDiff > USAGE_MAX_DAYS) {
     toStr = labDateString(addDays(fromDate, 7), zone);
-    toDate = labDayEnd(toStr, zone);
+    toDate = endOfLabDay(toStr, zone);
   }
 
   const where: Record<string, unknown> = {
     kind: "BOOKING",
     startAt: {
       gte: fromDate,
-      lte: toDate,
+      lt: toDate,
     },
   };
 

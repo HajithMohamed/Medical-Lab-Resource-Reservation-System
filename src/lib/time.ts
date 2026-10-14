@@ -44,9 +44,10 @@ export function labTimeString(date: Date, zone: string = env.APP_TIME_ZONE): str
 
 /**
  * Returns today's "YYYY-MM-DD" string in the lab time zone.
+ * Optional now parameter allows services and tests to pass a fixed time.
  */
-export function labToday(zone: string = env.APP_TIME_ZONE): string {
-  return labDateString(new Date(), zone);
+export function labToday(zone: string = env.APP_TIME_ZONE, now: Date = new Date()): string {
+  return labDateString(now, zone);
 }
 
 /**
@@ -114,11 +115,11 @@ export function labDayStart(dateString: string, zone: string = env.APP_TIME_ZONE
 }
 
 /**
- * Returns the Date of 23:59:59.999 that day in the lab time zone.
+ * Returns the instant the lab day ENDS (start of the next day, 00:00:00 of tomorrow in the lab zone),
+ * matching our [start, end) interval rule.
  */
-export function labDayEnd(dateString: string, zone: string = env.APP_TIME_ZONE): Date {
-  const [year, month, day] = dateString.split("-").map(Number);
-  return new TZDate(year, month - 1, day, 23, 59, 59, 999, zone);
+export function endOfLabDay(day: string, zone: string = env.APP_TIME_ZONE): Date {
+  return labDayStart(addLabDays(day, 1, zone), zone);
 }
 
 /**
