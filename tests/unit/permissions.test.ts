@@ -19,6 +19,7 @@ import {
   bookingOversightSitesFor,
   canViewUsage,
   usageSitesFor,
+  calendarOptionsFor,
 } from "@/lib/permissions";
 
 describe("Permissions matrix and helpers", () => {
@@ -377,6 +378,30 @@ describe("Permissions matrix and helpers", () => {
       expect(canCancelReservation(staffA, pastBooking, now)).toBe(false);
       expect(canCancelReservation(managerA, futureBooking, now)).toBe(true);
       expect(canCancelReservation(managerB, futureBooking, now)).toBe(false);
+    });
+
+    describe("calendarOptionsFor (role checks for calendar page)", () => {
+      it("STAFF -> canBookHere true, canBlockHere false", () => {
+        const opts = calendarOptionsFor(staffA, siteA);
+        expect(opts).toEqual({ canBookHere: true, canBlockHere: false });
+      });
+
+      it("MANAGER on own site -> both true", () => {
+        const opts = calendarOptionsFor(managerA, siteA);
+        expect(opts).toEqual({ canBookHere: true, canBlockHere: true });
+      });
+
+      it("MANAGER on another site -> canBookHere true, canBlockHere false", () => {
+        const opts = calendarOptionsFor(managerA, siteB);
+        expect(opts).toEqual({ canBookHere: true, canBlockHere: false });
+      });
+
+      it("ADMIN -> canBookHere false, canBlockHere true", () => {
+        const optsA = calendarOptionsFor(admin, siteA);
+        const optsB = calendarOptionsFor(admin, siteB);
+        expect(optsA).toEqual({ canBookHere: false, canBlockHere: true });
+        expect(optsB).toEqual({ canBookHere: false, canBlockHere: true });
+      });
     });
   });
 });

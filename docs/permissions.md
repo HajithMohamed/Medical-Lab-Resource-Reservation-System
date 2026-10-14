@@ -33,10 +33,13 @@ The server enforces every rule; `src/lib/permissions.ts` is the code version of 
 | Site switcher & category filter                             | yes   | yes      | yes                |
 | Click a free slot -> booking form                           | yes   | yes      | no                 |
 | Click a booking -> details modal                            | yes   | yes      | yes                |
+| "You" chip on own bookings                                  | yes   | yes      | no _(cannot book)_ |
 | Cancel own not-started booking                              | yes   | yes      | no _(cannot book)_ |
 | Cancel someone else's not-started booking (reason required) | no    | own site | all sites          |
 | Click a maintenance block -> details modal                  | yes   | yes      | yes                |
 | Cancel a maintenance block                                  | no    | own site | all sites          |
+| "Book a resource" button                                    | yes   | yes      | no                 |
+| "Block time" button                                         | no    | own site | all sites          |
 | "Find a slot" toolbar button                                | yes   | yes      | no                 |
 
 ### Find a slot (`/book`)
