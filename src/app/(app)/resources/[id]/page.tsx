@@ -3,7 +3,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   ArrowLeft,
-  Pencil,
   Wrench,
   AlertOctagon,
   CalendarCheck,
@@ -128,7 +127,11 @@ export default async function ResourceDetailPage({ params }: ResourceDetailPageP
 
           {/* Primary Action: Book this resource */}
           {resource.status === "ACTIVE" && (
-            <Button asChild size="lg" className="font-bold shrink-0 gap-2 bg-[#6cd8cb] text-[#003732] hover:bg-[#29a195] hover:text-[#002421] shadow-xs">
+            <Button
+              asChild
+              size="lg"
+              className="font-bold shrink-0 gap-2 bg-[#6cd8cb] text-[#003732] hover:bg-[#29a195] hover:text-[#002421] shadow-xs"
+            >
               <Link href={`/bookings/new?resourceId=${resource.id}`}>
                 <CalendarCheck className="size-5" />
                 <span>Book this resource</span>
@@ -200,9 +203,7 @@ export default async function ResourceDetailPage({ params }: ResourceDetailPageP
                 <div className="py-2.5">
                   <dt className="text-xs text-slate-400 font-medium">Location</dt>
                   <dd className="font-semibold text-slate-200 mt-0.5">
-                    {resource.location ?? (
-                      <span className="text-slate-500 italic">Not set</span>
-                    )}
+                    {resource.location ?? <span className="text-slate-500 italic">Not set</span>}
                   </dd>
                 </div>
                 <div className="py-2.5">
@@ -223,9 +224,7 @@ export default async function ResourceDetailPage({ params }: ResourceDetailPageP
             </CardHeader>
             <CardContent>
               {resource.recentMaintenance.length === 0 ? (
-                <p className="text-sm text-slate-500 italic">
-                  No maintenance blocks recorded.
-                </p>
+                <p className="text-sm text-slate-500 italic">No maintenance blocks recorded.</p>
               ) : (
                 <div className="space-y-3">
                   {resource.recentMaintenance.map((m) => (
@@ -291,12 +290,13 @@ export default async function ResourceDetailPage({ params }: ResourceDetailPageP
                           const isMaint = item.kind === "MAINTENANCE";
 
                           return (
-                            <div
+                            <Link
                               key={item.id}
-                              className={`p-3 rounded-lg border text-sm flex items-start justify-between gap-3 ${
+                              href={`/reservations/${item.id}`}
+                              className={`p-3 rounded-lg border text-sm flex items-start justify-between gap-3 transition-colors ${
                                 isMaint
-                                  ? "border-amber-500/40 bg-amber-950/20 text-amber-200"
-                                  : "border-[#334155] bg-[#18202f] hover:bg-[#222a3a]/70 text-slate-200"
+                                  ? "border-amber-500/40 bg-amber-950/20 text-amber-200 hover:bg-amber-950/30"
+                                  : "border-[#334155] bg-[#18202f] hover:bg-[#222a3a] text-slate-200"
                               }`}
                             >
                               <div className="space-y-1 min-w-0">
@@ -307,25 +307,23 @@ export default async function ResourceDetailPage({ params }: ResourceDetailPageP
                                       <span>Maintenance</span>
                                     </span>
                                   ) : null}
-                                  <span className="font-bold text-slate-100 truncate">
+                                  <span className="font-bold text-slate-100 truncate hover:text-[#6cd8cb] transition-colors">
                                     {item.purpose}
                                   </span>
                                 </div>
                                 <p className="text-xs text-slate-400">
                                   Booked by {item.createdBy.name}
                                   {item.createdBy.site ? ` (${item.createdBy.site.name})` : ""}
-                                  {item.attendeeCount
-                                    ? ` &bull; ${item.attendeeCount} attendees`
-                                    : ""}
+                                  {item.attendeeCount ? ` • ${item.attendeeCount} attendees` : ""}
                                 </p>
                               </div>
 
                               <div className="text-right shrink-0">
                                 <span className="font-mono text-xs font-bold text-[#6cd8cb] tabular-nums">
-                                  {formatTime(item.startAt)} &ndash; {formatTime(item.endAt)}
+                                  {formatTime(item.startAt)} – {formatTime(item.endAt)}
                                 </span>
                               </div>
-                            </div>
+                            </Link>
                           );
                         })}
                       </div>
