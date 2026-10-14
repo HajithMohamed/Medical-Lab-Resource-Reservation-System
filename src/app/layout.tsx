@@ -24,8 +24,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full antialiased font-sans dark">
-      <body className="min-h-full flex flex-col bg-background text-foreground">
+    <html lang="en" className="h-full antialiased font-sans dark bg-[#0b1322] text-[#f1f5f9]">
+      <body className="min-h-full flex flex-col bg-[#0b1322] text-[#f1f5f9]">
         <TooltipProvider>{children}</TooltipProvider>
         <Toaster theme="dark" />
       </body>

@@ -20,9 +20,6 @@ import { Logo } from "@/components/brand/logo";
 import { UserMenu } from "@/components/app-shell/user-menu";
 import { navItemsFor, type NavGroup, type NavItem } from "@/config/navigation";
 
-import { Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
-
 export interface AppSidebarProps {
   user: {
     name: string;
@@ -61,20 +58,7 @@ export function AppSidebar({ user, logoutAction }: AppSidebarProps) {
         <Logo subtitle={siteSubtitle} />
       </SidebarHeader>
 
-      {/* Quick Action Primary CTA */}
-      <div className="p-3 pb-1 group-data-[collapsible=icon]:hidden">
-        <Button
-          asChild
-          className="w-full justify-center gap-2 bg-[#6cd8cb] hover:bg-[#29a195] text-[#003732] font-semibold text-xs font-mono active:scale-[0.99] transition-all shadow-xs"
-        >
-          <Link href="/resources">
-            <Plus className="size-3.5 stroke-[2.5]" />
-            <span>New Reservation</span>
-          </Link>
-        </Button>
-      </div>
-
-      <SidebarContent className="px-2 py-1 bg-[#141c2b]">
+      <SidebarContent className="px-2 py-2 bg-[#141c2b]">
         {mainItems.length > 0 && (
           <SidebarGroup className="p-0">
             <SidebarGroupContent>

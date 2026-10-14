@@ -36,31 +36,31 @@ export function ResourceFilters({
     <form
       method="GET"
       action="/resources"
-      className="flex flex-wrap items-center gap-2.5 bg-[#141c2b] p-3 rounded-lg border border-[#334155] shadow-xs"
+      className="flex flex-wrap items-center gap-2 bg-[#141c2b] p-2.5 rounded-lg border border-[#334155] shadow-xs"
     >
       {/* Search Input */}
-      <div className="relative flex-1 min-w-[200px] sm:max-w-[260px]">
+      <div className="relative flex-1 min-w-[150px] max-w-[220px]">
         <Search
-          className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-[#94a3b8] pointer-events-none"
+          className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-[#94a3b8] pointer-events-none"
           aria-hidden="true"
         />
         <input
           type="search"
           name="search"
           defaultValue={currentFilters.search ?? ""}
-          placeholder="Search by instrument name"
+          placeholder="Search instrument..."
           aria-label="Search by name"
-          className="h-9 w-full rounded-md border border-[#334155] bg-[#060e1d] pl-9 pr-3 text-xs font-mono text-[#dbe2f8] placeholder:text-[#879390] focus:border-[#6cd8cb] focus:outline-none transition-colors"
+          className="h-8 w-full rounded-md border border-[#334155] bg-[#060e1d] pl-8 pr-2.5 text-xs font-mono text-[#dbe2f8] placeholder:text-[#879390] focus:border-[#6cd8cb] focus:outline-none transition-colors"
         />
       </div>
 
       {/* Site Filter */}
-      <div className="min-w-[140px]">
+      <div className="w-auto min-w-[110px] max-w-[145px]">
         <select
           name="siteId"
           defaultValue={currentFilters.siteId ?? ""}
           aria-label="Filter by site"
-          className="h-9 w-full rounded-md border border-[#334155] bg-[#060e1d] px-2.5 text-xs font-mono text-[#dbe2f8] focus:border-[#6cd8cb] focus:outline-none cursor-pointer transition-colors"
+          className="h-8 w-full rounded-md border border-[#334155] bg-[#060e1d] px-2 text-xs font-mono text-[#dbe2f8] focus:border-[#6cd8cb] focus:outline-none cursor-pointer transition-colors"
         >
           <option value="">All sites</option>
           {sites.map((site) => (
@@ -72,12 +72,12 @@ export function ResourceFilters({
       </div>
 
       {/* Category Filter */}
-      <div className="min-w-[150px]">
+      <div className="w-auto min-w-[120px] max-w-[150px]">
         <select
           name="categoryId"
           defaultValue={currentFilters.categoryId ?? ""}
           aria-label="Filter by category"
-          className="h-9 w-full rounded-md border border-[#334155] bg-[#060e1d] px-2.5 text-xs font-mono text-[#dbe2f8] focus:border-[#6cd8cb] focus:outline-none cursor-pointer transition-colors"
+          className="h-8 w-full rounded-md border border-[#334155] bg-[#060e1d] px-2 text-xs font-mono text-[#dbe2f8] focus:border-[#6cd8cb] focus:outline-none cursor-pointer transition-colors"
         >
           <option value="">All categories</option>
           {categories.map((category) => (
@@ -89,12 +89,12 @@ export function ResourceFilters({
       </div>
 
       {/* Section Filter */}
-      <div className="min-w-[150px]">
+      <div className="w-auto min-w-[120px] max-w-[150px]">
         <select
           name="sectionId"
           defaultValue={currentFilters.sectionId ?? ""}
           aria-label="Filter by owning section"
-          className="h-9 w-full rounded-md border border-[#334155] bg-[#060e1d] px-2.5 text-xs font-mono text-[#dbe2f8] focus:border-[#6cd8cb] focus:outline-none cursor-pointer transition-colors"
+          className="h-8 w-full rounded-md border border-[#334155] bg-[#060e1d] px-2 text-xs font-mono text-[#dbe2f8] focus:border-[#6cd8cb] focus:outline-none cursor-pointer transition-colors"
         >
           <option value="">All sections</option>
           {sections.map((section) => (
@@ -106,32 +106,32 @@ export function ResourceFilters({
       </div>
 
       {/* Status Filter */}
-      <div className="min-w-[170px]">
+      <div className="w-auto min-w-[130px] max-w-[160px]">
         <select
           name="status"
           defaultValue={currentFilters.status ?? ""}
           aria-label="Filter by status"
-          className="h-9 w-full rounded-md border border-[#334155] bg-[#060e1d] px-2.5 text-xs font-mono text-[#dbe2f8] focus:border-[#6cd8cb] focus:outline-none cursor-pointer transition-colors"
+          className="h-8 w-full rounded-md border border-[#334155] bg-[#060e1d] px-2 text-xs font-mono text-[#dbe2f8] focus:border-[#6cd8cb] focus:outline-none cursor-pointer transition-colors"
         >
           <option value="">Active & Lockout</option>
           <option value="ACTIVE">Active only</option>
-          <option value="OUT_OF_SERVICE">Lockout (Out of service)</option>
+          <option value="OUT_OF_SERVICE">Lockout (OOS)</option>
           <option value="RETIRED">Retired</option>
           <option value="ALL">All statuses</option>
         </select>
       </div>
 
       {/* Action Buttons */}
-      <div className="flex items-center gap-2 ml-auto shrink-0">
+      <div className="flex items-center gap-1.5 ml-auto shrink-0">
         <Button
           type="submit"
           size="sm"
-          className="h-9 px-3 bg-[#6cd8cb] hover:bg-[#29a195] text-[#003732] font-semibold text-xs font-mono"
+          className="h-8 px-3 bg-[#6cd8cb] hover:bg-[#29a195] text-[#003732] font-semibold text-xs font-mono active:scale-95 shadow-2xs"
         >
           Apply
         </Button>
         {hasActiveFilters && (
-          <Button asChild variant="ghost" size="sm" className="h-9 text-xs font-mono">
+          <Button asChild variant="ghost" size="sm" className="h-8 px-2 text-xs font-mono">
             <Link href="/resources" className="text-[#94a3b8] hover:text-white">
               Clear
             </Link>

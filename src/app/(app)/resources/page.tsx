@@ -1,6 +1,6 @@
 import * as React from "react";
 import Link from "next/link";
-import { FlaskConical } from "lucide-react";
+import { FlaskConical, CalendarPlus, Eye, Pencil } from "lucide-react";
 import { requireUser } from "@/lib/auth";
 import { listResources, type ResourceFilterOptions } from "@/services/resources";
 import { db } from "@/lib/db";
@@ -120,16 +120,16 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
       ) : (
         <>
           {/* Desktop & Tablet Table (md and above) */}
-          <div className="hidden md:block rounded-lg border border-[#334155] bg-[#141c2b] overflow-hidden shadow-sm">
-            <Table>
+          <div className="hidden md:block rounded-xl border border-[#334155] bg-[#141c2b] overflow-hidden shadow-sm">
+            <Table className="w-full table-fixed">
               <TableHeader>
-                <TableRow className="bg-[#222a3a]/70 border-b border-[#334155] text-xs font-mono uppercase tracking-wider text-[#94a3b8]">
-                  <TableHead className="w-[340px]">Resource Details</TableHead>
-                  <TableHead>Site / Campus</TableHead>
-                  <TableHead>Owning Section</TableHead>
-                  <TableHead>Clinical Room</TableHead>
-                  <TableHead>Real-Time Status</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                <TableRow className="bg-[#222a3a]/70 border-b border-[#334155] text-[11px] font-mono uppercase tracking-wider text-[#94a3b8]">
+                  <TableHead className="w-[32%] py-2.5 px-3">Resource Details</TableHead>
+                  <TableHead className="w-[20%] py-2.5 px-3">Site / Campus</TableHead>
+                  <TableHead className="w-[17%] py-2.5 px-3">Owning Section</TableHead>
+                  <TableHead className="w-[13%] py-2.5 px-3">Clinical Room</TableHead>
+                  <TableHead className="w-[10%] py-2.5 px-3">Real-Time Status</TableHead>
+                  <TableHead className="w-[8%] py-2.5 px-3 text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -153,59 +153,88 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
                           : "group hover:bg-[#222a3a]/50 transition-colors duration-150"
                       }
                     >
-                      <TableCell className="py-3 px-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-lg bg-[#18202f] border border-[#334155] flex items-center justify-center text-[#6cd8cb] shrink-0">
+                      <TableCell className="py-2 px-3 overflow-hidden">
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <div className="w-7 h-7 rounded-md bg-[#18202f] border border-[#334155] flex items-center justify-center text-[#6cd8cb] shrink-0">
                             <CategoryIcon
                               iconKey={resource.category.iconKey}
-                              className="size-5 shrink-0"
+                              className="size-4 shrink-0"
                             />
                           </div>
-                          <div className="min-w-0">
+                          <div className="min-w-0 flex-1">
                             <Link
                               href={`/resources/${resource.id}`}
-                              className="font-semibold text-white group-hover:text-[#6cd8cb] transition-colors truncate block text-sm"
+                              className="font-semibold text-white group-hover:text-[#6cd8cb] transition-colors truncate block text-xs"
+                              title={resource.name}
                             >
                               {resource.name}
                             </Link>
-                            <span className="text-xs font-mono text-[#94a3b8] block truncate">
+                            <span
+                              className="text-[10px] font-mono text-[#94a3b8] block truncate"
+                              title={subtitle}
+                            >
                               {subtitle}
                             </span>
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell className="py-3 px-4 font-medium text-white text-sm">
-                        {resource.site.name}
+                      <TableCell className="py-2 px-3 overflow-hidden">
+                        <span
+                          className="font-medium text-white text-xs truncate block"
+                          title={resource.site.name}
+                        >
+                          {resource.site.name}
+                        </span>
                       </TableCell>
-                      <TableCell className="py-3 px-4">
-                        <span className="px-2 py-0.5 rounded text-xs font-mono bg-[#18202f] text-[#bcc9c6] border border-[#334155]/60">
+                      <TableCell className="py-2 px-3 overflow-hidden">
+                        <span
+                          className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-[#18202f] text-[#bcc9c6] border border-[#334155]/60 truncate inline-block max-w-full"
+                          title={resource.section.name}
+                        >
                           {resource.section.name}
                         </span>
                       </TableCell>
-                      <TableCell className="py-3 px-4 text-xs font-mono">
+                      <TableCell className="py-2 px-3 overflow-hidden text-[11px] font-mono">
                         {resource.location ? (
-                          <span className="text-white">{resource.location}</span>
+                          <span className="text-white truncate block" title={resource.location}>
+                            {resource.location}
+                          </span>
                         ) : (
                           <span className="text-[#94a3b8] italic">Not set</span>
                         )}
                       </TableCell>
-                      <TableCell className="py-3 px-4">
-                        <ResourceStatusTag status={resource.status} />
+                      <TableCell className="py-2 px-3 overflow-hidden">
+                        <ResourceStatusTag
+                          status={resource.status}
+                          className="text-[10px] px-2 py-0.5"
+                        />
                       </TableCell>
-                      <TableCell className="py-3 px-4 text-right">
-                        <div className="inline-flex items-center gap-1.5 justify-end">
+                      <TableCell className="py-2 px-3 text-right overflow-hidden">
+                        <div className="inline-flex items-center gap-1 justify-end">
                           {resource.status === "ACTIVE" ? (
-                            <Button asChild size="sm" className="bg-[#6cd8cb]/15 hover:bg-[#6cd8cb] text-[#6cd8cb] hover:text-[#003732] text-xs font-mono font-semibold px-3 py-1 rounded border border-[#6cd8cb]/30 transition-all active:scale-95">
-                              <Link href={`/bookings/new?resourceId=${resource.id}`}>Book Slot</Link>
+                            <Button
+                              asChild
+                              size="icon"
+                              className="size-7 rounded bg-[#6cd8cb]/15 hover:bg-[#6cd8cb] text-[#6cd8cb] hover:text-[#003732] border border-[#6cd8cb]/40 transition-all active:scale-95 shadow-2xs"
+                              title="Book slot"
+                              aria-label={`Book slot for ${resource.name}`}
+                            >
+                              <Link href={`/bookings/new?resourceId=${resource.id}`}>
+                                <CalendarPlus className="size-3.5" />
+                              </Link>
                             </Button>
                           ) : (
                             <Button
                               asChild
                               variant="ghost"
-                              size="sm"
-                              className="h-8 px-2.5 text-xs font-mono text-[#94a3b8] hover:text-white"
+                              size="icon"
+                              className="size-7 rounded text-[#94a3b8] hover:text-white hover:bg-[#222a3a] transition-all"
+                              title="View details"
+                              aria-label={`View details for ${resource.name}`}
                             >
-                              <Link href={`/resources/${resource.id}`}>View</Link>
+                              <Link href={`/resources/${resource.id}`}>
+                                <Eye className="size-3.5" />
+                              </Link>
                             </Button>
                           )}
                           {canManage && (
@@ -216,6 +245,18 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
                               sites={sites}
                               categories={categories}
                               sections={sections}
+                              trigger={
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="icon"
+                                  className="size-7 rounded bg-[#18202f] hover:bg-[#222a3a] text-[#94a3b8] hover:text-[#6cd8cb] border border-[#334155] hover:border-[#6cd8cb]/40 transition-all active:scale-95 shadow-2xs"
+                                  title="Edit resource"
+                                  aria-label={`Edit ${resource.name}`}
+                                >
+                                  <Pencil className="size-3.5" />
+                                </Button>
+                              }
                             />
                           )}
                         </div>

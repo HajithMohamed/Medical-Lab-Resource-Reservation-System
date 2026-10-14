@@ -3,9 +3,16 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-function Table({ className, ...props }: React.ComponentProps<"table">) {
+interface TableProps extends React.ComponentProps<"table"> {
+  containerClassName?: string;
+}
+
+function Table({ className, containerClassName, ...props }: TableProps) {
   return (
-    <div data-slot="table-container" className="relative w-full overflow-x-auto rounded-lg border border-[#334155] bg-[#141c2b] shadow-sm">
+    <div
+      data-slot="table-container"
+      className={cn("relative w-full overflow-hidden", containerClassName)}
+    >
       <table
         data-slot="table"
         className={cn("w-full caption-bottom text-sm text-left border-collapse", className)}
@@ -63,7 +70,7 @@ function TableHead({ className, ...props }: React.ComponentProps<"th">) {
     <th
       data-slot="table-head"
       className={cn(
-        "h-10 px-4 text-left align-middle font-semibold whitespace-nowrap text-[#94a3b8] font-mono text-xs uppercase tracking-wider [&:has([role=checkbox])]:pr-0",
+        "h-9 px-3 text-left align-middle font-semibold text-[#94a3b8] font-mono text-[11px] uppercase tracking-wider [&:has([role=checkbox])]:pr-0",
         className,
       )}
       {...props}
@@ -75,7 +82,7 @@ function TableCell({ className, ...props }: React.ComponentProps<"td">) {
   return (
     <td
       data-slot="table-cell"
-      className={cn("py-3 px-4 align-middle whitespace-nowrap text-sm text-[#dbe2f8] [&:has([role=checkbox])]:pr-0", className)}
+      className={cn("py-2 px-3 align-middle text-sm text-[#dbe2f8] [&:has([role=checkbox])]:pr-0", className)}
       {...props}
     />
   );

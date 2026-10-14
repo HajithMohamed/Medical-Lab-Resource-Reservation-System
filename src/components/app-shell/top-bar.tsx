@@ -13,8 +13,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { NAV_ITEMS } from "@/config/navigation";
-import { MapPin, Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { MapPin } from "lucide-react";
 
 export function TopBar() {
   const pathname = usePathname();
@@ -118,9 +117,9 @@ export function TopBar() {
         <span className="text-[#94a3b8] text-[10px]">Colombo (UTC+5:30)</span>
       </div>
 
-      {/* Right: Location & Quick Action CTA */}
+      {/* Right: Location & Context */}
       <div className="flex items-center gap-3 shrink-0">
-        <div className="hidden xl:flex items-center gap-2 text-xs text-[#94a3b8]">
+        <div className="flex items-center gap-2 text-xs text-[#94a3b8]">
           <MapPin className="size-3.5 text-[#6cd8cb] shrink-0" />
           <span className="font-medium text-white">Main Lab</span>
           <span className="text-[#334155]">/</span>
@@ -128,17 +127,6 @@ export function TopBar() {
             Core Grid
           </span>
         </div>
-
-        <Button
-          asChild
-          size="sm"
-          className="h-8 px-3 gap-1.5 bg-[#6cd8cb] hover:bg-[#29a195] text-[#003732] font-semibold text-xs font-mono active:scale-[0.98] transition-all shadow-xs"
-        >
-          <Link href="/resources">
-            <Plus className="size-3.5 stroke-[2.5]" />
-            <span>New Reservation</span>
-          </Link>
-        </Button>
       </div>
     </header>
   );
