@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Live availability calendar (`/calendar`) supporting Day view per site and Week view per resource with real database schedules.
+- Pure calendar grid math helpers (`rowsPerDay`, `placeOnDay`, `rowLabel`) in `src/lib/calendar-layout.ts`.
+- Server-side calendar service (`src/services/calendar.ts`) providing `getSiteDay`, `getResourceWeek`, and `listCalendarOptions` with timezone normalization.
+- Pure role options helper `calendarOptionsFor(user, siteId)` in `src/lib/permissions.ts`.
+- Role-based slot rendering and toolbar controls: STAFF/MANAGER can click free slots to book with "+ HH:mm" hover triggers and "You" chip for own bookings; ADMIN has read-only plain cells and network-wide oversight description.
+- Bookmarkable GET toolbar with segmented Day/Week links, previous/today/next steppers, site/category/resource selectors, and live update timestamp.
+- Sticky time column and sticky column headers with native CSS Grid, off-hours distinction, and "Now" line indicator.
+- Skeleton loading component (`src/app/(app)/calendar/loading.tsx`).
+- Unit tests for calendar layout math and role options; integration tests for day/week calendar service filtering and isolation.
+- Architecture Decision Record D18 ("Own calendar grid instead of a calendar library").
+
 - Equipment care database models and migration (`equipment_records` table, enums `EquipmentRecordKind` and `EquipmentOutcome`, resource equipment fields, and 7 PostgreSQL check constraints).
 - Pure equipment care rules and helpers in `src/config/equipment.ts`, `src/lib/equipment-dates.ts`, `src/lib/equipment-status.ts`, and `src/lib/booking-rules.ts`.
 - Equipment care service (`src/services/equipment.ts`) and Server Actions (`src/actions/equipment.ts`) supporting append-only history, task completion (`markDone`), deferral (`markNotDone`), and overview queries.
