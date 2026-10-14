@@ -85,3 +85,11 @@ Each entry records an architectural choice, why it was made, and what trade-offs
 - **Context:** When a resource transitions out of service (`OUT_OF_SERVICE`) or is retired (`RETIRED`), existing future confirmed bookings would become invalid and leave users expecting unavailable equipment. If status update and booking cancellation are executed separately, a failure in between would leave an inconsistent state or ghost bookings on unavailable equipment.
 - **Decision:** Execute resource status changes and booking cancellations atomically within a single Prisma transaction (`prisma.$transaction`). When transitioning to `OUT_OF_SERVICE` or `RETIRED`, identify future confirmed bookings (`status = "CONFIRMED"` and `startAt > now`), update the resource status, and transition those bookings to `CANCELLED` with a structured reason recorded in `cancelReason` (e.g., `"Resource taken out of service: <reason>"` or `"Resource retired: <reason>"`). Maintenance reservations, past bookings, and bookings on other resources remain intact.
 - **Consequences:** Guarantees database consistency with zero ghost active bookings on offline resources. The status transition page displays the exact number of bookings that will be cancelled before the manager confirms the change.
+
+## D11: Times stored in UTC, entered and shown in APP_TIME_ZONE
+
+- **Date:** 2026-10-14
+- **Status:** accepted
+- **Context:** Laboratory operations require consistent schedule boundaries across all devices and shifts. Client browsers may run on differing local system timezones, and naive date parsing (`new Date("YYYY-MM-DDTHH:mm")`) uses the local browser's clock, creating accidental slot shifting and false clash detections.
+- **Decision:** Store all timestamps in PostgreSQL as `TIMESTAMPTZ` normalized to UTC. Parse all date and time inputs using `parseLabDateTime(dateStr, timeStr, zone)` via `@date-fns/tz` `TZDate`, explicitly locked to `APP_TIME_ZONE` (`Asia/Colombo` by default). Format all displayed schedule times using `formatLabRange`, `formatLabDate`, and `formatLabTime` with the lab timezone. Disallow naive parsing of local datetime strings.
+- **Consequences:** Ensures zero timezone drift across staff devices, exact 15-minute slot boundary alignment, and guarantees that bookings, calendar views, and database exclusion ranges match the physical laboratory's operating day.

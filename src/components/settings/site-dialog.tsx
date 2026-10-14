@@ -82,7 +82,10 @@ export function SiteDialog() {
 
           <div className="space-y-4">
             <div className="space-y-1.5">
-              <Label htmlFor="site-name" className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]">
+              <Label
+                htmlFor="site-name"
+                className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+              >
                 Site Name
               </Label>
               <Input
@@ -100,7 +103,10 @@ export function SiteDialog() {
 
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <Label htmlFor="site-address" className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]">
+                <Label
+                  htmlFor="site-address"
+                  className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                >
                   Address
                 </Label>
                 <span className="text-xs font-mono text-[#879390]">(optional)</span>

@@ -82,13 +82,13 @@ export default async function CategoriesPage({ searchParams }: CategoriesPagePro
             </TableHeader>
             <TableBody>
               {categories.map((category) => (
-                <TableRow key={category.id} className="group hover:bg-[#222a3a]/50 transition-colors duration-150">
+                <TableRow
+                  key={category.id}
+                  className="group hover:bg-[#222a3a]/50 transition-colors duration-150"
+                >
                   <TableCell className="w-14 pl-4 pr-0 py-3.5">
                     <div className="w-9 h-9 rounded-lg bg-[#18202f] border border-[#334155] flex items-center justify-center text-[#6cd8cb] shrink-0">
-                      <CategoryIcon
-                        iconKey={category.iconKey}
-                        className="size-5 shrink-0"
-                      />
+                      <CategoryIcon iconKey={category.iconKey} className="size-5 shrink-0" />
                     </div>
                   </TableCell>
                   <TableCell className="font-semibold text-white py-3.5 px-4 text-sm">

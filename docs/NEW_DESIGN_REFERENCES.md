@@ -11,24 +11,24 @@ The new design reference transitions from basic flat tables to a **multi-layered
 
 ### 1.1 Color Tokens & Surface Layering
 
-| Surface Level | Hex Token | CSS Variable / Tailwind | Description & Usage |
-| :--- | :--- | :--- | :--- |
-| **Canvas Base** | `#0b1322` / `#101827` | `--background` / `bg-surface` | Root application background, glare-absorbing matte finish |
-| **Recessed Track** | `#060e1d` / `#0f172a` | `bg-surface-container-lowest` | Table input fields, filter textboxes, inactive tracks |
-| **Surface Low** | `#141c2b` | `bg-surface-container-low` | Table container cards, card base, metrics strip |
-| **Surface Default** | `#18202f` | `bg-surface-container` | Standard structural elements, sidebar, button base |
-| **Surface High** | `#222a3a` | `bg-surface-container-high` | Row hover states, active tab backgrounds, toolbars |
-| **Surface Highest** | `#2d3545` | `bg-surface-container-highest` | Sticky table headers, subtle card dividers |
+| Surface Level       | Hex Token             | CSS Variable / Tailwind        | Description & Usage                                       |
+| :------------------ | :-------------------- | :----------------------------- | :-------------------------------------------------------- |
+| **Canvas Base**     | `#0b1322` / `#101827` | `--background` / `bg-surface`  | Root application background, glare-absorbing matte finish |
+| **Recessed Track**  | `#060e1d` / `#0f172a` | `bg-surface-container-lowest`  | Table input fields, filter textboxes, inactive tracks     |
+| **Surface Low**     | `#141c2b`             | `bg-surface-container-low`     | Table container cards, card base, metrics strip           |
+| **Surface Default** | `#18202f`             | `bg-surface-container`         | Standard structural elements, sidebar, button base        |
+| **Surface High**    | `#222a3a`             | `bg-surface-container-high`    | Row hover states, active tab backgrounds, toolbars        |
+| **Surface Highest** | `#2d3545`             | `bg-surface-container-highest` | Sticky table headers, subtle card dividers                |
 
 ### 1.2 Operational Colors & Accent Palette
 
-| State | Foreground | Background Pill / Container | Border | Notes |
-| :--- | :--- | :--- | :--- | :--- |
-| **Primary (Teal)** | `#6cd8cb` (`#0f9488`) | `rgba(15, 148, 136, 0.15)` | `rgba(15, 148, 136, 0.3)` | Primary actions, submit buttons, active links |
-| **Success / Active** | `#34d399` (`#10b981`) | `rgba(16, 185, 129, 0.1)` | `rgba(16, 185, 129, 0.25)` | Online equipment, verified status with pulse dot |
-| **Maintenance** | `#fbbf24` (`#d97706`) | `rgba(217, 119, 6, 0.15)` | `rgba(217, 119, 6, 0.35)` | 45° diagonal hatch stripe pattern applied |
-| **Destructive / OOS** | `#f87171` (`#ef4444`) | `rgba(239, 68, 68, 0.15)` | `rgba(239, 68, 68, 0.35)` | Delete buttons, decommissioned items, hardware lockout |
-| **Hairline Border** | `#334155` / `#3d4947` | — | `border-outline-variant` | 1px precision separation lines |
+| State                 | Foreground            | Background Pill / Container | Border                     | Notes                                                  |
+| :-------------------- | :-------------------- | :-------------------------- | :------------------------- | :----------------------------------------------------- |
+| **Primary (Teal)**    | `#6cd8cb` (`#0f9488`) | `rgba(15, 148, 136, 0.15)`  | `rgba(15, 148, 136, 0.3)`  | Primary actions, submit buttons, active links          |
+| **Success / Active**  | `#34d399` (`#10b981`) | `rgba(16, 185, 129, 0.1)`   | `rgba(16, 185, 129, 0.25)` | Online equipment, verified status with pulse dot       |
+| **Maintenance**       | `#fbbf24` (`#d97706`) | `rgba(217, 119, 6, 0.15)`   | `rgba(217, 119, 6, 0.35)`  | 45° diagonal hatch stripe pattern applied              |
+| **Destructive / OOS** | `#f87171` (`#ef4444`) | `rgba(239, 68, 68, 0.15)`   | `rgba(239, 68, 68, 0.35)`  | Delete buttons, decommissioned items, hardware lockout |
+| **Hairline Border**   | `#334155` / `#3d4947` | —                           | `border-outline-variant`   | 1px precision separation lines                         |
 
 ### 1.3 Typography
 
@@ -42,6 +42,7 @@ The new design reference transitions from basic flat tables to a **multi-layered
 The new table architecture is designed for dense data readability, eliminating visual jitter with sticky headers, icon badges, and contextual state row-tints.
 
 ### 2.1 Visual Specifications
+
 1. **Container**:
    - `rounded-lg border border-outline-variant bg-surface-container-low overflow-hidden shadow-sm`
 2. **Header Row (`<thead>`)**:
@@ -67,16 +68,16 @@ The new table architecture is designed for dense data readability, eliminating v
 ```tsx
 import * as React from "react";
 import Link from "next/link";
-import { 
-  CheckCircle2, 
-  AlertTriangle, 
-  Wrench, 
-  MoreHorizontal, 
-  Pencil, 
-  Trash2, 
-  ChevronLeft, 
+import {
+  CheckCircle2,
+  AlertTriangle,
+  Wrench,
+  MoreHorizontal,
+  Pencil,
+  Trash2,
+  ChevronLeft,
   ChevronRight,
-  ExternalLink
+  ExternalLink,
 } from "lucide-react";
 
 export interface ResourceRowItem {
@@ -116,7 +117,7 @@ export function ClinicalResourceTable({ resources }: { resources: ResourceRowIte
               const isOOS = item.status === "OUT_OF_SERVICE";
 
               return (
-                <tr 
+                <tr
                   key={item.id}
                   className={`
                     group transition-colors duration-150 hover:bg-[#222a3a]/50
@@ -127,18 +128,22 @@ export function ClinicalResourceTable({ resources }: { resources: ResourceRowIte
                   {/* Resource Details Cell */}
                   <td className="py-3.5 px-4">
                     <div className="flex items-center gap-3">
-                      <div className={`
+                      <div
+                        className={`
                         w-9 h-9 rounded-lg flex items-center justify-center shrink-0 border
-                        ${isOOS 
-                          ? "bg-[#18202f] border-rose-500/40 text-rose-400" 
-                          : isMaintenance 
-                          ? "bg-[#18202f] border-amber-500/40 text-amber-400" 
-                          : "bg-[#18202f] border-[#334155] text-[#6cd8cb]"}
-                      `}>
+                        ${
+                          isOOS
+                            ? "bg-[#18202f] border-rose-500/40 text-rose-400"
+                            : isMaintenance
+                              ? "bg-[#18202f] border-amber-500/40 text-amber-400"
+                              : "bg-[#18202f] border-[#334155] text-[#6cd8cb]"
+                        }
+                      `}
+                      >
                         {item.icon}
                       </div>
                       <div className="min-w-0">
-                        <Link 
+                        <Link
                           href={`/resources/${item.id}`}
                           className="font-semibold text-[#f1f5f9] group-hover:text-[#6cd8cb] transition-colors truncate block text-sm"
                         >
@@ -152,9 +157,7 @@ export function ClinicalResourceTable({ resources }: { resources: ResourceRowIte
                   </td>
 
                   {/* Site Cell */}
-                  <td className="py-3.5 px-4 font-medium text-[#f1f5f9] text-sm">
-                    {item.site}
-                  </td>
+                  <td className="py-3.5 px-4 font-medium text-[#f1f5f9] text-sm">{item.site}</td>
 
                   {/* Section Cell */}
                   <td className="py-3.5 px-4">
@@ -224,11 +227,12 @@ export function ClinicalResourceTable({ resources }: { resources: ResourceRowIte
       {/* Table Pagination & Metrics Strip */}
       <div className="p-3 bg-[#18202f] border-t border-[#334155] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-mono text-[#94a3b8]">
         <div>
-          Showing <span className="font-semibold text-[#f1f5f9] tabular-nums">1-5</span> of <span className="font-semibold text-[#f1f5f9] tabular-nums">14</span> assets
+          Showing <span className="font-semibold text-[#f1f5f9] tabular-nums">1-5</span> of{" "}
+          <span className="font-semibold text-[#f1f5f9] tabular-nums">14</span> assets
         </div>
         <div className="flex items-center gap-2">
-          <button 
-            disabled 
+          <button
+            disabled
             className="px-2.5 py-1 rounded bg-[#141c2b] border border-[#334155]/60 text-[#879390] disabled:opacity-40 disabled:cursor-not-allowed hover:text-[#f1f5f9] transition-colors"
           >
             Previous
@@ -271,7 +275,12 @@ interface EditButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> 
   onClick?: () => void;
 }
 
-export function ClinicalEditButton({ label = "Edit", onClick, className = "", ...props }: EditButtonProps) {
+export function ClinicalEditButton({
+  label = "Edit",
+  onClick,
+  className = "",
+  ...props
+}: EditButtonProps) {
   return (
     <button
       type="button"
@@ -287,14 +296,18 @@ export function ClinicalEditButton({ label = "Edit", onClick, className = "", ..
       `}
       {...props}
     >
-      <svg 
-        className="w-3.5 h-3.5 text-[#6cd8cb]" 
-        fill="none" 
-        viewBox="0 0 24 24" 
-        stroke="currentColor" 
+      <svg
+        className="w-3.5 h-3.5 text-[#6cd8cb]"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
         strokeWidth="2"
       >
-        <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
+        />
       </svg>
       <span>{label}</span>
     </button>
@@ -312,7 +325,12 @@ interface DeleteButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement
   onClick?: () => void;
 }
 
-export function ClinicalDeleteButton({ title = "Decommission", onClick, className = "", ...props }: DeleteButtonProps) {
+export function ClinicalDeleteButton({
+  title = "Decommission",
+  onClick,
+  className = "",
+  ...props
+}: DeleteButtonProps) {
   return (
     <button
       type="button"
@@ -329,14 +347,18 @@ export function ClinicalDeleteButton({ title = "Decommission", onClick, classNam
       `}
       {...props}
     >
-      <svg 
-        className="w-4 h-4" 
-        fill="none" 
-        viewBox="0 0 24 24" 
-        stroke="currentColor" 
+      <svg
+        className="w-4 h-4"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
         strokeWidth="2"
       >
-        <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
+        />
       </svg>
       <span className="sr-only">{title}</span>
     </button>
@@ -355,12 +377,12 @@ interface SubmitButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement
   pendingLabel?: string;
 }
 
-export function ClinicalSubmitButton({ 
-  isPending = false, 
-  label = "Save changes", 
-  pendingLabel = "Saving...", 
-  className = "", 
-  ...props 
+export function ClinicalSubmitButton({
+  isPending = false,
+  label = "Save changes",
+  pendingLabel = "Saving...",
+  className = "",
+  ...props
 }: SubmitButtonProps) {
   return (
     <button
@@ -379,12 +401,15 @@ export function ClinicalSubmitButton({
       {...props}
     >
       {isPending && (
-        <svg 
-          className="w-4 h-4 animate-spin text-[#003732]" 
-          fill="none" 
-          viewBox="0 0 24 24"
-        >
-          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+        <svg className="w-4 h-4 animate-spin text-[#003732]" fill="none" viewBox="0 0 24 24">
+          <circle
+            className="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            strokeWidth="4"
+          />
           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
         </svg>
       )}
@@ -397,7 +422,13 @@ export function ClinicalSubmitButton({
 ### 3.4 Cancel Button Reference
 
 ```tsx
-export function ClinicalCancelButton({ onClick, label = "Cancel" }: { onClick: () => void; label?: string }) {
+export function ClinicalCancelButton({
+  onClick,
+  label = "Cancel",
+}: {
+  onClick: () => void;
+  label?: string;
+}) {
   return (
     <button
       type="button"
@@ -452,7 +483,7 @@ export function ClinicalEditSiteModal({ isOpen, onClose, onSubmit, site }: EditS
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/65 backdrop-blur-[4px] animate-in fade-in duration-200">
-      <div 
+      <div
         className="w-full max-w-lg bg-[#141c2b] border border-[#334155] rounded-xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200"
         role="dialog"
       >
@@ -510,7 +541,9 @@ export function ClinicalEditSiteModal({ isOpen, onClose, onSubmit, site }: EditS
             <div className="flex items-center gap-2.5">
               <Info className="w-4 h-4 text-[#6cd8cb] shrink-0" />
               <span className="text-xs text-[#94a3b8] font-mono">
-                Associated with <strong className="text-[#f1f5f9]">{site.resourcesCount} resources</strong> and <strong className="text-[#f1f5f9]">{site.usersCount} users</strong>.
+                Associated with{" "}
+                <strong className="text-[#f1f5f9]">{site.resourcesCount} resources</strong> and{" "}
+                <strong className="text-[#f1f5f9]">{site.usersCount} users</strong>.
               </span>
             </div>
             <span className="text-xs font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
@@ -534,13 +567,13 @@ export function ClinicalEditSiteModal({ isOpen, onClose, onSubmit, site }: EditS
 
 ## 5. Summary Table Comparison: Current vs New Design
 
-| Element | Previous UI (Light / Neutral) | New Clinical Precision Design |
-| :--- | :--- | :--- |
-| **Theme / Background** | Light grey `#f4f7f8`, white cards | Deep matte `#0b1322`, layered containers (`#141c2b` / `#18202f`) |
-| **Table Header** | Soft grey `bg-muted/40`, mixed font | Sticky `#222a3a/70`, `label-sm` uppercase mono, tracking-wider |
-| **Table Rows** | Plain divider, basic hover | High contrast `#dbe2f8`, subtle hover `#222a3a/50`, OOS rose wash |
-| **Maintenance Rows**| Plain text warning | 45° linear amber diagonal hatch pattern `.hatch-maintenance` |
-| **Edit Button** | Secondary outline button (`h-8 text-xs`) | Compact 30px container button `#18202f` with teal icon & border |
-| **Delete Button** | Standard ghost icon with light red hover | Subtle neutral icon with soft rose hover `hover:bg-rose-500/10` |
-| **Submit Button** | Deep teal `#0e6a85` with white text | Electric Clinical Teal `#6cd8cb` / `#29a195` with dark ink text |
-| **Modal Dialog** | Plain white card with standard border | Low-glare container, blur backdrop, telemetry metadata badge |
+| Element                | Previous UI (Light / Neutral)            | New Clinical Precision Design                                     |
+| :--------------------- | :--------------------------------------- | :---------------------------------------------------------------- |
+| **Theme / Background** | Light grey `#f4f7f8`, white cards        | Deep matte `#0b1322`, layered containers (`#141c2b` / `#18202f`)  |
+| **Table Header**       | Soft grey `bg-muted/40`, mixed font      | Sticky `#222a3a/70`, `label-sm` uppercase mono, tracking-wider    |
+| **Table Rows**         | Plain divider, basic hover               | High contrast `#dbe2f8`, subtle hover `#222a3a/50`, OOS rose wash |
+| **Maintenance Rows**   | Plain text warning                       | 45° linear amber diagonal hatch pattern `.hatch-maintenance`      |
+| **Edit Button**        | Secondary outline button (`h-8 text-xs`) | Compact 30px container button `#18202f` with teal icon & border   |
+| **Delete Button**      | Standard ghost icon with light red hover | Subtle neutral icon with soft rose hover `hover:bg-rose-500/10`   |
+| **Submit Button**      | Deep teal `#0e6a85` with white text      | Electric Clinical Teal `#6cd8cb` / `#29a195` with dark ink text   |
+| **Modal Dialog**       | Plain white card with standard border    | Low-glare container, blur backdrop, telemetry metadata badge      |

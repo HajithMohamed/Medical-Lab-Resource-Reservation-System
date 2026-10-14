@@ -65,7 +65,10 @@ export function UserMenu({ user, logoutAction }: UserMenuProps) {
         </DropdownMenuLabel>
         <DropdownMenuSeparator className="bg-[#334155]/60" />
         <DropdownMenuItem asChild className="hover:bg-[#222a3a] focus:bg-[#222a3a]">
-          <Link href="/change-password" className="flex items-center gap-2 cursor-pointer text-[#dbe2f8] hover:text-white">
+          <Link
+            href="/change-password"
+            className="flex items-center gap-2 cursor-pointer text-[#dbe2f8] hover:text-white"
+          >
             <KeyRound className="size-4 text-[#6cd8cb]" />
             <span>Change password</span>
           </Link>

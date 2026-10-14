@@ -56,8 +56,11 @@ export function PaginationControls({
       )}
     >
       <div>
-        Showing <strong className="text-white font-semibold">{start}-{end}</strong> of{" "}
-        <strong className="text-white font-semibold">{totalCount}</strong> {itemLabel}
+        Showing{" "}
+        <strong className="text-white font-semibold">
+          {start}-{end}
+        </strong>{" "}
+        of <strong className="text-white font-semibold">{totalCount}</strong> {itemLabel}
       </div>
 
       <div className="flex items-center gap-2 self-end sm:self-auto">

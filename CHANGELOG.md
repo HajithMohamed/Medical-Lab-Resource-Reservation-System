@@ -46,3 +46,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Resource status transition flow (`/resources/[id]/status`) that atomically cancels future confirmed bookings with recorded reason when transitioning to OUT_OF_SERVICE or RETIRED inside a single database transaction.
 - Server Actions in `src/actions/resources.ts` with manager role verification, Zod input validation, and Next.js path cache revalidation.
 - Integration tests in `tests/integration/resources.test.ts` covering manager site scoping, duplicate name handling, site migration permissions, atomic status cancellation, and multi-field resource filtering.
+- Pure booking validation rules in `src/lib/booking-rules.ts` (`checkBookingTimes`, `checkAttendees`, `formatDurationWords`) enforcing 15-minute slot alignment, duration limits, 60-day advance window, and room capacities.
+- Pure cancellation permission rules in `src/lib/permissions.ts` (`canCancelReservation`) restricting cancellation to unstarted confirmed bookings by owners or site managers.
+- Clash-free booking service in `src/services/bookings.ts` (`createBooking`, `cancelBooking`, `getReservation`, `listMyBookings`) backed by PostgreSQL `EXCLUDE` constraint with user-friendly naming of clashing bookings or maintenance.
+- Server Actions in `src/actions/bookings.ts` (`createBookingAction`, `cancelBookingAction`) with path cache revalidations and notice redirects.
+- Real-time `socket.io-client` synchronization hook (`useBookingSocket`) for collaborative schedule updates across multiple browser tabs and laboratory terminals.
+- Bookings UI adhering to Clinical Precision design system:
+  - `/bookings/new` Card form (max 640px) with site-grouped selects, dynamic duration/capacity hints, and top destructive clash alerts linking to calendar.
+  - `/bookings` My Bookings client with sectioned views (Upcoming, Past, Cancelled), modal creation dialog, NoticeToast notifications, soft highlight fade on `?highlight=`, and client pagination controls.
+  - `/reservations/[id]` Specimen label slip with large tabular timestamps, status pills, diagonal maintenance hatching, and modal cancellation dialog with required reason.
+  - Linked reservation slips across `/resources/[id]` 7-day schedule.
+- Unit test suites covering booking rules and permissions; comprehensive integration test suite verifying free slot booking, named person clashes, maintenance clashes, 5-parallel concurrent race condition handling, and site-scoped cancellation rules.

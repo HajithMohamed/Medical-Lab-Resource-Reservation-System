@@ -173,11 +173,16 @@ export default async function UsersPage({ searchParams }: UsersPageProps) {
                     : "Never signed in";
 
                   return (
-                    <TableRow key={user.id} className="group hover:bg-[#222a3a]/50 transition-colors duration-150">
+                    <TableRow
+                      key={user.id}
+                      className="group hover:bg-[#222a3a]/50 transition-colors duration-150"
+                    >
                       <TableCell className="py-3 px-4">
                         <div className="flex items-center gap-3">
                           <Avatar className="size-9 rounded-lg bg-[#6cd8cb]/20 text-[#6cd8cb] border border-[#6cd8cb]/30 font-mono font-bold text-xs shrink-0">
-                            <AvatarFallback className="bg-[#6cd8cb]/20 text-[#6cd8cb]">{getInitials(user.name)}</AvatarFallback>
+                            <AvatarFallback className="bg-[#6cd8cb]/20 text-[#6cd8cb]">
+                              {getInitials(user.name)}
+                            </AvatarFallback>
                           </Avatar>
                           <div className="min-w-0">
                             <UserEditDialog

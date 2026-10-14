@@ -104,7 +104,10 @@ export function CategoryDialog() {
 
           <div className="space-y-4">
             <div className="space-y-1.5">
-              <Label htmlFor="category-name" className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]">
+              <Label
+                htmlFor="category-name"
+                className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+              >
                 Category Name
               </Label>
               <Input
@@ -122,7 +125,10 @@ export function CategoryDialog() {
 
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <Label htmlFor="category-max-minutes" className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]">
+                <Label
+                  htmlFor="category-max-minutes"
+                  className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                >
                   Longest booking
                 </Label>
                 {liveHint && (
@@ -148,16 +154,26 @@ export function CategoryDialog() {
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="category-icon" className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]">
+              <Label
+                htmlFor="category-icon"
+                className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+              >
                 Icon glyph
               </Label>
               <Select value={iconKey} onValueChange={(val) => setIconKey(val as CategoryIconKey)}>
-                <SelectTrigger id="category-icon" className="w-full bg-[#060e1d] border-[#334155] text-white">
+                <SelectTrigger
+                  id="category-icon"
+                  className="w-full bg-[#060e1d] border-[#334155] text-white"
+                >
                   <SelectValue placeholder="Select icon" />
                 </SelectTrigger>
                 <SelectContent className="bg-[#18202f] border-[#334155] text-white">
                   {CATEGORY_ICON_KEYS.map((key) => (
-                    <SelectItem key={key} value={key} className="hover:bg-[#222a3a] focus:bg-[#222a3a]">
+                    <SelectItem
+                      key={key}
+                      value={key}
+                      className="hover:bg-[#222a3a] focus:bg-[#222a3a]"
+                    >
                       <div className="flex items-center gap-2">
                         <CategoryIcon
                           iconKey={key}

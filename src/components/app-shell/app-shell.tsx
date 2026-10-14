@@ -24,9 +24,14 @@ export function AppShell({ user, logoutAction, children }: AppShellProps) {
       </a>
       <SidebarProvider className="bg-[#0b1322] min-h-screen text-[#f1f5f9] overflow-x-hidden">
         <AppSidebar user={user} logoutAction={logoutAction} />
-        <SidebarInset id="main" className="flex flex-col min-h-screen bg-[#0b1322] text-[#f1f5f9] w-full max-w-full overflow-x-hidden">
+        <SidebarInset
+          id="main"
+          className="flex flex-col min-h-screen bg-[#0b1322] text-[#f1f5f9] w-full max-w-full overflow-x-hidden"
+        >
           <TopBar />
-          <div className="flex-1 p-4 sm:p-6 lg:p-8 bg-[#0b1322] text-[#f1f5f9] w-full max-w-full overflow-x-hidden">{children}</div>
+          <div className="flex-1 p-4 sm:p-6 lg:p-8 bg-[#0b1322] text-[#f1f5f9] w-full max-w-full overflow-x-hidden">
+            {children}
+          </div>
         </SidebarInset>
       </SidebarProvider>
     </>

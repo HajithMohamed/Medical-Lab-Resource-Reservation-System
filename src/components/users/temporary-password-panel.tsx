@@ -52,7 +52,8 @@ export function TemporaryPasswordPanel({
         <div className="flex items-start gap-2.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-3 text-xs font-mono text-emerald-300">
           <Mail className="size-4 text-emerald-400 shrink-0 mt-0.5" />
           <div>
-            <span className="font-semibold">Email sent: </span>Welcome email with credentials and activation link was delivered to{" "}
+            <span className="font-semibold">Email sent: </span>Welcome email with credentials and
+            activation link was delivered to{" "}
             <span className="font-semibold text-white">{userEmail}</span>.
           </div>
         </div>
@@ -61,7 +62,8 @@ export function TemporaryPasswordPanel({
           <AlertCircle className="size-4 text-amber-400 shrink-0 mt-0.5" />
           <div>
             <span className="font-semibold">Notice: </span>
-            Could not deliver email ({emailError}). Please copy the temporary password below and share it directly.
+            Could not deliver email ({emailError}). Please copy the temporary password below and
+            share it directly.
           </div>
         </div>
       ) : null}
@@ -122,7 +124,11 @@ export function TemporaryPasswordPanel({
           </Button>
         )}
 
-        <Button asChild variant="outline" className="text-xs font-mono text-[#dbe2f8] hover:bg-[#222a3a] border-[#334155]">
+        <Button
+          asChild
+          variant="outline"
+          className="text-xs font-mono text-[#dbe2f8] hover:bg-[#222a3a] border-[#334155]"
+        >
           <Link href="/users" className="gap-2">
             <ArrowLeft className="size-3.5" />
             <span>Back to users</span>

@@ -37,10 +37,7 @@ export function ResourceCard({
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-start gap-3 min-w-0">
           <div className="w-9 h-9 rounded-lg bg-[#18202f] border border-[#334155] flex items-center justify-center text-[#6cd8cb] shrink-0 mt-0.5">
-            <CategoryIcon
-              iconKey={resource.category.iconKey}
-              className="size-5 shrink-0"
-            />
+            <CategoryIcon iconKey={resource.category.iconKey} className="size-5 shrink-0" />
           </div>
           <div className="min-w-0">
             <Link
@@ -92,7 +89,11 @@ export function ResourceCard({
         </div>
 
         {resource.status === "ACTIVE" && (
-          <Button asChild size="sm" className="h-8 px-3 text-xs font-mono font-semibold bg-[#6cd8cb] hover:bg-[#29a195] text-[#003732]">
+          <Button
+            asChild
+            size="sm"
+            className="h-8 px-3 text-xs font-mono font-semibold bg-[#6cd8cb] hover:bg-[#29a195] text-[#003732]"
+          >
             <Link href={`/bookings/new?resourceId=${resource.id}`}>Book Slot</Link>
           </Button>
         )}
