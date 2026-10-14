@@ -1,21 +1,33 @@
 import "server-only";
 
-import { subDays, addDays } from "date-fns";
+import { subDays, addDays, differenceInCalendarDays } from "date-fns";
 import { db } from "@/lib/db";
 import { env } from "@/lib/env";
 import { checkBookingTimes, checkAttendees } from "@/lib/booking-rules";
-import { canCancelReservation } from "@/lib/permissions";
+import {
+  canBook,
+  canCancelBooking,
+  canOverseeBookings,
+  bookingOversightSitesFor,
+} from "@/lib/permissions";
 import { isOverlapError } from "@/lib/db-errors";
 import {
   formatLabRange,
   labDayStart,
+  labDayEnd,
   labDateString,
   labTimeString,
   labToday,
   startOfCurrentSlot,
 } from "@/lib/time";
 import { freeStartTimes, nearestStarts, type TimeRange } from "@/lib/slot-finder";
-import { RECENT_DAYS, SLOT_MINUTES, FIND_SLOT_SUGGESTIONS } from "@/config/rules";
+import {
+  RECENT_DAYS,
+  SLOT_MINUTES,
+  FIND_SLOT_SUGGESTIONS,
+  BOOKINGS_PAGE_SIZE,
+  USAGE_MAX_DAYS,
+} from "@/config/rules";
 import type { Reservation, Role } from "@/generated/prisma/client";
 
 export interface BookingActor {
@@ -54,6 +66,13 @@ export async function createBooking(
   actor: BookingActor,
   input: CreateBookingInput,
 ): Promise<CreateBookingResult> {
+  if (!canBook(actor)) {
+    return {
+      ok: false,
+      error: "Admins manage the network and do not book. Use a staff or manager account.",
+    };
+  }
+
   const resource = await db.resource.findUnique({
     where: { id: input.resourceId },
     include: {
@@ -244,11 +263,26 @@ export async function cancelBooking(
     return { ok: false, error: "Reservation not found." };
   }
 
+  if (reservation.kind !== "BOOKING") {
+    return { ok: false, error: "Cannot cancel a maintenance block with this action." };
+  }
+
+  if (reservation.status !== "CONFIRMED") {
+    return { ok: false, error: "Only confirmed bookings can be cancelled." };
+  }
+
   const now = new Date();
-  if (!canCancelReservation(actor, reservation, now)) {
+  if (reservation.startAt.getTime() <= now.getTime()) {
     return {
       ok: false,
-      error: "You are not authorized to cancel this reservation, or it has already started.",
+      error: "Cannot cancel a booking that has already started.",
+    };
+  }
+
+  if (!canCancelBooking(actor, reservation)) {
+    return {
+      ok: false,
+      error: "You are not authorized to cancel this reservation.",
     };
   }
 
@@ -272,6 +306,248 @@ export async function cancelBooking(
   });
 
   return { ok: true, data: updated };
+}
+
+export interface OversightBookingFilters {
+  from?: string;
+  to?: string;
+  siteId?: string;
+  resourceId?: string;
+  person?: string;
+  status?: "CONFIRMED" | "CANCELLED" | "ALL";
+  page?: number;
+  pageSize?: number;
+}
+
+export interface OversightBookingItem {
+  id: string;
+  startAt: Date;
+  endAt: Date;
+  formattedRange: string;
+  purpose: string;
+  status: string;
+  hasStarted: boolean;
+  canCancel: boolean;
+  cancelReason?: string | null;
+  cancelledAt?: Date | null;
+  cancelledBy?: {
+    id: string;
+    name: string;
+  } | null;
+  resource: {
+    id: string;
+    name: string;
+    siteId: string;
+    site: {
+      id: string;
+      name: string;
+    };
+    category: {
+      name: string;
+      iconKey: string;
+    };
+  };
+  createdBy: {
+    id: string;
+    name: string;
+    email: string;
+  };
+}
+
+export interface ListOversightResult {
+  items: OversightBookingItem[];
+  totalCount: number;
+  totalPages: number;
+  page: number;
+  pageSize: number;
+  query: {
+    from: string;
+    to: string;
+    siteId?: string;
+    resourceId?: string;
+    person?: string;
+    status: "CONFIRMED" | "CANCELLED" | "ALL";
+  };
+}
+
+/**
+ * Lists bookings for oversight (Managers see own site only; Admins see all sites).
+ */
+export async function listBookingsForOversight(
+  actor: BookingActor,
+  filters: OversightBookingFilters = {},
+): Promise<ListOversightResult> {
+  const zone = env.APP_TIME_ZONE;
+  const now = new Date();
+
+  const allowedSites = bookingOversightSitesFor(actor);
+  if (!canOverseeBookings(actor) || (Array.isArray(allowedSites) && allowedSites.length === 0)) {
+    return {
+      items: [],
+      totalCount: 0,
+      totalPages: 1,
+      page: 1,
+      pageSize: BOOKINGS_PAGE_SIZE,
+      query: {
+        from: labToday(zone),
+        to: labDateString(addDays(now, 7), zone),
+        status: "CONFIRMED",
+      },
+    };
+  }
+
+  // Parse dates with fallbacks
+  const fromStr =
+    filters.from && /^\d{4}-\d{2}-\d{2}$/.test(filters.from) ? filters.from : labToday(zone);
+  let toStr =
+    filters.to && /^\d{4}-\d{2}-\d{2}$/.test(filters.to)
+      ? filters.to
+      : labDateString(addDays(now, 7), zone);
+
+  const fromDate = labDayStart(fromStr, zone);
+  let toDate = labDayEnd(toStr, zone);
+
+  // Clamp date range: at most USAGE_MAX_DAYS apart, and toDate >= fromDate
+  const daysDiff = differenceInCalendarDays(toDate, fromDate);
+  if (daysDiff < 0 || daysDiff > USAGE_MAX_DAYS) {
+    toStr = labDateString(addDays(fromDate, 7), zone);
+    toDate = labDayEnd(toStr, zone);
+  }
+
+  const where: Record<string, unknown> = {
+    kind: "BOOKING",
+    startAt: {
+      gte: fromDate,
+      lte: toDate,
+    },
+  };
+
+  // Status filter (default CONFIRMED)
+  const statusParam = filters.status ?? "CONFIRMED";
+  if (statusParam === "CONFIRMED") {
+    where.status = "CONFIRMED";
+  } else if (statusParam === "CANCELLED") {
+    where.status = "CANCELLED";
+  } else if (statusParam === "ALL") {
+    where.status = { in: ["CONFIRMED", "CANCELLED"] };
+  }
+
+  // Site scoping
+  if (allowedSites === "all") {
+    if (filters.siteId && filters.siteId !== "all") {
+      where.resource = { siteId: filters.siteId };
+    }
+  } else {
+    // MANAGER: own site only, ignore any other site in filters
+    where.resource = { siteId: { in: allowedSites } };
+  }
+
+  // Resource filter
+  if (filters.resourceId && filters.resourceId !== "all") {
+    where.resourceId = filters.resourceId;
+  }
+
+  // Person filter (name search case-insensitive)
+  if (filters.person && filters.person.trim().length > 0) {
+    where.createdBy = {
+      name: {
+        contains: filters.person.trim(),
+        mode: "insensitive",
+      },
+    };
+  }
+
+  const page = Math.max(1, filters.page ?? 1);
+  const pageSize = Math.max(1, filters.pageSize ?? BOOKINGS_PAGE_SIZE);
+
+  const totalCount = await db.reservation.count({ where });
+  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+
+  const rows = await db.reservation.findMany({
+    where,
+    orderBy: { startAt: "desc" },
+    skip: (page - 1) * pageSize,
+    take: pageSize,
+    select: {
+      id: true,
+      kind: true,
+      status: true,
+      startAt: true,
+      endAt: true,
+      purpose: true,
+      cancelReason: true,
+      cancelledAt: true,
+      cancelledBy: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+      createdBy: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      },
+      resource: {
+        select: {
+          id: true,
+          name: true,
+          siteId: true,
+          site: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+          category: {
+            select: {
+              name: true,
+              iconKey: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  const items: OversightBookingItem[] = rows.map((r) => {
+    const hasStarted = r.startAt.getTime() <= now.getTime();
+    const canCancel = r.status === "CONFIRMED" && !hasStarted && canCancelBooking(actor, r);
+
+    return {
+      id: r.id,
+      startAt: r.startAt,
+      endAt: r.endAt,
+      formattedRange: formatLabRange(r.startAt, r.endAt, zone),
+      purpose: r.purpose,
+      status: r.status,
+      hasStarted,
+      canCancel,
+      cancelReason: r.cancelReason,
+      cancelledAt: r.cancelledAt,
+      cancelledBy: r.cancelledBy,
+      resource: r.resource,
+      createdBy: r.createdBy,
+    };
+  });
+
+  return {
+    items,
+    totalCount,
+    totalPages,
+    page,
+    pageSize,
+    query: {
+      from: fromStr,
+      to: toStr,
+      siteId: allowedSites === "all" ? filters.siteId : undefined,
+      resourceId: filters.resourceId,
+      person: filters.person,
+      status: statusParam,
+    },
+  };
 }
 
 /**

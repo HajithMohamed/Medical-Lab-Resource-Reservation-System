@@ -65,6 +65,7 @@ export async function login(
 
 /**
  * Server Action: sign out and delete session.
+ * Uses getCurrentUser on purpose: this action must work while mustChangePassword is true.
  */
 export async function logout(): Promise<void> {
   await deleteSession();
@@ -73,6 +74,7 @@ export async function logout(): Promise<void> {
 
 /**
  * Server Action: change user's password.
+ * Uses getCurrentUser on purpose: this action must work while mustChangePassword is true.
  */
 export async function changePassword(
   _prevState: AuthActionState | undefined,

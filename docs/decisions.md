@@ -100,4 +100,28 @@ Each entry records an architectural choice, why it was made, and what trade-offs
 - **Status:** accepted
 - **Context:** Users typically think 'when and what' first (date, time, duration, equipment category, attendees) rather than browsing individual instrument schedules, similar to passenger transit or ticket booking systems. Traditional hold mechanisms introduce complex hold table schemas, timeout sweeps, and seat abandonment locks.
 - **Decision:** Provide a bookmarkable GET search page (`/book`) that computes cross-resource availability across all matching laboratory equipment in two batched queries. Rather than holding slots while users fill out booking details, enforce reservations at the moment of saving through the existing PostgreSQL GiST exclusion constraint (`reservations_no_overlap`). If a race condition occurs and another user confirms the slot first, the booking form gracefully intercepts the clash and immediately suggests the nearest free alternate start times computed by `slot-finder`.
-- **Consequences:** Eliminates reservation hold tables, abandoned cart cleanup cron jobs, and resource locking overhead. Users can share and bookmark searches. In the rare event of a lost race, the user receives actionable instant alternatives.
+- **Consequences:** Eliminates reservation hold tables, abandoned cart cleanup cron jobs, and resource locking overhead. Users can share and bookmark searches. In the rare event of a lost race, the user receives actionable instant alternatives. Replaced by polling every 60 s; a socket server needs a custom Node server that Vercel does not run.
+
+## D13: One permission table, one function per rule
+
+- **Date:** 2026-10-14
+- **Status:** accepted
+- **Context:** Role-based access control was previously scattered across inline checks in pages and services, risking discrepancies between visible UI elements and backend enforcement.
+- **Decision:** Document the complete access rules and permission matrix centrally in `docs/permissions.md`. For every rule in the matrix, implement exactly one pure, deterministic helper function in `src/lib/permissions.ts` (e.g., `canBook`, `canManageResource`, `canChangeResourceStatus`, `canCancelBooking`, `canOverseeBookings`, `canViewUsage`). Ensure server-side Server Actions and services independently enforce these functions regardless of client UI visibility.
+- **Consequences:** Eliminates access control drift, provides a single source of truth for authorization, and makes permissions verifiable through comprehensive unit matrix tests.
+
+## D14: Site managers, not regions
+
+- **Date:** 2026-10-14
+- **Status:** accepted
+- **Context:** The laboratory operates distinct physical branch facilities ("sites"). Introducing multi-tier regional hierarchies or regional manager roles adds unnecessary complexity to current operations.
+- **Decision:** Retain single-site managers (`MANAGER` assigned to one `site_id`). Each manager possesses operational authority over their assigned branch lab (staff, resources, equipment care, maintenance, bookings oversight, and usage). Multi-site regional aggregation remains deferred to future work.
+- **Consequences:** Simplifies authorization models, keeps site isolation clear and strict, and matches the physical operational structure of the laboratory network.
+
+## D15: Admins do not book (separation of duties)
+
+- **Date:** 2026-10-14
+- **Status:** accepted
+- **Context:** Administrators oversee the entire network (sites, sections, categories, user accounts, system configuration, and audit logs). Admins have no assigned site or section (`users_site_required_unless_admin`), so bookings created by administrators would appear without section attribution in usage analytics. Furthermore, bench testing and clinical sample processing are performed by lab workers and branch managers, not network administrators.
+- **Decision:** Enforce separation of duties: `ADMIN` users do not create bookings (`canBook` returns `false`). The booking service rejects admin booking attempts with `"Admins manage the network and do not book. Use a staff or manager account."`. Navigation menus, "Book" action buttons, slot-finder search, and calendar slot click-handlers are hidden for admins. In place of personal bookings, administrators and managers receive a dedicated "Bookings" oversight interface (`/bookings/manage`) with search, filters, and cancellation capabilities.
+- **Consequences:** Upholds strict separation of duties, ensures usage telemetry is consistently attributed to lab sections, and gives administrators clear tools to oversee and intervene across all site schedules.

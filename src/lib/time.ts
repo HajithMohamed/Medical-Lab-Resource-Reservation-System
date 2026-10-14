@@ -4,6 +4,12 @@ import { TZDate } from "@date-fns/tz";
 import { format, addDays, formatDistance, isSameDay } from "date-fns";
 import { env } from "@/lib/env";
 import { SLOT_MINUTES } from "@/config/rules";
+/**
+ * Returns the configured lab time zone.
+ */
+export function getLabTimeZone(): string {
+  return env.APP_TIME_ZONE;
+}
 
 /**
  * Parses a lab date string ("2026-10-13") and time string ("10:00") into a Date
@@ -105,6 +111,14 @@ export function formatRelative(date: Date | null | undefined, now: Date = new Da
  */
 export function labDayStart(dateString: string, zone: string = env.APP_TIME_ZONE): Date {
   return parseLabDateTime(dateString, "00:00", zone);
+}
+
+/**
+ * Returns the Date of 23:59:59.999 that day in the lab time zone.
+ */
+export function labDayEnd(dateString: string, zone: string = env.APP_TIME_ZONE): Date {
+  const [year, month, day] = dateString.split("-").map(Number);
+  return new TZDate(year, month - 1, day, 23, 59, 59, 999, zone);
 }
 
 /**

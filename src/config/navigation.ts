@@ -5,6 +5,7 @@ import {
   CalendarSearch,
   FlaskConical,
   CalendarCheck,
+  ClipboardList,
   Wrench,
   BarChart3,
   Users,
@@ -22,7 +23,7 @@ export interface NavItem {
 }
 
 export const NAV_ITEMS: readonly NavItem[] = [
-  // main: STAFF, MANAGER, ADMIN
+  // main: Calendar, Find a slot, Resources, My bookings
   {
     label: "Calendar",
     href: "/calendar",
@@ -34,7 +35,7 @@ export const NAV_ITEMS: readonly NavItem[] = [
     label: "Find a slot",
     href: "/book",
     icon: CalendarSearch,
-    roles: ["STAFF", "MANAGER", "ADMIN"],
+    roles: ["STAFF", "MANAGER"],
     group: "main",
   },
   {
@@ -48,10 +49,17 @@ export const NAV_ITEMS: readonly NavItem[] = [
     label: "My bookings",
     href: "/bookings",
     icon: CalendarCheck,
-    roles: ["STAFF", "MANAGER", "ADMIN"],
+    roles: ["STAFF", "MANAGER"],
     group: "main",
   },
-  // manage: MANAGER, ADMIN
+  // manage: Bookings (oversight), Maintenance, (Equipment care E1), Usage, Users
+  {
+    label: "Bookings",
+    href: "/bookings/manage",
+    icon: ClipboardList,
+    roles: ["MANAGER", "ADMIN"],
+    group: "manage",
+  },
   {
     label: "Maintenance",
     href: "/maintenance",

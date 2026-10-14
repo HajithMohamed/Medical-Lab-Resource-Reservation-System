@@ -106,6 +106,7 @@ export async function cancelBookingAction(
   }
 
   revalidatePath("/bookings");
+  revalidatePath("/bookings/manage");
   revalidatePath("/calendar");
   revalidatePath(`/reservations/${reservationId}`);
   if (result.data.resourceId) {

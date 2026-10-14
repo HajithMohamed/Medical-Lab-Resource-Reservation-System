@@ -117,7 +117,15 @@ A web-based Resource Reservation Management System that gives all lab staff one 
 | **5. Usage dashboard**            | Shows busy and idle resources, peak hours and use by section, so managers can plan.                                                                                                                                            | P5     |
 | **Optional: authorised users**    | Only staff authorised for a resource can book it.                                                                                                                                                                              | P4     |
 
-**Roles.** Staff make and manage their own bookings. Lab managers manage resources, maintenance and all bookings.
+### Roles and menus
+
+The system enforces separation of duties across three roles with strict server-side authorization:
+
+- **STAFF:** A lab worker at one site and section. Finds and books resources at any site for themselves and manages their own bookings.
+- **MANAGER:** The manager of one site. Does everything staff do, plus manages their site's staff accounts, resources, equipment care, maintenance, bookings oversight, and usage.
+- **ADMIN:** Runs the whole network. Has no site or section and does not book (`[ADMIN-NO-BOOK]`). Configures sites, sections, categories, and oversees all users, resources, bookings, and system-wide usage.
+
+The complete access rules, permission matrix, and role menus are documented in [docs/permissions.md](docs/permissions.md).
 
 **How to book.** Find a slot: choose date, time, duration and filters, pick a free resource. Or click a free slot on the calendar.
 

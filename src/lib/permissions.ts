@@ -6,8 +6,27 @@ export interface UserLike {
   siteId?: string | null;
 }
 
+export interface ResourceLike {
+  id?: string;
+  siteId: string;
+  status?: string;
+}
+
+export interface BookingLike {
+  id?: string;
+  createdById?: string | null;
+  userId?: string | null;
+  kind: string;
+  status?: string;
+  startAt?: Date;
+  resource: {
+    siteId: string;
+  };
+}
+
 /**
  * Returns true if the user has the ADMIN role.
+ * Rule: Admin manages network infrastructure and settings; does not book.
  */
 export function isAdmin(user: UserLike): boolean {
   return user.role === "ADMIN";
@@ -18,6 +37,52 @@ export function isAdmin(user: UserLike): boolean {
  */
 export function isManagerOrAdmin(user: UserLike): boolean {
   return user.role === "MANAGER" || user.role === "ADMIN";
+}
+
+/**
+ * Rule: STAFF and MANAGER can book resources for themselves.
+ * ADMIN cannot book ([ADMIN-NO-BOOK]).
+ */
+export function canBook(actor: UserLike): boolean {
+  return actor.role === "STAFF" || actor.role === "MANAGER";
+}
+
+/**
+ * Rule: Only ADMIN can configure sites, sections, categories, and booking limits.
+ */
+export function canManageSettings(actor: UserLike): boolean {
+  return isAdmin(actor);
+}
+
+/**
+ * Rule: MANAGER (own site) and ADMIN (all sites) can view users.
+ */
+export function canViewUsers(actor: UserLike): boolean {
+  return isManagerOrAdmin(actor);
+}
+
+/**
+ * Rule: ADMIN can view any user; MANAGER can view users at their own site.
+ * Constraint C3: Manager viewing another site's user returns not found.
+ */
+export function canViewUser(actor: UserLike, target: UserLike): boolean {
+  if (isAdmin(actor)) {
+    return true;
+  }
+  if (actor.role === "MANAGER") {
+    return Boolean(actor.siteId && target.siteId && actor.siteId === target.siteId);
+  }
+  return false;
+}
+
+/**
+ * Rule: Only ADMIN can change user roles or transfer sites, but never for themselves (C4).
+ */
+export function canChangeRoleOrSite(actor: UserLike, target: UserLike): boolean {
+  if (!isAdmin(actor)) {
+    return false;
+  }
+  return Boolean(actor.id && target.id && actor.id !== target.id);
 }
 
 /**
@@ -34,6 +99,103 @@ export function canManageSite(user: UserLike, siteId?: string | null): boolean {
     return Boolean(user.siteId && siteId && user.siteId === siteId);
   }
   return false;
+}
+
+/**
+ * Rule: MANAGER can manage resources at their own site; ADMIN can manage any resource.
+ * Constraint C2: Uses the stored siteId of the resource.
+ */
+export function canManageResource(actor: UserLike, resource: ResourceLike): boolean {
+  return canManageSite(actor, resource.siteId);
+}
+
+/**
+ * Rule: Change resource status (out of service, back to active, retire).
+ * Constraint C6: RETIRED is final: its status cannot change again.
+ */
+export function canChangeResourceStatus(actor: UserLike, resource: ResourceLike): boolean {
+  if (!canManageResource(actor, resource)) {
+    return false;
+  }
+  return resource.status !== "RETIRED";
+}
+
+/**
+ * Rule: Cancel a booking.
+ * - Own BOOKING: allowed if actor can book and created the booking.
+ * - MANAGER: allowed for bookings on resources at their own site.
+ * - ADMIN: allowed for all bookings.
+ * - Never allowed for MAINTENANCE blocks (use canManageMaintenance).
+ * Note: "Not started" (startAt > now) is enforced by the service layer.
+ */
+export function canCancelBooking(actor: UserLike, booking: BookingLike): boolean {
+  if (booking.kind !== "BOOKING") {
+    return false;
+  }
+  const creatorId = booking.createdById ?? booking.userId;
+  if (canBook(actor) && actor.id && creatorId && actor.id === creatorId) {
+    return true;
+  }
+  if (actor.role === "MANAGER" && actor.siteId && actor.siteId === booking.resource.siteId) {
+    return true;
+  }
+  if (isAdmin(actor)) {
+    return true;
+  }
+  return false;
+}
+
+/**
+ * Rule: Creating or cancelling maintenance blocks on resources.
+ * MANAGER for own site resources, ADMIN for all resources.
+ */
+export function canManageMaintenance(actor: UserLike, resource: ResourceLike): boolean {
+  return canManageSite(actor, resource.siteId);
+}
+
+/**
+ * Rule: MANAGER and ADMIN can oversee bookings across their sites.
+ */
+export function canOverseeBookings(actor: UserLike): boolean {
+  return isManagerOrAdmin(actor);
+}
+
+/**
+ * Rule: Returns "all" for ADMIN or [own siteId] for MANAGER.
+ */
+export function bookingOversightSitesFor(actor: UserLike): "all" | string[] {
+  if (isAdmin(actor)) {
+    return "all";
+  }
+  if (actor.role === "MANAGER" && actor.siteId) {
+    return [actor.siteId];
+  }
+  return [];
+}
+
+/**
+ * Rule: View usage statistics.
+ * null / undefined / "all" = network overview (ADMIN only).
+ * specific siteId: ADMIN for any site, MANAGER for own site.
+ */
+export function canViewUsage(actor: UserLike, siteId?: string | null): boolean {
+  if (!siteId || siteId === "all") {
+    return isAdmin(actor);
+  }
+  return canManageSite(actor, siteId);
+}
+
+/**
+ * Rule: Returns "all" for ADMIN or [own siteId] for MANAGER for usage reports.
+ */
+export function usageSitesFor(actor: UserLike): "all" | string[] {
+  if (isAdmin(actor)) {
+    return "all";
+  }
+  if (actor.role === "MANAGER" && actor.siteId) {
+    return [actor.siteId];
+  }
+  return [];
 }
 
 /**
@@ -54,7 +216,7 @@ export function rolesActorCanCreate(actor: UserLike): Role[] {
 
 /**
  * Returns true if the actor is permitted to manage the target user:
- * - ADMIN -> true
+ * - ADMIN -> true (except self for role/site changes, checked separately)
  * - MANAGER -> target.role is STAFF and target.siteId === actor.siteId
  * - STAFF -> false
  */
@@ -71,37 +233,19 @@ export function canManageUser(actor: UserLike, target: UserLike): boolean {
   return false;
 }
 
-export interface ReservationLike {
-  id?: string;
-  status: string;
-  kind: string;
-  startAt: Date;
-  userId?: string | null;
-  createdById?: string | null;
-  resource: {
-    siteId: string;
-  };
-}
-
 /**
- * Returns true if the actor is permitted to cancel the reservation:
- * - only CONFIRMED BOOKINGs that have not started (startAt > now).
- * - allowed for the person who made it, or for anyone with canManageSite(actor, reservation.resource.siteId).
+ * Backward compatibility alias for reservation cancellation checks.
  */
 export function canCancelReservation(
   actor: UserLike,
-  reservation: ReservationLike,
+  reservation: BookingLike & { status?: string; startAt?: Date },
   now: Date = new Date(),
 ): boolean {
-  if (reservation.status !== "CONFIRMED" || reservation.kind !== "BOOKING") {
+  if (reservation.status && reservation.status !== "CONFIRMED") {
     return false;
   }
-  if (reservation.startAt.getTime() <= now.getTime()) {
+  if (reservation.startAt && reservation.startAt.getTime() <= now.getTime()) {
     return false;
   }
-  const creatorId = reservation.createdById ?? reservation.userId;
-  if (actor.id && creatorId && actor.id === creatorId) {
-    return true;
-  }
-  return canManageSite(actor, reservation.resource.siteId);
+  return canCancelBooking(actor, reservation);
 }
