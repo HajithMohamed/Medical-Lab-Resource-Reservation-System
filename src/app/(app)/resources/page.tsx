@@ -120,18 +120,16 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
       ) : (
         <>
           {/* Desktop & Tablet Table (md and above) */}
-          <div className="hidden md:block rounded-xl border border-border bg-card overflow-hidden shadow-xs">
+          <div className="hidden md:block rounded-lg border border-[#334155] bg-[#141c2b] overflow-hidden shadow-sm">
             <Table>
               <TableHeader>
-                <TableRow className="bg-muted/40 hover:bg-muted/40">
-                  <TableHead className="w-[320px]">Resource</TableHead>
-                  <TableHead>Site</TableHead>
-                  <TableHead>Owning section</TableHead>
-                  <TableHead>Location</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">
-                    <span className="sr-only">Actions</span>
-                  </TableHead>
+                <TableRow className="bg-[#222a3a]/70 border-b border-[#334155] text-xs font-mono uppercase tracking-wider text-[#94a3b8]">
+                  <TableHead className="w-[340px]">Resource Details</TableHead>
+                  <TableHead>Site / Campus</TableHead>
+                  <TableHead>Owning Section</TableHead>
+                  <TableHead>Clinical Room</TableHead>
+                  <TableHead>Real-Time Status</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -139,67 +137,73 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
                   const isRoom = resource.category.iconKey === "room";
                   const capacityText =
                     isRoom && resource.capacity ? `, ${resource.capacity} seats` : "";
-                  const subtitle = `${resource.category.name}, up to ${formatMinutes(resource.category.maxBookingMinutes)}${capacityText}`;
+                  const subtitle = `${resource.category.name} • Max slot: ${formatMinutes(resource.category.maxBookingMinutes)}${capacityText}`;
                   const canManage =
                     user.role === "ADMIN" ||
                     (user.role === "MANAGER" && user.siteId === resource.siteId);
+
+                  const isOos = resource.status === "OUT_OF_SERVICE";
 
                   return (
                     <TableRow
                       key={resource.id}
                       className={
-                        resource.status === "OUT_OF_SERVICE"
-                          ? "bg-destructive/5 hover:bg-destructive/10 transition-colors"
-                          : "hover:bg-muted/20 transition-colors"
+                        isOos
+                          ? "group hover:bg-[#222a3a]/50 transition-colors duration-150 bg-rose-950/15"
+                          : "group hover:bg-[#222a3a]/50 transition-colors duration-150"
                       }
                     >
-                      <TableCell>
+                      <TableCell className="py-3 px-4">
                         <div className="flex items-center gap-3">
-                          <CategoryIcon
-                            iconKey={resource.category.iconKey}
-                            className="size-8 rounded-lg shrink-0"
-                          />
+                          <div className="w-9 h-9 rounded-lg bg-[#18202f] border border-[#334155] flex items-center justify-center text-[#6cd8cb] shrink-0">
+                            <CategoryIcon
+                              iconKey={resource.category.iconKey}
+                              className="size-5 shrink-0"
+                            />
+                          </div>
                           <div className="min-w-0">
                             <Link
                               href={`/resources/${resource.id}`}
-                              className="font-bold text-sm text-foreground hover:underline truncate block"
+                              className="font-semibold text-white group-hover:text-[#6cd8cb] transition-colors truncate block text-sm"
                             >
                               {resource.name}
                             </Link>
-                            <span className="text-xs text-muted-foreground block truncate">
+                            <span className="text-xs font-mono text-[#94a3b8] block truncate">
                               {subtitle}
                             </span>
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell className="text-sm font-medium text-foreground">
+                      <TableCell className="py-3 px-4 font-medium text-white text-sm">
                         {resource.site.name}
                       </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
-                        {resource.section.name}
+                      <TableCell className="py-3 px-4">
+                        <span className="px-2 py-0.5 rounded text-xs font-mono bg-[#18202f] text-[#bcc9c6] border border-[#334155]/60">
+                          {resource.section.name}
+                        </span>
                       </TableCell>
-                      <TableCell className="text-sm">
+                      <TableCell className="py-3 px-4 text-xs font-mono">
                         {resource.location ? (
-                          <span className="text-foreground">{resource.location}</span>
+                          <span className="text-white">{resource.location}</span>
                         ) : (
-                          <span className="text-muted-foreground italic">Not set</span>
+                          <span className="text-[#94a3b8] italic">Not set</span>
                         )}
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="py-3 px-4">
                         <ResourceStatusTag status={resource.status} />
                       </TableCell>
-                      <TableCell className="text-right">
+                      <TableCell className="py-3 px-4 text-right">
                         <div className="inline-flex items-center gap-1.5 justify-end">
                           {resource.status === "ACTIVE" ? (
-                            <Button asChild size="sm" className="h-8 px-3 font-semibold text-xs">
-                              <Link href={`/bookings/new?resourceId=${resource.id}`}>Book</Link>
+                            <Button asChild size="sm" className="bg-[#6cd8cb]/15 hover:bg-[#6cd8cb] text-[#6cd8cb] hover:text-[#003732] text-xs font-mono font-semibold px-3 py-1 rounded border border-[#6cd8cb]/30 transition-all active:scale-95">
+                              <Link href={`/bookings/new?resourceId=${resource.id}`}>Book Slot</Link>
                             </Button>
                           ) : (
                             <Button
                               asChild
                               variant="ghost"
                               size="sm"
-                              className="h-8 px-3 text-xs text-muted-foreground hover:text-foreground"
+                              className="h-8 px-2.5 text-xs font-mono text-[#94a3b8] hover:text-white"
                             >
                               <Link href={`/resources/${resource.id}`}>View</Link>
                             </Button>
@@ -221,23 +225,21 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
                 })}
               </TableBody>
             </Table>
-            <div className="border-t border-border bg-muted/20 px-3">
-              <PaginationControls
-                currentPage={page}
-                totalPages={totalPages}
-                totalCount={totalCount}
-                pageSize={pageSize}
-                basePath="/resources"
-                queryParams={{
-                  search: resolvedParams.search,
-                  siteId: resolvedParams.siteId,
-                  categoryId: resolvedParams.categoryId,
-                  sectionId: resolvedParams.sectionId,
-                  status: resolvedParams.status,
-                }}
-                itemLabel="resources"
-              />
-            </div>
+            <PaginationControls
+              currentPage={page}
+              totalPages={totalPages}
+              totalCount={totalCount}
+              pageSize={pageSize}
+              basePath="/resources"
+              queryParams={{
+                search: resolvedParams.search,
+                siteId: resolvedParams.siteId,
+                categoryId: resolvedParams.categoryId,
+                sectionId: resolvedParams.sectionId,
+                status: resolvedParams.status,
+              }}
+              itemLabel="resources"
+            />
           </div>
 
           {/* Mobile Stacked Cards (below md) */}

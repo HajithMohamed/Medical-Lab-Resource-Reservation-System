@@ -12,15 +12,15 @@ export function PageHeader({ title, description, actions, className }: PageHeade
   return (
     <div
       className={cn(
-        "flex flex-col gap-3 pb-6 sm:flex-row sm:items-center sm:justify-between",
+        "flex flex-col gap-3 pb-3 sm:flex-row sm:items-center sm:justify-between border-b border-[#334155]/60",
         className,
       )}
     >
-      <div className="space-y-1">
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">{title}</h1>
-        {description && <p className="text-base text-muted-foreground">{description}</p>}
+      <div className="space-y-0.5">
+        <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white">{title}</h1>
+        {description && <p className="text-xs sm:text-sm text-[#94a3b8]">{description}</p>}
       </div>
-      {actions && <div className="flex flex-wrap items-center gap-3 shrink-0">{actions}</div>}
+      {actions && <div className="flex flex-wrap items-center gap-2.5 shrink-0">{actions}</div>}
     </div>
   );
 }

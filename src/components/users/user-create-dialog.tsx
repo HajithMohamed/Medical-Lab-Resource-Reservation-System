@@ -98,8 +98,6 @@ export function UserCreateDialog({
     formData.set("role", role);
     if (showSiteSelect) {
       formData.set("siteId", siteId);
-    } else if (!isAdmin && actorSiteId) {
-      formData.set("siteId", actorSiteId);
     }
     if (sectionId && sectionId !== "none") {
       formData.set("sectionId", sectionId);
@@ -143,7 +141,7 @@ export function UserCreateDialog({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         {trigger ?? (
-          <Button className="gap-2">
+          <Button className="gap-2 bg-[#6cd8cb] hover:bg-[#29a195] text-[#003732] font-semibold text-xs font-mono shadow-xs">
             <UserPlus className="size-4" />
             <span>Add user</span>
           </Button>
@@ -167,8 +165,12 @@ export function UserCreateDialog({
               onAddAnother={handleAddAnother}
             />
 
-            <DialogFooter className="pt-2">
-              <Button type="button" onClick={() => handleOpenChange(false)}>
+            <DialogFooter className="pt-3 border-t border-[#334155]/40">
+              <Button
+                type="button"
+                onClick={() => handleOpenChange(false)}
+                className="bg-[#6cd8cb] hover:bg-[#29a195] text-[#003732] font-semibold text-xs font-mono px-5 py-2 rounded-lg"
+              >
                 Done
               </Button>
             </DialogFooter>
@@ -190,9 +192,9 @@ export function UserCreateDialog({
               </Alert>
             )}
 
-            <div className="space-y-3.5">
+            <div className="space-y-4">
               <div className="space-y-1.5">
-                <Label htmlFor="create-user-name">Full name</Label>
+                <Label htmlFor="create-user-name" className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]">Full name</Label>
                 <Input
                   id="create-user-name"
                   name="name"
@@ -205,12 +207,12 @@ export function UserCreateDialog({
                   autoFocus
                 />
                 {fieldErrors.name && (
-                  <p className="text-xs text-destructive">{fieldErrors.name[0]}</p>
+                  <p className="text-xs font-mono text-rose-400">{fieldErrors.name[0]}</p>
                 )}
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="create-user-email">Email address</Label>
+                <Label htmlFor="create-user-email" className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]">Email address</Label>
                 <Input
                   id="create-user-email"
                   name="email"
@@ -221,20 +223,20 @@ export function UserCreateDialog({
                   required
                 />
                 {fieldErrors.email && (
-                  <p className="text-xs text-destructive">{fieldErrors.email[0]}</p>
+                  <p className="text-xs font-mono text-rose-400">{fieldErrors.email[0]}</p>
                 )}
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <Label htmlFor="create-user-role">Role</Label>
+                  <Label htmlFor="create-user-role" className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]">Role</Label>
                   <Select value={role} onValueChange={(val) => setRole(val as Role)}>
-                    <SelectTrigger id="create-user-role" className="w-full">
+                    <SelectTrigger id="create-user-role" className="w-full bg-[#060e1d] border-[#334155] text-white">
                       <SelectValue placeholder="Select role" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-[#18202f] border-[#334155] text-white">
                       {allowedRoles.map((r) => (
-                        <SelectItem key={r} value={r}>
+                        <SelectItem key={r} value={r} className="hover:bg-[#222a3a] focus:bg-[#222a3a]">
                           {r === "STAFF"
                             ? "Staff"
                             : r === "MANAGER"
@@ -248,38 +250,41 @@ export function UserCreateDialog({
 
                 {showSiteSelect && (
                   <div className="space-y-1.5">
-                    <Label htmlFor="create-user-site">Site</Label>
+                    <Label htmlFor="create-user-site" className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]">Site</Label>
                     <Select value={siteId} onValueChange={(val) => setSiteId(val)}>
-                      <SelectTrigger id="create-user-site" className="w-full">
+                      <SelectTrigger id="create-user-site" className="w-full bg-[#060e1d] border-[#334155] text-white">
                         <SelectValue placeholder="Select site" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="bg-[#18202f] border-[#334155] text-white">
                         {sites.map((s) => (
-                          <SelectItem key={s.id} value={s.id}>
+                          <SelectItem key={s.id} value={s.id} className="hover:bg-[#222a3a] focus:bg-[#222a3a]">
                             {s.name}
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                     {fieldErrors.siteId && (
-                      <p className="text-xs text-destructive">{fieldErrors.siteId[0]}</p>
+                      <p className="text-xs font-mono text-rose-400">{fieldErrors.siteId[0]}</p>
                     )}
                   </div>
                 )}
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="create-user-section">
-                  Section <span className="text-muted-foreground font-normal">(optional)</span>
-                </Label>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="create-user-section" className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]">
+                    Section
+                  </Label>
+                  <span className="text-xs font-mono text-[#879390]">(optional)</span>
+                </div>
                 <Select value={sectionId} onValueChange={(val) => setSectionId(val)}>
-                  <SelectTrigger id="create-user-section" className="w-full">
+                  <SelectTrigger id="create-user-section" className="w-full bg-[#060e1d] border-[#334155] text-white">
                     <SelectValue placeholder="No assigned section" />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">None / Unassigned</SelectItem>
+                  <SelectContent className="bg-[#18202f] border-[#334155] text-white">
+                    <SelectItem value="none" className="hover:bg-[#222a3a] focus:bg-[#222a3a]">None / Unassigned</SelectItem>
                     {sections.map((sec) => (
-                      <SelectItem key={sec.id} value={sec.id}>
+                      <SelectItem key={sec.id} value={sec.id} className="hover:bg-[#222a3a] focus:bg-[#222a3a]">
                         {sec.name}
                       </SelectItem>
                     ))}
@@ -288,16 +293,21 @@ export function UserCreateDialog({
               </div>
             </div>
 
-            <DialogFooter className="pt-2">
+            <DialogFooter className="pt-3 border-t border-[#334155]/40">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => handleOpenChange(false)}
                 disabled={isPending}
+                className="text-[#dbe2f8] hover:bg-[#222a3a]"
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={isPending}>
+              <Button
+                type="submit"
+                disabled={isPending}
+                className="bg-[#6cd8cb] hover:bg-[#29a195] text-[#003732] font-semibold text-xs font-mono px-5 py-2 rounded-lg transition-all duration-150 active:scale-[0.98]"
+              >
                 {isPending ? "Creating..." : "Create user"}
               </Button>
             </DialogFooter>

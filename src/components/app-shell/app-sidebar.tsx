@@ -20,6 +20,9 @@ import { Logo } from "@/components/brand/logo";
 import { UserMenu } from "@/components/app-shell/user-menu";
 import { navItemsFor, type NavGroup, type NavItem } from "@/config/navigation";
 
+import { Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
 export interface AppSidebarProps {
   user: {
     name: string;
@@ -52,13 +55,26 @@ export function AppSidebar({ user, logoutAction }: AppSidebarProps) {
   return (
     <Sidebar
       collapsible="icon"
-      className="border-r border-sidebar-border bg-sidebar text-sidebar-foreground"
+      className="border-r border-[#334155] bg-[#141c2b] text-[#dbe2f8]"
     >
-      <SidebarHeader className="border-b border-sidebar-border p-3">
+      <SidebarHeader className="border-b border-[#334155] p-3 bg-[#141c2b]">
         <Logo subtitle={siteSubtitle} />
       </SidebarHeader>
 
-      <SidebarContent className="px-2 py-2">
+      {/* Quick Action Primary CTA */}
+      <div className="p-3 pb-1 group-data-[collapsible=icon]:hidden">
+        <Button
+          asChild
+          className="w-full justify-center gap-2 bg-[#6cd8cb] hover:bg-[#29a195] text-[#003732] font-semibold text-xs font-mono active:scale-[0.99] transition-all shadow-xs"
+        >
+          <Link href="/resources">
+            <Plus className="size-3.5 stroke-[2.5]" />
+            <span>New Reservation</span>
+          </Link>
+        </Button>
+      </div>
+
+      <SidebarContent className="px-2 py-1 bg-[#141c2b]">
         {mainItems.length > 0 && (
           <SidebarGroup className="p-0">
             <SidebarGroupContent>
@@ -72,15 +88,18 @@ export function AppSidebar({ user, logoutAction }: AppSidebarProps) {
                         asChild
                         isActive={isActive}
                         tooltip={item.label}
-                        className="h-10 text-[15px] font-medium text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground data-[active=true]:bg-sidebar-primary data-[active=true]:text-sidebar-primary-foreground"
+                        className="h-9.5 text-xs font-medium rounded-lg text-[#dbe2f8] hover:bg-[#222a3a] hover:text-white data-[active=true]:bg-[#222a3a] data-[active=true]:text-[#6cd8cb] data-[active=true]:font-semibold data-[active=true]:border-l-2 data-[active=true]:border-[#6cd8cb] transition-all"
                       >
                         <Link
                           href={item.href}
                           aria-current={isActive ? "page" : undefined}
-                          className="flex items-center gap-2.5"
+                          className="flex items-center gap-2.5 w-full"
                         >
                           <Icon className="size-4 shrink-0" />
-                          <span>{item.label}</span>
+                          <span className="truncate">{item.label}</span>
+                          {isActive && (
+                            <span className="ml-auto w-1.5 h-1.5 rounded-full bg-[#6cd8cb] animate-pulse shrink-0" />
+                          )}
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -93,7 +112,7 @@ export function AppSidebar({ user, logoutAction }: AppSidebarProps) {
 
         {manageItems.length > 0 && (
           <SidebarGroup className="p-0 pt-3">
-            <SidebarGroupLabel className="text-xs font-semibold text-sidebar-muted px-2 py-1">
+            <SidebarGroupLabel className="text-[11px] font-mono uppercase tracking-wider text-[#94a3b8] px-2 py-1">
               Manage
             </SidebarGroupLabel>
             <SidebarGroupContent>
@@ -107,15 +126,18 @@ export function AppSidebar({ user, logoutAction }: AppSidebarProps) {
                         asChild
                         isActive={isActive}
                         tooltip={item.label}
-                        className="h-10 text-[15px] font-medium text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground data-[active=true]:bg-sidebar-primary data-[active=true]:text-sidebar-primary-foreground"
+                        className="h-9.5 text-xs font-medium rounded-lg text-[#dbe2f8] hover:bg-[#222a3a] hover:text-white data-[active=true]:bg-[#222a3a] data-[active=true]:text-[#6cd8cb] data-[active=true]:font-semibold data-[active=true]:border-l-2 data-[active=true]:border-[#6cd8cb] transition-all"
                       >
                         <Link
                           href={item.href}
                           aria-current={isActive ? "page" : undefined}
-                          className="flex items-center gap-2.5"
+                          className="flex items-center gap-2.5 w-full"
                         >
                           <Icon className="size-4 shrink-0" />
-                          <span>{item.label}</span>
+                          <span className="truncate">{item.label}</span>
+                          {isActive && (
+                            <span className="ml-auto w-1.5 h-1.5 rounded-full bg-[#6cd8cb] animate-pulse shrink-0" />
+                          )}
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -128,7 +150,7 @@ export function AppSidebar({ user, logoutAction }: AppSidebarProps) {
 
         {adminItems.length > 0 && (
           <SidebarGroup className="p-0 pt-3">
-            <SidebarGroupLabel className="text-xs font-semibold text-sidebar-muted px-2 py-1">
+            <SidebarGroupLabel className="text-[11px] font-mono uppercase tracking-wider text-[#94a3b8] px-2 py-1">
               Admin
             </SidebarGroupLabel>
             <SidebarGroupContent>
@@ -142,15 +164,18 @@ export function AppSidebar({ user, logoutAction }: AppSidebarProps) {
                         asChild
                         isActive={isActive}
                         tooltip={item.label}
-                        className="h-10 text-[15px] font-medium text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground data-[active=true]:bg-sidebar-primary data-[active=true]:text-sidebar-primary-foreground"
+                        className="h-9.5 text-xs font-medium rounded-lg text-[#dbe2f8] hover:bg-[#222a3a] hover:text-white data-[active=true]:bg-[#222a3a] data-[active=true]:text-[#6cd8cb] data-[active=true]:font-semibold data-[active=true]:border-l-2 data-[active=true]:border-[#6cd8cb] transition-all"
                       >
                         <Link
                           href={item.href}
                           aria-current={isActive ? "page" : undefined}
-                          className="flex items-center gap-2.5"
+                          className="flex items-center gap-2.5 w-full"
                         >
                           <Icon className="size-4 shrink-0" />
-                          <span>{item.label}</span>
+                          <span className="truncate">{item.label}</span>
+                          {isActive && (
+                            <span className="ml-auto w-1.5 h-1.5 rounded-full bg-[#6cd8cb] animate-pulse shrink-0" />
+                          )}
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -162,7 +187,7 @@ export function AppSidebar({ user, logoutAction }: AppSidebarProps) {
         )}
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-sidebar-border p-2">
+      <SidebarFooter className="border-t border-[#334155] p-2 bg-[#141c2b]">
         <UserMenu user={user} logoutAction={logoutAction} />
       </SidebarFooter>
       <SidebarRail />

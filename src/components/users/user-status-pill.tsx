@@ -51,11 +51,11 @@ export function UserStatusPill({
       return (
         <span
           className={cn(
-            "inline-flex items-center gap-1.5 rounded-full bg-pass-bg px-2.5 py-0.5 text-xs font-semibold text-pass border border-pass/30",
+            "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/30",
             className,
           )}
         >
-          <span className="size-1.5 rounded-full bg-pass" aria-hidden="true" />
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" aria-hidden="true" />
           Active
         </span>
       );
@@ -64,7 +64,7 @@ export function UserStatusPill({
       return (
         <span
           className={cn(
-            "inline-flex items-center rounded-full bg-secondary px-2.5 py-0.5 text-xs font-medium text-secondary-foreground border border-secondary-foreground/20",
+            "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-[#6cd8cb]/15 text-[#6cd8cb] border border-[#6cd8cb]/30",
             className,
           )}
         >
@@ -76,10 +76,11 @@ export function UserStatusPill({
       return (
         <span
           className={cn(
-            "inline-flex items-center rounded-full bg-maint px-2.5 py-0.5 text-xs font-semibold text-maint-ink border border-maint-edge/30",
+            "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-amber-500/20 text-amber-300 border border-amber-500/40",
             className,
           )}
         >
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" aria-hidden="true" />
           Locked
         </span>
       );
@@ -88,11 +89,11 @@ export function UserStatusPill({
       return (
         <span
           className={cn(
-            "inline-flex items-center rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground border border-border",
+            "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-[#18202f] text-[#94a3b8] border border-[#334155]",
             className,
           )}
         >
-          Inactive
+          Deactivated
         </span>
       );
   }

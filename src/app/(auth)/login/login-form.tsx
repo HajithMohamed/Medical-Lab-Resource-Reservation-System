@@ -45,12 +45,12 @@ export function LoginForm({ defaultEmail }: LoginFormProps) {
 
       {/* Email input */}
       <div className="space-y-1.5">
-        <Label htmlFor="email" className="text-xs font-bold text-foreground">
+        <Label htmlFor="email" className="text-xs font-bold text-slate-200">
           Email address
         </Label>
         <div className="relative">
           <Mail
-            className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none"
+            className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-slate-400 pointer-events-none"
             aria-hidden="true"
           />
           <Input
@@ -62,19 +62,19 @@ export function LoginForm({ defaultEmail }: LoginFormProps) {
             defaultValue={defaultEmail}
             placeholder="e.g. kasun.silva@lab.example"
             disabled={isPending}
-            className="h-11 pl-10 pr-3 text-sm bg-card border-input rounded-xl focus-visible:ring-ring"
+            className="h-11 pl-10 pr-3 text-sm bg-[#060e1d] border-[#334155] rounded-xl text-slate-100 placeholder:text-slate-500 focus:border-[#6cd8cb]"
           />
         </div>
       </div>
 
       {/* Password input */}
       <div className="space-y-1.5">
-        <Label htmlFor="password" className="text-xs font-bold text-foreground">
+        <Label htmlFor="password" className="text-xs font-bold text-slate-200">
           Password
         </Label>
         <div className="relative">
           <Lock
-            className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none"
+            className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-slate-400 pointer-events-none"
             aria-hidden="true"
           />
           <Input
@@ -85,12 +85,12 @@ export function LoginForm({ defaultEmail }: LoginFormProps) {
             required
             placeholder="••••••••••••"
             disabled={isPending}
-            className="h-11 pl-10 pr-10 text-sm bg-card border-input rounded-xl focus-visible:ring-ring"
+            className="h-11 pl-10 pr-10 text-sm bg-[#060e1d] border-[#334155] rounded-xl text-slate-100 placeholder:text-slate-500 focus:border-[#6cd8cb]"
           />
           <button
             type="button"
             onClick={() => setShowPassword((prev) => !prev)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded p-1 transition-colors"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#6cd8cb] rounded p-1 transition-colors"
             aria-label={showPassword ? "Hide password" : "Show password"}
           >
             {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
@@ -100,12 +100,12 @@ export function LoginForm({ defaultEmail }: LoginFormProps) {
 
       {/* Remember me & Forgot password row */}
       <div className="flex items-center justify-between text-xs pt-0.5">
-        <label className="flex items-center gap-1.5 cursor-pointer select-none text-muted-foreground hover:text-foreground">
+        <label className="flex items-center gap-1.5 cursor-pointer select-none text-slate-400 hover:text-slate-200">
           <input
             type="checkbox"
             checked={rememberMe}
             onChange={(e) => setRememberMe(e.target.checked)}
-            className="w-3.5 h-3.5 rounded border-input text-primary focus:ring-ring cursor-pointer"
+            className="w-3.5 h-3.5 rounded border-[#334155] bg-[#060e1d] text-[#6cd8cb] accent-[#6cd8cb] cursor-pointer"
           />
           <span>Remember me</span>
         </label>
@@ -113,7 +113,7 @@ export function LoginForm({ defaultEmail }: LoginFormProps) {
         <button
           type="button"
           onClick={() => setShowForgotNotice((prev) => !prev)}
-          className="text-primary font-bold hover:underline focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring rounded"
+          className="text-[#6cd8cb] font-bold hover:underline focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#6cd8cb] rounded"
         >
           Forgot password?
         </button>
@@ -121,23 +121,23 @@ export function LoginForm({ defaultEmail }: LoginFormProps) {
 
       {/* Forgot password notice */}
       {showForgotNotice && (
-        <div className="rounded-lg bg-secondary/40 border border-secondary p-2.5 text-xs text-secondary-foreground space-y-0.5 animate-in fade-in zoom-in-95 duration-150">
-          <div className="flex items-center gap-1 font-semibold text-primary">
+        <div className="rounded-lg bg-[#18202f] border border-[#334155] p-3 text-xs text-slate-300 space-y-1 animate-in fade-in zoom-in-95 duration-150">
+          <div className="flex items-center gap-1 font-semibold text-[#6cd8cb]">
             <Info className="size-3.5 shrink-0" />
             <span>Password resets</span>
           </div>
-          <p className="text-[11px] leading-relaxed">
+          <p className="text-[11px] text-slate-400 leading-relaxed">
             Staff accounts are managed by your lab manager. Contact your manager or email{" "}
-            <span className="font-mono">admin@lab.example</span> for a temporary password.
+            <span className="font-mono text-slate-300">admin@lab.example</span> for a temporary password.
           </p>
         </div>
       )}
 
-      {/* Submit Button (Our design system button theme: solid bg-primary) */}
+      {/* Submit Button */}
       <Button
         type="submit"
         disabled={isPending}
-        className="w-full h-11 rounded-xl font-semibold text-sm shadow-xs transition-all active:scale-[0.99] cursor-pointer"
+        className="w-full h-11 rounded-xl font-bold text-sm bg-[#6cd8cb] text-[#003732] hover:bg-[#29a195] hover:text-[#002421] shadow-xs transition-all active:scale-[0.99] cursor-pointer"
       >
         {isPending ? (
           <>
@@ -153,15 +153,15 @@ export function LoginForm({ defaultEmail }: LoginFormProps) {
       </Button>
 
       {/* Divider and security notice */}
-      <div className="border-t border-border pt-3 space-y-2">
-        <div className="flex items-center gap-2 text-muted-foreground">
-          <ShieldCheck className="size-4 text-primary shrink-0" />
+      <div className="border-t border-[#334155] pt-3 space-y-2">
+        <div className="flex items-center gap-2 text-slate-400">
+          <ShieldCheck className="size-4 text-[#6cd8cb] shrink-0" />
           <span className="text-[11px] font-medium">
             Your account and reservation details stay protected.
           </span>
         </div>
 
-        <p className="text-[11px] text-muted-foreground/75 text-center">
+        <p className="text-[11px] text-slate-500 text-center">
           Authorized users only · Medical Lab Resource Reservation System
         </p>
       </div>

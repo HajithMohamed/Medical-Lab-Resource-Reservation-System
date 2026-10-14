@@ -98,20 +98,24 @@ export function ResourceEditDialog({
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsPending(true);
     setError(null);
     setFieldErrors({});
+    setIsPending(true);
 
     const formData = new FormData();
-    formData.set("name", name.trim());
-    formData.set("siteId", isManager ? (actorSiteId ?? siteId) : siteId);
-    formData.set("categoryId", categoryId);
-    formData.set("sectionId", sectionId);
+    formData.append("name", name.trim());
+    formData.append("siteId", isManager && actorSiteId ? actorSiteId : siteId);
+    formData.append("categoryId", categoryId);
+    formData.append("sectionId", sectionId);
     if (location.trim()) {
-      formData.set("location", location.trim());
+      formData.append("location", location.trim());
+    } else {
+      formData.append("location", "");
     }
     if (capacity.trim()) {
-      formData.set("capacity", capacity.trim());
+      formData.append("capacity", capacity.trim());
+    } else {
+      formData.append("capacity", "");
     }
 
     const result: ResourceActionResult = await updateResourceAction(resource.id, null, formData);
@@ -140,9 +144,9 @@ export function ResourceEditDialog({
             type="button"
             variant="outline"
             size="sm"
-            className="h-8 gap-1.5 text-xs font-medium border-border/80 hover:border-primary/50"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#18202f] hover:bg-[#222a3a] text-xs font-mono font-medium text-[#dbe2f8] hover:text-white border border-[#334155] hover:border-[#6cd8cb]/50 transition-all duration-150 active:scale-[0.98]"
           >
-            <Pencil className="size-3.5 text-primary" />
+            <Pencil className="size-3.5 text-[#6cd8cb]" />
             <span>Edit</span>
           </Button>
         )}
@@ -165,7 +169,7 @@ export function ResourceEditDialog({
           <div className="space-y-3.5">
             {/* Resource Name */}
             <div className="space-y-1.5">
-              <Label htmlFor={`edit-resource-name-${resource.id}`}>Resource name</Label>
+              <Label htmlFor={`edit-resource-name-${resource.id}`} className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]">Resource name</Label>
               <Input
                 id={`edit-resource-name-${resource.id}`}
                 name="name"
@@ -184,17 +188,17 @@ export function ResourceEditDialog({
 
             {/* Laboratory Site */}
             <div className="space-y-1.5">
-              <Label htmlFor={`edit-resource-site-${resource.id}`}>Laboratory site</Label>
+              <Label htmlFor={`edit-resource-site-${resource.id}`} className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]">Laboratory site</Label>
               {isManager ? (
                 <div>
                   <Input
                     id={`edit-resource-site-${resource.id}`}
                     value={currentSiteName}
                     disabled
-                    className="bg-muted text-muted-foreground"
+                    className="bg-[#141c2b] text-[#94a3b8]"
                   />
                   <input type="hidden" name="siteId" value={actorSiteId ?? ""} />
-                  <p className="text-xs text-muted-foreground mt-1">
+                  <p className="text-xs text-[#94a3b8] mt-1 font-mono">
                     Site managers may only manage resources for their assigned laboratory.
                   </p>
                 </div>
@@ -206,7 +210,7 @@ export function ResourceEditDialog({
                   onChange={(e) => setSiteId(e.target.value)}
                   disabled={isPending}
                   required
-                  className="h-10 w-full rounded-md border border-input bg-card px-3 text-sm text-foreground shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring cursor-pointer"
+                  className="h-10 w-full rounded-md border border-[#334155] bg-[#060e1d] px-3 text-sm text-white focus:border-[#6cd8cb] focus:outline-none cursor-pointer transition-colors"
                 >
                   {sites.map((s) => (
                     <option key={s.id} value={s.id}>
@@ -222,7 +226,7 @@ export function ResourceEditDialog({
 
             {/* Category */}
             <div className="space-y-1.5">
-              <Label htmlFor={`edit-resource-category-${resource.id}`}>Category</Label>
+              <Label htmlFor={`edit-resource-category-${resource.id}`} className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]">Category</Label>
               <select
                 id={`edit-resource-category-${resource.id}`}
                 name="categoryId"
@@ -230,7 +234,7 @@ export function ResourceEditDialog({
                 onChange={(e) => setCategoryId(e.target.value)}
                 disabled={isPending}
                 required
-                className="h-10 w-full rounded-md border border-input bg-card px-3 text-sm text-foreground shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring cursor-pointer"
+                className="h-10 w-full rounded-md border border-[#334155] bg-[#060e1d] px-3 text-sm text-white focus:border-[#6cd8cb] focus:outline-none cursor-pointer transition-colors"
               >
                 {categories.map((c) => (
                   <option key={c.id} value={c.id}>
@@ -245,7 +249,7 @@ export function ResourceEditDialog({
 
             {/* Section */}
             <div className="space-y-1.5">
-              <Label htmlFor={`edit-resource-section-${resource.id}`}>Owning section</Label>
+              <Label htmlFor={`edit-resource-section-${resource.id}`} className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]">Owning section</Label>
               <select
                 id={`edit-resource-section-${resource.id}`}
                 name="sectionId"
@@ -253,7 +257,7 @@ export function ResourceEditDialog({
                 onChange={(e) => setSectionId(e.target.value)}
                 disabled={isPending}
                 required
-                className="h-10 w-full rounded-md border border-input bg-card px-3 text-sm text-foreground shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring cursor-pointer"
+                className="h-10 w-full rounded-md border border-[#334155] bg-[#060e1d] px-3 text-sm text-white focus:border-[#6cd8cb] focus:outline-none cursor-pointer transition-colors"
               >
                 {sections.map((s) => (
                   <option key={s.id} value={s.id}>
@@ -268,15 +272,15 @@ export function ResourceEditDialog({
 
             {/* Location (optional) */}
             <div className="space-y-1.5">
-              <Label htmlFor={`edit-resource-location-${resource.id}`}>
-                Location <span className="text-muted-foreground font-normal">(optional)</span>
+              <Label htmlFor={`edit-resource-location-${resource.id}`} className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]">
+                Location <span className="text-[#94a3b8] font-normal font-mono">(optional)</span>
               </Label>
               <Input
                 id={`edit-resource-location-${resource.id}`}
                 name="location"
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
-                placeholder="e.g. Molecular lab, room 2.14"
+                placeholder="e.g. Lab 3B, Bench 4"
                 maxLength={120}
                 disabled={isPending}
               />
@@ -285,12 +289,21 @@ export function ResourceEditDialog({
               )}
             </div>
 
-            {/* Capacity (optional or room) */}
+            {/* Capacity (rooms only) */}
             <div className="space-y-1.5">
-              <Label htmlFor={`edit-resource-capacity-${resource.id}`}>
-                {isRoom ? "Seat capacity" : "Capacity"}{" "}
-                <span className="text-muted-foreground font-normal">(optional)</span>
-              </Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor={`edit-resource-capacity-${resource.id}`} className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]">
+                  Capacity / seats{" "}
+                  <span className="text-[#94a3b8] font-normal font-mono">
+                    {isRoom ? "(recommended for rooms)" : "(optional)"}
+                  </span>
+                </Label>
+                {isRoom && (
+                  <span className="text-xs font-mono text-[#6cd8cb] flex items-center gap-1">
+                    <Info className="size-3" /> Room resource
+                  </span>
+                )}
+              </div>
               <Input
                 id={`edit-resource-capacity-${resource.id}`}
                 name="capacity"
@@ -306,33 +319,23 @@ export function ResourceEditDialog({
                 <p className="text-xs font-medium text-destructive">{fieldErrors.capacity[0]}</p>
               )}
             </div>
-
-            {/* Association Telemetry Info Callout */}
-            <div className="rounded-lg bg-muted/50 p-2.5 text-xs text-muted-foreground flex items-center gap-2 border border-border/60">
-              <Info className="size-4 text-primary shrink-0" />
-              <span>
-                Site:{" "}
-                <span className="font-semibold text-foreground">
-                  {resource.site?.name ?? currentSiteName}
-                </span>{" "}
-                • Department:{" "}
-                <span className="font-semibold text-foreground">
-                  {sections.find((s) => s.id === sectionId)?.name ?? "Assigned"}
-                </span>
-              </span>
-            </div>
           </div>
 
-          <DialogFooter className="pt-3 border-t border-border/60">
+          <DialogFooter className="pt-3 border-t border-[#334155]/40">
             <Button
               type="button"
               variant="outline"
               onClick={() => setOpen(false)}
               disabled={isPending}
+              className="text-[#dbe2f8] hover:bg-[#222a3a]"
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isPending} className="font-semibold">
+            <Button
+              type="submit"
+              disabled={isPending}
+              className="bg-[#6cd8cb] hover:bg-[#29a195] text-[#003732] font-semibold text-xs font-mono px-5 py-2 rounded-lg transition-all duration-150 active:scale-[0.98]"
+            >
               {isPending ? "Saving..." : "Save changes"}
             </Button>
           </DialogFooter>

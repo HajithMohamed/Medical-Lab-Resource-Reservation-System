@@ -64,13 +64,17 @@ export function EditSectionDialog({ section, trigger }: EditSectionDialogProps) 
         {trigger ? (
           trigger
         ) : (
-          <Button variant="outline" size="sm" className="h-8 gap-1.5 text-xs font-medium">
-            <Pencil className="size-3.5 text-primary" />
+          <Button
+            variant="outline"
+            size="sm"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-[#18202f] hover:bg-[#222a3a] text-xs font-mono font-medium text-[#dbe2f8] hover:text-white border border-[#334155] hover:border-[#6cd8cb]/50 transition-all duration-150 active:scale-[0.98]"
+          >
+            <Pencil className="size-3.5 text-[#6cd8cb]" />
             <span>Edit</span>
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-lg">
         <form onSubmit={handleSubmit} className="space-y-4">
           <DialogHeader>
             <DialogTitle>Edit section</DialogTitle>
@@ -85,9 +89,11 @@ export function EditSectionDialog({ section, trigger }: EditSectionDialogProps) 
             </Alert>
           )}
 
-          <div className="space-y-3">
+          <div className="space-y-4">
             <div className="space-y-1.5">
-              <Label htmlFor={`edit-section-name-${section.id}`}>Name</Label>
+              <Label htmlFor={`edit-section-name-${section.id}`} className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]">
+                Section Name
+              </Label>
               <Input
                 id={`edit-section-name-${section.id}`}
                 name="name"
@@ -100,24 +106,35 @@ export function EditSectionDialog({ section, trigger }: EditSectionDialogProps) 
               />
             </div>
 
-            <div className="rounded-lg bg-muted/50 p-2.5 text-xs text-muted-foreground">
-              Associated with{" "}
-              <span className="font-semibold text-foreground">{section._count.resources}</span>{" "}
-              resources and{" "}
-              <span className="font-semibold text-foreground">{section._count.users}</span> users.
+            {/* Telemetry Stats Callout */}
+            <div className="p-3 bg-[#18202f] border border-[#334155]/60 rounded-lg flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <span className="text-[#6cd8cb]">ℹ</span>
+                <span className="text-xs text-[#94a3b8] font-mono">
+                  Associated with <strong className="text-white font-semibold">{section._count.resources} resources</strong> and <strong className="text-white font-semibold">{section._count.users} users</strong>.
+                </span>
+              </div>
+              <span className="text-xs font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                Active
+              </span>
             </div>
           </div>
 
-          <DialogFooter className="pt-2">
+          <DialogFooter className="pt-3 border-t border-[#334155]/40">
             <Button
               type="button"
               variant="outline"
               onClick={() => setOpen(false)}
               disabled={isPending}
+              className="text-[#dbe2f8] hover:bg-[#222a3a]"
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isPending}>
+            <Button
+              type="submit"
+              disabled={isPending}
+              className="bg-[#6cd8cb] hover:bg-[#29a195] text-[#003732] font-semibold text-xs font-mono px-5 py-2 rounded-lg transition-all duration-150 active:scale-[0.98]"
+            >
               {isPending ? "Saving..." : "Save changes"}
             </Button>
           </DialogFooter>

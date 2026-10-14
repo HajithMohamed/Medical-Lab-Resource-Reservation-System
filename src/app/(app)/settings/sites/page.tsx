@@ -47,9 +47,9 @@ export default async function SitesPage({ searchParams }: SitesPageProps) {
       <div>
         <Link
           href="/settings"
-          className="inline-flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground mb-3 transition-colors"
+          className="inline-flex items-center gap-1 text-xs font-mono text-[#94a3b8] hover:text-[#6cd8cb] mb-3 transition-colors"
         >
-          <ArrowLeft className="size-4" />
+          <ArrowLeft className="size-3.5" />
           <span>Back to Settings</span>
         </Link>
         <PageHeader
@@ -67,44 +67,40 @@ export default async function SitesPage({ searchParams }: SitesPageProps) {
           action={<SiteDialog />}
         />
       ) : (
-        <div className="rounded-xl border border-border bg-card overflow-hidden shadow-xs">
+        <div className="rounded-lg border border-[#334155] bg-[#141c2b] overflow-hidden shadow-sm">
           <Table>
             <TableHeader>
-              <TableRow className="bg-muted/40 hover:bg-muted/40">
-                <TableHead className="font-semibold text-foreground">Name</TableHead>
-                <TableHead className="font-semibold text-foreground">Address</TableHead>
-                <TableHead className="font-semibold text-foreground text-right">
-                  Resources
-                </TableHead>
-                <TableHead className="font-semibold text-foreground text-right">Users</TableHead>
-                <TableHead className="w-28 text-right font-semibold text-foreground pr-4">
-                  Actions
-                </TableHead>
+              <TableRow className="bg-[#222a3a]/70 border-b border-[#334155] text-xs font-mono uppercase tracking-wider text-[#94a3b8]">
+                <TableHead>Site Name</TableHead>
+                <TableHead>Address</TableHead>
+                <TableHead className="text-right">Resources</TableHead>
+                <TableHead className="text-right">Users</TableHead>
+                <TableHead className="w-28 text-right pr-4">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {sites.map((site) => (
-                <TableRow key={site.id} className="hover:bg-muted/30">
-                  <TableCell className="font-medium text-foreground py-3.5">
+                <TableRow key={site.id} className="group hover:bg-[#222a3a]/50 transition-colors duration-150">
+                  <TableCell className="font-semibold text-white py-3.5 px-4 text-sm">
                     <EditSiteDialog
                       site={site}
                       trigger={
                         <button
                           type="button"
-                          className="font-medium text-foreground hover:text-primary hover:underline focus-visible:outline-none focus-visible:underline text-left cursor-pointer"
+                          className="font-semibold text-white hover:text-[#6cd8cb] transition-colors text-left cursor-pointer"
                         >
                           {site.name}
                         </button>
                       }
                     />
                   </TableCell>
-                  <TableCell className="text-muted-foreground py-3.5">
+                  <TableCell className="text-[#94a3b8] font-mono text-xs py-3.5 px-4">
                     {site.address || "—"}
                   </TableCell>
-                  <TableCell className="text-right tabular-nums text-muted-foreground py-3.5">
+                  <TableCell className="text-right tabular-nums text-white font-mono text-xs py-3.5 px-4">
                     {site._count.resources}
                   </TableCell>
-                  <TableCell className="text-right tabular-nums text-muted-foreground py-3.5">
+                  <TableCell className="text-right tabular-nums text-white font-mono text-xs py-3.5 px-4">
                     {site._count.users}
                   </TableCell>
                   <TableCell className="text-right py-3.5 pr-4">
@@ -122,16 +118,14 @@ export default async function SitesPage({ searchParams }: SitesPageProps) {
               ))}
             </TableBody>
           </Table>
-          <div className="border-t border-border bg-muted/20 px-3">
-            <PaginationControls
-              currentPage={page}
-              totalPages={totalPages}
-              totalCount={totalCount}
-              pageSize={pageSize}
-              basePath="/settings/sites"
-              itemLabel="sites"
-            />
-          </div>
+          <PaginationControls
+            currentPage={page}
+            totalPages={totalPages}
+            totalCount={totalCount}
+            pageSize={pageSize}
+            basePath="/settings/sites"
+            itemLabel="sites"
+          />
         </div>
       )}
     </div>

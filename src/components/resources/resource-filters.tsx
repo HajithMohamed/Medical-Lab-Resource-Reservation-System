@@ -36,21 +36,21 @@ export function ResourceFilters({
     <form
       method="GET"
       action="/resources"
-      className="flex flex-wrap items-center gap-2.5 bg-card p-3 rounded-xl border border-border shadow-xs"
+      className="flex flex-wrap items-center gap-2.5 bg-[#141c2b] p-3 rounded-lg border border-[#334155] shadow-xs"
     >
       {/* Search Input */}
       <div className="relative flex-1 min-w-[200px] sm:max-w-[260px]">
         <Search
-          className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none"
+          className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-[#94a3b8] pointer-events-none"
           aria-hidden="true"
         />
         <input
           type="search"
           name="search"
           defaultValue={currentFilters.search ?? ""}
-          placeholder="Search by name"
+          placeholder="Search by instrument name"
           aria-label="Search by name"
-          className="h-9 w-full rounded-md border border-input bg-card pl-9 pr-3 text-sm text-foreground shadow-xs placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+          className="h-9 w-full rounded-md border border-[#334155] bg-[#060e1d] pl-9 pr-3 text-xs font-mono text-[#dbe2f8] placeholder:text-[#879390] focus:border-[#6cd8cb] focus:outline-none transition-colors"
         />
       </div>
 
@@ -60,7 +60,7 @@ export function ResourceFilters({
           name="siteId"
           defaultValue={currentFilters.siteId ?? ""}
           aria-label="Filter by site"
-          className="h-9 w-full rounded-md border border-input bg-card px-3 text-sm text-foreground shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring cursor-pointer"
+          className="h-9 w-full rounded-md border border-[#334155] bg-[#060e1d] px-2.5 text-xs font-mono text-[#dbe2f8] focus:border-[#6cd8cb] focus:outline-none cursor-pointer transition-colors"
         >
           <option value="">All sites</option>
           {sites.map((site) => (
@@ -77,7 +77,7 @@ export function ResourceFilters({
           name="categoryId"
           defaultValue={currentFilters.categoryId ?? ""}
           aria-label="Filter by category"
-          className="h-9 w-full rounded-md border border-input bg-card px-3 text-sm text-foreground shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring cursor-pointer"
+          className="h-9 w-full rounded-md border border-[#334155] bg-[#060e1d] px-2.5 text-xs font-mono text-[#dbe2f8] focus:border-[#6cd8cb] focus:outline-none cursor-pointer transition-colors"
         >
           <option value="">All categories</option>
           {categories.map((category) => (
@@ -94,7 +94,7 @@ export function ResourceFilters({
           name="sectionId"
           defaultValue={currentFilters.sectionId ?? ""}
           aria-label="Filter by owning section"
-          className="h-9 w-full rounded-md border border-input bg-card px-3 text-sm text-foreground shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring cursor-pointer"
+          className="h-9 w-full rounded-md border border-[#334155] bg-[#060e1d] px-2.5 text-xs font-mono text-[#dbe2f8] focus:border-[#6cd8cb] focus:outline-none cursor-pointer transition-colors"
         >
           <option value="">All sections</option>
           {sections.map((section) => (
@@ -111,11 +111,11 @@ export function ResourceFilters({
           name="status"
           defaultValue={currentFilters.status ?? ""}
           aria-label="Filter by status"
-          className="h-9 w-full rounded-md border border-input bg-card px-3 text-sm text-foreground shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring cursor-pointer"
+          className="h-9 w-full rounded-md border border-[#334155] bg-[#060e1d] px-2.5 text-xs font-mono text-[#dbe2f8] focus:border-[#6cd8cb] focus:outline-none cursor-pointer transition-colors"
         >
-          <option value="">Active and out of service</option>
-          <option value="ACTIVE">Active</option>
-          <option value="OUT_OF_SERVICE">Out of service</option>
+          <option value="">Active & Lockout</option>
+          <option value="ACTIVE">Active only</option>
+          <option value="OUT_OF_SERVICE">Lockout (Out of service)</option>
           <option value="RETIRED">Retired</option>
           <option value="ALL">All statuses</option>
         </select>
@@ -123,13 +123,17 @@ export function ResourceFilters({
 
       {/* Action Buttons */}
       <div className="flex items-center gap-2 ml-auto shrink-0">
-        <Button type="submit" variant="secondary" size="sm" className="h-9 font-medium">
+        <Button
+          type="submit"
+          size="sm"
+          className="h-9 px-3 bg-[#6cd8cb] hover:bg-[#29a195] text-[#003732] font-semibold text-xs font-mono"
+        >
           Apply
         </Button>
         {hasActiveFilters && (
-          <Button asChild variant="ghost" size="sm" className="h-9">
-            <Link href="/resources" className="text-muted-foreground hover:text-foreground">
-              Clear filters
+          <Button asChild variant="ghost" size="sm" className="h-9 text-xs font-mono">
+            <Link href="/resources" className="text-[#94a3b8] hover:text-white">
+              Clear
             </Link>
           </Button>
         )}

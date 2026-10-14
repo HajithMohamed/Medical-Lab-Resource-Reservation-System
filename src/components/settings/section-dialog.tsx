@@ -56,12 +56,12 @@ export function SectionDialog() {
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button className="gap-2">
+        <Button className="gap-2 bg-[#6cd8cb] hover:bg-[#29a195] text-[#003732] font-semibold text-xs font-mono shadow-xs">
           <Plus className="size-4" />
           <span>Add section</span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-lg">
         <form onSubmit={handleSubmit} className="space-y-4">
           <DialogHeader>
             <DialogTitle>Add section</DialogTitle>
@@ -75,7 +75,9 @@ export function SectionDialog() {
           )}
 
           <div className="space-y-1.5">
-            <Label htmlFor="section-name">Name</Label>
+            <Label htmlFor="section-name" className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]">
+              Section Name
+            </Label>
             <Input
               id="section-name"
               name="name"
@@ -89,16 +91,21 @@ export function SectionDialog() {
             />
           </div>
 
-          <DialogFooter className="pt-2">
+          <DialogFooter className="pt-3 border-t border-[#334155]/40">
             <Button
               type="button"
               variant="outline"
               onClick={() => setOpen(false)}
               disabled={isPending}
+              className="text-[#dbe2f8] hover:bg-[#222a3a]"
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isPending}>
+            <Button
+              type="submit"
+              disabled={isPending}
+              className="bg-[#6cd8cb] hover:bg-[#29a195] text-[#003732] font-semibold text-xs font-mono px-5 py-2 rounded-lg transition-all duration-150 active:scale-[0.98]"
+            >
               {isPending ? "Adding..." : "Add section"}
             </Button>
           </DialogFooter>
