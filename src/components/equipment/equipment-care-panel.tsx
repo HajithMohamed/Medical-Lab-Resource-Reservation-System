@@ -13,11 +13,7 @@ import {
   type TrackerStatus,
 } from "@/lib/equipment-status";
 import { dbToDay } from "@/lib/equipment-dates";
-import type {
-  EquipmentRecordKind,
-  EquipmentOutcome,
-  ResourceStatus,
-} from "@/generated/prisma/client";
+import type { ResourceStatus } from "@/generated/prisma/client";
 import type { EquipmentRecordItem } from "@/services/equipment";
 import type { UserLike } from "@/lib/permissions";
 

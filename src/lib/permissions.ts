@@ -279,3 +279,22 @@ export function equipmentOverviewSitesFor(actor: UserLike): "all" | string[] {
   }
   return [];
 }
+
+export interface CalendarOptions {
+  canBookHere: boolean;
+  canBlockHere: boolean;
+}
+
+/**
+ * Returns role-based permissions for the calendar view at a specific site:
+ * - STAFF: canBookHere = true, canBlockHere = false
+ * - MANAGER on own site: canBookHere = true, canBlockHere = true
+ * - MANAGER on another site: canBookHere = true, canBlockHere = false
+ * - ADMIN: canBookHere = false, canBlockHere = true
+ */
+export function calendarOptionsFor(user: UserLike, siteId: string): CalendarOptions {
+  return {
+    canBookHere: canBook(user),
+    canBlockHere: canManageMaintenance(user, { siteId }),
+  };
+}

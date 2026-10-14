@@ -17,8 +17,8 @@ import {
   EquipmentRecordKind,
   EquipmentOutcome,
 } from "@/generated/prisma/client";
-import { labToday, parseLabDateTime } from "@/lib/time";
-import { addDaysToDay, dayToDb, dbToDay } from "@/lib/equipment-dates";
+import { labToday } from "@/lib/time";
+import { addDaysToDay, dayToDb } from "@/lib/equipment-dates";
 
 describe("Equipment Care Service (Integration)", () => {
   let fixture: Awaited<ReturnType<typeof createTestData>>;
