@@ -49,8 +49,11 @@ describe("Access guards static verification", () => {
 
       for (const match of functionMatches) {
         const fnName = match[1];
-        // Sign-in action is exempted from requiring an active session; logout deletes session
-        if (fnName === "login" || fnName === "loginAction" || fnName === "logout") {
+        // Named exemptions in auth.ts:
+        // - login / loginAction: unauthenticated visitors
+        // - logout / changePassword: must work while mustChangePassword is true
+        const AUTH_EXEMPT_ACTIONS = ["login", "loginAction", "logout", "changePassword"];
+        if (AUTH_EXEMPT_ACTIONS.includes(fnName)) {
           continue;
         }
 
@@ -66,6 +69,21 @@ describe("Access guards static verification", () => {
         ).toBe(true);
       }
     }
+
+    // Specific checks for auth.ts actions:
+    // changePassword must contain getCurrentUser( and NOT requireUser(
+    // (requireUser() redirects users with mustChangePassword: true to /change-password, preventing completion)
+    const authActionContent = fs.readFileSync(path.join(actionsDir, "auth.ts"), "utf-8");
+    const changePasswordStart = authActionContent.indexOf("export async function changePassword");
+    const changePasswordSnippet = authActionContent.slice(changePasswordStart);
+    expect(changePasswordSnippet).toContain("getCurrentUser(");
+    expect(changePasswordSnippet).not.toContain("requireUser(");
+
+    // logout contains neither requireUser( nor requireRole(
+    const logoutStart = authActionContent.indexOf("export async function logout");
+    const logoutSnippet = authActionContent.slice(logoutStart, changePasswordStart);
+    expect(logoutSnippet).not.toContain("requireUser(");
+    expect(logoutSnippet).not.toContain("requireRole(");
   });
 
   it("every page.tsx in src/app/(app) enforces requireUser() or requireRole()", () => {
