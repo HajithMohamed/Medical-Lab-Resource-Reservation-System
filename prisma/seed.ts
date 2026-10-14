@@ -14,6 +14,8 @@ import {
   ResourceStatus,
   ReservationKind,
   ReservationStatus,
+  EquipmentRecordKind,
+  EquipmentOutcome,
   type Prisma,
 } from "../src/generated/prisma/client";
 import { BCRYPT_COST } from "../src/config/rules";
@@ -202,7 +204,7 @@ async function main() {
         data: { name: "Vehicles", maxBookingMinutes: 600, iconKey: "vehicle" },
       });
 
-      // Resources
+      // Resources (demo values; a real lab copies intervals from each instrument's manual; dates relative to today)
       // Colombo
       const pcr1 = await tx.resource.create({
         data: {
@@ -212,6 +214,12 @@ async function main() {
           sectionId: secMol.id,
           location: "Molecular lab, room 2.14",
           status: ResourceStatus.ACTIVE,
+          manufacturer: "Bio-Rad",
+          model: "CFX96 Touch",
+          serialNumber: "DEMO-PCR-0001",
+          inServiceOn: new Date("2021-01-15T00:00:00Z"),
+          calibrationIntervalDays: 365,
+          nextCalibrationDueOn: subDays(todayLab, 3), // overdue by 3 days
         },
       });
       const pcr2 = await tx.resource.create({
@@ -222,6 +230,12 @@ async function main() {
           sectionId: secMol.id,
           location: "Molecular lab, room 2.14",
           status: ResourceStatus.ACTIVE,
+          manufacturer: "Applied Biosystems",
+          model: "QuantStudio 5",
+          serialNumber: "DEMO-PCR-0002",
+          inServiceOn: new Date("2022-03-20T00:00:00Z"),
+          calibrationIntervalDays: 365,
+          nextCalibrationDueOn: addDays(todayLab, 265),
         },
       });
       const hplc = await tx.resource.create({
@@ -232,6 +246,14 @@ async function main() {
           sectionId: secBiochem.id,
           location: "Biochemistry lab, bench 4",
           status: ResourceStatus.ACTIVE,
+          manufacturer: "Agilent Technologies",
+          model: "1260 Infinity II",
+          serialNumber: "DEMO-HPLC-0001",
+          inServiceOn: new Date("2021-04-12T00:00:00Z"),
+          calibrationIntervalDays: 180,
+          nextCalibrationDueOn: addDays(todayLab, 120),
+          maintenanceIntervalDays: 180,
+          nextMaintenanceDueOn: addDays(todayLab, 120),
         },
       });
       const flowCytometer = await tx.resource.create({
@@ -242,6 +264,12 @@ async function main() {
           sectionId: secHaem.id,
           location: "Haematology lab",
           status: ResourceStatus.OUT_OF_SERVICE,
+          manufacturer: "BD Biosciences",
+          model: "FACSCanto II",
+          serialNumber: "DEMO-CYTO-0001",
+          inServiceOn: new Date("2020-09-01T00:00:00Z"),
+          calibrationIntervalDays: 180,
+          nextCalibrationDueOn: addDays(todayLab, 90),
         },
       });
       const fluorMicr = await tx.resource.create({
@@ -252,6 +280,12 @@ async function main() {
           sectionId: secMicro.id,
           location: "Microbiology lab",
           status: ResourceStatus.ACTIVE,
+          manufacturer: "Nikon",
+          model: "Eclipse Ni-U",
+          serialNumber: "DEMO-MIC-0002",
+          inServiceOn: new Date("2021-02-10T00:00:00Z"),
+          maintenanceIntervalDays: 180,
+          nextMaintenanceDueOn: addDays(todayLab, 140),
         },
       });
       const bscA = await tx.resource.create({
@@ -262,6 +296,12 @@ async function main() {
           sectionId: secMicro.id,
           location: "Microbiology lab, room 1.08",
           status: ResourceStatus.ACTIVE,
+          manufacturer: "Thermo Fisher Scientific",
+          model: "1300 Series A2",
+          serialNumber: "DEMO-BSC-0001",
+          inServiceOn: new Date("2020-06-10T00:00:00Z"),
+          calibrationIntervalDays: 365,
+          nextCalibrationDueOn: addDays(todayLab, 10), // due in ~10 days (Due soon)
         },
       });
       const bscB = await tx.resource.create({
@@ -272,6 +312,12 @@ async function main() {
           sectionId: secMol.id,
           location: "Molecular lab, room 2.16",
           status: ResourceStatus.ACTIVE,
+          manufacturer: "Esco",
+          model: "Airstream Class II",
+          serialNumber: "DEMO-BSC-0002",
+          inServiceOn: new Date("2019-11-01T00:00:00Z"),
+          calibrationIntervalDays: 365,
+          nextCalibrationDueOn: todayLab, // due TODAY! Shows in Nadeesha's Today list
         },
       });
       const autoclave1 = await tx.resource.create({
@@ -282,6 +328,12 @@ async function main() {
           sectionId: secMicro.id,
           location: "Wash-up room",
           status: ResourceStatus.ACTIVE,
+          manufacturer: "Tuttnauer",
+          model: "3870EL",
+          serialNumber: "DEMO-AUT-0001",
+          inServiceOn: new Date("2020-03-15T00:00:00Z"),
+          maintenanceIntervalDays: 30,
+          nextMaintenanceDueOn: addDays(todayLab, 15),
         },
       });
       const trainingRoom = await tx.resource.create({
@@ -303,6 +355,12 @@ async function main() {
           sectionId: secAdmin.id,
           location: "Car park",
           status: ResourceStatus.ACTIVE,
+          manufacturer: "Toyota",
+          model: "HiAce Van",
+          serialNumber: "WP-NB-1024",
+          inServiceOn: new Date("2022-01-01T00:00:00Z"),
+          maintenanceIntervalDays: 90,
+          nextMaintenanceDueOn: addDays(todayLab, 60),
         },
       });
 
@@ -313,7 +371,13 @@ async function main() {
           categoryId: catMol.id,
           siteId: siteKandy.id,
           sectionId: secMol.id,
-          status: ResourceStatus.ACTIVE,
+          status: ResourceStatus.OUT_OF_SERVICE, // last performance check failed
+          manufacturer: "Bio-Rad",
+          model: "CFX96",
+          serialNumber: "DEMO-PCR-0003",
+          inServiceOn: new Date("2022-05-18T00:00:00Z"),
+          calibrationIntervalDays: 365,
+          nextCalibrationDueOn: addDays(todayLab, 180),
         },
       });
       const bscKandy = await tx.resource.create({
@@ -323,6 +387,27 @@ async function main() {
           siteId: siteKandy.id,
           sectionId: secMicro.id,
           status: ResourceStatus.ACTIVE,
+          manufacturer: "Labconco",
+          model: "Purifier Logic+ Class II",
+          serialNumber: "DEMO-BSC-0003",
+          inServiceOn: new Date("2021-08-15T00:00:00Z"),
+          calibrationIntervalDays: 365,
+          nextCalibrationDueOn: addDays(todayLab, 10), // due in ~10 days (Due soon)
+        },
+      });
+      const autoclaveKandy = await tx.resource.create({
+        data: {
+          name: "Autoclave",
+          categoryId: catSter.id,
+          siteId: siteKandy.id,
+          sectionId: secMicro.id,
+          status: ResourceStatus.ACTIVE,
+          manufacturer: "Tuttnauer",
+          model: "3870EL",
+          serialNumber: "DEMO-AUT-0002",
+          inServiceOn: new Date("2021-09-01T00:00:00Z"),
+          maintenanceIntervalDays: 30,
+          nextMaintenanceDueOn: todayLab, // due today!
         },
       });
       const meetingRoomKandy = await tx.resource.create({
@@ -342,6 +427,12 @@ async function main() {
           siteId: siteKandy.id,
           sectionId: secAdmin.id,
           status: ResourceStatus.ACTIVE,
+          manufacturer: "Nissan",
+          model: "NV350 Caravan",
+          serialNumber: "CP-PA-5091",
+          inServiceOn: new Date("2022-07-01T00:00:00Z"),
+          maintenanceIntervalDays: 90,
+          nextMaintenanceDueOn: addDays(todayLab, 45),
         },
       });
 
@@ -353,6 +444,12 @@ async function main() {
           siteId: siteGalle.id,
           sectionId: secHisto.id,
           status: ResourceStatus.ACTIVE,
+          manufacturer: "Olympus",
+          model: "BX53",
+          serialNumber: "DEMO-MIC-0001",
+          inServiceOn: new Date("2016-01-10T00:00:00Z"),
+          expectedServiceLifeYears: 10,
+          replacementReviewDueOn: new Date("2026-01-10T00:00:00Z"), // replacement review overdue
         },
       });
       const autoclaveGalle = await tx.resource.create({
@@ -362,6 +459,12 @@ async function main() {
           siteId: siteGalle.id,
           sectionId: secMicro.id,
           status: ResourceStatus.ACTIVE,
+          manufacturer: "Tuttnauer",
+          model: "2840EL",
+          serialNumber: "DEMO-AUT-0003",
+          inServiceOn: new Date("2020-04-01T00:00:00Z"),
+          maintenanceIntervalDays: 30,
+          nextMaintenanceDueOn: addDays(todayLab, 20),
         },
       });
       const uvVis = await tx.resource.create({
@@ -371,6 +474,10 @@ async function main() {
           siteId: siteGalle.id,
           sectionId: secBiochem.id,
           status: ResourceStatus.RETIRED,
+          manufacturer: "Shimadzu",
+          model: "UV-1800",
+          serialNumber: "DEMO-SPEC-0001",
+          inServiceOn: new Date("2012-04-01T00:00:00Z"),
         },
       });
 
@@ -550,48 +657,50 @@ async function main() {
 
         const dayYMD = format(day, "yyyy-MM-dd");
 
-        // 1. PCR machine 1
-        // Mon-Fri 08:00-11:00 Kasun
-        reservations.push({
-          resourceId: pcr1.id,
-          createdById: staffKasun.id,
-          kind: ReservationKind.BOOKING,
-          status: ReservationStatus.CONFIRMED,
-          purpose: "qPCR run, respiratory panel",
-          startAt: labTime(day, "08:00", timeZone),
-          endAt: labTime(day, "11:00", timeZone),
-        });
-        // Mon-Fri 11:00-13:00 Chamari
-        reservations.push({
-          resourceId: pcr1.id,
-          createdById: staffChamari.id,
-          kind: ReservationKind.BOOKING,
-          status: ReservationStatus.CONFIRMED,
-          purpose: "qPCR run, samples from Kandy",
-          startAt: labTime(day, "11:00", timeZone),
-          endAt: labTime(day, "13:00", timeZone),
-        });
-        // Mon-Fri 13:00-14:00 Kasun
-        reservations.push({
-          resourceId: pcr1.id,
-          createdById: staffKasun.id,
-          kind: ReservationKind.BOOKING,
-          status: ReservationStatus.CONFIRMED,
-          purpose: "Plate set-up",
-          startAt: labTime(day, "13:00", timeZone),
-          endAt: labTime(day, "14:00", timeZone),
-        });
-        // Mon,Wed,Fri 14:00-17:00 Kasun
-        if (isMonWedFri) {
+        // 1. PCR machine 1 (overdue for calibration: only past bookings to satisfy calibration rule)
+        if (pastWorkingDays.includes(day)) {
+          // Mon-Fri 08:00-11:00 Kasun
           reservations.push({
             resourceId: pcr1.id,
             createdById: staffKasun.id,
             kind: ReservationKind.BOOKING,
             status: ReservationStatus.CONFIRMED,
-            purpose: "HBV viral load",
-            startAt: labTime(day, "14:00", timeZone),
-            endAt: labTime(day, "17:00", timeZone),
+            purpose: "qPCR run, respiratory panel",
+            startAt: labTime(day, "08:00", timeZone),
+            endAt: labTime(day, "11:00", timeZone),
           });
+          // Mon-Fri 11:00-13:00 Chamari
+          reservations.push({
+            resourceId: pcr1.id,
+            createdById: staffChamari.id,
+            kind: ReservationKind.BOOKING,
+            status: ReservationStatus.CONFIRMED,
+            purpose: "qPCR run, samples from Kandy",
+            startAt: labTime(day, "11:00", timeZone),
+            endAt: labTime(day, "13:00", timeZone),
+          });
+          // Mon-Fri 13:00-14:00 Kasun
+          reservations.push({
+            resourceId: pcr1.id,
+            createdById: staffKasun.id,
+            kind: ReservationKind.BOOKING,
+            status: ReservationStatus.CONFIRMED,
+            purpose: "Plate set-up",
+            startAt: labTime(day, "13:00", timeZone),
+            endAt: labTime(day, "14:00", timeZone),
+          });
+          // Mon,Wed,Fri 14:00-17:00 Kasun
+          if (isMonWedFri) {
+            reservations.push({
+              resourceId: pcr1.id,
+              createdById: staffKasun.id,
+              kind: ReservationKind.BOOKING,
+              status: ReservationStatus.CONFIRMED,
+              purpose: "HBV viral load",
+              startAt: labTime(day, "14:00", timeZone),
+              endAt: labTime(day, "17:00", timeZone),
+            });
+          }
         }
 
         // 2. PCR machine 2
@@ -953,6 +1062,134 @@ async function main() {
       // Insert all reservations
       await tx.reservation.createMany({
         data: reservations,
+      });
+
+      // Equipment care history records (demo values matching ISO 15189 schedules)
+      const equipmentRecords: Prisma.EquipmentRecordCreateManyInput[] = [
+        // 1. PCR machine 1: PASS calibration 368 days ago -> due 3 days ago (overdue)
+        {
+          resourceId: pcr1.id,
+          kind: EquipmentRecordKind.CALIBRATION,
+          outcome: EquipmentOutcome.PASS,
+          performedOn: subDays(todayLab, 368),
+          performedBy: "Bio-Rad Field Service",
+          reference: "CERT-PCR-2025-01",
+          nextDueOn: subDays(todayLab, 3),
+          recordedById: mgrColombo.id,
+        },
+        // 2. PCR machine 2: PASS calibration 100 days ago
+        {
+          resourceId: pcr2.id,
+          kind: EquipmentRecordKind.CALIBRATION,
+          outcome: EquipmentOutcome.PASS,
+          performedOn: subDays(todayLab, 100),
+          performedBy: "Applied Biosystems Specialist",
+          reference: "CERT-PCR-2026-02",
+          nextDueOn: addDays(todayLab, 265),
+          recordedById: mgrColombo.id,
+        },
+        // 3. Biosafety cabinet A (Colombo): PASS calibration 355 days ago -> due in ~10 days (Due soon)
+        {
+          resourceId: bscA.id,
+          kind: EquipmentRecordKind.CALIBRATION,
+          outcome: EquipmentOutcome.PASS,
+          performedOn: subDays(todayLab, 355),
+          performedBy: "Clean Air Certification Services",
+          reference: "BSC-CERT-2025-A",
+          nextDueOn: addDays(todayLab, 10),
+          recordedById: mgrColombo.id,
+        },
+        // 4. Biosafety cabinet B (Colombo): PASS calibration 365 days ago -> due TODAY!
+        {
+          resourceId: bscB.id,
+          kind: EquipmentRecordKind.CALIBRATION,
+          outcome: EquipmentOutcome.PASS,
+          performedOn: subDays(todayLab, 365),
+          performedBy: "Clean Air Certification Services",
+          reference: "BSC-CERT-2025-B",
+          nextDueOn: todayLab,
+          recordedById: mgrColombo.id,
+        },
+        // 5. Biosafety cabinet (Kandy): PASS calibration 355 days ago -> due in ~10 days (Due soon)
+        {
+          resourceId: bscKandy.id,
+          kind: EquipmentRecordKind.CALIBRATION,
+          outcome: EquipmentOutcome.PASS,
+          performedOn: subDays(todayLab, 355),
+          performedBy: "Clean Air Certification Services",
+          reference: "BSC-CERT-2025-K",
+          nextDueOn: addDays(todayLab, 10),
+          recordedById: mgrKandy.id,
+        },
+        // 6. Autoclave (Kandy): PASS preventive maintenance 30 days ago -> due TODAY!
+        {
+          resourceId: autoclaveKandy.id,
+          kind: EquipmentRecordKind.PREVENTIVE_MAINTENANCE,
+          outcome: EquipmentOutcome.PASS,
+          performedOn: subDays(todayLab, 30),
+          performedBy: "Meditech Service Engineers",
+          reference: "MAINT-AUT-2026-09",
+          nextDueOn: todayLab,
+          recordedById: mgrKandy.id,
+        },
+        // 7. HPLC system: PASS calibration 60 days ago
+        {
+          resourceId: hplc.id,
+          kind: EquipmentRecordKind.CALIBRATION,
+          outcome: EquipmentOutcome.PASS,
+          performedOn: subDays(todayLab, 60),
+          performedBy: "Agilent Technologies",
+          reference: "HPLC-CAL-2026-08",
+          nextDueOn: addDays(todayLab, 120),
+          recordedById: mgrColombo.id,
+        },
+        // 8. HPLC system: PASS preventive maintenance 60 days ago
+        {
+          resourceId: hplc.id,
+          kind: EquipmentRecordKind.PREVENTIVE_MAINTENANCE,
+          outcome: EquipmentOutcome.PASS,
+          performedOn: subDays(todayLab, 60),
+          performedBy: "Agilent Technologies",
+          reference: "HPLC-PM-2026-08",
+          nextDueOn: addDays(todayLab, 120),
+          recordedById: mgrColombo.id,
+        },
+        // 9. Real-time PCR machine (Kandy): FAIL performance check 2 days ago -> OUT_OF_SERVICE (Failed)
+        {
+          resourceId: pcrKandy.id,
+          kind: EquipmentRecordKind.PERFORMANCE_CHECK,
+          outcome: EquipmentOutcome.FAIL,
+          performedOn: subDays(todayLab, 2),
+          performedBy: "Ruwan Jayasinghe",
+          notes: "Optical sensor failure on channel 2. Awaiting vendor replacement part.",
+          recordedById: mgrKandy.id,
+        },
+        // 10. Sample transport van 1: PASS vehicle service 30 days ago
+        {
+          resourceId: van1.id,
+          kind: EquipmentRecordKind.PREVENTIVE_MAINTENANCE,
+          outcome: EquipmentOutcome.PASS,
+          performedOn: subDays(todayLab, 30),
+          performedBy: "Toyota Lanka",
+          reference: "TOY-SRV-2026-09",
+          nextDueOn: addDays(todayLab, 60),
+          recordedById: mgrColombo.id,
+        },
+        // 11. Sample transport van 2: PASS vehicle service 45 days ago
+        {
+          resourceId: van2.id,
+          kind: EquipmentRecordKind.PREVENTIVE_MAINTENANCE,
+          outcome: EquipmentOutcome.PASS,
+          performedOn: subDays(todayLab, 45),
+          performedBy: "Associated Motorways",
+          reference: "AMW-SRV-2026-08",
+          nextDueOn: addDays(todayLab, 45),
+          recordedById: mgrKandy.id,
+        },
+      ];
+
+      await tx.equipmentRecord.createMany({
+        data: equipmentRecords,
       });
     },
     { timeout: 30000 },
