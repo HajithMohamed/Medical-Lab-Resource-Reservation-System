@@ -4,6 +4,7 @@ import { env } from "@/lib/env";
 import { AppShell } from "@/components/app-shell/app-shell";
 import { PageHeader } from "@/components/page-header";
 import { ResourceStatusTag } from "@/components/resource-status-tag";
+import { EquipmentStatusTag } from "@/components/equipment/equipment-status-tag";
 import { CategoryIcon, CATEGORY_ICON_MAP } from "@/components/category-icon";
 import { EmptyState } from "@/components/empty-state";
 import { SummaryStrip } from "@/components/summary-strip";
@@ -211,6 +212,20 @@ export default function StyleguidePage() {
                 <span className="inline-flex items-center h-[22px] px-2.5 rounded-full text-[13px] font-bold bg-muted text-muted-foreground border border-border">
                   Idle
                 </span>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-sm font-semibold text-muted-foreground mb-3">
+                Equipment care &amp; verification status tags (ISO 15189)
+              </h3>
+              <div className="flex flex-wrap items-center gap-3">
+                <EquipmentStatusTag status="CURRENT" label="Current" />
+                <EquipmentStatusTag status="DUE_SOON" label="Due soon" />
+                <EquipmentStatusTag status="DUE_TODAY" label="Due today" />
+                <EquipmentStatusTag status="OVERDUE" label="Overdue" />
+                <EquipmentStatusTag status="FAILED" label="Failed" />
+                <EquipmentStatusTag status="NOT_TRACKED" label="Not tracked" />
               </div>
             </div>
           </div>

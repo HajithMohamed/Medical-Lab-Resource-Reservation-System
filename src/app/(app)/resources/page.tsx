@@ -204,10 +204,22 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
                         )}
                       </TableCell>
                       <TableCell className="py-2 px-3 overflow-hidden">
-                        <ResourceStatusTag
-                          status={resource.status}
-                          className="text-[10px] px-2 py-0.5"
-                        />
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          <ResourceStatusTag
+                            status={resource.status}
+                            className="text-[10px] px-2 py-0.5"
+                          />
+                          {resource.calibrationStatus === "FAILED" && (
+                            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-rose-500/15 text-rose-300 border border-rose-500/40">
+                              Check failed
+                            </span>
+                          )}
+                          {resource.calibrationStatus === "OVERDUE" && (
+                            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-rose-500/15 text-rose-300 border border-rose-500/40">
+                              Calibration overdue
+                            </span>
+                          )}
+                        </div>
                       </TableCell>
                       <TableCell className="py-2 px-3 text-right overflow-hidden">
                         <div className="inline-flex items-center gap-1 justify-end">

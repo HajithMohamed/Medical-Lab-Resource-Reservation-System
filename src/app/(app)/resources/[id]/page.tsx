@@ -22,6 +22,12 @@ import { env } from "@/lib/env";
 import { db } from "@/lib/db";
 import { ResourceEditDialog } from "@/components/resources/resource-edit-dialog";
 
+import { DueDayBanner } from "@/components/equipment/due-day-banner";
+import { EquipmentCarePanel } from "@/components/equipment/equipment-care-panel";
+import * as equipmentService from "@/services/equipment";
+import { countUpcomingBookings } from "@/services/resources";
+import { dbToDay } from "@/lib/equipment-dates";
+
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const result = await getResource(id);
@@ -49,16 +55,30 @@ export default async function ResourceDetailPage({ params }: ResourceDetailPageP
   const resource = result.data;
   const canManage = canManageResource(user, resource);
 
-  const [sites, categories, sections] = canManage
-    ? await Promise.all([
-        db.site.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } }),
-        db.category.findMany({
+  const [sites, categories, sections, historyResult, upcomingBookingsCount] = await Promise.all([
+    canManage
+      ? db.site.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } })
+      : Promise.resolve([]),
+    canManage
+      ? db.category.findMany({
           select: { id: true, name: true, maxBookingMinutes: true, iconKey: true },
           orderBy: { name: "asc" },
-        }),
-        db.section.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } }),
-      ])
-    : [[], [], []];
+        })
+      : Promise.resolve([]),
+    canManage
+      ? db.section.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } })
+      : Promise.resolve([]),
+    equipmentService.getEquipmentHistory(resource.id),
+    countUpcomingBookings(resource.id),
+  ]);
+
+  const history = historyResult.ok ? historyResult.data : [];
+  const lastNotDoneCalib = history.find(
+    (h) => h.kind === "CALIBRATION" && h.outcome === "NOT_DONE",
+  );
+  const lastNotDoneMaint = history.find(
+    (h) => h.kind === "PREVENTIVE_MAINTENANCE" && h.outcome === "NOT_DONE",
+  );
 
   const timeZone = env.APP_TIME_ZONE;
 
@@ -192,6 +212,41 @@ export default async function ResourceDetailPage({ params }: ResourceDetailPageP
           </Button>
         </div>
       )}
+
+      {/* Due Day Banner (shown if calibration or service is due today or overdue) */}
+      <DueDayBanner
+        actor={user}
+        actorName={user.name}
+        resource={resource}
+        calibrationStatus={resource.calibrationStatus ?? "NOT_TRACKED"}
+        maintenanceStatus={resource.maintenanceStatus ?? "NOT_TRACKED"}
+        affectedBookingsCount={upcomingBookingsCount}
+        lastNotDoneCalibration={
+          lastNotDoneCalib
+            ? {
+                notes: lastNotDoneCalib.notes ?? "",
+                plannedDate: lastNotDoneCalib.nextDueOn ? dbToDay(lastNotDoneCalib.nextDueOn) : null,
+              }
+            : null
+        }
+        lastNotDoneMaintenance={
+          lastNotDoneMaint
+            ? {
+                notes: lastNotDoneMaint.notes ?? "",
+                plannedDate: lastNotDoneMaint.nextDueOn ? dbToDay(lastNotDoneMaint.nextDueOn) : null,
+              }
+            : null
+        }
+      />
+
+      {/* Equipment Care Panel */}
+      <EquipmentCarePanel
+        actor={user}
+        actorName={user.name}
+        resource={resource}
+        history={history}
+        affectedBookingsCount={upcomingBookingsCount}
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column: Details panel */}

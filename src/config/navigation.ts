@@ -7,6 +7,7 @@ import {
   CalendarCheck,
   ClipboardList,
   Wrench,
+  ClipboardCheck,
   BarChart3,
   Users,
   Settings,
@@ -52,7 +53,7 @@ export const NAV_ITEMS: readonly NavItem[] = [
     roles: ["STAFF", "MANAGER"],
     group: "main",
   },
-  // manage: Bookings (oversight), Maintenance, (Equipment care E1), Usage, Users
+  // manage: Bookings (oversight), Maintenance, Equipment care, Usage, Users
   {
     label: "Bookings",
     href: "/bookings/manage",
@@ -64,6 +65,13 @@ export const NAV_ITEMS: readonly NavItem[] = [
     label: "Maintenance",
     href: "/maintenance",
     icon: Wrench,
+    roles: ["MANAGER", "ADMIN"],
+    group: "manage",
+  },
+  {
+    label: "Equipment care",
+    href: "/equipment",
+    icon: ClipboardCheck,
     roles: ["MANAGER", "ADMIN"],
     group: "manage",
   },
