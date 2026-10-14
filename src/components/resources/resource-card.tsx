@@ -73,7 +73,7 @@ export function ResourceCard({
 
       <div className="flex items-center justify-between gap-2 pt-1 border-t border-[#334155]/40">
         <div className="flex items-center gap-1.5">
-          <Button asChild variant="outline" size="sm" className="h-8 px-2.5 text-xs font-mono">
+          <Button asChild variant="outline" size="sm" className="h-8 px-2.5 text-xs font-mono border-[#334155] hover:bg-[#18202f]">
             <Link href={`/resources/${resource.id}`}>Details</Link>
           </Button>
           {canManage && sites && categories && sections && (

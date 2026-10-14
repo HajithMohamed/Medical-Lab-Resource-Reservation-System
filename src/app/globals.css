@@ -60,6 +60,22 @@
   --color-error: #ffb4ab;
   --color-error-container: #93000a;
 
+  --color-surface-container-lowest: #060e1d;
+  --color-surface-container-low: #141c2b;
+  --color-surface-container: #18202f;
+  --color-surface-container-high: #222a3a;
+  --color-surface-container-highest: #2d3545;
+  --color-surface: #0b1322;
+  --color-on-surface: #dbe2f8;
+  --color-on-surface-variant: #bcc9c6;
+  --color-outline: #879390;
+  --color-outline-variant: #3d4947;
+  --color-primary-container: #29a195;
+  --color-tertiary: #ffb77d;
+  --color-tertiary-container: #d97707;
+  --color-error: #ffb4ab;
+  --color-error-container: #93000a;
+
   --color-booking: var(--booking);
   --color-booking-ink: var(--booking-ink);
   --color-booking-edge: var(--booking-edge);

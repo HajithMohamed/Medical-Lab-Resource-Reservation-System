@@ -155,22 +155,32 @@ export default async function ResourceDetailPage({ params }: ResourceDetailPageP
             categories={categories}
             sections={sections}
           />
-          <Button asChild variant="outline" size="sm" className="gap-1.5 h-8">
+          <Button asChild variant="outline" size="sm" className="gap-1.5 h-8 border-[#334155] bg-[#18202f] hover:bg-[#222a3a] text-xs">
             <Link href={`/resources/${resource.id}/status`}>
               <AlertOctagon className="size-3.5" />
-              <span>Change status</span>
+              <span>Status</span>
             </Link>
           </Button>
-          <Button asChild variant="outline" size="sm" className="gap-1.5 h-8">
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="gap-1.5 h-8 border-[#334155] bg-[#18202f] hover:bg-[#222a3a] text-xs"
+          >
             <Link href={`/maintenance/new?resourceId=${resource.id}`}>
               <Wrench className="size-3.5" />
-              <span>Block time</span>
+              <span>Block Maintenance</span>
             </Link>
           </Button>
-          <Button asChild variant="outline" size="sm" className="gap-1.5 h-8">
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="gap-1.5 h-8 border-rose-500/40 text-rose-400 bg-rose-950/20 hover:bg-rose-950/40 text-xs"
+          >
             <Link href={`/maintenance/new?resourceId=${resource.id}&breakdown=1`}>
               <ShieldAlert className="size-3.5" />
-              <span>Report breakdown</span>
+              <span>Report Lockout</span>
             </Link>
           </Button>
         </div>
@@ -222,11 +232,11 @@ export default async function ResourceDetailPage({ params }: ResourceDetailPageP
                 <span>Recent maintenance</span>
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pt-3">
               {resource.recentMaintenance.length === 0 ? (
                 <p className="text-sm text-slate-500 italic">No maintenance blocks recorded.</p>
               ) : (
-                <div className="space-y-3">
+                <div className="space-y-2.5">
                   {resource.recentMaintenance.map((m) => (
                     <div
                       key={m.id}
@@ -263,10 +273,10 @@ export default async function ResourceDetailPage({ params }: ResourceDetailPageP
               </CardTitle>
               <span className="text-xs text-slate-400 font-mono">
                 {resource.reservationsNext7Days.length}{" "}
-                {resource.reservationsNext7Days.length === 1 ? "booking" : "bookings"}
+                {resource.reservationsNext7Days.length === 1 ? "run" : "runs"}
               </span>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pt-3">
               {resource.reservationsNext7Days.length === 0 ? (
                 <div className="py-8 text-center border border-dashed border-[#334155] rounded-xl bg-[#18202f]/50">
                   <Clock className="size-8 text-slate-500 mx-auto mb-2" />
@@ -278,7 +288,7 @@ export default async function ResourceDetailPage({ params }: ResourceDetailPageP
                   </p>
                 </div>
               ) : (
-                <div className="space-y-6">
+                <div className="space-y-4">
                   {Array.from(reservationsByDay.entries()).map(([dayString, dayReservations]) => (
                     <div key={dayString} className="space-y-2">
                       <div className="text-xs font-bold text-slate-400 uppercase tracking-wider px-1">
