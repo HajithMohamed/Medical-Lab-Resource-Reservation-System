@@ -23,7 +23,7 @@ import { EmptyState } from "@/components/empty-state";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { useBookingSocket } from "@/hooks/use-booking-socket";
+import { useAutoRefresh } from "@/hooks/use-auto-refresh";
 import { BookingCreateDialog } from "@/components/bookings/booking-create-dialog";
 import type { ResourceOption } from "@/components/bookings/booking-create-form";
 
@@ -151,8 +151,8 @@ export function MyBookingsClient({
   cancelled,
   resources,
 }: MyBookingsClientProps) {
-  // Listen for real-time socket updates from other users/tabs
-  useBookingSocket();
+  // simple polling: works on any host, no socket server needed
+  useAutoRefresh();
 
   const searchParams = useSearchParams();
   const highlightId = searchParams.get("highlight");

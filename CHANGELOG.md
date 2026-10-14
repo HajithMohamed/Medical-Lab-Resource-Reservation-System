@@ -76,6 +76,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Sidebar navigation updated in `src/config/navigation.ts`: "Bookings" added to `manage` group for `MANAGER` and `ADMIN`; "My bookings" and "Find a slot" restricted to `STAFF` and `MANAGER`.
 - Resource status transitions in `src/services/resources.ts` strictly reject any changes to `RETIRED` resources (`Constraint C6: RETIRED is final`) and duplicate status requests.
 - Sanitized email service in `src/lib/email.ts` to read exclusively from `env` rather than disk/process.env, and simplified password change link in `buildChangePasswordUrl` to eliminate email address query strings.
+- Replaced unused `socket.io-client` with lightweight `useAutoRefresh` tab-visibility polling every 60 seconds (`CALENDAR_REFRESH_SECONDS`).
+
+### Removed
+
+- Removed unused `socket.io` and `socket.io-client` dependencies, `use-booking-socket.ts`, and `socket-events.ts`.
 
 ### Security
 
