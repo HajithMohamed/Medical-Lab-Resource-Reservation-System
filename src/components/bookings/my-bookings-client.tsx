@@ -111,8 +111,11 @@ function ClientPagination({
   return (
     <div className="p-3 bg-[#18202f] border border-[#334155] rounded-lg flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-mono text-[#94a3b8] mt-2">
       <div>
-        Showing <strong className="text-white font-semibold">{start}-{end}</strong> of{" "}
-        <strong className="text-white font-semibold">{totalCount}</strong> {itemLabel}
+        Showing{" "}
+        <strong className="text-white font-semibold">
+          {start}-{end}
+        </strong>{" "}
+        of <strong className="text-white font-semibold">{totalCount}</strong> {itemLabel}
       </div>
       <div className="flex items-center gap-2 self-end sm:self-auto">
         <button
@@ -179,10 +182,7 @@ export function MyBookingsClient({
   );
 
   const pastTotalPages = Math.ceil(past.length / PAGE_SIZE) || 1;
-  const paginatedPast = past.slice(
-    (pastPage - 1) * PAGE_SIZE,
-    pastPage * PAGE_SIZE,
-  );
+  const paginatedPast = past.slice((pastPage - 1) * PAGE_SIZE, pastPage * PAGE_SIZE);
 
   const cancelledTotalPages = Math.ceil(cancelled.length / PAGE_SIZE) || 1;
   const paginatedCancelled = cancelled.slice(
@@ -330,7 +330,10 @@ export function MyBookingsClient({
                       >
                         <input type="hidden" name="reservationId" value={booking.id} />
                         <div className="space-y-1.5 pt-1">
-                          <Label htmlFor="cancelReason" className="text-xs font-mono text-slate-200">
+                          <Label
+                            htmlFor="cancelReason"
+                            className="text-xs font-mono text-slate-200"
+                          >
                             Reason for cancellation <span className="text-rose-400">*</span>
                           </Label>
                           <Input
