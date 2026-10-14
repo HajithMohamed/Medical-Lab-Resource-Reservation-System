@@ -20,9 +20,11 @@ describe("Email Service & Templates", () => {
   };
 
   describe("buildChangePasswordUrl", () => {
-    it("encodes the email query parameter properly into the change password route", () => {
+    it("returns the change password route with no email query parameter", () => {
       const url = buildChangePasswordUrl("test+user@domain.com");
-      expect(url).toContain("/change-password?email=test%2Buser%40domain.com");
+      expect(url).toBe("http://localhost:3000/change-password");
+      expect(url).not.toContain("?");
+      expect(url).not.toContain("email=");
     });
   });
 
