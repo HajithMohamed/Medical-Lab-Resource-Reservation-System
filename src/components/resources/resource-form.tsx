@@ -5,8 +5,6 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Card,
@@ -17,11 +15,24 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
   createResourceAction,
   updateResourceAction,
   type ResourceActionResult,
 } from "@/actions/resources";
 import type { Role } from "@/generated/prisma/client";
+import { ResourceCoreFields } from "./resource-core-fields";
+import { EquipmentFields, type EquipmentFormState } from "./equipment-fields";
+import { dbToDay, isValidDay, todayDay } from "@/lib/equipment-dates";
 
 interface ResourceFormProps {
   initialData?: {
@@ -32,6 +43,16 @@ interface ResourceFormProps {
     sectionId: string;
     location: string | null;
     capacity: number | null;
+    manufacturer?: string | null;
+    model?: string | null;
+    serialNumber?: string | null;
+    inServiceOn?: Date | string | null;
+    expectedServiceLifeYears?: number | null;
+    replacementReviewDueOn?: Date | string | null;
+    calibrationIntervalDays?: number | null;
+    nextCalibrationDueOn?: Date | string | null;
+    maintenanceIntervalDays?: number | null;
+    nextMaintenanceDueOn?: Date | string | null;
   };
   actorRole: Role;
   actorSiteId: string | null;
@@ -39,6 +60,55 @@ interface ResourceFormProps {
   categories: Array<{ id: string; name: string; maxBookingMinutes: number; iconKey: string }>;
   sections: Array<{ id: string; name: string }>;
   isEdit?: boolean;
+}
+
+function buildInitialEquipment(data?: ResourceFormProps["initialData"]): EquipmentFormState {
+  const inServiceOnStr = data?.inServiceOn
+    ? typeof data.inServiceOn === "string"
+      ? data.inServiceOn
+      : dbToDay(data.inServiceOn)
+    : "";
+  const reviewDueOnStr = data?.replacementReviewDueOn
+    ? typeof data.replacementReviewDueOn === "string"
+      ? data.replacementReviewDueOn
+      : dbToDay(data.replacementReviewDueOn)
+    : "";
+  const calibDueOnStr = data?.nextCalibrationDueOn
+    ? typeof data.nextCalibrationDueOn === "string"
+      ? data.nextCalibrationDueOn
+      : dbToDay(data.nextCalibrationDueOn)
+    : "";
+  const maintDueOnStr = data?.nextMaintenanceDueOn
+    ? typeof data.nextMaintenanceDueOn === "string"
+      ? data.nextMaintenanceDueOn
+      : dbToDay(data.nextMaintenanceDueOn)
+    : "";
+
+  return {
+    manufacturer: data?.manufacturer ?? "",
+    model: data?.model ?? "",
+    serialNumber: data?.serialNumber ?? "",
+    inServiceOn: inServiceOnStr,
+    expectedServiceLifeYears: data?.expectedServiceLifeYears
+      ? String(data.expectedServiceLifeYears)
+      : "",
+    replacementReviewDueOn: reviewDueOnStr,
+    needsCalibration: Boolean(data?.calibrationIntervalDays || data?.nextCalibrationDueOn),
+    calibrationIntervalDays: data?.calibrationIntervalDays
+      ? String(data.calibrationIntervalDays)
+      : "",
+    lastCalibratedOn: "",
+    calibratedBy: "",
+    calibrationReference: "",
+    nextCalibrationDueOn: calibDueOnStr,
+    needsMaintenance: Boolean(data?.maintenanceIntervalDays || data?.nextMaintenanceDueOn),
+    maintenanceIntervalDays: data?.maintenanceIntervalDays
+      ? String(data.maintenanceIntervalDays)
+      : "",
+    lastServicedOn: "",
+    servicedBy: "",
+    nextMaintenanceDueOn: maintDueOnStr,
+  };
 }
 
 export function ResourceForm({
@@ -71,15 +141,20 @@ export function ResourceForm({
       : "",
   );
 
+  const [equipment, setEquipment] = React.useState<EquipmentFormState>(() =>
+    buildInitialEquipment(initialData),
+  );
+  const [showOverdueWarning, setShowOverdueWarning] = React.useState(false);
+
   const [isPending, setIsPending] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = React.useState<Record<string, string[]>>({});
 
   const selectedCategory = categories.find((c) => c.id === categoryId);
-  const isRoom = selectedCategory?.iconKey === "room";
+  const currentSiteName =
+    sites.find((s) => s.id === (isManager ? actorSiteId : siteId))?.name ?? "Assigned site";
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const submitForm = async () => {
     setIsPending(true);
     setError(null);
     setFieldErrors({});
@@ -95,6 +170,27 @@ export function ResourceForm({
     if (capacity.trim()) {
       formData.set("capacity", capacity.trim());
     }
+
+    // Equipment fields
+    formData.set("manufacturer", equipment.manufacturer.trim());
+    formData.set("model", equipment.model.trim());
+    formData.set("serialNumber", equipment.serialNumber.trim());
+    formData.set("inServiceOn", equipment.inServiceOn);
+    formData.set("expectedServiceLifeYears", equipment.expectedServiceLifeYears);
+    formData.set("replacementReviewDueOn", equipment.replacementReviewDueOn);
+
+    formData.set("needsCalibration", equipment.needsCalibration ? "true" : "false");
+    formData.set("calibrationIntervalDays", equipment.calibrationIntervalDays);
+    formData.set("lastCalibratedOn", equipment.lastCalibratedOn);
+    formData.set("calibratedBy", equipment.calibratedBy.trim());
+    formData.set("calibrationReference", equipment.calibrationReference.trim());
+    formData.set("nextCalibrationDueOn", equipment.nextCalibrationDueOn);
+
+    formData.set("needsMaintenance", equipment.needsMaintenance ? "true" : "false");
+    formData.set("maintenanceIntervalDays", equipment.maintenanceIntervalDays);
+    formData.set("lastServicedOn", equipment.lastServicedOn);
+    formData.set("servicedBy", equipment.servicedBy.trim());
+    formData.set("nextMaintenanceDueOn", equipment.nextMaintenanceDueOn);
 
     let result: ResourceActionResult;
 
@@ -126,195 +222,126 @@ export function ResourceForm({
     router.refresh();
   };
 
-  const currentSiteName =
-    sites.find((s) => s.id === (isManager ? actorSiteId : siteId))?.name ?? "Assigned site";
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const today = todayDay();
+    if (
+      equipment.needsCalibration &&
+      equipment.nextCalibrationDueOn &&
+      isValidDay(equipment.nextCalibrationDueOn) &&
+      equipment.nextCalibrationDueOn < today
+    ) {
+      setShowOverdueWarning(true);
+      return;
+    }
+    submitForm();
+  };
 
   return (
-    <Card className="max-w-2xl">
-      <form onSubmit={handleSubmit}>
-        <CardHeader>
-          <CardTitle>
-            {isEdit ? `Edit ${initialData?.name ?? "resource"}` : "Add resource"}
-          </CardTitle>
-          <CardDescription>
-            {isEdit
-              ? "Update equipment specifications, location or assigned department."
-              : "Register an instrument, biosafety cabinet, room or van into the network."}
-          </CardDescription>
-        </CardHeader>
+    <>
+      <Card className="max-w-2xl">
+        <form onSubmit={handleSubmit}>
+          <CardHeader>
+            <CardTitle>
+              {isEdit ? `Edit ${initialData?.name ?? "resource"}` : "Add resource"}
+            </CardTitle>
+            <CardDescription>
+              {isEdit
+                ? "Update equipment specifications, location or assigned department."
+                : "Register an instrument, biosafety cabinet, room or van into the network."}
+            </CardDescription>
+          </CardHeader>
 
-        <CardContent className="space-y-4">
-          {error && (
-            <Alert variant="destructive">
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
+          <CardContent className="space-y-4">
+            {error && (
+              <Alert variant="destructive">
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
 
-          {/* Resource Name */}
-          <div className="space-y-1.5">
-            <Label htmlFor="resource-name">Resource name</Label>
-            <Input
-              id="resource-name"
-              name="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. Real-time PCR machine 1"
-              required
-              minLength={2}
-              maxLength={80}
+            <ResourceCoreFields
+              idPrefix="resource-form"
+              name={name}
+              setName={setName}
+              siteId={siteId}
+              setSiteId={setSiteId}
+              categoryId={categoryId}
+              setCategoryId={setCategoryId}
+              sectionId={sectionId}
+              setSectionId={setSectionId}
+              location={location}
+              setLocation={setLocation}
+              capacity={capacity}
+              setCapacity={setCapacity}
+              isManager={isManager}
+              actorSiteId={actorSiteId}
+              currentSiteName={currentSiteName}
+              sites={sites}
+              categories={categories}
+              sections={sections}
+              fieldErrors={fieldErrors}
               disabled={isPending}
             />
-            {fieldErrors.name && (
-              <p className="text-xs font-medium text-destructive">{fieldErrors.name[0]}</p>
-            )}
-          </div>
 
-          {/* Site selection: Managers are locked to their own site */}
-          <div className="space-y-1.5">
-            <Label htmlFor="resource-site">Laboratory site</Label>
-            {isManager ? (
-              <div>
-                <Input
-                  id="resource-site"
-                  value={currentSiteName}
-                  disabled
-                  className="bg-muted text-muted-foreground"
-                />
-                <input type="hidden" name="siteId" value={actorSiteId ?? ""} />
-                <p className="text-xs text-muted-foreground mt-1">
-                  Site managers may only manage resources for their assigned laboratory.
-                </p>
-              </div>
-            ) : (
-              <select
-                id="resource-site"
-                name="siteId"
-                value={siteId}
-                onChange={(e) => setSiteId(e.target.value)}
-                disabled={isPending}
-                required
-                className="h-9 w-full rounded-md border border-input bg-card px-3 text-sm text-foreground shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring cursor-pointer"
+            <EquipmentFields
+              iconKey={selectedCategory?.iconKey ?? "other"}
+              values={equipment}
+              onChange={setEquipment}
+              fieldErrors={fieldErrors}
+              disabled={isPending}
+            />
+          </CardContent>
+
+          <CardFooter className="flex items-center justify-end gap-3 pt-4 border-t border-[#1e293b]">
+            <Button asChild variant="outline" type="button" disabled={isPending}>
+              <Link
+                href={isEdit && initialData?.id ? `/resources/${initialData.id}` : "/resources"}
               >
-                {sites.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.name}
-                  </option>
-                ))}
-              </select>
-            )}
-            {fieldErrors.siteId && (
-              <p className="text-xs font-medium text-destructive">{fieldErrors.siteId[0]}</p>
-            )}
-          </div>
-
-          {/* Category */}
-          <div className="space-y-1.5">
-            <Label htmlFor="resource-category">Category</Label>
-            <select
-              id="resource-category"
-              name="categoryId"
-              value={categoryId}
-              onChange={(e) => setCategoryId(e.target.value)}
+                Cancel
+              </Link>
+            </Button>
+            <Button
+              type="submit"
               disabled={isPending}
-              required
-              className="h-9 w-full rounded-md border border-input bg-card px-3 text-sm text-foreground shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring cursor-pointer"
+              className="bg-[#6cd8cb] hover:bg-[#29a195] text-[#003732] font-semibold"
             >
-              {categories.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
-            {fieldErrors.categoryId && (
-              <p className="text-xs font-medium text-destructive">{fieldErrors.categoryId[0]}</p>
-            )}
-          </div>
+              {isPending
+                ? isEdit
+                  ? "Saving..."
+                  : "Adding..."
+                : isEdit
+                  ? "Save changes"
+                  : "Add resource"}
+            </Button>
+          </CardFooter>
+        </form>
+      </Card>
 
-          {/* Section */}
-          <div className="space-y-1.5">
-            <Label htmlFor="resource-section">Owning section</Label>
-            <select
-              id="resource-section"
-              name="sectionId"
-              value={sectionId}
-              onChange={(e) => setSectionId(e.target.value)}
-              disabled={isPending}
-              required
-              className="h-9 w-full rounded-md border border-input bg-card px-3 text-sm text-foreground shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring cursor-pointer"
+      <AlertDialog open={showOverdueWarning} onOpenChange={setShowOverdueWarning}>
+        <AlertDialogContent className="sm:max-w-md">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Calibration is overdue</AlertDialogTitle>
+            <AlertDialogDescription>
+              The calibration is overdue. Nobody can book this instrument until a calibration is
+              recorded.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setShowOverdueWarning(false)}>
+              Go back
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                setShowOverdueWarning(false);
+                submitForm();
+              }}
+              className="bg-amber-600 hover:bg-amber-700 text-white font-semibold"
             >
-              {sections.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.name}
-                </option>
-              ))}
-            </select>
-            {fieldErrors.sectionId && (
-              <p className="text-xs font-medium text-destructive">{fieldErrors.sectionId[0]}</p>
-            )}
-          </div>
-
-          {/* Location */}
-          <div className="space-y-1.5">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="resource-location">Location</Label>
-              <span className="text-xs text-muted-foreground">Optional, up to 120 characters</span>
-            </div>
-            <Input
-              id="resource-location"
-              name="location"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              placeholder="e.g. Molecular lab, room 2.14"
-              maxLength={120}
-              disabled={isPending}
-            />
-            {fieldErrors.location && (
-              <p className="text-xs font-medium text-destructive">{fieldErrors.location[0]}</p>
-            )}
-          </div>
-
-          {/* Capacity (Seats for rooms) */}
-          <div className="space-y-1.5">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="resource-capacity">Capacity</Label>
-              <span className="text-xs text-muted-foreground">
-                {isRoom ? "Number of seats (1-500)" : "Optional, for rooms"}
-              </span>
-            </div>
-            <Input
-              id="resource-capacity"
-              name="capacity"
-              type="number"
-              min={1}
-              max={500}
-              value={capacity}
-              onChange={(e) => setCapacity(e.target.value)}
-              placeholder="Number of seats, for rooms"
-              disabled={isPending}
-            />
-            {fieldErrors.capacity && (
-              <p className="text-xs font-medium text-destructive">{fieldErrors.capacity[0]}</p>
-            )}
-          </div>
-        </CardContent>
-
-        <CardFooter className="flex items-center justify-end gap-3 pt-2">
-          <Button asChild variant="outline" type="button" disabled={isPending}>
-            <Link href={isEdit && initialData?.id ? `/resources/${initialData.id}` : "/resources"}>
-              Cancel
-            </Link>
-          </Button>
-          <Button type="submit" disabled={isPending}>
-            {isPending
-              ? isEdit
-                ? "Saving..."
-                : "Adding..."
-              : isEdit
-                ? "Save changes"
-                : "Add resource"}
-          </Button>
-        </CardFooter>
-      </form>
-    </Card>
+              Save anyway
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }

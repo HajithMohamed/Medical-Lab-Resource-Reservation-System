@@ -108,24 +108,35 @@ These resources are limited and expensive, so labs must manage them carefully. W
 
 A web-based Resource Reservation Management System that gives all lab staff one live, trustworthy schedule for shared resources. Each feature answers one or more of the problems in [section 5](#5-the-main-problems-and-the-evidence).
 
-| Feature                           | What it does                                                                                                                                                                                                                   | Solves |
-| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------ |
-| **1. Resource register**          | Lists every shared resource with its category, section, site, location and status: active, out of service or retired. Retired resources keep their history.                                                                    | P1, P5 |
-| **2. Live availability**          | Day and week views for each resource and each site, showing bookings and blocked time.                                                                                                                                         | P1     |
-| **3. Clash-free booking**         | The database itself rejects overlapping bookings, even when two people book the same slot at the same moment. Simple rules: no bookings in the past, a maximum length per category, only working resources, and room capacity. | P2     |
-| **4. Maintenance and breakdowns** | Managers block time for service or mark a resource out of service. One action cancels the affected bookings and records the reason, which each person sees in “My bookings”.                                                   | P3     |
-| **5. Usage dashboard**            | Shows busy and idle resources, peak hours and use by section, so managers can plan.                                                                                                                                            | P5     |
-| **Optional: authorised users**    | Only staff authorised for a resource can book it.                                                                                                                                                                              | P4     |
+| Feature                                             | What it does                                                                                                                                                                                                                   | Solves |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------ |
+| **1. Resource register**                            | Lists every shared resource with its category, section, site, location and status: active, out of service or retired. Retired resources keep their history.                                                                    | P1, P5 |
+| **2. Live availability**                            | Day and week views for each resource and each site, showing bookings and blocked time.                                                                                                                                         | P1     |
+| **3. Clash-free booking**                           | The database itself rejects overlapping bookings, even when two people book the same slot at the same moment. Simple rules: no bookings in the past, a maximum length per category, only working resources, and room capacity. | P2     |
+| **4. Maintenance and breakdowns**                   | Managers block time for service or mark a resource out of service. One action cancels the affected bookings and records the reason, which each person sees in “My bookings”.                                                   | P3     |
+| **5. Usage dashboard**                              | Shows busy and idle resources, peak hours and use by section, so managers can plan.                                                                                                                                            | P5     |
+| **6. Equipment calibration, care & lifecycle (E1)** | Calibration and maintenance schedules entered when resources are registered, per ISO 15189:2022. Append-only verification history, booking blocks past calibration due day, and immediate removal from service upon failure.   | P3, P5 |
+| **Optional: authorised users**                      | Only staff authorised for a resource can book it.                                                                                                                                                                              | P4     |
 
 ### Roles and menus
 
 The system enforces separation of duties across three roles with strict server-side authorization:
 
-- **STAFF:** A lab worker at one site and section. Finds and books resources at any site for themselves and manages their own bookings.
-- **MANAGER:** The manager of one site. Does everything staff do, plus manages their site's staff accounts, resources, equipment care, maintenance, bookings oversight, and usage.
-- **ADMIN:** Runs the whole network. Has no site or section and does not book (`[ADMIN-NO-BOOK]`). Configures sites, sections, categories, and oversees all users, resources, bookings, and system-wide usage.
+- **STAFF:** A lab worker at one site and section. Finds and books resources at any site for themselves and manages their own bookings. Sees equipment verification history and status tags (`Current`, `Due soon`, `Due today`, `Overdue`, `Failed`).
+- **MANAGER:** The manager of one site. Does everything staff do, plus manages their site's staff accounts, resources, equipment care, maintenance, bookings oversight, and usage. On `/equipment`, manages the "Today" task list (`Mark as done`, `Not done`) and records verification results.
+- **ADMIN:** Runs the whole network. Has no site or section and does not book (`[ADMIN-NO-BOOK]`). Configures sites, sections, categories, and oversees all users, resources, equipment care, bookings, and system-wide usage.
 
 The complete access rules, permission matrix, and role menus are documented in [docs/permissions.md](docs/permissions.md).
+
+### Equipment care and data model
+
+Equipment care follows **ISO 15189:2022** clauses 6.4.5, 6.4.7, and 6.5.2 and **WHO LQMS** chapter 3:
+
+- **Equipment details entered at registration:** When creating a resource, managers enter its manufacturer, model, serial number, entry into service date, and service life. For instruments, calibration and maintenance intervals are set from manufacturer manuals.
+- **Initial verification record:** Entering a last calibrated or serviced date automatically records the initial `PASS` event in one transaction.
+- **Append-only records:** In compliance with ISO 15189 6.4.7, `equipment_records` cannot be edited or deleted. Errors are corrected by recording a new outcome with explanatory notes.
+- **Calibration booking rule:** Bookings cannot run past the resource's calibration due day (`endAt <= endOfLabDay(nextCalibrationDueOn)`).
+- **Defective equipment isolation:** A failed calibration or performance check takes the instrument `OUT_OF_SERVICE` and cancels future unstarted bookings with the recorded reason. It cannot be returned to `ACTIVE` until a passing check is recorded.
 
 **How to book.** Find a slot: choose date, time, duration and filters, pick a free resource. Or click a free slot on the calendar.
 

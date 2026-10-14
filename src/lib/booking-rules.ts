@@ -5,7 +5,9 @@ import {
   BOOKING_WINDOW_DAYS,
   MAX_CATEGORY_LIMIT_MINUTES,
 } from "@/config/rules";
-import { isOnSlotBoundary, startOfCurrentSlot } from "@/lib/time";
+import { isOnSlotBoundary, startOfCurrentSlot, endOfLabDay } from "@/lib/time";
+import { dbToDay } from "@/lib/equipment-dates";
+import { formatEquipmentDay } from "@/lib/equipment-status";
 
 /**
  * Formats a duration in minutes into full English words (e.g. "4 hours", "1 hour", "45 minutes").
@@ -133,5 +135,32 @@ export function checkAttendees(
     return `This room holds up to ${capacity} people.`;
   }
 
+  return null;
+}
+
+/**
+ * Rule: Bookings cannot end after the calibration due day.
+ * If nextCalibrationDueOn is set, booking endAt must be <= endOfLabDay(nextCalibrationDueOn).
+ * Refused with: "<Resource> is calibrated only until <dueDay>. Book up to the end of that day, or ask the site manager to record the calibration."
+ */
+export function checkCalibrationDue(options: {
+  resourceName: string;
+  nextCalibrationDueOn: Date | string | null | undefined;
+  endAt: Date;
+  timeZone?: string;
+}): string | null {
+  if (!options.nextCalibrationDueOn) {
+    return null;
+  }
+  const dueDayStr =
+    typeof options.nextCalibrationDueOn === "string"
+      ? options.nextCalibrationDueOn.slice(0, 10)
+      : dbToDay(options.nextCalibrationDueOn);
+
+  const allowedEnd = endOfLabDay(dueDayStr, options.timeZone);
+  if (options.endAt.getTime() > allowedEnd.getTime()) {
+    const formattedDue = formatEquipmentDay(dueDayStr);
+    return `${options.resourceName} is calibrated only until ${formattedDue}. Book up to the end of that day, or ask the site manager to record the calibration.`;
+  }
   return null;
 }

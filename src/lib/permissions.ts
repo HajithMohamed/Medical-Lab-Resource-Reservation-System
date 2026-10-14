@@ -250,6 +250,36 @@ export function canCancelReservation(
   return canCancelBooking(actor, reservation);
 }
 
+/**
+ * Rule: MANAGER (own site) and ADMIN (all sites) can enter equipment details, schedules and add records.
+ */
+export function canManageEquipment(actor: UserLike, resource: ResourceLike): boolean {
+  return canManageResource(actor, resource);
+}
+
+/**
+ * Rule: MANAGER and ADMIN can view the Equipment care page and overview.
+ */
+export function canViewEquipmentOverview(actor: UserLike): boolean {
+  return isManagerOrAdmin(actor);
+}
+
+/**
+ * Returns allowed site IDs for equipment care overview:
+ * - ADMIN -> "all"
+ * - MANAGER -> [own site]
+ * - STAFF -> []
+ */
+export function equipmentOverviewSitesFor(actor: UserLike): "all" | string[] {
+  if (isAdmin(actor)) {
+    return "all";
+  }
+  if (actor.role === "MANAGER" && actor.siteId) {
+    return [actor.siteId];
+  }
+  return [];
+}
+
 export interface CalendarOptions {
   canBookHere: boolean;
   canBlockHere: boolean;

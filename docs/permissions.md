@@ -92,9 +92,18 @@ The server enforces every rule; `src/lib/permissions.ts` is the code version of 
 | "Report breakdown" -> Change status (OUT_OF_SERVICE)            | no    | own site | all sites |
 | "Cancel block" (future blocks)                                  | no    | own site | all sites |
 
-### Equipment care (E1)
+### Equipment care (`/equipment`)
 
-_Added by E1._
+| Action / Element                                                  | STAFF | MANAGER            | ADMIN              |
+| :---------------------------------------------------------------- | :---- | :----------------- | :----------------- |
+| Equipment care page (`/equipment`)                                | no    | own site           | all sites + filter |
+| View "Today" list (due today / overdue tasks)                     | no    | own site           | all sites          |
+| "Mark as done" (Pass / Fail result)                               | no    | own site           | all sites          |
+| "Not done" (reason required; due date does not move)              | no    | own site           | all sites          |
+| View equipment history / audit trail (resource page)              | view  | view               | view               |
+| Record verification / calibration / maintenance / review / repair | no    | own site           | all sites          |
+| Edit / delete equipment records                                   | no    | no _(append-only)_ | no _(append-only)_ |
+| "Block time" (links to maintenance for due items)                 | no    | own site           | all sites          |
 
 ### Notifications (E2)
 
@@ -140,6 +149,8 @@ _Added by E2._
 - Room reservations require attendees between 1 and room capacity.
 - Clash-free: rejection by database GiST exclusion constraint (`reservations_no_overlap`).
 - No approval: confirmed immediately.
+- **Calibrated only:** Bookings cannot run past the resource's calibration due day (`endAt <= endOfLabDay(nextCalibrationDueOn)`). Attempting to book after the due day is refused.
+- **Defective / Check-failed instruments:** A failed calibration or performance check immediately takes the resource `OUT_OF_SERVICE`, cancels unstarted future bookings with reason, and blocks putting it back to `ACTIVE` until a passing calibration or performance check is recorded.
 - **ADMIN cannot book:** Administrators oversee the network and do not book bench resources.
 
 ## 6. Constraints C1–C9
