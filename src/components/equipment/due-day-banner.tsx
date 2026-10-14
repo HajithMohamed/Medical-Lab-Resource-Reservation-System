@@ -5,8 +5,9 @@ import { AlertCircle, Clock } from "lucide-react";
 import { MarkDoneDialog } from "./mark-done-dialog";
 import { MarkNotDoneDialog } from "./mark-not-done-dialog";
 import { BlockTimeButton } from "./block-time-button";
-import { type TrackerStatus, formatEquipmentDay } from "@/lib/equipment-status";
-import { ResourceStatus } from "@/generated/prisma/client";
+import type { TrackerStatus } from "@/lib/equipment-status";
+import { formatEquipmentDay } from "@/lib/equipment-status";
+import type { ResourceStatus } from "@/generated/prisma/client";
 import type { UserLike } from "@/lib/permissions";
 
 export interface DueDayBannerProps {

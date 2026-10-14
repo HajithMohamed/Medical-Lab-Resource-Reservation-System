@@ -13,7 +13,11 @@ import {
   type TrackerStatus,
 } from "@/lib/equipment-status";
 import { dbToDay } from "@/lib/equipment-dates";
-import { EquipmentRecordKind, EquipmentOutcome, ResourceStatus } from "@/generated/prisma/client";
+import type {
+  EquipmentRecordKind,
+  EquipmentOutcome,
+  ResourceStatus,
+} from "@/generated/prisma/client";
 import type { EquipmentRecordItem } from "@/services/equipment";
 import type { UserLike } from "@/lib/permissions";
 
@@ -305,17 +309,17 @@ export function EquipmentCarePanel({
               <tbody className="divide-y divide-[#1e293b] bg-[#060e1d]/60">
                 {history.map((rec) => {
                   const dayStr = dbToDay(rec.performedOn);
-                  const isFail = rec.outcome === EquipmentOutcome.FAIL;
-                  const isNotDone = rec.outcome === EquipmentOutcome.NOT_DONE;
+                  const isFail = rec.outcome === "FAIL";
+                  const isNotDone = rec.outcome === "NOT_DONE";
 
                   let kindName = "Calibration";
-                  if (rec.kind === EquipmentRecordKind.PREVENTIVE_MAINTENANCE) {
+                  if (rec.kind === "PREVENTIVE_MAINTENANCE") {
                     kindName = iconKey === "vehicle" ? "Vehicle service" : "Preventive maintenance";
-                  } else if (rec.kind === EquipmentRecordKind.PERFORMANCE_CHECK) {
+                  } else if (rec.kind === "PERFORMANCE_CHECK") {
                     kindName = "Performance check";
-                  } else if (rec.kind === EquipmentRecordKind.REPAIR) {
+                  } else if (rec.kind === "REPAIR") {
                     kindName = "Repair";
-                  } else if (rec.kind === EquipmentRecordKind.REPLACEMENT_REVIEW) {
+                  } else if (rec.kind === "REPLACEMENT_REVIEW") {
                     kindName = "Lifecycle review";
                   }
 
@@ -324,11 +328,11 @@ export function EquipmentCarePanel({
                     outcomeBadge = <span className="font-semibold text-rose-400">Fail</span>;
                   } else if (isNotDone) {
                     outcomeBadge = <span className="font-semibold text-amber-300">Not done</span>;
-                  } else if (rec.outcome === EquipmentOutcome.KEEP_IN_SERVICE) {
+                  } else if (rec.outcome === "KEEP_IN_SERVICE") {
                     outcomeBadge = (
                       <span className="font-semibold text-emerald-400">Keep in service</span>
                     );
-                  } else if (rec.outcome === EquipmentOutcome.REPLACE) {
+                  } else if (rec.outcome === "REPLACE") {
                     outcomeBadge = <span className="font-semibold text-rose-400">Replace</span>;
                   }
 

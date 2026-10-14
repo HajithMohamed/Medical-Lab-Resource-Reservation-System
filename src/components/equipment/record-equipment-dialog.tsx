@@ -28,7 +28,11 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { addEquipmentRecordAction, type EquipmentActionResult } from "@/actions/equipment";
-import { EquipmentRecordKind, EquipmentOutcome, ResourceStatus } from "@/generated/prisma/client";
+import type {
+  EquipmentRecordKind,
+  EquipmentOutcome,
+  ResourceStatus,
+} from "@/generated/prisma/client";
 import { addDaysToDay, todayDay } from "@/lib/equipment-dates";
 
 export type RecordDialogKindCategory =
@@ -63,16 +67,15 @@ export function RecordEquipmentDialog({
   const [showFailConfirm, setShowFailConfirm] = React.useState(false);
 
   const getInitialKind = (): EquipmentRecordKind => {
-    if (kindCategory === "CALIBRATION") return EquipmentRecordKind.CALIBRATION;
-    if (kindCategory === "PREVENTIVE_MAINTENANCE")
-      return EquipmentRecordKind.PREVENTIVE_MAINTENANCE;
-    if (kindCategory === "REPLACEMENT_REVIEW") return EquipmentRecordKind.REPLACEMENT_REVIEW;
-    return EquipmentRecordKind.PERFORMANCE_CHECK;
+    if (kindCategory === "CALIBRATION") return "CALIBRATION";
+    if (kindCategory === "PREVENTIVE_MAINTENANCE") return "PREVENTIVE_MAINTENANCE";
+    if (kindCategory === "REPLACEMENT_REVIEW") return "REPLACEMENT_REVIEW";
+    return "PERFORMANCE_CHECK";
   };
 
   const getInitialOutcome = (): EquipmentOutcome => {
-    if (kindCategory === "REPLACEMENT_REVIEW") return EquipmentOutcome.KEEP_IN_SERVICE;
-    return EquipmentOutcome.PASS;
+    if (kindCategory === "REPLACEMENT_REVIEW") return "KEEP_IN_SERVICE";
+    return "PASS";
   };
 
   const defaultNextDue =
@@ -156,7 +159,7 @@ export function RecordEquipmentDialog({
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (outcome === EquipmentOutcome.FAIL && resourceStatus === ResourceStatus.ACTIVE) {
+    if (outcome === "FAIL" && resourceStatus === "ACTIVE") {
       setShowFailConfirm(true);
       return;
     }
@@ -208,9 +211,9 @@ export function RecordEquipmentDialog({
                       <input
                         type="radio"
                         name="activity-kind"
-                        value={EquipmentRecordKind.PERFORMANCE_CHECK}
-                        checked={kind === EquipmentRecordKind.PERFORMANCE_CHECK}
-                        onChange={() => setKind(EquipmentRecordKind.PERFORMANCE_CHECK)}
+                        value="PERFORMANCE_CHECK"
+                        checked={kind === "PERFORMANCE_CHECK"}
+                        onChange={() => setKind("PERFORMANCE_CHECK")}
                         className="accent-[#6cd8cb]"
                       />
                       <span>Performance check</span>
@@ -219,9 +222,9 @@ export function RecordEquipmentDialog({
                       <input
                         type="radio"
                         name="activity-kind"
-                        value={EquipmentRecordKind.REPAIR}
-                        checked={kind === EquipmentRecordKind.REPAIR}
-                        onChange={() => setKind(EquipmentRecordKind.REPAIR)}
+                        value="REPAIR"
+                        checked={kind === "REPAIR"}
+                        onChange={() => setKind("REPAIR")}
                         className="accent-[#6cd8cb]"
                       />
                       <span>Repair</span>
@@ -265,9 +268,9 @@ export function RecordEquipmentDialog({
                         <input
                           type="radio"
                           name="rec-outcome"
-                          value={EquipmentOutcome.KEEP_IN_SERVICE}
-                          checked={outcome === EquipmentOutcome.KEEP_IN_SERVICE}
-                          onChange={() => setOutcome(EquipmentOutcome.KEEP_IN_SERVICE)}
+                          value="KEEP_IN_SERVICE"
+                          checked={outcome === "KEEP_IN_SERVICE"}
+                          onChange={() => setOutcome("KEEP_IN_SERVICE")}
                           className="accent-emerald-500"
                         />
                         <span>Keep in service</span>
@@ -276,9 +279,9 @@ export function RecordEquipmentDialog({
                         <input
                           type="radio"
                           name="rec-outcome"
-                          value={EquipmentOutcome.REPLACE}
-                          checked={outcome === EquipmentOutcome.REPLACE}
-                          onChange={() => setOutcome(EquipmentOutcome.REPLACE)}
+                          value="REPLACE"
+                          checked={outcome === "REPLACE"}
+                          onChange={() => setOutcome("REPLACE")}
                           className="accent-rose-500"
                         />
                         <span>Replace</span>
@@ -290,9 +293,9 @@ export function RecordEquipmentDialog({
                         <input
                           type="radio"
                           name="rec-outcome"
-                          value={EquipmentOutcome.PASS}
-                          checked={outcome === EquipmentOutcome.PASS}
-                          onChange={() => setOutcome(EquipmentOutcome.PASS)}
+                          value="PASS"
+                          checked={outcome === "PASS"}
+                          onChange={() => setOutcome("PASS")}
                           className="accent-emerald-500"
                         />
                         <span>Pass</span>
@@ -301,9 +304,9 @@ export function RecordEquipmentDialog({
                         <input
                           type="radio"
                           name="rec-outcome"
-                          value={EquipmentOutcome.FAIL}
-                          checked={outcome === EquipmentOutcome.FAIL}
-                          onChange={() => setOutcome(EquipmentOutcome.FAIL)}
+                          value="FAIL"
+                          checked={outcome === "FAIL"}
+                          onChange={() => setOutcome("FAIL")}
                           className="accent-rose-500"
                         />
                         <span>Fail</span>
@@ -359,14 +362,14 @@ export function RecordEquipmentDialog({
               </div>
 
               {/* Next due date */}
-              {(outcome === EquipmentOutcome.PASS || isReview) && (
+              {(outcome === "PASS" || isReview) && (
                 <div className="space-y-1.5">
                   <Label
                     htmlFor="rec-next-due"
                     className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
                   >
                     {isReview
-                      ? outcome === EquipmentOutcome.KEEP_IN_SERVICE
+                      ? outcome === "KEEP_IN_SERVICE"
                         ? "Keep in service until *"
                         : "Replace by *"
                       : "Next due date *"}
@@ -393,10 +396,7 @@ export function RecordEquipmentDialog({
                   htmlFor="rec-notes"
                   className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
                 >
-                  Notes{" "}
-                  {outcome === EquipmentOutcome.FAIL || outcome === EquipmentOutcome.REPLACE
-                    ? "*"
-                    : "(optional)"}
+                  Notes {outcome === "FAIL" || outcome === "REPLACE" ? "*" : "(optional)"}
                 </Label>
                 <textarea
                   id="rec-notes"
@@ -404,15 +404,13 @@ export function RecordEquipmentDialog({
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder={
-                    outcome === EquipmentOutcome.FAIL
+                    outcome === "FAIL"
                       ? "Explain the failure cause, error details, and required remedy..."
-                      : outcome === EquipmentOutcome.REPLACE
+                      : outcome === "REPLACE"
                         ? "State reasons for replacement recommendation and budget timeframe..."
                         : "Optional verification or observation notes..."
                   }
-                  required={
-                    outcome === EquipmentOutcome.FAIL || outcome === EquipmentOutcome.REPLACE
-                  }
+                  required={outcome === "FAIL" || outcome === "REPLACE"}
                   maxLength={500}
                   disabled={isPending}
                   className="w-full rounded-md border border-[#334155] bg-[#060e1d] p-2.5 text-xs text-white placeholder:text-[#64748b] focus:border-[#6cd8cb] focus:outline-none resize-none"
@@ -436,16 +434,12 @@ export function RecordEquipmentDialog({
                 type="submit"
                 disabled={isPending}
                 className={
-                  outcome === EquipmentOutcome.FAIL
+                  outcome === "FAIL"
                     ? "bg-rose-600 hover:bg-rose-700 text-white font-semibold"
                     : "bg-[#6cd8cb] hover:bg-[#29a195] text-[#003732] font-semibold"
                 }
               >
-                {isPending
-                  ? "Saving..."
-                  : outcome === EquipmentOutcome.FAIL
-                    ? "Record failure"
-                    : "Save result"}
+                {isPending ? "Saving..." : outcome === "FAIL" ? "Record failure" : "Save result"}
               </Button>
             </DialogFooter>
           </form>

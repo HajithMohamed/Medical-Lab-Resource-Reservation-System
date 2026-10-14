@@ -28,7 +28,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { markDoneAction, type EquipmentActionResult } from "@/actions/equipment";
-import { EquipmentOutcome, ResourceStatus } from "@/generated/prisma/client";
+import type { EquipmentOutcome, ResourceStatus } from "@/generated/prisma/client";
 import { addDaysToDay, todayDay } from "@/lib/equipment-dates";
 import { formatEquipmentDay } from "@/lib/equipment-status";
 
@@ -66,14 +66,14 @@ export function MarkDoneDialog({
   const defaultNextDue =
     intervalDays && intervalDays > 0 ? addDaysToDay(todayDay(), intervalDays) : "";
 
-  const [outcome, setOutcome] = React.useState<EquipmentOutcome>(EquipmentOutcome.PASS);
+  const [outcome, setOutcome] = React.useState<EquipmentOutcome>("PASS");
   const [performedBy, setPerformedBy] = React.useState(actorName);
   const [reference, setReference] = React.useState("");
   const [notes, setNotes] = React.useState("");
   const [nextDueOn, setNextDueOn] = React.useState(defaultNextDue);
 
   const resetForm = () => {
-    setOutcome(EquipmentOutcome.PASS);
+    setOutcome("PASS");
     setPerformedBy(actorName);
     setReference("");
     setNotes("");
@@ -100,7 +100,7 @@ export function MarkDoneDialog({
     formData.append("performedBy", performedBy.trim());
     if (reference.trim()) formData.append("reference", reference.trim());
     if (notes.trim()) formData.append("notes", notes.trim());
-    if (outcome === EquipmentOutcome.PASS && nextDueOn.trim()) {
+    if (outcome === "PASS" && nextDueOn.trim()) {
       formData.append("nextDueOn", nextDueOn.trim());
     }
 
@@ -123,7 +123,7 @@ export function MarkDoneDialog({
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (outcome === EquipmentOutcome.FAIL && resourceStatus === ResourceStatus.ACTIVE) {
+    if (outcome === "FAIL" && resourceStatus === "ACTIVE") {
       setShowFailConfirm(true);
       return;
     }
@@ -172,9 +172,9 @@ export function MarkDoneDialog({
                     <input
                       type="radio"
                       name="mark-done-outcome"
-                      value={EquipmentOutcome.PASS}
-                      checked={outcome === EquipmentOutcome.PASS}
-                      onChange={() => setOutcome(EquipmentOutcome.PASS)}
+                      value="PASS"
+                      checked={outcome === "PASS"}
+                      onChange={() => setOutcome("PASS")}
                       className="accent-[#6cd8cb]"
                     />
                     <span>Pass</span>
@@ -183,9 +183,9 @@ export function MarkDoneDialog({
                     <input
                       type="radio"
                       name="mark-done-outcome"
-                      value={EquipmentOutcome.FAIL}
-                      checked={outcome === EquipmentOutcome.FAIL}
-                      onChange={() => setOutcome(EquipmentOutcome.FAIL)}
+                      value="FAIL"
+                      checked={outcome === "FAIL"}
+                      onChange={() => setOutcome("FAIL")}
                       className="accent-rose-500"
                     />
                     <span>Fail</span>
@@ -239,7 +239,7 @@ export function MarkDoneDialog({
               </div>
 
               {/* Next due (for Pass) */}
-              {outcome === EquipmentOutcome.PASS && (
+              {outcome === "PASS" && (
                 <div className="space-y-1.5">
                   <Label
                     htmlFor="done-next-due"
@@ -269,7 +269,7 @@ export function MarkDoneDialog({
                   htmlFor="done-notes"
                   className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
                 >
-                  Notes {outcome === EquipmentOutcome.FAIL ? "*" : "(optional)"}
+                  Notes {outcome === "FAIL" ? "*" : "(optional)"}
                 </Label>
                 <textarea
                   id="done-notes"
@@ -277,11 +277,11 @@ export function MarkDoneDialog({
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder={
-                    outcome === EquipmentOutcome.FAIL
+                    outcome === "FAIL"
                       ? "Explain the failure cause, error codes, and required remedy..."
                       : "Optional calibration or maintenance notes..."
                   }
-                  required={outcome === EquipmentOutcome.FAIL}
+                  required={outcome === "FAIL"}
                   maxLength={500}
                   disabled={isPending}
                   className="w-full rounded-md border border-[#334155] bg-[#060e1d] p-2.5 text-xs text-white placeholder:text-[#64748b] focus:border-[#6cd8cb] focus:outline-none resize-none"
@@ -305,16 +305,12 @@ export function MarkDoneDialog({
                 type="submit"
                 disabled={isPending}
                 className={
-                  outcome === EquipmentOutcome.FAIL
+                  outcome === "FAIL"
                     ? "bg-rose-600 hover:bg-rose-700 text-white font-semibold"
                     : "bg-[#6cd8cb] hover:bg-[#29a195] text-[#003732] font-semibold"
                 }
               >
-                {isPending
-                  ? "Saving..."
-                  : outcome === EquipmentOutcome.FAIL
-                    ? "Record failure"
-                    : "Save result"}
+                {isPending ? "Saving..." : outcome === "FAIL" ? "Record failure" : "Save result"}
               </Button>
             </DialogFooter>
           </form>
