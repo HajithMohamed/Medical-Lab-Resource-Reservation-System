@@ -626,6 +626,20 @@ export async function changeStatus(
     };
   }
 
+  if (stored.status === ResourceStatus.RETIRED) {
+    return {
+      ok: false,
+      error: "This resource is retired. Its history is kept, but its status cannot change.",
+    };
+  }
+
+  if (stored.status === newStatus) {
+    return {
+      ok: false,
+      error: `The resource is already ${newStatus.toLowerCase().replace(/_/g, " ")}.`,
+    };
+  }
+
   const validStatuses: ResourceStatus[] = [
     ResourceStatus.ACTIVE,
     ResourceStatus.OUT_OF_SERVICE,

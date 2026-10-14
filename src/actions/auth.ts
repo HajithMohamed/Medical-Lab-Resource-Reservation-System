@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { authenticate, changePassword as changePasswordService } from "@/services/auth";
 import { createSession, deleteSession } from "@/lib/session";
-import { getCurrentUser } from "@/lib/auth";
+import { requireUser } from "@/lib/auth";
 
 export interface AuthActionState {
   error?: string;
@@ -78,10 +78,7 @@ export async function changePassword(
   _prevState: AuthActionState | undefined,
   formData: FormData,
 ): Promise<AuthActionState> {
-  const user = await getCurrentUser();
-  if (!user) {
-    redirect("/login");
-  }
+  const user = await requireUser();
 
   const rawCurrent = formData.get("currentPassword");
   const rawNew = formData.get("newPassword");
