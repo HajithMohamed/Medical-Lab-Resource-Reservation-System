@@ -550,7 +550,9 @@ describe("Database Rules & Constraints", () => {
     } catch (err) {
       nextDueAfterError = err;
     }
-    expect(isCheckError(nextDueAfterError, "equipment_records_next_due_after_performed")).toBe(true);
+    expect(isCheckError(nextDueAfterError, "equipment_records_next_due_after_performed")).toBe(
+      true,
+    );
 
     // 9i. equipment_records_review_needs_date (REPLACEMENT_REVIEW requires next_due_on)
     let reviewNeedsDateError: unknown;

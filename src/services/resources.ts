@@ -291,7 +291,11 @@ export const resourceInputSchema = z
         data.nextCalibrationDueOn,
         "Next calibration due date must be a valid date (YYYY-MM-DD).",
       ],
-      ["lastServicedOn", data.lastServicedOn, "Last serviced date must be a valid date (YYYY-MM-DD)."],
+      [
+        "lastServicedOn",
+        data.lastServicedOn,
+        "Last serviced date must be a valid date (YYYY-MM-DD).",
+      ],
       [
         "nextMaintenanceDueOn",
         data.nextMaintenanceDueOn,
@@ -313,7 +317,11 @@ export const resourceInputSchema = z
         path: ["inServiceOn"],
       });
     }
-    if (data.lastCalibratedOn && isValidDay(data.lastCalibratedOn) && data.lastCalibratedOn > today) {
+    if (
+      data.lastCalibratedOn &&
+      isValidDay(data.lastCalibratedOn) &&
+      data.lastCalibratedOn > today
+    ) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: "Last calibration date cannot be in the future.",
@@ -380,7 +388,8 @@ export const resourceInputSchema = z
       if (!data.maintenanceIntervalDays || !data.nextMaintenanceDueOn) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: "Enter the interval and the next due date, or switch preventive maintenance off.",
+          message:
+            "Enter the interval and the next due date, or switch preventive maintenance off.",
           path: ["maintenanceIntervalDays"],
         });
       }

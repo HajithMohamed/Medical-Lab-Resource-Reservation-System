@@ -69,7 +69,11 @@ export function EquipmentFields({
     const newInService = e.target.value;
     onChange((prev) => {
       let nextReview = prev.replacementReviewDueOn;
-      if (!reviewManuallyEdited && isValidDay(newInService) && Number(prev.expectedServiceLifeYears) > 0) {
+      if (
+        !reviewManuallyEdited &&
+        isValidDay(newInService) &&
+        Number(prev.expectedServiceLifeYears) > 0
+      ) {
         nextReview = addYearsToDay(newInService, Number(prev.expectedServiceLifeYears));
       }
       return { ...prev, inServiceOn: newInService, replacementReviewDueOn: nextReview };
@@ -109,7 +113,11 @@ export function EquipmentFields({
     const newLastCal = e.target.value;
     onChange((prev) => {
       let nextDue = prev.nextCalibrationDueOn;
-      if (!calibDueManuallyEdited && isValidDay(newLastCal) && Number(prev.calibrationIntervalDays) > 0) {
+      if (
+        !calibDueManuallyEdited &&
+        isValidDay(newLastCal) &&
+        Number(prev.calibrationIntervalDays) > 0
+      ) {
         nextDue = addDaysToDay(newLastCal, Number(prev.calibrationIntervalDays));
       }
       return { ...prev, lastCalibratedOn: newLastCal, nextCalibrationDueOn: nextDue };
@@ -138,7 +146,11 @@ export function EquipmentFields({
     const newLastService = e.target.value;
     onChange((prev) => {
       let nextDue = prev.nextMaintenanceDueOn;
-      if (!maintDueManuallyEdited && isValidDay(newLastService) && Number(prev.maintenanceIntervalDays) > 0) {
+      if (
+        !maintDueManuallyEdited &&
+        isValidDay(newLastService) &&
+        Number(prev.maintenanceIntervalDays) > 0
+      ) {
         nextDue = addDaysToDay(newLastService, Number(prev.maintenanceIntervalDays));
       }
       return { ...prev, lastServicedOn: newLastService, nextMaintenanceDueOn: nextDue };
@@ -185,7 +197,9 @@ export function EquipmentFields({
                 maxLength={100}
               />
               {fieldErrors.manufacturer && (
-                <p className="text-xs font-medium text-destructive">{fieldErrors.manufacturer[0]}</p>
+                <p className="text-xs font-medium text-destructive">
+                  {fieldErrors.manufacturer[0]}
+                </p>
               )}
             </div>
 
@@ -229,7 +243,9 @@ export function EquipmentFields({
                 maxLength={100}
               />
               {fieldErrors.serialNumber && (
-                <p className="text-xs font-medium text-destructive">{fieldErrors.serialNumber[0]}</p>
+                <p className="text-xs font-medium text-destructive">
+                  {fieldErrors.serialNumber[0]}
+                </p>
               )}
             </div>
 
@@ -317,10 +333,7 @@ export function EquipmentFields({
               </p>
             </div>
             <div className="flex items-center gap-2">
-              <Label
-                htmlFor="switch-calibration"
-                className="text-xs text-[#bcc9c6] cursor-pointer"
-              >
+              <Label htmlFor="switch-calibration" className="text-xs text-[#bcc9c6] cursor-pointer">
                 Needs calibration
               </Label>
               <Switch
@@ -430,7 +443,9 @@ export function EquipmentFields({
                     id="eq-calibrated-by"
                     name="calibratedBy"
                     value={values.calibratedBy}
-                    onChange={(e) => onChange((prev) => ({ ...prev, calibratedBy: e.target.value }))}
+                    onChange={(e) =>
+                      onChange((prev) => ({ ...prev, calibratedBy: e.target.value }))
+                    }
                     placeholder="Person or service company"
                     disabled={disabled}
                     maxLength={120}
@@ -486,10 +501,7 @@ export function EquipmentFields({
               </p>
             </div>
             <div className="flex items-center gap-2">
-              <Label
-                htmlFor="switch-maintenance"
-                className="text-xs text-[#bcc9c6] cursor-pointer"
-              >
+              <Label htmlFor="switch-maintenance" className="text-xs text-[#bcc9c6] cursor-pointer">
                 Needs servicing
               </Label>
               <Switch

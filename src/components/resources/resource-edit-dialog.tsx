@@ -62,9 +62,7 @@ interface ResourceEditDialogProps {
   trigger?: React.ReactNode;
 }
 
-function buildInitialEquipment(
-  resource: ResourceEditDialogProps["resource"],
-): EquipmentFormState {
+function buildInitialEquipment(resource: ResourceEditDialogProps["resource"]): EquipmentFormState {
   const inServiceOnStr = resource.inServiceOn
     ? typeof resource.inServiceOn === "string"
       ? resource.inServiceOn
@@ -95,9 +93,7 @@ function buildInitialEquipment(
       ? String(resource.expectedServiceLifeYears)
       : "",
     replacementReviewDueOn: reviewDueOnStr,
-    needsCalibration: Boolean(
-      resource.calibrationIntervalDays || resource.nextCalibrationDueOn,
-    ),
+    needsCalibration: Boolean(resource.calibrationIntervalDays || resource.nextCalibrationDueOn),
     calibrationIntervalDays: resource.calibrationIntervalDays
       ? String(resource.calibrationIntervalDays)
       : "",
@@ -105,9 +101,7 @@ function buildInitialEquipment(
     calibratedBy: "",
     calibrationReference: "",
     nextCalibrationDueOn: calibDueOnStr,
-    needsMaintenance: Boolean(
-      resource.maintenanceIntervalDays || resource.nextMaintenanceDueOn,
-    ),
+    needsMaintenance: Boolean(resource.maintenanceIntervalDays || resource.nextMaintenanceDueOn),
     maintenanceIntervalDays: resource.maintenanceIntervalDays
       ? String(resource.maintenanceIntervalDays)
       : "",

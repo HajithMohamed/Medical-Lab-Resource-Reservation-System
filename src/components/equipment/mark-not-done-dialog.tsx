@@ -141,13 +141,13 @@ export function MarkNotDoneDialog({
               <p className="leading-relaxed">
                 The due date stays <strong className="text-white">{formattedDueOn}</strong>. From{" "}
                 <strong className="text-white">{formattedTomorrow}</strong> nobody can book{" "}
-                <strong className="text-white">{resourceName}</strong> until the {trackerLabel.toLowerCase()} is
-                recorded.
+                <strong className="text-white">{resourceName}</strong> until the{" "}
+                {trackerLabel.toLowerCase()} is recorded.
               </p>
               {affectedBookingsCount > 0 && (
                 <p className="text-amber-300/90 font-medium">
-                  {affectedBookingsCount} confirmed booking{affectedBookingsCount === 1 ? "" : "s"} end
-                  after that day.
+                  {affectedBookingsCount} confirmed booking{affectedBookingsCount === 1 ? "" : "s"}{" "}
+                  end after that day.
                 </p>
               )}
             </div>

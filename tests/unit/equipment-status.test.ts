@@ -4,7 +4,6 @@ import {
   needsAction,
   formatEquipmentDay,
   formatEquipmentStatusText,
-  TRACKER_STATUS_LABELS,
 } from "@/lib/equipment-status";
 
 describe("Equipment Status Tracker", () => {

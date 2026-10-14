@@ -23,20 +23,10 @@ import {
   REPLACEMENT_REVIEW_REPAIR_DAYS,
   EQUIPMENT_HISTORY_ROWS,
 } from "@/config/rules";
-import {
-  isValidDay,
-  dayToDb,
-  dbToDay,
-  addDaysToDay,
-  daysBetween,
-} from "@/lib/equipment-dates";
+import { isValidDay, dayToDb, dbToDay, addDaysToDay, daysBetween } from "@/lib/equipment-dates";
 import { labToday, endOfLabDay } from "@/lib/time";
-import {
-  trackerStatus,
-  formatEquipmentDay,
-  type TrackerStatus,
-} from "@/lib/equipment-status";
-import { takeResourceOutOfServiceInTx, countUpcomingBookings } from "@/services/resources";
+import { trackerStatus, formatEquipmentDay, type TrackerStatus } from "@/lib/equipment-status";
+import { takeResourceOutOfServiceInTx } from "@/services/resources";
 
 export type ServiceResult<T = void> =
   | { ok: true; data: T; message?: string }
@@ -583,11 +573,7 @@ export interface EquipmentOverviewResult {
   pageSize: number;
 }
 
-function urgencyRankOf(
-  calib: TrackerStatus,
-  maint: TrackerStatus,
-  review: TrackerStatus,
-): number {
+function urgencyRankOf(calib: TrackerStatus, maint: TrackerStatus, review: TrackerStatus): number {
   const rankMap: Record<TrackerStatus, number> = {
     FAILED: 1,
     OVERDUE: 2,

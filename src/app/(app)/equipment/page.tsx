@@ -10,16 +10,14 @@ import {
 } from "lucide-react";
 import { requireRole } from "@/lib/auth";
 import { db } from "@/lib/db";
-import {
-  listEquipmentOverview,
-  listTodayTasks,
-} from "@/services/equipment";
+import { listEquipmentOverview, listTodayTasks } from "@/services/equipment";
 import { SummaryStrip } from "@/components/summary-strip";
 import { FilterBar } from "@/components/filter-bar";
 import { CategoryIcon } from "@/components/category-icon";
 import { EquipmentStatusTag } from "@/components/equipment/equipment-status-tag";
 import { MarkDoneDialog } from "@/components/equipment/mark-done-dialog";
 import { MarkNotDoneDialog } from "@/components/equipment/mark-not-done-dialog";
+import { BlockTimeButton } from "@/components/equipment/block-time-button";
 import { Button } from "@/components/ui/button";
 import { dbToDay } from "@/lib/equipment-dates";
 import { formatEquipmentDay, formatEquipmentStatusText } from "@/lib/equipment-status";
@@ -115,7 +113,10 @@ export default async function EquipmentPage({ searchParams }: EquipmentPageProps
                 >
                   <div className="space-y-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <CategoryIcon iconKey={task.categoryIconKey} className="size-6 rounded shrink-0" />
+                      <CategoryIcon
+                        iconKey={task.categoryIconKey}
+                        className="size-6 rounded shrink-0"
+                      />
                       <Link
                         href={`/resources/${task.resourceId}`}
                         className="font-bold text-sm text-white hover:text-[#6cd8cb] transition-colors truncate"
@@ -124,9 +125,7 @@ export default async function EquipmentPage({ searchParams }: EquipmentPageProps
                       </Link>
 
                       {isAdmin && (
-                        <span className="text-xs text-[#94a3b8] font-mono">
-                          ({task.siteName})
-                        </span>
+                        <span className="text-xs text-[#94a3b8] font-mono">({task.siteName})</span>
                       )}
 
                       <span className="text-xs px-2 py-0.5 rounded bg-[#1e293b] text-slate-300 font-mono">
@@ -136,7 +135,9 @@ export default async function EquipmentPage({ searchParams }: EquipmentPageProps
                       {isOverdue ? (
                         <span className="inline-flex items-center gap-1 text-xs font-mono font-semibold text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/30">
                           <AlertCircle className="size-3 shrink-0" />
-                          <span>Overdue by {task.daysOverdue} day{task.daysOverdue === 1 ? "" : "s"}</span>
+                          <span>
+                            Overdue by {task.daysOverdue} day{task.daysOverdue === 1 ? "" : "s"}
+                          </span>
                         </span>
                       ) : (
                         <span className="inline-flex items-center gap-1 text-xs font-mono font-bold text-amber-300 bg-amber-500/20 px-2 py-0.5 rounded border border-amber-500/40">
@@ -148,7 +149,8 @@ export default async function EquipmentPage({ searchParams }: EquipmentPageProps
                     <div className="text-xs text-[#94a3b8] flex flex-wrap items-center gap-x-3 gap-y-1">
                       {task.affectedBookingsCount > 0 ? (
                         <span className="text-amber-300/90 font-medium">
-                          {task.affectedBookingsCount} booking{task.affectedBookingsCount === 1 ? "" : "s"} end after due date
+                          {task.affectedBookingsCount} booking
+                          {task.affectedBookingsCount === 1 ? "" : "s"} end after due date
                         </span>
                       ) : (
                         <span>No upcoming bookings past due day</span>
@@ -181,6 +183,11 @@ export default async function EquipmentPage({ searchParams }: EquipmentPageProps
                       tracker={task.tracker}
                       dueOn={task.dueOn}
                       affectedBookingsCount={task.affectedBookingsCount}
+                    />
+                    <BlockTimeButton
+                      actor={user}
+                      resource={{ id: task.resourceId, siteId: task.siteId }}
+                      reason={task.tracker === "calibration" ? "Calibration" : "Service"}
                     />
                   </div>
                 </div>
@@ -221,11 +228,7 @@ export default async function EquipmentPage({ searchParams }: EquipmentPageProps
       />
 
       {/* Filter Bar */}
-      <FilterBar
-        action="/equipment"
-        hasActiveFilters={hasActiveFilters}
-        clearHref="/equipment"
-      >
+      <FilterBar action="/equipment" hasActiveFilters={hasActiveFilters} clearHref="/equipment">
         {isAdmin && (
           <div className="flex items-center gap-2">
             <label htmlFor="filter-site" className="text-xs text-[#94a3b8] font-mono uppercase">
@@ -314,7 +317,10 @@ export default async function EquipmentPage({ searchParams }: EquipmentPageProps
                       <tr key={res.id} className="hover:bg-[#141c2b]/50 transition-colors">
                         <td className="py-3 px-4 font-medium">
                           <div className="flex items-center gap-2.5">
-                            <CategoryIcon iconKey={res.category.iconKey} className="size-6 rounded shrink-0" />
+                            <CategoryIcon
+                              iconKey={res.category.iconKey}
+                              className="size-6 rounded shrink-0"
+                            />
                             <div>
                               <Link
                                 href={`/resources/${res.id}`}
@@ -376,7 +382,26 @@ export default async function EquipmentPage({ searchParams }: EquipmentPageProps
 
                         <td className="py-3 px-4 text-right">
                           <div className="flex items-center justify-end gap-2">
-                            <Button asChild variant="outline" size="sm" className="h-7 text-xs border-[#334155]">
+                            {isDueSoon && (
+                              <BlockTimeButton
+                                actor={user}
+                                resource={{ id: res.id, siteId: res.site.id }}
+                                reason={
+                                  res.calibrationStatus === "DUE_TODAY" ||
+                                  res.calibrationStatus === "OVERDUE" ||
+                                  res.calibrationStatus === "DUE_SOON"
+                                    ? "Calibration"
+                                    : "Service"
+                                }
+                                size="xs"
+                              />
+                            )}
+                            <Button
+                              asChild
+                              variant="outline"
+                              size="sm"
+                              className="h-7 text-xs border-[#334155]"
+                            >
                               <Link href={`/resources/${res.id}`} className="gap-1">
                                 <span>Details</span>
                                 <ExternalLink className="size-3 text-[#94a3b8]" />
@@ -395,7 +420,8 @@ export default async function EquipmentPage({ searchParams }: EquipmentPageProps
             {overview.totalPages > 1 && (
               <div className="p-3.5 border-t border-[#1e293b] bg-[#141c2b] flex items-center justify-between text-xs text-[#94a3b8]">
                 <span>
-                  Showing page {overview.page} of {overview.totalPages} ({overview.totalCount} total)
+                  Showing page {overview.page} of {overview.totalPages} ({overview.totalCount}{" "}
+                  total)
                 </span>
                 <div className="flex items-center gap-2">
                   <Button

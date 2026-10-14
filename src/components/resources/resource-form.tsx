@@ -62,9 +62,7 @@ interface ResourceFormProps {
   isEdit?: boolean;
 }
 
-function buildInitialEquipment(
-  data?: ResourceFormProps["initialData"],
-): EquipmentFormState {
+function buildInitialEquipment(data?: ResourceFormProps["initialData"]): EquipmentFormState {
   const inServiceOnStr = data?.inServiceOn
     ? typeof data.inServiceOn === "string"
       ? data.inServiceOn
@@ -296,7 +294,9 @@ export function ResourceForm({
 
           <CardFooter className="flex items-center justify-end gap-3 pt-4 border-t border-[#1e293b]">
             <Button asChild variant="outline" type="button" disabled={isPending}>
-              <Link href={isEdit && initialData?.id ? `/resources/${initialData.id}` : "/resources"}>
+              <Link
+                href={isEdit && initialData?.id ? `/resources/${initialData.id}` : "/resources"}
+              >
                 Cancel
               </Link>
             </Button>

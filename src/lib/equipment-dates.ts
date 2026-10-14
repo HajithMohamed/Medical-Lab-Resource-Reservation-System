@@ -65,8 +65,7 @@ export function addYearsToDay(day: string, n: number): string {
   let targetDay = dayNumber;
 
   if (month === 2 && dayNumber === 29) {
-    const isLeap =
-      (targetYear % 4 === 0 && targetYear % 100 !== 0) || targetYear % 400 === 0;
+    const isLeap = (targetYear % 4 === 0 && targetYear % 100 !== 0) || targetYear % 400 === 0;
     if (!isLeap) {
       targetDay = 28;
     }
@@ -98,4 +97,3 @@ export function todayDay(): string {
   const d = String(now.getDate()).padStart(2, "0");
   return `${y}-${m}-${d}`;
 }
-

@@ -104,12 +104,7 @@ export function MarkDoneDialog({
       formData.append("nextDueOn", nextDueOn.trim());
     }
 
-    const result: EquipmentActionResult = await markDoneAction(
-      resourceId,
-      tracker,
-      null,
-      formData,
-    );
+    const result: EquipmentActionResult = await markDoneAction(resourceId, tracker, null, formData);
     setIsPending(false);
 
     if (!result.ok) {
@@ -216,7 +211,9 @@ export function MarkDoneDialog({
                   disabled={isPending}
                 />
                 {fieldErrors.performedBy && (
-                  <p className="text-xs font-medium text-destructive">{fieldErrors.performedBy[0]}</p>
+                  <p className="text-xs font-medium text-destructive">
+                    {fieldErrors.performedBy[0]}
+                  </p>
                 )}
               </div>
 
@@ -259,7 +256,9 @@ export function MarkDoneDialog({
                     disabled={isPending}
                   />
                   {fieldErrors.nextDueOn && (
-                    <p className="text-xs font-medium text-destructive">{fieldErrors.nextDueOn[0]}</p>
+                    <p className="text-xs font-medium text-destructive">
+                      {fieldErrors.nextDueOn[0]}
+                    </p>
                   )}
                 </div>
               )}
@@ -311,7 +310,11 @@ export function MarkDoneDialog({
                     : "bg-[#6cd8cb] hover:bg-[#29a195] text-[#003732] font-semibold"
                 }
               >
-                {isPending ? "Saving..." : outcome === EquipmentOutcome.FAIL ? "Record failure" : "Save result"}
+                {isPending
+                  ? "Saving..."
+                  : outcome === EquipmentOutcome.FAIL
+                    ? "Record failure"
+                    : "Save result"}
               </Button>
             </DialogFooter>
           </form>
@@ -321,7 +324,9 @@ export function MarkDoneDialog({
       <AlertDialog open={showFailConfirm} onOpenChange={setShowFailConfirm}>
         <AlertDialogContent className="sm:max-w-md">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-rose-400">Record verification failure?</AlertDialogTitle>
+            <AlertDialogTitle className="text-rose-400">
+              Record verification failure?
+            </AlertDialogTitle>
             <AlertDialogDescription>
               Saving a failed result takes {resourceName} out of service and cancels{" "}
               {affectedBookingsCount} booking{affectedBookingsCount === 1 ? "" : "s"} that have not
@@ -329,9 +334,7 @@ export function MarkDoneDialog({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setShowFailConfirm(false)}>
-              Go back
-            </AlertDialogCancel>
+            <AlertDialogCancel onClick={() => setShowFailConfirm(false)}>Go back</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
                 setShowFailConfirm(false);

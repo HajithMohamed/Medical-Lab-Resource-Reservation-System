@@ -32,10 +32,7 @@ import { EquipmentRecordKind, EquipmentOutcome, ResourceStatus } from "@/generat
 import { addDaysToDay, todayDay } from "@/lib/equipment-dates";
 
 export type RecordDialogKindCategory =
-  | "CALIBRATION"
-  | "PREVENTIVE_MAINTENANCE"
-  | "CHECK_OR_REPAIR"
-  | "REPLACEMENT_REVIEW";
+  "CALIBRATION" | "PREVENTIVE_MAINTENANCE" | "CHECK_OR_REPAIR" | "REPLACEMENT_REVIEW";
 
 interface RecordEquipmentDialogProps {
   resourceId: string;
@@ -67,7 +64,8 @@ export function RecordEquipmentDialog({
 
   const getInitialKind = (): EquipmentRecordKind => {
     if (kindCategory === "CALIBRATION") return EquipmentRecordKind.CALIBRATION;
-    if (kindCategory === "PREVENTIVE_MAINTENANCE") return EquipmentRecordKind.PREVENTIVE_MAINTENANCE;
+    if (kindCategory === "PREVENTIVE_MAINTENANCE")
+      return EquipmentRecordKind.PREVENTIVE_MAINTENANCE;
     if (kindCategory === "REPLACEMENT_REVIEW") return EquipmentRecordKind.REPLACEMENT_REVIEW;
     return EquipmentRecordKind.PERFORMANCE_CHECK;
   };
@@ -249,7 +247,9 @@ export function RecordEquipmentDialog({
                   disabled={isPending}
                 />
                 {fieldErrors.performedOn && (
-                  <p className="text-xs font-medium text-destructive">{fieldErrors.performedOn[0]}</p>
+                  <p className="text-xs font-medium text-destructive">
+                    {fieldErrors.performedOn[0]}
+                  </p>
                 )}
               </div>
 
@@ -331,7 +331,9 @@ export function RecordEquipmentDialog({
                   disabled={isPending}
                 />
                 {fieldErrors.performedBy && (
-                  <p className="text-xs font-medium text-destructive">{fieldErrors.performedBy[0]}</p>
+                  <p className="text-xs font-medium text-destructive">
+                    {fieldErrors.performedBy[0]}
+                  </p>
                 )}
               </div>
 
@@ -378,7 +380,9 @@ export function RecordEquipmentDialog({
                     disabled={isPending}
                   />
                   {fieldErrors.nextDueOn && (
-                    <p className="text-xs font-medium text-destructive">{fieldErrors.nextDueOn[0]}</p>
+                    <p className="text-xs font-medium text-destructive">
+                      {fieldErrors.nextDueOn[0]}
+                    </p>
                   )}
                 </div>
               )}
@@ -437,7 +441,11 @@ export function RecordEquipmentDialog({
                     : "bg-[#6cd8cb] hover:bg-[#29a195] text-[#003732] font-semibold"
                 }
               >
-                {isPending ? "Saving..." : outcome === EquipmentOutcome.FAIL ? "Record failure" : "Save result"}
+                {isPending
+                  ? "Saving..."
+                  : outcome === EquipmentOutcome.FAIL
+                    ? "Record failure"
+                    : "Save result"}
               </Button>
             </DialogFooter>
           </form>
@@ -447,7 +455,9 @@ export function RecordEquipmentDialog({
       <AlertDialog open={showFailConfirm} onOpenChange={setShowFailConfirm}>
         <AlertDialogContent className="sm:max-w-md">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-rose-400">Record verification failure?</AlertDialogTitle>
+            <AlertDialogTitle className="text-rose-400">
+              Record verification failure?
+            </AlertDialogTitle>
             <AlertDialogDescription>
               Saving a failed result takes {resourceName} out of service and cancels{" "}
               {affectedBookingsCount} booking{affectedBookingsCount === 1 ? "" : "s"} that have not
@@ -455,9 +465,7 @@ export function RecordEquipmentDialog({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setShowFailConfirm(false)}>
-              Go back
-            </AlertDialogCancel>
+            <AlertDialogCancel onClick={() => setShowFailConfirm(false)}>Go back</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
                 setShowFailConfirm(false);

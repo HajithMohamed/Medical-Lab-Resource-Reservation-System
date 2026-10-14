@@ -1,24 +1,18 @@
 "use client";
 
 import * as React from "react";
-import { format } from "date-fns";
-import {
-  Wrench,
-  ShieldCheck,
-  Calendar,
-  AlertTriangle,
-  FileText,
-} from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 import { EquipmentStatusTag } from "./equipment-status-tag";
 import { RecordEquipmentDialog } from "./record-equipment-dialog";
+import { BlockTimeButton } from "./block-time-button";
 import { equipmentPartsFor, equipmentLabelsFor } from "@/config/equipment";
-import { formatEquipmentDay, formatEquipmentStatusText, type TrackerStatus } from "@/lib/equipment-status";
-import { dbToDay } from "@/lib/equipment-dates";
 import {
-  EquipmentRecordKind,
-  EquipmentOutcome,
-  ResourceStatus,
-} from "@/generated/prisma/client";
+  formatEquipmentDay,
+  formatEquipmentStatusText,
+  type TrackerStatus,
+} from "@/lib/equipment-status";
+import { dbToDay } from "@/lib/equipment-dates";
+import { EquipmentRecordKind, EquipmentOutcome, ResourceStatus } from "@/generated/prisma/client";
 import type { EquipmentRecordItem } from "@/services/equipment";
 import type { UserLike } from "@/lib/permissions";
 
@@ -76,11 +70,11 @@ export function EquipmentCarePanel({
 
   const calibDueStr = resource.nextCalibrationDueOn ? dbToDay(resource.nextCalibrationDueOn) : null;
   const maintDueStr = resource.nextMaintenanceDueOn ? dbToDay(resource.nextMaintenanceDueOn) : null;
-  const reviewDueStr = resource.replacementReviewDueOn ? dbToDay(resource.replacementReviewDueOn) : null;
-
-  const inServiceStr = resource.inServiceOn
-    ? format(resource.inServiceOn, "d MMM yyyy")
+  const reviewDueStr = resource.replacementReviewDueOn
+    ? dbToDay(resource.replacementReviewDueOn)
     : null;
+
+  const inServiceStr = resource.inServiceOn ? format(resource.inServiceOn, "d MMM yyyy") : null;
 
   return (
     <div className="space-y-6 rounded-2xl bg-[#0f172a]/60 border border-[#1e293b] p-6 text-slate-200">
@@ -171,6 +165,18 @@ export function EquipmentCarePanel({
                 </button>
               }
             />
+
+            <BlockTimeButton
+              actor={actor}
+              resource={{ id: resource.id, siteId: resource.siteId }}
+              reason={
+                resource.maintenanceStatus === "DUE_TODAY" ||
+                resource.maintenanceStatus === "OVERDUE" ||
+                resource.maintenanceStatus === "DUE_SOON"
+                  ? "Service"
+                  : "Calibration"
+              }
+            />
           </div>
         )}
       </div>
@@ -185,7 +191,9 @@ export function EquipmentCarePanel({
             <p className="font-medium text-white mt-0.5">{resource.manufacturer || "—"}</p>
           </div>
           <div>
-            <span className="text-[11px] font-mono uppercase tracking-wider text-[#94a3b8]">Model</span>
+            <span className="text-[11px] font-mono uppercase tracking-wider text-[#94a3b8]">
+              Model
+            </span>
             <p className="font-medium text-white mt-0.5">{resource.model || "—"}</p>
           </div>
           <div>
@@ -200,7 +208,8 @@ export function EquipmentCarePanel({
             </span>
             <p className="font-medium text-white mt-0.5">
               {inServiceStr || "—"}
-              {resource.expectedServiceLifeYears && ` (${resource.expectedServiceLifeYears} yr lifespan)`}
+              {resource.expectedServiceLifeYears &&
+                ` (${resource.expectedServiceLifeYears} yr lifespan)`}
             </p>
           </div>
         </div>
@@ -208,7 +217,9 @@ export function EquipmentCarePanel({
 
       {/* Schedule Tracker Rows */}
       <div className="space-y-3">
-        <h3 className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]">Schedule status</h3>
+        <h3 className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]">
+          Schedule status
+        </h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {/* Calibration */}
           {hasCalibration && (
@@ -294,7 +305,6 @@ export function EquipmentCarePanel({
                 {history.map((rec) => {
                   const dayStr = dbToDay(rec.performedOn);
                   const isFail = rec.outcome === EquipmentOutcome.FAIL;
-                  const isPass = rec.outcome === EquipmentOutcome.PASS;
                   const isNotDone = rec.outcome === EquipmentOutcome.NOT_DONE;
 
                   let kindName = "Calibration";
@@ -308,9 +318,7 @@ export function EquipmentCarePanel({
                     kindName = "Lifecycle review";
                   }
 
-                  let outcomeBadge = (
-                    <span className="font-semibold text-emerald-400">Pass</span>
-                  );
+                  let outcomeBadge = <span className="font-semibold text-emerald-400">Pass</span>;
                   if (isFail) {
                     outcomeBadge = <span className="font-semibold text-rose-400">Fail</span>;
                   } else if (isNotDone) {
@@ -331,8 +339,13 @@ export function EquipmentCarePanel({
                       <td className="py-2.5 px-3 text-slate-200 whitespace-nowrap">{kindName}</td>
                       <td className="py-2.5 px-3 whitespace-nowrap">{outcomeBadge}</td>
                       <td className="py-2.5 px-3 text-slate-300">{rec.performedBy}</td>
-                      <td className="py-2.5 px-3 font-mono text-[#94a3b8]">{rec.reference || "—"}</td>
-                      <td className="py-2.5 px-3 text-slate-300 max-w-xs truncate" title={rec.notes ?? ""}>
+                      <td className="py-2.5 px-3 font-mono text-[#94a3b8]">
+                        {rec.reference || "—"}
+                      </td>
+                      <td
+                        className="py-2.5 px-3 text-slate-300 max-w-xs truncate"
+                        title={rec.notes ?? ""}
+                      >
                         {rec.notes || "—"}
                       </td>
                       <td className="py-2.5 px-3 text-[#94a3b8] whitespace-nowrap">

@@ -2,12 +2,7 @@ import { daysBetween, dayToDb } from "./equipment-dates";
 import { format } from "date-fns";
 
 export type TrackerStatus =
-  | "NOT_TRACKED"
-  | "CURRENT"
-  | "DUE_SOON"
-  | "DUE_TODAY"
-  | "OVERDUE"
-  | "FAILED";
+  "NOT_TRACKED" | "CURRENT" | "DUE_SOON" | "DUE_TODAY" | "OVERDUE" | "FAILED";
 
 export interface TrackerStatusInput {
   dueOn?: string | null;
@@ -71,9 +66,7 @@ export const TRACKER_STATUS_LABELS: Record<TrackerStatus, string> = {
  */
 export function formatEquipmentDay(day: string, referenceToday?: string): string {
   const [year] = day.split("-").map(Number);
-  const refYear = referenceToday
-    ? Number(referenceToday.split("-")[0])
-    : new Date().getFullYear();
+  const refYear = referenceToday ? Number(referenceToday.split("-")[0]) : new Date().getFullYear();
   const date = dayToDb(day);
 
   if (year !== refYear) {

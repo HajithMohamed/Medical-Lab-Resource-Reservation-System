@@ -1,8 +1,6 @@
 // Plain data configuration for equipment care form parts and labels. No React imports.
 // A lab can change this list; the standards leave it to the lab.
 
-import type { CategoryIconKey } from "./category-icons";
-
 export type EquipmentPart = "details" | "calibration" | "maintenance";
 
 /**

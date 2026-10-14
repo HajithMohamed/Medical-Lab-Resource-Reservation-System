@@ -4,6 +4,7 @@ import * as React from "react";
 import { AlertCircle, Clock } from "lucide-react";
 import { MarkDoneDialog } from "./mark-done-dialog";
 import { MarkNotDoneDialog } from "./mark-not-done-dialog";
+import { BlockTimeButton } from "./block-time-button";
 import { type TrackerStatus, formatEquipmentDay } from "@/lib/equipment-status";
 import { ResourceStatus } from "@/generated/prisma/client";
 import type { UserLike } from "@/lib/permissions";
@@ -52,10 +53,8 @@ export function DueDayBanner({
     return null;
   }
 
-  const calibNeedsAction =
-    calibrationStatus === "DUE_TODAY" || calibrationStatus === "OVERDUE";
-  const maintNeedsAction =
-    maintenanceStatus === "DUE_TODAY" || maintenanceStatus === "OVERDUE";
+  const calibNeedsAction = calibrationStatus === "DUE_TODAY" || calibrationStatus === "OVERDUE";
+  const maintNeedsAction = maintenanceStatus === "DUE_TODAY" || maintenanceStatus === "OVERDUE";
 
   if (!calibNeedsAction && !maintNeedsAction) {
     return null;
@@ -124,6 +123,11 @@ export function DueDayBanner({
               dueOn={calibDueStr}
               affectedBookingsCount={affectedBookingsCount}
             />
+            <BlockTimeButton
+              actor={actor}
+              resource={{ id: resource.id, siteId: resource.siteId }}
+              reason="Calibration"
+            />
           </div>
         </div>
       )}
@@ -176,6 +180,11 @@ export function DueDayBanner({
               tracker="maintenance"
               dueOn={maintDueStr}
               affectedBookingsCount={affectedBookingsCount}
+            />
+            <BlockTimeButton
+              actor={actor}
+              resource={{ id: resource.id, siteId: resource.siteId }}
+              reason="Service"
             />
           </div>
         </div>

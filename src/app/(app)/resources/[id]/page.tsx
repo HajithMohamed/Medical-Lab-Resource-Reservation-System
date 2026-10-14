@@ -225,7 +225,9 @@ export default async function ResourceDetailPage({ params }: ResourceDetailPageP
           lastNotDoneCalib
             ? {
                 notes: lastNotDoneCalib.notes ?? "",
-                plannedDate: lastNotDoneCalib.nextDueOn ? dbToDay(lastNotDoneCalib.nextDueOn) : null,
+                plannedDate: lastNotDoneCalib.nextDueOn
+                  ? dbToDay(lastNotDoneCalib.nextDueOn)
+                  : null,
               }
             : null
         }
@@ -233,7 +235,9 @@ export default async function ResourceDetailPage({ params }: ResourceDetailPageP
           lastNotDoneMaint
             ? {
                 notes: lastNotDoneMaint.notes ?? "",
-                plannedDate: lastNotDoneMaint.nextDueOn ? dbToDay(lastNotDoneMaint.nextDueOn) : null,
+                plannedDate: lastNotDoneMaint.nextDueOn
+                  ? dbToDay(lastNotDoneMaint.nextDueOn)
+                  : null,
               }
             : null
         }
