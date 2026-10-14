@@ -1,6 +1,7 @@
 import type { Role } from "@/generated/prisma/client";
 
 export interface UserLike {
+  id?: string;
   role: Role | string;
   siteId?: string | null;
 }
@@ -68,4 +69,39 @@ export function canManageUser(actor: UserLike, target: UserLike): boolean {
     );
   }
   return false;
+}
+
+export interface ReservationLike {
+  id?: string;
+  status: string;
+  kind: string;
+  startAt: Date;
+  userId?: string | null;
+  createdById?: string | null;
+  resource: {
+    siteId: string;
+  };
+}
+
+/**
+ * Returns true if the actor is permitted to cancel the reservation:
+ * - only CONFIRMED BOOKINGs that have not started (startAt > now).
+ * - allowed for the person who made it, or for anyone with canManageSite(actor, reservation.resource.siteId).
+ */
+export function canCancelReservation(
+  actor: UserLike,
+  reservation: ReservationLike,
+  now: Date = new Date(),
+): boolean {
+  if (reservation.status !== "CONFIRMED" || reservation.kind !== "BOOKING") {
+    return false;
+  }
+  if (reservation.startAt.getTime() <= now.getTime()) {
+    return false;
+  }
+  const creatorId = reservation.createdById ?? reservation.userId;
+  if (actor.id && creatorId && actor.id === creatorId) {
+    return true;
+  }
+  return canManageSite(actor, reservation.resource.siteId);
 }
