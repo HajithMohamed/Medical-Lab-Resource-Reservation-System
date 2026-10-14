@@ -2,7 +2,13 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { db } from "@/lib/db";
 import { isOverlapError, isCheckError } from "@/lib/db-errors";
 import { resetDatabase, createTestData, makeTestTime } from "../helpers/db";
-import { Role, ReservationKind, ReservationStatus } from "@/generated/prisma/client";
+import {
+  Role,
+  ReservationKind,
+  ReservationStatus,
+  EquipmentRecordKind,
+  EquipmentOutcome,
+} from "@/generated/prisma/client";
 
 describe("Database Rules & Constraints", () => {
   let fixture: Awaited<ReturnType<typeof createTestData>>;
@@ -352,7 +358,16 @@ describe("Database Rules & Constraints", () => {
         'categories_max_booking_minutes_positive',
         'users_email_lowercase',
         'users_site_required_unless_admin',
-        'users_failed_login_count_not_negative'
+        'users_failed_login_count_not_negative',
+        'resources_calibration_interval_positive',
+        'resources_maintenance_interval_positive',
+        'resources_service_life_positive',
+        'resources_calibration_schedule_complete',
+        'resources_maintenance_schedule_complete',
+        'equipment_records_outcome_fits_kind',
+        'equipment_records_notes_when_failed',
+        'equipment_records_next_due_after_performed',
+        'equipment_records_review_needs_date'
       );
     `;
 
@@ -374,10 +389,187 @@ describe("Database Rules & Constraints", () => {
       "users_email_lowercase",
       "users_site_required_unless_admin",
       "users_failed_login_count_not_negative",
+      "resources_calibration_interval_positive",
+      "resources_maintenance_interval_positive",
+      "resources_service_life_positive",
+      "resources_calibration_schedule_complete",
+      "resources_maintenance_schedule_complete",
+      "equipment_records_outcome_fits_kind",
+      "equipment_records_notes_when_failed",
+      "equipment_records_next_due_after_performed",
+      "equipment_records_review_needs_date",
     ];
 
     for (const checkName of expectedChecks) {
       expect(constraintsByName.get(checkName), `Missing CHECK constraint ${checkName}`).toBe("c");
     }
+  });
+
+  it("9. equipment care CHECK constraints reject invalid rows", async () => {
+    // 9a. resources_calibration_interval_positive
+    let calibIntervalError: unknown;
+    try {
+      await db.resource.create({
+        data: {
+          name: "Invalid Calib Interval",
+          categoryId: fixture.category.id,
+          siteId: fixture.site.id,
+          sectionId: fixture.section.id,
+          calibrationIntervalDays: 0,
+          nextCalibrationDueOn: new Date("2026-10-20"),
+        },
+      });
+    } catch (err) {
+      calibIntervalError = err;
+    }
+    expect(isCheckError(calibIntervalError, "resources_calibration_interval_positive")).toBe(true);
+
+    // 9b. resources_maintenance_interval_positive
+    let maintIntervalError: unknown;
+    try {
+      await db.resource.create({
+        data: {
+          name: "Invalid Maint Interval",
+          categoryId: fixture.category.id,
+          siteId: fixture.site.id,
+          sectionId: fixture.section.id,
+          maintenanceIntervalDays: -5,
+          nextMaintenanceDueOn: new Date("2026-10-20"),
+        },
+      });
+    } catch (err) {
+      maintIntervalError = err;
+    }
+    expect(isCheckError(maintIntervalError, "resources_maintenance_interval_positive")).toBe(true);
+
+    // 9c. resources_service_life_positive
+    let serviceLifeError: unknown;
+    try {
+      await db.resource.create({
+        data: {
+          name: "Invalid Service Life",
+          categoryId: fixture.category.id,
+          siteId: fixture.site.id,
+          sectionId: fixture.section.id,
+          expectedServiceLifeYears: 0,
+        },
+      });
+    } catch (err) {
+      serviceLifeError = err;
+    }
+    expect(isCheckError(serviceLifeError, "resources_service_life_positive")).toBe(true);
+
+    // 9d. resources_calibration_schedule_complete (interval given without next due date)
+    let calibScheduleError: unknown;
+    try {
+      await db.resource.create({
+        data: {
+          name: "Incomplete Calib Schedule",
+          categoryId: fixture.category.id,
+          siteId: fixture.site.id,
+          sectionId: fixture.section.id,
+          calibrationIntervalDays: 365,
+          nextCalibrationDueOn: null,
+        },
+      });
+    } catch (err) {
+      calibScheduleError = err;
+    }
+    expect(isCheckError(calibScheduleError, "resources_calibration_schedule_complete")).toBe(true);
+
+    // 9e. resources_maintenance_schedule_complete (due date given without interval)
+    let maintScheduleError: unknown;
+    try {
+      await db.resource.create({
+        data: {
+          name: "Incomplete Maint Schedule",
+          categoryId: fixture.category.id,
+          siteId: fixture.site.id,
+          sectionId: fixture.section.id,
+          maintenanceIntervalDays: null,
+          nextMaintenanceDueOn: new Date("2026-10-20"),
+        },
+      });
+    } catch (err) {
+      maintScheduleError = err;
+    }
+    expect(isCheckError(maintScheduleError, "resources_maintenance_schedule_complete")).toBe(true);
+
+    // 9f. equipment_records_outcome_fits_kind (REPLACEMENT_REVIEW with PASS is invalid)
+    let outcomeFitsKindError: unknown;
+    try {
+      await db.equipmentRecord.create({
+        data: {
+          resourceId: fixture.resource1.id,
+          kind: EquipmentRecordKind.REPLACEMENT_REVIEW,
+          outcome: EquipmentOutcome.PASS,
+          performedOn: new Date("2026-10-14"),
+          performedBy: "Engineer",
+          nextDueOn: new Date("2027-10-14"),
+          recordedById: fixture.managerUser.id,
+        },
+      });
+    } catch (err) {
+      outcomeFitsKindError = err;
+    }
+    expect(isCheckError(outcomeFitsKindError, "equipment_records_outcome_fits_kind")).toBe(true);
+
+    // 9g. equipment_records_notes_when_failed (FAIL outcome requires non-empty notes)
+    let notesWhenFailedError: unknown;
+    try {
+      await db.equipmentRecord.create({
+        data: {
+          resourceId: fixture.resource1.id,
+          kind: EquipmentRecordKind.PERFORMANCE_CHECK,
+          outcome: EquipmentOutcome.FAIL,
+          performedOn: new Date("2026-10-14"),
+          performedBy: "Engineer",
+          notes: "   ",
+          recordedById: fixture.managerUser.id,
+        },
+      });
+    } catch (err) {
+      notesWhenFailedError = err;
+    }
+    expect(isCheckError(notesWhenFailedError, "equipment_records_notes_when_failed")).toBe(true);
+
+    // 9h. equipment_records_next_due_after_performed (next_due_on must be strictly after performed_on)
+    let nextDueAfterError: unknown;
+    try {
+      await db.equipmentRecord.create({
+        data: {
+          resourceId: fixture.resource1.id,
+          kind: EquipmentRecordKind.CALIBRATION,
+          outcome: EquipmentOutcome.PASS,
+          performedOn: new Date("2026-10-14"),
+          performedBy: "Calibration Tech",
+          nextDueOn: new Date("2026-10-14"), // same day is invalid
+          recordedById: fixture.managerUser.id,
+        },
+      });
+    } catch (err) {
+      nextDueAfterError = err;
+    }
+    expect(isCheckError(nextDueAfterError, "equipment_records_next_due_after_performed")).toBe(true);
+
+    // 9i. equipment_records_review_needs_date (REPLACEMENT_REVIEW requires next_due_on)
+    let reviewNeedsDateError: unknown;
+    try {
+      await db.equipmentRecord.create({
+        data: {
+          resourceId: fixture.resource1.id,
+          kind: EquipmentRecordKind.REPLACEMENT_REVIEW,
+          outcome: EquipmentOutcome.KEEP_IN_SERVICE,
+          performedOn: new Date("2026-10-14"),
+          performedBy: "Director",
+          notes: "Review passed",
+          nextDueOn: null,
+          recordedById: fixture.managerUser.id,
+        },
+      });
+    } catch (err) {
+      reviewNeedsDateError = err;
+    }
+    expect(isCheckError(reviewNeedsDateError, "equipment_records_review_needs_date")).toBe(true);
   });
 });
