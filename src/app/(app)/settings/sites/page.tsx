@@ -9,6 +9,7 @@ import { SiteDialog } from "@/components/settings/site-dialog";
 import { EditSiteDialog } from "@/components/settings/edit-site-dialog";
 import { DeleteRowButton } from "@/components/settings/delete-row-button";
 import { EmptyState } from "@/components/empty-state";
+import { PaginationControls } from "@/components/pagination-controls";
 import {
   Table,
   TableBody,
@@ -22,10 +23,24 @@ export const metadata = {
   title: "Sites | Settings",
 };
 
-export default async function SitesPage() {
+interface SitesPageProps {
+  searchParams?: Promise<{
+    page?: string;
+    pageSize?: string;
+  }>;
+}
+
+export default async function SitesPage({ searchParams }: SitesPageProps) {
   const actor = await requireRole("ADMIN");
-  const result = await listSites(actor);
+  const resolvedParams = searchParams ? await searchParams : {};
+
+  const page = Math.max(1, Number(resolvedParams.page) || 1);
+  const pageSize = Math.max(1, Number(resolvedParams.pageSize) || 8);
+
+  const result = await listSites(actor, { page, pageSize });
   const sites = result.ok ? result.data : [];
+  const totalCount = result.ok ? (result.totalCount ?? sites.length) : 0;
+  const totalPages = result.ok ? (result.totalPages ?? 1) : 1;
 
   return (
     <div className="space-y-6">
@@ -71,12 +86,17 @@ export default async function SitesPage() {
               {sites.map((site) => (
                 <TableRow key={site.id} className="hover:bg-muted/30">
                   <TableCell className="font-medium text-foreground py-3.5">
-                    <Link
-                      href={`/settings/sites/${site.id}`}
-                      className="hover:underline focus-visible:outline-none focus-visible:underline"
-                    >
-                      {site.name}
-                    </Link>
+                    <EditSiteDialog
+                      site={site}
+                      trigger={
+                        <button
+                          type="button"
+                          className="font-medium text-foreground hover:text-primary hover:underline focus-visible:outline-none focus-visible:underline text-left cursor-pointer"
+                        >
+                          {site.name}
+                        </button>
+                      }
+                    />
                   </TableCell>
                   <TableCell className="text-muted-foreground py-3.5">
                     {site.address || "—"}
@@ -102,6 +122,16 @@ export default async function SitesPage() {
               ))}
             </TableBody>
           </Table>
+          <div className="border-t border-border bg-muted/20 px-3">
+            <PaginationControls
+              currentPage={page}
+              totalPages={totalPages}
+              totalCount={totalCount}
+              pageSize={pageSize}
+              basePath="/settings/sites"
+              itemLabel="sites"
+            />
+          </div>
         </div>
       )}
     </div>

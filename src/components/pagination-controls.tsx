@@ -25,9 +25,10 @@ export function PaginationControls({
   basePath,
   queryParams = {},
   itemLabel = "users",
+  alwaysShow = true,
   className,
-}: PaginationControlsProps) {
-  if (totalCount === 0 || totalPages <= 1) {
+}: PaginationControlsProps & { alwaysShow?: boolean }) {
+  if (totalCount === 0 || (!alwaysShow && totalPages <= 1)) {
     return null;
   }
 

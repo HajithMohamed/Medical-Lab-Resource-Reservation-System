@@ -21,9 +21,10 @@ import type { SectionWithCounts } from "@/services/settings";
 
 interface EditSectionDialogProps {
   section: SectionWithCounts;
+  trigger?: React.ReactNode;
 }
 
-export function EditSectionDialog({ section }: EditSectionDialogProps) {
+export function EditSectionDialog({ section, trigger }: EditSectionDialogProps) {
   const [open, setOpen] = React.useState(false);
   const [isPending, setIsPending] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
@@ -60,10 +61,14 @@ export function EditSectionDialog({ section }: EditSectionDialogProps) {
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="h-8 gap-1.5 text-xs font-medium">
-          <Pencil className="size-3.5" />
-          <span>Edit</span>
-        </Button>
+        {trigger ? (
+          trigger
+        ) : (
+          <Button variant="outline" size="sm" className="h-8 gap-1.5 text-xs font-medium">
+            <Pencil className="size-3.5 text-primary" />
+            <span>Edit</span>
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <form onSubmit={handleSubmit} className="space-y-4">

@@ -7,7 +7,7 @@ import { isUniqueError } from "@/lib/db-errors";
 import { ResourceStatus, ReservationKind, ReservationStatus } from "@/generated/prisma/client";
 
 export type ServiceResult<T = void> =
-  | { ok: true; data: T; message?: string }
+  | { ok: true; data: T; message?: string; totalCount?: number; totalPages?: number }
   | { ok: false; error: string; fieldErrors?: Record<string, string[]> };
 
 export interface ResourceFilterOptions {
@@ -16,6 +16,8 @@ export interface ResourceFilterOptions {
   sectionId?: string;
   status?: string;
   search?: string;
+  page?: number;
+  pageSize?: number;
 }
 
 export interface ResourceListItem {
@@ -154,8 +156,17 @@ export async function listResources(
     };
   }
 
+  const shouldPaginate = filters.page !== undefined || filters.pageSize !== undefined;
+  const page = Math.max(1, filters.page ?? 1);
+  const pageSize = Math.max(1, filters.pageSize ?? 10);
+
+  const totalCount = await db.resource.count({ where });
+  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+
   const resources = await db.resource.findMany({
     where,
+    skip: shouldPaginate ? (page - 1) * pageSize : undefined,
+    take: shouldPaginate ? pageSize : undefined,
     include: {
       category: {
         select: {
@@ -181,7 +192,7 @@ export async function listResources(
     orderBy: [{ site: { name: "asc" } }, { category: { name: "asc" } }, { name: "asc" }],
   });
 
-  return { ok: true, data: resources };
+  return { ok: true, data: resources, totalCount, totalPages };
 }
 
 /**

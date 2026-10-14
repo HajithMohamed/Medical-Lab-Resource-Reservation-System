@@ -35,9 +35,10 @@ import type { CategoryWithCounts } from "@/services/settings";
 
 interface EditCategoryDialogProps {
   category: CategoryWithCounts;
+  trigger?: React.ReactNode;
 }
 
-export function EditCategoryDialog({ category }: EditCategoryDialogProps) {
+export function EditCategoryDialog({ category, trigger }: EditCategoryDialogProps) {
   const [open, setOpen] = React.useState(false);
   const [isPending, setIsPending] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
@@ -86,10 +87,14 @@ export function EditCategoryDialog({ category }: EditCategoryDialogProps) {
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="h-8 gap-1.5 text-xs font-medium">
-          <Pencil className="size-3.5" />
-          <span>Edit</span>
-        </Button>
+        {trigger ? (
+          trigger
+        ) : (
+          <Button variant="outline" size="sm" className="h-8 gap-1.5 text-xs font-medium">
+            <Pencil className="size-3.5 text-primary" />
+            <span>Edit</span>
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <form onSubmit={handleSubmit} className="space-y-4">

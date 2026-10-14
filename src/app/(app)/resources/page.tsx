@@ -1,6 +1,6 @@
 import * as React from "react";
 import Link from "next/link";
-import { Plus, FlaskConical } from "lucide-react";
+import { FlaskConical } from "lucide-react";
 import { requireUser } from "@/lib/auth";
 import { listResources, type ResourceFilterOptions } from "@/services/resources";
 import { db } from "@/lib/db";
@@ -12,6 +12,9 @@ import { Button } from "@/components/ui/button";
 import { formatMinutes } from "@/lib/format";
 import { ResourceFilters } from "@/components/resources/resource-filters";
 import { ResourceCard } from "@/components/resources/resource-card";
+import { ResourceCreateDialog } from "@/components/resources/resource-create-dialog";
+import { ResourceEditDialog } from "@/components/resources/resource-edit-dialog";
+import { PaginationControls } from "@/components/pagination-controls";
 import {
   Table,
   TableBody,
@@ -33,6 +36,8 @@ interface ResourcesPageProps {
     categoryId?: string;
     sectionId?: string;
     status?: string;
+    page?: string;
+    pageSize?: string;
   }>;
 }
 
@@ -40,12 +45,17 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
   const user = await requireUser();
   const resolvedParams = searchParams ? await searchParams : {};
 
+  const page = Math.max(1, Number(resolvedParams.page) || 1);
+  const pageSize = Math.max(1, Number(resolvedParams.pageSize) || 8);
+
   const filters: ResourceFilterOptions = {
     search: resolvedParams.search,
     siteId: resolvedParams.siteId,
     categoryId: resolvedParams.categoryId,
     sectionId: resolvedParams.sectionId,
     status: resolvedParams.status,
+    page,
+    pageSize,
   };
 
   // Load filter dropdown options and resources in parallel
@@ -55,7 +65,7 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
       orderBy: { name: "asc" },
     }),
     db.category.findMany({
-      select: { id: true, name: true },
+      select: { id: true, name: true, maxBookingMinutes: true, iconKey: true },
       orderBy: { name: "asc" },
     }),
     db.section.findMany({
@@ -66,6 +76,9 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
   ]);
 
   const resources = resourcesResult.ok ? resourcesResult.data : [];
+  const totalCount = resourcesResult.ok ? (resourcesResult.totalCount ?? resources.length) : 0;
+  const totalPages = resourcesResult.ok ? (resourcesResult.totalPages ?? 1) : 1;
+
   const canAddResource = user.role === "MANAGER" || user.role === "ADMIN";
 
   return (
@@ -75,12 +88,13 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
         description="Every shared instrument, cabinet, room and van in the network."
         actions={
           canAddResource ? (
-            <Button asChild variant="secondary" className="gap-2">
-              <Link href="/resources/new">
-                <Plus className="size-4" />
-                <span>Add resource</span>
-              </Link>
-            </Button>
+            <ResourceCreateDialog
+              actorRole={user.role}
+              actorSiteId={user.siteId}
+              sites={sites}
+              categories={categories}
+              sections={sections}
+            />
           ) : undefined
         }
       />
@@ -126,9 +140,19 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
                   const capacityText =
                     isRoom && resource.capacity ? `, ${resource.capacity} seats` : "";
                   const subtitle = `${resource.category.name}, up to ${formatMinutes(resource.category.maxBookingMinutes)}${capacityText}`;
+                  const canManage =
+                    user.role === "ADMIN" ||
+                    (user.role === "MANAGER" && user.siteId === resource.siteId);
 
                   return (
-                    <TableRow key={resource.id} className="hover:bg-muted/20">
+                    <TableRow
+                      key={resource.id}
+                      className={
+                        resource.status === "OUT_OF_SERVICE"
+                          ? "bg-destructive/5 hover:bg-destructive/10 transition-colors"
+                          : "hover:bg-muted/20 transition-colors"
+                      }
+                    >
                       <TableCell>
                         <div className="flex items-center gap-3">
                           <CategoryIcon
@@ -165,33 +189,87 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
                         <ResourceStatusTag status={resource.status} />
                       </TableCell>
                       <TableCell className="text-right">
-                        {resource.status === "ACTIVE" ? (
-                          <Button asChild size="sm" className="h-8 px-3 font-semibold text-xs">
-                            <Link href={`/bookings/new?resourceId=${resource.id}`}>Book</Link>
-                          </Button>
-                        ) : (
-                          <Button
-                            asChild
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 px-3 text-xs text-muted-foreground hover:text-foreground"
-                          >
-                            <Link href={`/resources/${resource.id}`}>View</Link>
-                          </Button>
-                        )}
+                        <div className="inline-flex items-center gap-1.5 justify-end">
+                          {resource.status === "ACTIVE" ? (
+                            <Button asChild size="sm" className="h-8 px-3 font-semibold text-xs">
+                              <Link href={`/bookings/new?resourceId=${resource.id}`}>Book</Link>
+                            </Button>
+                          ) : (
+                            <Button
+                              asChild
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 px-3 text-xs text-muted-foreground hover:text-foreground"
+                            >
+                              <Link href={`/resources/${resource.id}`}>View</Link>
+                            </Button>
+                          )}
+                          {canManage && (
+                            <ResourceEditDialog
+                              resource={resource}
+                              actorRole={user.role}
+                              actorSiteId={user.siteId}
+                              sites={sites}
+                              categories={categories}
+                              sections={sections}
+                            />
+                          )}
+                        </div>
                       </TableCell>
                     </TableRow>
                   );
                 })}
               </TableBody>
             </Table>
+            <div className="border-t border-border bg-muted/20 px-3">
+              <PaginationControls
+                currentPage={page}
+                totalPages={totalPages}
+                totalCount={totalCount}
+                pageSize={pageSize}
+                basePath="/resources"
+                queryParams={{
+                  search: resolvedParams.search,
+                  siteId: resolvedParams.siteId,
+                  categoryId: resolvedParams.categoryId,
+                  sectionId: resolvedParams.sectionId,
+                  status: resolvedParams.status,
+                }}
+                itemLabel="resources"
+              />
+            </div>
           </div>
 
           {/* Mobile Stacked Cards (below md) */}
           <div className="md:hidden space-y-3">
             {resources.map((resource) => (
-              <ResourceCard key={resource.id} resource={resource} />
+              <ResourceCard
+                key={resource.id}
+                resource={resource}
+                actorRole={user.role}
+                actorSiteId={user.siteId}
+                sites={sites}
+                categories={categories}
+                sections={sections}
+              />
             ))}
+            <div className="pt-2">
+              <PaginationControls
+                currentPage={page}
+                totalPages={totalPages}
+                totalCount={totalCount}
+                pageSize={pageSize}
+                basePath="/resources"
+                queryParams={{
+                  search: resolvedParams.search,
+                  siteId: resolvedParams.siteId,
+                  categoryId: resolvedParams.categoryId,
+                  sectionId: resolvedParams.sectionId,
+                  status: resolvedParams.status,
+                }}
+                itemLabel="resources"
+              />
+            </div>
           </div>
         </>
       )}

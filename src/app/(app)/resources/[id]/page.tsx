@@ -20,6 +20,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatMinutes } from "@/lib/format";
 import { env } from "@/lib/env";
+import { db } from "@/lib/db";
+import { ResourceEditDialog } from "@/components/resources/resource-edit-dialog";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -47,6 +49,17 @@ export default async function ResourceDetailPage({ params }: ResourceDetailPageP
 
   const resource = result.data;
   const isManagerOrAdmin = canManageSite(user, resource.siteId);
+
+  const [sites, categories, sections] = isManagerOrAdmin
+    ? await Promise.all([
+        db.site.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } }),
+        db.category.findMany({
+          select: { id: true, name: true, maxBookingMinutes: true, iconKey: true },
+          orderBy: { name: "asc" },
+        }),
+        db.section.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } }),
+      ])
+    : [[], [], []];
 
   const timeZone = env.APP_TIME_ZONE;
 
@@ -131,12 +144,14 @@ export default async function ResourceDetailPage({ params }: ResourceDetailPageP
           <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground mr-1">
             Manage:
           </span>
-          <Button asChild variant="outline" size="sm" className="gap-1.5 h-8">
-            <Link href={`/resources/${resource.id}/edit`}>
-              <Pencil className="size-3.5" />
-              <span>Edit</span>
-            </Link>
-          </Button>
+          <ResourceEditDialog
+            resource={resource}
+            actorRole={user.role}
+            actorSiteId={user.siteId}
+            sites={sites}
+            categories={categories}
+            sections={sections}
+          />
           <Button asChild variant="outline" size="sm" className="gap-1.5 h-8">
             <Link href={`/resources/${resource.id}/status`}>
               <AlertOctagon className="size-3.5" />

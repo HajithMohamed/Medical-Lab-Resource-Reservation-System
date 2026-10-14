@@ -9,6 +9,7 @@ import { SectionDialog } from "@/components/settings/section-dialog";
 import { EditSectionDialog } from "@/components/settings/edit-section-dialog";
 import { DeleteRowButton } from "@/components/settings/delete-row-button";
 import { EmptyState } from "@/components/empty-state";
+import { PaginationControls } from "@/components/pagination-controls";
 import {
   Table,
   TableBody,
@@ -22,10 +23,24 @@ export const metadata = {
   title: "Sections | Settings",
 };
 
-export default async function SectionsPage() {
+interface SectionsPageProps {
+  searchParams?: Promise<{
+    page?: string;
+    pageSize?: string;
+  }>;
+}
+
+export default async function SectionsPage({ searchParams }: SectionsPageProps) {
   const actor = await requireRole("ADMIN");
-  const result = await listSections(actor);
+  const resolvedParams = searchParams ? await searchParams : {};
+
+  const page = Math.max(1, Number(resolvedParams.page) || 1);
+  const pageSize = Math.max(1, Number(resolvedParams.pageSize) || 8);
+
+  const result = await listSections(actor, { page, pageSize });
   const sections = result.ok ? result.data : [];
+  const totalCount = result.ok ? (result.totalCount ?? sections.length) : 0;
+  const totalPages = result.ok ? (result.totalPages ?? 1) : 1;
 
   return (
     <div className="space-y-6">
@@ -70,12 +85,17 @@ export default async function SectionsPage() {
               {sections.map((section) => (
                 <TableRow key={section.id} className="hover:bg-muted/30">
                   <TableCell className="font-medium text-foreground py-3.5">
-                    <Link
-                      href={`/settings/sections/${section.id}`}
-                      className="hover:underline focus-visible:outline-none focus-visible:underline"
-                    >
-                      {section.name}
-                    </Link>
+                    <EditSectionDialog
+                      section={section}
+                      trigger={
+                        <button
+                          type="button"
+                          className="font-medium text-foreground hover:text-primary hover:underline focus-visible:outline-none focus-visible:underline text-left cursor-pointer"
+                        >
+                          {section.name}
+                        </button>
+                      }
+                    />
                   </TableCell>
                   <TableCell className="text-right tabular-nums text-muted-foreground py-3.5">
                     {section._count.resources}
@@ -98,6 +118,16 @@ export default async function SectionsPage() {
               ))}
             </TableBody>
           </Table>
+          <div className="border-t border-border bg-muted/20 px-3">
+            <PaginationControls
+              currentPage={page}
+              totalPages={totalPages}
+              totalCount={totalCount}
+              pageSize={pageSize}
+              basePath="/settings/sections"
+              itemLabel="sections"
+            />
+          </div>
         </div>
       )}
     </div>

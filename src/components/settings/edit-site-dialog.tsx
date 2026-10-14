@@ -21,9 +21,10 @@ import type { SiteWithCounts } from "@/services/settings";
 
 interface EditSiteDialogProps {
   site: SiteWithCounts;
+  trigger?: React.ReactNode;
 }
 
-export function EditSiteDialog({ site }: EditSiteDialogProps) {
+export function EditSiteDialog({ site, trigger }: EditSiteDialogProps) {
   const [open, setOpen] = React.useState(false);
   const [isPending, setIsPending] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
@@ -63,10 +64,14 @@ export function EditSiteDialog({ site }: EditSiteDialogProps) {
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="h-8 gap-1.5 text-xs font-medium">
-          <Pencil className="size-3.5" />
-          <span>Edit</span>
-        </Button>
+        {trigger ? (
+          trigger
+        ) : (
+          <Button variant="outline" size="sm" className="h-8 gap-1.5 text-xs font-medium">
+            <Pencil className="size-3.5 text-primary" />
+            <span>Edit</span>
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <form onSubmit={handleSubmit} className="space-y-4">

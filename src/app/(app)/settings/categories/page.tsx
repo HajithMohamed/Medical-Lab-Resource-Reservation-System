@@ -11,6 +11,7 @@ import { EditCategoryDialog } from "@/components/settings/edit-category-dialog";
 import { DeleteRowButton } from "@/components/settings/delete-row-button";
 import { CategoryIcon } from "@/components/category-icon";
 import { EmptyState } from "@/components/empty-state";
+import { PaginationControls } from "@/components/pagination-controls";
 import {
   Table,
   TableBody,
@@ -24,10 +25,24 @@ export const metadata = {
   title: "Categories | Settings",
 };
 
-export default async function CategoriesPage() {
+interface CategoriesPageProps {
+  searchParams?: Promise<{
+    page?: string;
+    pageSize?: string;
+  }>;
+}
+
+export default async function CategoriesPage({ searchParams }: CategoriesPageProps) {
   const actor = await requireRole("ADMIN");
-  const result = await listCategories(actor);
+  const resolvedParams = searchParams ? await searchParams : {};
+
+  const page = Math.max(1, Number(resolvedParams.page) || 1);
+  const pageSize = Math.max(1, Number(resolvedParams.pageSize) || 8);
+
+  const result = await listCategories(actor, { page, pageSize });
   const categories = result.ok ? result.data : [];
+  const totalCount = result.ok ? (result.totalCount ?? categories.length) : 0;
+  const totalPages = result.ok ? (result.totalPages ?? 1) : 1;
 
   return (
     <div className="space-y-6">
@@ -80,12 +95,17 @@ export default async function CategoriesPage() {
                     />
                   </TableCell>
                   <TableCell className="font-medium text-foreground py-3.5">
-                    <Link
-                      href={`/settings/categories/${category.id}`}
-                      className="hover:underline focus-visible:outline-none focus-visible:underline"
-                    >
-                      {category.name}
-                    </Link>
+                    <EditCategoryDialog
+                      category={category}
+                      trigger={
+                        <button
+                          type="button"
+                          className="font-medium text-foreground hover:text-primary hover:underline focus-visible:outline-none focus-visible:underline text-left cursor-pointer"
+                        >
+                          {category.name}
+                        </button>
+                      }
+                    />
                   </TableCell>
                   <TableCell className="tabular-nums text-muted-foreground py-3.5">
                     {formatMinutes(category.maxBookingMinutes)}
@@ -108,6 +128,16 @@ export default async function CategoriesPage() {
               ))}
             </TableBody>
           </Table>
+          <div className="border-t border-border bg-muted/20 px-3">
+            <PaginationControls
+              currentPage={page}
+              totalPages={totalPages}
+              totalCount={totalCount}
+              pageSize={pageSize}
+              basePath="/settings/categories"
+              itemLabel="categories"
+            />
+          </div>
         </div>
       )}
     </div>

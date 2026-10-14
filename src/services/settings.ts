@@ -10,8 +10,13 @@ import { CATEGORY_ICON_KEYS } from "@/config/category-icons";
 export const ADMIN_ONLY_ERROR = "Only admins can change settings.";
 
 export type ServiceResult<T = void> =
-  | { ok: true; data: T; message?: string }
+  | { ok: true; data: T; message?: string; totalCount?: number; totalPages?: number }
   | { ok: false; error: string; fieldErrors?: Record<string, string[]> };
+
+export interface SettingsPaginationOptions {
+  page?: number;
+  pageSize?: number;
+}
 
 // Validation schemas
 export const createSiteSchema = z.object({
@@ -134,13 +139,25 @@ export async function getSettingsCounts(
 // Sites
 // ==========================================
 
-export async function listSites(actor: UserLike): Promise<ServiceResult<SiteWithCounts[]>> {
+export async function listSites(
+  actor: UserLike,
+  options?: SettingsPaginationOptions,
+): Promise<ServiceResult<SiteWithCounts[]>> {
   if (!isAdmin(actor)) {
     return { ok: false, error: ADMIN_ONLY_ERROR };
   }
 
+  const shouldPaginate = options?.page !== undefined || options?.pageSize !== undefined;
+  const page = Math.max(1, options?.page ?? 1);
+  const pageSize = Math.max(1, options?.pageSize ?? 10);
+
+  const totalCount = await db.site.count();
+  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+
   const sites = await db.site.findMany({
     orderBy: { name: "asc" },
+    skip: shouldPaginate ? (page - 1) * pageSize : undefined,
+    take: shouldPaginate ? pageSize : undefined,
     include: {
       _count: {
         select: {
@@ -151,7 +168,7 @@ export async function listSites(actor: UserLike): Promise<ServiceResult<SiteWith
     },
   });
 
-  return { ok: true, data: sites };
+  return { ok: true, data: sites, totalCount, totalPages };
 }
 
 export async function getSite(
@@ -299,13 +316,25 @@ export async function deleteSite(actor: UserLike, id: string): Promise<ServiceRe
 // Sections
 // ==========================================
 
-export async function listSections(actor: UserLike): Promise<ServiceResult<SectionWithCounts[]>> {
+export async function listSections(
+  actor: UserLike,
+  options?: SettingsPaginationOptions,
+): Promise<ServiceResult<SectionWithCounts[]>> {
   if (!isAdmin(actor)) {
     return { ok: false, error: ADMIN_ONLY_ERROR };
   }
 
+  const shouldPaginate = options?.page !== undefined || options?.pageSize !== undefined;
+  const page = Math.max(1, options?.page ?? 1);
+  const pageSize = Math.max(1, options?.pageSize ?? 10);
+
+  const totalCount = await db.section.count();
+  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+
   const sections = await db.section.findMany({
     orderBy: { name: "asc" },
+    skip: shouldPaginate ? (page - 1) * pageSize : undefined,
+    take: shouldPaginate ? pageSize : undefined,
     include: {
       _count: {
         select: {
@@ -316,7 +345,7 @@ export async function listSections(actor: UserLike): Promise<ServiceResult<Secti
     },
   });
 
-  return { ok: true, data: sections };
+  return { ok: true, data: sections, totalCount, totalPages };
 }
 
 export async function getSection(
@@ -466,13 +495,23 @@ export async function deleteSection(actor: UserLike, id: string): Promise<Servic
 
 export async function listCategories(
   actor: UserLike,
+  options?: SettingsPaginationOptions,
 ): Promise<ServiceResult<CategoryWithCounts[]>> {
   if (!isAdmin(actor)) {
     return { ok: false, error: ADMIN_ONLY_ERROR };
   }
 
+  const shouldPaginate = options?.page !== undefined || options?.pageSize !== undefined;
+  const page = Math.max(1, options?.page ?? 1);
+  const pageSize = Math.max(1, options?.pageSize ?? 10);
+
+  const totalCount = await db.category.count();
+  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+
   const categories = await db.category.findMany({
     orderBy: { name: "asc" },
+    skip: shouldPaginate ? (page - 1) * pageSize : undefined,
+    take: shouldPaginate ? pageSize : undefined,
     include: {
       _count: {
         select: {
@@ -482,7 +521,7 @@ export async function listCategories(
     },
   });
 
-  return { ok: true, data: categories };
+  return { ok: true, data: categories, totalCount, totalPages };
 }
 
 export async function getCategory(
