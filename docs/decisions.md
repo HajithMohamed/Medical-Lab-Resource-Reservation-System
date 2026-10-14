@@ -125,3 +125,23 @@ Each entry records an architectural choice, why it was made, and what trade-offs
 - **Context:** Administrators oversee the entire network (sites, sections, categories, user accounts, system configuration, and audit logs). Admins have no assigned site or section (`users_site_required_unless_admin`), so bookings created by administrators would appear without section attribution in usage analytics. Furthermore, bench testing and clinical sample processing are performed by lab workers and branch managers, not network administrators.
 - **Decision:** Enforce separation of duties: `ADMIN` users do not create bookings (`canBook` returns `false`). The booking service rejects admin booking attempts with `"Admins manage the network and do not book. Use a staff or manager account."`. Navigation menus, "Book" action buttons, slot-finder search, and calendar slot click-handlers are hidden for admins. In place of personal bookings, administrators and managers receive a dedicated "Bookings" oversight interface (`/bookings/manage`) with search, filters, and cancellation capabilities.
 - **Consequences:** Upholds strict separation of duties, ensures usage telemetry is consistently attributed to lab sections, and gives administrators clear tools to oversee and intervene across all site schedules.
+
+## D16: Equipment care follows ISO 15189:2022 6.4/6.5 and WHO LQMS; intervals come from the manufacturer
+
+- **Date:** 2026-10-14
+- **Status:** accepted
+- **Context:** Medical laboratory accreditation (ISO 15189:2022 sections 6.4.5, 6.4.7, 6.5.2 and WHO LQMS handbook ch. 3) mandates rigorous control of examination equipment. Defective instruments must be removed from service and labelled; calibration must be verified at defined intervals; equipment records must document identity, in-service dates, maintenance programmes, and verifications. Fixed network-wide service intervals do not reflect reality, as each instrument manufacturer specifies its own calibration and servicing schedule.
+- **Decision:** Align equipment care with international laboratory standards:
+  - Intervals are configured per instrument based on manufacturer specifications, not hardcoded globally.
+  - "Due soon" thresholds (`CALIBRATION_DUE_SOON_DAYS = 30`, `MAINTENANCE_DUE_SOON_DAYS = 14`, `REPLACEMENT_REVIEW_LEAD_DAYS = 180`) represent laboratory operating policy to ensure adequate advance warning.
+  - Defective instruments (failing a calibration, maintenance, or performance check) are immediately placed `OUT_OF_SERVICE` and cannot be returned to `ACTIVE` until a passing check is recorded (ISO 15189:2022 6.4.5 c).
+  - Uncalibrated instruments block bookings past the due day (ISO 15189:2022 6.5.2).
+- **Consequences:** Meets medical diagnostic accreditation compliance out of the box while accommodating varied equipment types (analyzers, biosafety cabinets, centrifuges, transport vans).
+
+## D17: Equipment details are entered in the resource form; results are append-only records
+
+- **Date:** 2026-10-14
+- **Status:** accepted
+- **Context:** Laboratory staff register equipment once and need schedules active immediately upon commissioning. ISO 15189:2022 section 6.4.7 requires complete, tamper-proof equipment records that document all verifications, calibrations, maintenance, and repairs performed over the asset's lifespan.
+- **Decision:** Combine resource creation and equipment onboarding into a single unified form with category-specific sections (Rooms show only resource fields; Vehicles show vehicle details and servicing; Instruments show details, calibration, and preventive maintenance). When a resource is registered with an existing calibration or service date, the initial verification record is generated atomically within the creation transaction. All verification records (`equipment_records`) are strictly append-only: records can never be edited or deleted. Corrections are made by recording a new event with explanatory notes.
+- **Consequences:** Guarantees a reliable, unalterable audit trail for accreditation inspections. Eliminates disconnected spreadsheet registers and ensures every instrument in the register has a verifiable history from its first day in service.

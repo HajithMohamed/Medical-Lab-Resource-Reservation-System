@@ -2,12 +2,15 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Plus, Calendar, ArrowRight, Loader2, Maximize2 } from "lucide-react";
+import { Plus, Calendar, ArrowRight, Loader2, Maximize2, AlertCircle } from "lucide-react";
 import { useActionState } from "react";
+import { format } from "date-fns";
 import { createBookingAction } from "@/actions/bookings";
 import { CategoryIcon } from "@/components/category-icon";
 import { formatMinutes } from "@/lib/format";
-import { SLOT_MINUTES } from "@/config/rules";
+import { SLOT_MINUTES, CALIBRATION_DUE_SOON_DAYS } from "@/config/rules";
+import { dbToDay } from "@/lib/equipment-dates";
+import { trackerStatus, formatEquipmentDay } from "@/lib/equipment-status";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -61,6 +64,24 @@ export function BookingCreateDialog({
     () => resources.find((r) => r.id === selectedResourceId),
     [resources, selectedResourceId],
   );
+
+  const calibrationDueSoonText = React.useMemo(() => {
+    if (!selectedResource?.nextCalibrationDueOn) return null;
+    const dueDay =
+      typeof selectedResource.nextCalibrationDueOn === "string"
+        ? selectedResource.nextCalibrationDueOn.slice(0, 10)
+        : dbToDay(selectedResource.nextCalibrationDueOn);
+    const today = format(new Date(), "yyyy-MM-dd");
+    const status = trackerStatus({
+      dueOn: dueDay,
+      today,
+      dueSoonDays: CALIBRATION_DUE_SOON_DAYS,
+    });
+    if (status === "DUE_SOON" || status === "DUE_TODAY") {
+      return `Calibrated until ${formatEquipmentDay(dueDay)}`;
+    }
+    return null;
+  }, [selectedResource]);
 
   const groupedBySite = React.useMemo(() => {
     const map = new Map<string, { siteName: string; items: ResourceOption[] }>();
@@ -215,6 +236,12 @@ export function BookingCreateDialog({
                     Holds up to {selectedResource.capacity} people.
                   </p>
                 ) : null}
+                {calibrationDueSoonText && (
+                  <p className="text-amber-400 font-semibold flex items-center gap-1.5 pt-0.5">
+                    <AlertCircle className="size-3.5 shrink-0" />
+                    <span>{calibrationDueSoonText}</span>
+                  </p>
+                )}
               </div>
             )}
             {state?.fieldErrors?.resourceId && (

@@ -10,6 +10,7 @@ import { ResourceStatusTag } from "@/components/resource-status-tag";
 import { EmptyState } from "@/components/empty-state";
 import { Button } from "@/components/ui/button";
 import { formatMinutes } from "@/lib/format";
+import { canBook } from "@/lib/permissions";
 import { ResourceFilters } from "@/components/resources/resource-filters";
 import { ResourceCard } from "@/components/resources/resource-card";
 import { ResourceCreateDialog } from "@/components/resources/resource-create-dialog";
@@ -204,14 +205,26 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
                         )}
                       </TableCell>
                       <TableCell className="py-2 px-3 overflow-hidden">
-                        <ResourceStatusTag
-                          status={resource.status}
-                          className="text-[10px] px-2 py-0.5"
-                        />
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          <ResourceStatusTag
+                            status={resource.status}
+                            className="text-[10px] px-2 py-0.5"
+                          />
+                          {resource.calibrationStatus === "FAILED" && (
+                            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-rose-500/15 text-rose-300 border border-rose-500/40">
+                              Check failed
+                            </span>
+                          )}
+                          {resource.calibrationStatus === "OVERDUE" && (
+                            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-rose-500/15 text-rose-300 border border-rose-500/40">
+                              Calibration overdue
+                            </span>
+                          )}
+                        </div>
                       </TableCell>
                       <TableCell className="py-2 px-3 text-right overflow-hidden">
                         <div className="inline-flex items-center gap-1 justify-end">
-                          {resource.status === "ACTIVE" ? (
+                          {canBook(user) && resource.status === "ACTIVE" ? (
                             <Button
                               asChild
                               size="icon"

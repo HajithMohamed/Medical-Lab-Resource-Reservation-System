@@ -22,7 +22,10 @@ import {
   startOfCurrentSlot,
   isOnSlotBoundary,
   formatLabTime,
+  endOfLabDay,
 } from "@/lib/time";
+import { dbToDay } from "@/lib/equipment-dates";
+import { formatEquipmentDay } from "@/lib/equipment-status";
 import { formatDurationWords } from "@/lib/booking-rules";
 import { isFree, freeStartTimes, nearestStarts, type TimeRange } from "@/lib/slot-finder";
 import type { BookingActor } from "@/services/bookings";
@@ -259,6 +262,7 @@ export async function findSlots(
       capacity: true,
       location: true,
       status: true,
+      nextCalibrationDueOn: true,
       siteId: true,
       site: {
         select: {
@@ -360,6 +364,13 @@ export async function findSlots(
     ) {
       state = "TOO_SMALL";
       stateReason = `Seats ${resource.capacity}`;
+    } else if (
+      resource.nextCalibrationDueOn &&
+      requestedEndAt.getTime() > endOfLabDay(dbToDay(resource.nextCalibrationDueOn), zone).getTime()
+    ) {
+      state = "CALIBRATION";
+      const dueDayStr = dbToDay(resource.nextCalibrationDueOn);
+      stateReason = `Calibrated only until ${formatEquipmentDay(dueDayStr)}`;
     } else {
       const free = isFree(busyRanges, requestedStartAt, requestedEndAt);
       if (!free) {

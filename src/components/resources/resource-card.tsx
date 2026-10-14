@@ -31,6 +31,8 @@ export function ResourceCard({
   const canManage =
     actorRole === "ADMIN" ||
     (actorRole === "MANAGER" && actorSiteId && actorSiteId === resource.siteId);
+  const canBook =
+    (actorRole === "STAFF" || actorRole === "MANAGER") && resource.status === "ACTIVE";
 
   return (
     <div className="rounded-lg border border-[#334155] bg-[#141c2b] p-4 space-y-3 shadow-xs">
@@ -93,7 +95,7 @@ export function ResourceCard({
           )}
         </div>
 
-        {resource.status === "ACTIVE" && (
+        {canBook && (
           <Button
             asChild
             size="sm"

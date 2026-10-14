@@ -3,7 +3,7 @@ import "server-only";
 import { subDays, addDays, differenceInCalendarDays } from "date-fns";
 import { db } from "@/lib/db";
 import { env } from "@/lib/env";
-import { checkBookingTimes, checkAttendees } from "@/lib/booking-rules";
+import { checkBookingTimes, checkAttendees, checkCalibrationDue } from "@/lib/booking-rules";
 import {
   canBook,
   canCancelBooking,
@@ -14,7 +14,7 @@ import { isOverlapError } from "@/lib/db-errors";
 import {
   formatLabRange,
   labDayStart,
-  labDayEnd,
+  endOfLabDay,
   labDateString,
   labTimeString,
   labToday,
@@ -113,6 +113,17 @@ export async function createBooking(
   });
   if (timeError) {
     return { ok: false, error: timeError };
+  }
+
+  // Check calibration due day (ISO 15189:2022 6.4.6)
+  const calibError = checkCalibrationDue({
+    resourceName: resource.name,
+    nextCalibrationDueOn: resource.nextCalibrationDueOn,
+    endAt: input.endAt,
+    timeZone: env.APP_TIME_ZONE,
+  });
+  if (calibError) {
+    return { ok: false, error: calibError };
   }
 
   // Check attendees
@@ -405,20 +416,20 @@ export async function listBookingsForOversight(
       : labDateString(addDays(now, 7), zone);
 
   const fromDate = labDayStart(fromStr, zone);
-  let toDate = labDayEnd(toStr, zone);
+  let toDate = endOfLabDay(toStr, zone);
 
   // Clamp date range: at most USAGE_MAX_DAYS apart, and toDate >= fromDate
   const daysDiff = differenceInCalendarDays(toDate, fromDate);
   if (daysDiff < 0 || daysDiff > USAGE_MAX_DAYS) {
     toStr = labDateString(addDays(fromDate, 7), zone);
-    toDate = labDayEnd(toStr, zone);
+    toDate = endOfLabDay(toStr, zone);
   }
 
   const where: Record<string, unknown> = {
     kind: "BOOKING",
     startAt: {
       gte: fromDate,
-      lte: toDate,
+      lt: toDate,
     },
   };
 

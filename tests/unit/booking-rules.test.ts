@@ -3,9 +3,10 @@ import {
   checkCategoryLimit,
   checkBookingTimes,
   checkAttendees,
+  checkCalibrationDue,
   formatDurationWords,
 } from "@/lib/booking-rules";
-import { parseLabDateTime } from "@/lib/time";
+import { parseLabDateTime, endOfLabDay } from "@/lib/time";
 
 describe("Booking Rules (Unit)", () => {
   const zone = "Asia/Colombo";
@@ -158,6 +159,78 @@ describe("Booking Rules (Unit)", () => {
 
     it("refuses attendee count exceeding capacity", () => {
       expect(checkAttendees(20, 21)).toBe("This room holds up to 20 people.");
+    });
+  });
+
+  describe("checkCalibrationDue", () => {
+    const resourceName = "PCR machine 1";
+    const dueDay = "2026-10-20"; // Tue 20 Oct 2026
+
+    it("returns null if resource has no nextCalibrationDueOn", () => {
+      const endAt = parseLabDateTime("2026-10-25", "10:00", zone);
+      expect(
+        checkCalibrationDue({ resourceName, nextCalibrationDueOn: null, endAt, timeZone: zone }),
+      ).toBeNull();
+      expect(
+        checkCalibrationDue({
+          resourceName,
+          nextCalibrationDueOn: undefined,
+          endAt,
+          timeZone: zone,
+        }),
+      ).toBeNull();
+    });
+
+    it("accepts booking ending earlier on the calibration due day", () => {
+      const endAt = parseLabDateTime("2026-10-20", "17:00", zone);
+      expect(
+        checkCalibrationDue({ resourceName, nextCalibrationDueOn: dueDay, endAt, timeZone: zone }),
+      ).toBeNull();
+    });
+
+    it("accepts booking ending exactly at endOfLabDay(dueDay)", () => {
+      const endAt = endOfLabDay(dueDay, zone);
+      expect(
+        checkCalibrationDue({ resourceName, nextCalibrationDueOn: dueDay, endAt, timeZone: zone }),
+      ).toBeNull();
+    });
+
+    it("refuses booking ending past the calibration due day with exact message", () => {
+      const endAt = parseLabDateTime("2026-10-21", "09:00", zone);
+      const error = checkCalibrationDue({
+        resourceName,
+        nextCalibrationDueOn: dueDay,
+        endAt,
+        timeZone: zone,
+      });
+
+      expect(error).toBe(
+        "PCR machine 1 is calibrated only until Tue 20 Oct. Book up to the end of that day, or ask the site manager to record the calibration.",
+      );
+    });
+
+    it("works identically with Date instance for nextCalibrationDueOn", () => {
+      const dueDate = new Date("2026-10-20T00:00:00.000Z");
+      const endAtAllowed = parseLabDateTime("2026-10-20", "18:00", zone);
+      expect(
+        checkCalibrationDue({
+          resourceName,
+          nextCalibrationDueOn: dueDate,
+          endAt: endAtAllowed,
+          timeZone: zone,
+        }),
+      ).toBeNull();
+
+      const endAtPast = parseLabDateTime("2026-10-21", "10:00", zone);
+      const error = checkCalibrationDue({
+        resourceName,
+        nextCalibrationDueOn: dueDate,
+        endAt: endAtPast,
+        timeZone: zone,
+      });
+      expect(error).toBe(
+        "PCR machine 1 is calibrated only until Tue 20 Oct. Book up to the end of that day, or ask the site manager to record the calibration.",
+      );
     });
   });
 });

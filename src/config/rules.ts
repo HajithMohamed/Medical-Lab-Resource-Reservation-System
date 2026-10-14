@@ -38,3 +38,13 @@ export const USAGE_DEFAULT_DAYS = 28; // default report period: the last four we
 export const USAGE_MAX_DAYS = 92; // longest report period (about three months)
 export const BUSY_UTILISATION_PERCENT = 70; // at or above this, a resource is "busy"
 export const IDLE_UTILISATION_PERCENT = 10; // below this, a resource is "idle"
+
+// Equipment care
+export const CALIBRATION_DUE_SOON_DAYS = 30; // lab policy: warn a month ahead
+export const MAINTENANCE_DUE_SOON_DAYS = 14; // lab policy: warn two weeks ahead
+export const REPLACEMENT_REVIEW_LEAD_DAYS = 180; // lab policy: time to budget and buy
+export const MAX_EQUIPMENT_INTERVAL_DAYS = 1095; // longest interval accepted (3 years)
+export const MAX_SERVICE_LIFE_YEARS = 30; // longest service life accepted
+export const REPLACEMENT_REVIEW_REPAIRS = 3; // lab policy: this many repairs ...
+export const REPLACEMENT_REVIEW_REPAIR_DAYS = 365; // ... in this many days -> review
+export const EQUIPMENT_HISTORY_ROWS = 10; // rows shown on the resource page

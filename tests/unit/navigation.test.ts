@@ -9,9 +9,9 @@ describe("Navigation configuration", () => {
     expect(items.every((i) => i.group === "main")).toBe(true);
   });
 
-  it("navItemsFor returns exactly 8 items for MANAGER", () => {
+  it("navItemsFor returns exactly 9 items for MANAGER", () => {
     const items = navItemsFor("MANAGER");
-    expect(items).toHaveLength(8);
+    expect(items).toHaveLength(9);
     expect(items.map((i) => i.href)).toEqual([
       "/calendar",
       "/book",
@@ -19,19 +19,21 @@ describe("Navigation configuration", () => {
       "/bookings",
       "/bookings/manage",
       "/maintenance",
+      "/equipment",
       "/usage",
       "/users",
     ]);
   });
 
-  it("navItemsFor returns exactly 7 items for ADMIN (no booking routes)", () => {
+  it("navItemsFor returns exactly 8 items for ADMIN (no booking routes)", () => {
     const items = navItemsFor("ADMIN");
-    expect(items).toHaveLength(7);
+    expect(items).toHaveLength(8);
     expect(items.map((i) => i.href)).toEqual([
       "/calendar",
       "/resources",
       "/bookings/manage",
       "/maintenance",
+      "/equipment",
       "/usage",
       "/users",
       "/settings",

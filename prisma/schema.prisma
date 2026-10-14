@@ -41,6 +41,26 @@ enum ReservationStatus {
   @@map("reservation_status")
 }
 
+enum EquipmentRecordKind {
+  CALIBRATION
+  PREVENTIVE_MAINTENANCE
+  PERFORMANCE_CHECK
+  REPAIR
+  REPLACEMENT_REVIEW
+
+  @@map("equipment_record_kind")
+}
+
+enum EquipmentOutcome {
+  PASS
+  FAIL
+  NOT_DONE
+  KEEP_IN_SERVICE
+  REPLACE
+
+  @@map("equipment_outcome")
+}
+
 /// A place where the lab works, e.g. the main lab or a branch lab.
 model Site {
   id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
@@ -94,13 +114,27 @@ model Resource {
   /// Number of seats, for rooms. Empty for instruments.
   capacity   Int?
   status     ResourceStatus @default(ACTIVE)
+
+  // Equipment details & schedules (optional; entered at creation or edit)
+  manufacturer             String?
+  model                    String?
+  serialNumber             String?   @map("serial_number")
+  inServiceOn              DateTime? @map("in_service_on") @db.Date
+  expectedServiceLifeYears Int?      @map("expected_service_life_years")
+  calibrationIntervalDays  Int?      @map("calibration_interval_days")
+  nextCalibrationDueOn     DateTime? @map("next_calibration_due_on") @db.Date
+  maintenanceIntervalDays  Int?      @map("maintenance_interval_days")
+  nextMaintenanceDueOn     DateTime? @map("next_maintenance_due_on") @db.Date
+  replacementReviewDueOn   DateTime? @map("replacement_review_due_on") @db.Date
+
   createdAt  DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt  DateTime       @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  category     Category      @relation(fields: [categoryId], references: [id], onDelete: Restrict)
-  site         Site          @relation(fields: [siteId], references: [id], onDelete: Restrict)
-  section      Section       @relation(fields: [sectionId], references: [id], onDelete: Restrict)
-  reservations Reservation[]
+  category         Category          @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  site             Site              @relation(fields: [siteId], references: [id], onDelete: Restrict)
+  section          Section           @relation(fields: [sectionId], references: [id], onDelete: Restrict)
+  reservations     Reservation[]
+  equipmentRecords EquipmentRecord[]
 
   @@unique([siteId, name])
   @@index([categoryId])
@@ -129,13 +163,35 @@ model User {
   createdAt          DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt          DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  site                  Site?         @relation(fields: [siteId], references: [id], onDelete: Restrict)
-  section               Section?      @relation(fields: [sectionId], references: [id], onDelete: Restrict)
-  reservationsMade      Reservation[] @relation("ReservationCreatedBy")
-  reservationsCancelled Reservation[] @relation("ReservationCancelledBy")
+  site                  Site?             @relation(fields: [siteId], references: [id], onDelete: Restrict)
+  section               Section?          @relation(fields: [sectionId], references: [id], onDelete: Restrict)
+  reservationsMade      Reservation[]     @relation("ReservationCreatedBy")
+  reservationsCancelled Reservation[]     @relation("ReservationCancelledBy")
+  equipmentRecords      EquipmentRecord[]
 
   @@index([siteId])
   @@map("users")
+}
+
+/// An immutable, append-only record of calibration, service, check, repair or review.
+model EquipmentRecord {
+  id           String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  resourceId   String              @map("resource_id") @db.Uuid
+  kind         EquipmentRecordKind
+  outcome      EquipmentOutcome
+  performedOn  DateTime            @map("performed_on") @db.Date
+  performedBy  String              @map("performed_by")
+  reference    String?
+  notes        String?
+  nextDueOn    DateTime?           @map("next_due_on") @db.Date
+  recordedById String              @map("recorded_by_id") @db.Uuid
+  createdAt    DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  resource   Resource @relation(fields: [resourceId], references: [id], onDelete: Restrict)
+  recordedBy User     @relation(fields: [recordedById], references: [id], onDelete: Restrict)
+
+  @@index([resourceId, kind, performedOn])
+  @@map("equipment_records")
 }
 
 /// One booking or one maintenance block, for one resource and one period.

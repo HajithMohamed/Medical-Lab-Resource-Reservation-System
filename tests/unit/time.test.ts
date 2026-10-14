@@ -9,7 +9,9 @@ import {
   formatTimeRange,
   formatRelative,
   labDayStart,
+  endOfLabDay,
   addLabDays,
+  labToday,
   isOnSlotBoundary,
   startOfCurrentSlot,
   ceilToSlot,
@@ -86,6 +88,17 @@ describe("Time Helpers (Unit)", () => {
 
       expect(addLabDays("2026-10-13", 1, colomboZone)).toBe("2026-10-14");
       expect(addLabDays("2026-10-31", 1, colomboZone)).toBe("2026-11-01");
+    });
+
+    it("calculates endOfLabDay as start of next day (matching [start, end) rule)", () => {
+      const endDay = endOfLabDay("2026-10-13", colomboZone);
+      expect(labTimeString(endDay, colomboZone)).toBe("00:00");
+      expect(labDateString(endDay, colomboZone)).toBe("2026-10-14");
+    });
+
+    it("calculates labToday with optional now parameter", () => {
+      const fixedDate = parseLabDateTime("2026-10-14", "15:30", colomboZone);
+      expect(labToday(colomboZone, fixedDate)).toBe("2026-10-14");
     });
 
     it("checks slot boundaries correctly", () => {

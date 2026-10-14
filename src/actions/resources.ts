@@ -14,6 +14,16 @@ export interface ResourceActionResult {
   cancelledBookingsCount?: number;
 }
 
+function getOptionalString(formData: FormData, key: string): string | undefined {
+  const val = formData.get(key);
+  return typeof val === "string" && val.trim() !== "" ? val.trim() : undefined;
+}
+
+function getBoolean(formData: FormData, key: string): boolean {
+  const val = formData.get(key);
+  return val === "true" || val === "on" || val === "1";
+}
+
 export async function createResourceAction(
   _prevState: ResourceActionResult | null,
   formData: FormData,
@@ -34,6 +44,23 @@ export async function createResourceAction(
     sectionId: typeof sectionId === "string" ? sectionId : "",
     location: typeof location === "string" ? location : undefined,
     capacity: typeof capacity === "string" && capacity.trim() !== "" ? capacity : undefined,
+    manufacturer: getOptionalString(formData, "manufacturer"),
+    model: getOptionalString(formData, "model"),
+    serialNumber: getOptionalString(formData, "serialNumber"),
+    inServiceOn: getOptionalString(formData, "inServiceOn"),
+    expectedServiceLifeYears: getOptionalString(formData, "expectedServiceLifeYears"),
+    replacementReviewDueOn: getOptionalString(formData, "replacementReviewDueOn"),
+    needsCalibration: getBoolean(formData, "needsCalibration"),
+    calibrationIntervalDays: getOptionalString(formData, "calibrationIntervalDays"),
+    lastCalibratedOn: getOptionalString(formData, "lastCalibratedOn"),
+    calibratedBy: getOptionalString(formData, "calibratedBy"),
+    calibrationReference: getOptionalString(formData, "calibrationReference"),
+    nextCalibrationDueOn: getOptionalString(formData, "nextCalibrationDueOn"),
+    needsMaintenance: getBoolean(formData, "needsMaintenance"),
+    maintenanceIntervalDays: getOptionalString(formData, "maintenanceIntervalDays"),
+    lastServicedOn: getOptionalString(formData, "lastServicedOn"),
+    servicedBy: getOptionalString(formData, "servicedBy"),
+    nextMaintenanceDueOn: getOptionalString(formData, "nextMaintenanceDueOn"),
   });
 
   if (!result.ok) {
@@ -45,6 +72,7 @@ export async function createResourceAction(
   }
 
   revalidatePath("/resources");
+  revalidatePath("/equipment");
   revalidatePath("/calendar");
   revalidatePath("/bookings");
 
@@ -76,6 +104,23 @@ export async function updateResourceAction(
     sectionId: typeof sectionId === "string" ? sectionId : "",
     location: typeof location === "string" ? location : undefined,
     capacity: typeof capacity === "string" && capacity.trim() !== "" ? capacity : undefined,
+    manufacturer: getOptionalString(formData, "manufacturer"),
+    model: getOptionalString(formData, "model"),
+    serialNumber: getOptionalString(formData, "serialNumber"),
+    inServiceOn: getOptionalString(formData, "inServiceOn"),
+    expectedServiceLifeYears: getOptionalString(formData, "expectedServiceLifeYears"),
+    replacementReviewDueOn: getOptionalString(formData, "replacementReviewDueOn"),
+    needsCalibration: getBoolean(formData, "needsCalibration"),
+    calibrationIntervalDays: getOptionalString(formData, "calibrationIntervalDays"),
+    lastCalibratedOn: getOptionalString(formData, "lastCalibratedOn"),
+    calibratedBy: getOptionalString(formData, "calibratedBy"),
+    calibrationReference: getOptionalString(formData, "calibrationReference"),
+    nextCalibrationDueOn: getOptionalString(formData, "nextCalibrationDueOn"),
+    needsMaintenance: getBoolean(formData, "needsMaintenance"),
+    maintenanceIntervalDays: getOptionalString(formData, "maintenanceIntervalDays"),
+    lastServicedOn: getOptionalString(formData, "lastServicedOn"),
+    servicedBy: getOptionalString(formData, "servicedBy"),
+    nextMaintenanceDueOn: getOptionalString(formData, "nextMaintenanceDueOn"),
   });
 
   if (!result.ok) {
@@ -88,6 +133,7 @@ export async function updateResourceAction(
 
   revalidatePath("/resources");
   revalidatePath(`/resources/${id}`);
+  revalidatePath("/equipment");
   revalidatePath("/calendar");
   revalidatePath("/bookings");
 
@@ -124,6 +170,7 @@ export async function changeResourceStatusAction(
   revalidatePath("/resources");
   revalidatePath(`/resources/${id}`);
   revalidatePath(`/resources/${id}/status`);
+  revalidatePath("/equipment");
   revalidatePath("/calendar");
   revalidatePath("/bookings");
 

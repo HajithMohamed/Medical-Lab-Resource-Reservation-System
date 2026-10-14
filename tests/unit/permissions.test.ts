@@ -19,6 +19,9 @@ import {
   bookingOversightSitesFor,
   canViewUsage,
   usageSitesFor,
+  canManageEquipment,
+  canViewEquipmentOverview,
+  equipmentOverviewSitesFor,
 } from "@/lib/permissions";
 
 describe("Permissions matrix and helpers", () => {
@@ -377,6 +380,29 @@ describe("Permissions matrix and helpers", () => {
       expect(canCancelReservation(staffA, pastBooking, now)).toBe(false);
       expect(canCancelReservation(managerA, futureBooking, now)).toBe(true);
       expect(canCancelReservation(managerB, futureBooking, now)).toBe(false);
+    });
+
+    it("canManageEquipment allows admin for all and manager for own site only", () => {
+      const resA = { id: "res-a", siteId: siteA };
+      const resB = { id: "res-b", siteId: siteB };
+
+      expect(canManageEquipment(admin, resA)).toBe(true);
+      expect(canManageEquipment(admin, resB)).toBe(true);
+      expect(canManageEquipment(managerA, resA)).toBe(true);
+      expect(canManageEquipment(managerA, resB)).toBe(false);
+      expect(canManageEquipment(staffA, resA)).toBe(false);
+    });
+
+    it("canViewEquipmentOverview allows manager and admin only", () => {
+      expect(canViewEquipmentOverview(admin)).toBe(true);
+      expect(canViewEquipmentOverview(managerA)).toBe(true);
+      expect(canViewEquipmentOverview(staffA)).toBe(false);
+    });
+
+    it("equipmentOverviewSitesFor scopes sites correctly", () => {
+      expect(equipmentOverviewSitesFor(admin)).toBe("all");
+      expect(equipmentOverviewSitesFor(managerA)).toEqual([siteA]);
+      expect(equipmentOverviewSitesFor(staffA)).toEqual([]);
     });
   });
 });
