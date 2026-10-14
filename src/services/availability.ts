@@ -482,3 +482,31 @@ export async function findSlots(
     requestedEndAt,
   };
 }
+
+export interface BookingFilterOptions {
+  sites: Array<{ id: string; name: string }>;
+  categories: Array<{ id: string; name: string; maxBookingMinutes: number; iconKey: string }>;
+  sections: Array<{ id: string; name: string }>;
+}
+
+/**
+ * Loads dropdown master data (sites, categories, sections) for booking search filters.
+ */
+export async function listBookingFilterOptions(): Promise<BookingFilterOptions> {
+  const [sites, categories, sections] = await Promise.all([
+    db.site.findMany({
+      select: { id: true, name: true },
+      orderBy: { name: "asc" },
+    }),
+    db.category.findMany({
+      select: { id: true, name: true, maxBookingMinutes: true, iconKey: true },
+      orderBy: { name: "asc" },
+    }),
+    db.section.findMany({
+      select: { id: true, name: true },
+      orderBy: { name: "asc" },
+    }),
+  ]);
+
+  return { sites, categories, sections };
+}

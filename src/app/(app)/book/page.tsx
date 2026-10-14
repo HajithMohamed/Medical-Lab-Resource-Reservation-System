@@ -12,12 +12,14 @@ import {
 import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { canBook } from "@/lib/permissions";
-import { db } from "@/lib/db";
-import { env } from "@/lib/env";
-import { findSlots, type FindSlotsQueryInput } from "@/services/availability";
+import {
+  findSlots,
+  listBookingFilterOptions,
+  type FindSlotsQueryInput,
+} from "@/services/availability";
 import { FIND_SLOT_DURATIONS_MINUTES, SLOT_MINUTES } from "@/config/rules";
 import { formatMinutes } from "@/lib/format";
-import { formatLabRange, labTimeString } from "@/lib/time";
+import { formatLabRange, labTimeString, getLabTimeZone } from "@/lib/time";
 import { CategoryIcon } from "@/components/category-icon";
 import { ResourceStatusTag } from "@/components/resource-status-tag";
 import { Button } from "@/components/ui/button";
@@ -59,23 +61,10 @@ export default async function FindSlotPage({ searchParams }: FindSlotPageProps) 
 
   // Run availability search
   const result = await findSlots(user, queryInput);
-  const zone = env.APP_TIME_ZONE;
+  const zone = getLabTimeZone();
 
-  // Load dropdown master data in parallel
-  const [sites, categories, sections] = await Promise.all([
-    db.site.findMany({
-      select: { id: true, name: true },
-      orderBy: { name: "asc" },
-    }),
-    db.category.findMany({
-      select: { id: true, name: true, maxBookingMinutes: true, iconKey: true },
-      orderBy: { name: "asc" },
-    }),
-    db.section.findMany({
-      select: { id: true, name: true },
-      orderBy: { name: "asc" },
-    }),
-  ]);
+  // Load dropdown master data in parallel via service
+  const { sites, categories, sections } = await listBookingFilterOptions();
 
   // Selected category helper for duration and people field hints
   const selectedCategory = categories.find((c) => c.id === result.query.categoryId);

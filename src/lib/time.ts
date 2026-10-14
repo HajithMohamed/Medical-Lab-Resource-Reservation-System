@@ -4,6 +4,12 @@ import { TZDate } from "@date-fns/tz";
 import { format, addDays, formatDistance, isSameDay } from "date-fns";
 import { env } from "@/lib/env";
 import { SLOT_MINUTES } from "@/config/rules";
+/**
+ * Returns the configured lab time zone.
+ */
+export function getLabTimeZone(): string {
+  return env.APP_TIME_ZONE;
+}
 
 /**
  * Parses a lab date string ("2026-10-13") and time string ("10:00") into a Date
