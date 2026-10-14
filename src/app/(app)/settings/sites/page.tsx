@@ -80,7 +80,10 @@ export default async function SitesPage({ searchParams }: SitesPageProps) {
             </TableHeader>
             <TableBody>
               {sites.map((site) => (
-                <TableRow key={site.id} className="group hover:bg-[#222a3a]/50 transition-colors duration-150">
+                <TableRow
+                  key={site.id}
+                  className="group hover:bg-[#222a3a]/50 transition-colors duration-150"
+                >
                   <TableCell className="font-semibold text-white py-3.5 px-4 text-sm">
                     <EditSiteDialog
                       site={site}

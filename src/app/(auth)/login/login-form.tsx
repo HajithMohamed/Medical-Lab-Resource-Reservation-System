@@ -128,7 +128,8 @@ export function LoginForm({ defaultEmail }: LoginFormProps) {
           </div>
           <p className="text-[11px] text-slate-400 leading-relaxed">
             Staff accounts are managed by your lab manager. Contact your manager or email{" "}
-            <span className="font-mono text-slate-300">admin@lab.example</span> for a temporary password.
+            <span className="font-mono text-slate-300">admin@lab.example</span> for a temporary
+            password.
           </p>
         </div>
       )}

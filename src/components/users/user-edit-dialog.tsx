@@ -206,7 +206,12 @@ export function UserEditDialog({
 
             <div className="space-y-4">
               <div className="space-y-1.5">
-                <Label htmlFor={`edit-user-name-${user.id}`} className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]">Full name</Label>
+                <Label
+                  htmlFor={`edit-user-name-${user.id}`}
+                  className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                >
+                  Full name
+                </Label>
                 <Input
                   id={`edit-user-name-${user.id}`}
                   name="name"
@@ -222,7 +227,12 @@ export function UserEditDialog({
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor={`edit-user-email-${user.id}`} className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]">Email address</Label>
+                <Label
+                  htmlFor={`edit-user-email-${user.id}`}
+                  className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                >
+                  Email address
+                </Label>
                 <Input
                   id={`edit-user-email-${user.id}`}
                   value={user.email}
@@ -234,29 +244,58 @@ export function UserEditDialog({
               {canEditRoleAndSite ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <Label htmlFor={`edit-user-role-${user.id}`} className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]">Role</Label>
+                    <Label
+                      htmlFor={`edit-user-role-${user.id}`}
+                      className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                    >
+                      Role
+                    </Label>
                     <Select value={role} onValueChange={(val) => setRole(val as Role)}>
-                      <SelectTrigger id={`edit-user-role-${user.id}`} className="w-full bg-[#060e1d] border-[#334155] text-white">
+                      <SelectTrigger
+                        id={`edit-user-role-${user.id}`}
+                        className="w-full bg-[#060e1d] border-[#334155] text-white"
+                      >
                         <SelectValue placeholder="Select role" />
                       </SelectTrigger>
                       <SelectContent className="bg-[#18202f] border-[#334155] text-white">
-                        <SelectItem value="STAFF" className="hover:bg-[#222a3a] focus:bg-[#222a3a]">Staff</SelectItem>
-                        <SelectItem value="MANAGER" className="hover:bg-[#222a3a] focus:bg-[#222a3a]">Site Manager</SelectItem>
-                        <SelectItem value="ADMIN" className="hover:bg-[#222a3a] focus:bg-[#222a3a]">Administrator</SelectItem>
+                        <SelectItem value="STAFF" className="hover:bg-[#222a3a] focus:bg-[#222a3a]">
+                          Staff
+                        </SelectItem>
+                        <SelectItem
+                          value="MANAGER"
+                          className="hover:bg-[#222a3a] focus:bg-[#222a3a]"
+                        >
+                          Site Manager
+                        </SelectItem>
+                        <SelectItem value="ADMIN" className="hover:bg-[#222a3a] focus:bg-[#222a3a]">
+                          Administrator
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
 
                   {showSiteSelect && (
                     <div className="space-y-1.5">
-                      <Label htmlFor={`edit-user-site-${user.id}`} className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]">Site</Label>
+                      <Label
+                        htmlFor={`edit-user-site-${user.id}`}
+                        className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                      >
+                        Site
+                      </Label>
                       <Select value={siteId} onValueChange={(val) => setSiteId(val)}>
-                        <SelectTrigger id={`edit-user-site-${user.id}`} className="w-full bg-[#060e1d] border-[#334155] text-white">
+                        <SelectTrigger
+                          id={`edit-user-site-${user.id}`}
+                          className="w-full bg-[#060e1d] border-[#334155] text-white"
+                        >
                           <SelectValue placeholder="Select site" />
                         </SelectTrigger>
                         <SelectContent className="bg-[#18202f] border-[#334155] text-white">
                           {sites.map((s) => (
-                            <SelectItem key={s.id} value={s.id} className="hover:bg-[#222a3a] focus:bg-[#222a3a]">
+                            <SelectItem
+                              key={s.id}
+                              value={s.id}
+                              className="hover:bg-[#222a3a] focus:bg-[#222a3a]"
+                            >
                               {s.name}
                             </SelectItem>
                           ))}
@@ -279,26 +318,40 @@ export function UserEditDialog({
                   </div>
                   <div>
                     <span className="text-[#94a3b8] block uppercase text-[10px]">Site</span>
-                    <span className="font-semibold text-white">{user.site?.name ?? "Network wide"}</span>
+                    <span className="font-semibold text-white">
+                      {user.site?.name ?? "Network wide"}
+                    </span>
                   </div>
                 </div>
               )}
 
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <Label htmlFor={`edit-user-section-${user.id}`} className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]">
+                  <Label
+                    htmlFor={`edit-user-section-${user.id}`}
+                    className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                  >
                     Section
                   </Label>
                   <span className="text-xs font-mono text-[#879390]">(optional)</span>
                 </div>
                 <Select value={sectionId} onValueChange={(val) => setSectionId(val)}>
-                  <SelectTrigger id={`edit-user-section-${user.id}`} className="w-full bg-[#060e1d] border-[#334155] text-white">
+                  <SelectTrigger
+                    id={`edit-user-section-${user.id}`}
+                    className="w-full bg-[#060e1d] border-[#334155] text-white"
+                  >
                     <SelectValue placeholder="No assigned section" />
                   </SelectTrigger>
                   <SelectContent className="bg-[#18202f] border-[#334155] text-white">
-                    <SelectItem value="none" className="hover:bg-[#222a3a] focus:bg-[#222a3a]">None / Unassigned</SelectItem>
+                    <SelectItem value="none" className="hover:bg-[#222a3a] focus:bg-[#222a3a]">
+                      None / Unassigned
+                    </SelectItem>
                     {sections.map((sec) => (
-                      <SelectItem key={sec.id} value={sec.id} className="hover:bg-[#222a3a] focus:bg-[#222a3a]">
+                      <SelectItem
+                        key={sec.id}
+                        value={sec.id}
+                        className="hover:bg-[#222a3a] focus:bg-[#222a3a]"
+                      >
                         {sec.name}
                       </SelectItem>
                     ))}

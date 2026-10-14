@@ -50,10 +50,7 @@ export function AppSidebar({ user, logoutAction }: AppSidebarProps) {
   const adminItems = grouped.get("admin") ?? [];
 
   return (
-    <Sidebar
-      collapsible="icon"
-      className="border-r border-[#334155] bg-[#141c2b] text-[#dbe2f8]"
-    >
+    <Sidebar collapsible="icon" className="border-r border-[#334155] bg-[#141c2b] text-[#dbe2f8]">
       <SidebarHeader className="border-b border-[#334155] p-3 bg-[#141c2b]">
         <Logo subtitle={siteSubtitle} />
       </SidebarHeader>

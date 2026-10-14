@@ -3,7 +3,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   ArrowLeft,
-  Pencil,
   Wrench,
   AlertOctagon,
   CalendarCheck,
@@ -128,7 +127,11 @@ export default async function ResourceDetailPage({ params }: ResourceDetailPageP
 
           {/* Primary Action: Book this resource */}
           {resource.status === "ACTIVE" && (
-            <Button asChild size="lg" className="font-bold shrink-0 gap-2 bg-[#6cd8cb] text-[#003732] hover:bg-[#29a195] hover:text-[#002421] shadow-xs">
+            <Button
+              asChild
+              size="lg"
+              className="font-bold shrink-0 gap-2 bg-[#6cd8cb] text-[#003732] hover:bg-[#29a195] hover:text-[#002421] shadow-xs"
+            >
               <Link href={`/bookings/new?resourceId=${resource.id}`}>
                 <CalendarCheck className="size-5" />
                 <span>Book this resource</span>
@@ -200,9 +203,7 @@ export default async function ResourceDetailPage({ params }: ResourceDetailPageP
                 <div className="py-2.5">
                   <dt className="text-xs text-slate-400 font-medium">Location</dt>
                   <dd className="font-semibold text-slate-200 mt-0.5">
-                    {resource.location ?? (
-                      <span className="text-slate-500 italic">Not set</span>
-                    )}
+                    {resource.location ?? <span className="text-slate-500 italic">Not set</span>}
                   </dd>
                 </div>
                 <div className="py-2.5">
@@ -223,9 +224,7 @@ export default async function ResourceDetailPage({ params }: ResourceDetailPageP
             </CardHeader>
             <CardContent>
               {resource.recentMaintenance.length === 0 ? (
-                <p className="text-sm text-slate-500 italic">
-                  No maintenance blocks recorded.
-                </p>
+                <p className="text-sm text-slate-500 italic">No maintenance blocks recorded.</p>
               ) : (
                 <div className="space-y-3">
                   {resource.recentMaintenance.map((m) => (

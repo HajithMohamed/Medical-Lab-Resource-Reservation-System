@@ -117,7 +117,10 @@ export function EditCategoryDialog({ category, trigger }: EditCategoryDialogProp
 
           <div className="space-y-4">
             <div className="space-y-1.5">
-              <Label htmlFor={`edit-category-name-${category.id}`} className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]">
+              <Label
+                htmlFor={`edit-category-name-${category.id}`}
+                className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+              >
                 Category Name
               </Label>
               <Input
@@ -134,7 +137,10 @@ export function EditCategoryDialog({ category, trigger }: EditCategoryDialogProp
 
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <Label htmlFor={`edit-category-max-${category.id}`} className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]">
+                <Label
+                  htmlFor={`edit-category-max-${category.id}`}
+                  className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                >
                   Longest booking
                 </Label>
                 {liveHint && (
@@ -160,16 +166,26 @@ export function EditCategoryDialog({ category, trigger }: EditCategoryDialogProp
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor={`edit-category-icon-${category.id}`} className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]">
+              <Label
+                htmlFor={`edit-category-icon-${category.id}`}
+                className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+              >
                 Icon glyph
               </Label>
               <Select value={iconKey} onValueChange={(val) => setIconKey(val as CategoryIconKey)}>
-                <SelectTrigger id={`edit-category-icon-${category.id}`} className="w-full bg-[#060e1d] border-[#334155] text-white">
+                <SelectTrigger
+                  id={`edit-category-icon-${category.id}`}
+                  className="w-full bg-[#060e1d] border-[#334155] text-white"
+                >
                   <SelectValue placeholder="Select icon" />
                 </SelectTrigger>
                 <SelectContent className="bg-[#18202f] border-[#334155] text-white">
                   {CATEGORY_ICON_KEYS.map((key) => (
-                    <SelectItem key={key} value={key} className="hover:bg-[#222a3a] focus:bg-[#222a3a]">
+                    <SelectItem
+                      key={key}
+                      value={key}
+                      className="hover:bg-[#222a3a] focus:bg-[#222a3a]"
+                    >
                       <div className="flex items-center gap-2">
                         <CategoryIcon
                           iconKey={key}
@@ -189,7 +205,11 @@ export function EditCategoryDialog({ category, trigger }: EditCategoryDialogProp
               <div className="flex items-center gap-2.5">
                 <span className="text-[#6cd8cb]">ℹ</span>
                 <span className="text-xs text-[#94a3b8] font-mono">
-                  Associated with <strong className="text-white font-semibold">{category._count.resources} resources</strong>.
+                  Associated with{" "}
+                  <strong className="text-white font-semibold">
+                    {category._count.resources} resources
+                  </strong>
+                  .
                 </span>
               </div>
               <span className="text-xs font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">

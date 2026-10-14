@@ -45,7 +45,7 @@ export function ResourceCreateDialog({
 
   const isManager = actorRole === "MANAGER";
 
-  const defaultSiteId = isManager && actorSiteId ? actorSiteId : sites[0]?.id ?? "";
+  const defaultSiteId = isManager && actorSiteId ? actorSiteId : (sites[0]?.id ?? "");
   const defaultCategoryId = categories[0]?.id ?? "";
   const defaultSectionId = sections[0]?.id ?? "";
 
@@ -58,7 +58,7 @@ export function ResourceCreateDialog({
 
   const resetForm = () => {
     setName("");
-    setSiteId(isManager && actorSiteId ? actorSiteId : sites[0]?.id ?? "");
+    setSiteId(isManager && actorSiteId ? actorSiteId : (sites[0]?.id ?? ""));
     setCategoryId(categories[0]?.id ?? "");
     setSectionId(sections[0]?.id ?? "");
     setLocation("");
@@ -120,7 +120,10 @@ export function ResourceCreateDialog({
         {trigger ? (
           trigger
         ) : (
-          <Button variant="default" className="gap-2 bg-[#6cd8cb] hover:bg-[#29a195] text-[#003732] font-semibold text-xs font-mono shadow-xs">
+          <Button
+            variant="default"
+            className="gap-2 bg-[#6cd8cb] hover:bg-[#29a195] text-[#003732] font-semibold text-xs font-mono shadow-xs"
+          >
             <Plus className="size-4" />
             <span>Add resource</span>
           </Button>
@@ -144,7 +147,12 @@ export function ResourceCreateDialog({
           <div className="space-y-3.5">
             {/* Resource Name */}
             <div className="space-y-1.5">
-              <Label htmlFor="create-resource-name" className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]">Resource name</Label>
+              <Label
+                htmlFor="create-resource-name"
+                className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+              >
+                Resource name
+              </Label>
               <Input
                 id="create-resource-name"
                 name="name"
@@ -163,7 +171,12 @@ export function ResourceCreateDialog({
 
             {/* Laboratory Site */}
             <div className="space-y-1.5">
-              <Label htmlFor="create-resource-site" className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]">Laboratory site</Label>
+              <Label
+                htmlFor="create-resource-site"
+                className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+              >
+                Laboratory site
+              </Label>
               {isManager ? (
                 <div>
                   <Input
@@ -201,7 +214,12 @@ export function ResourceCreateDialog({
 
             {/* Category */}
             <div className="space-y-1.5">
-              <Label htmlFor="create-resource-category" className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]">Category</Label>
+              <Label
+                htmlFor="create-resource-category"
+                className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+              >
+                Category
+              </Label>
               <select
                 id="create-resource-category"
                 name="categoryId"
@@ -224,7 +242,12 @@ export function ResourceCreateDialog({
 
             {/* Section */}
             <div className="space-y-1.5">
-              <Label htmlFor="create-resource-section" className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]">Owning section</Label>
+              <Label
+                htmlFor="create-resource-section"
+                className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+              >
+                Owning section
+              </Label>
               <select
                 id="create-resource-section"
                 name="sectionId"
@@ -247,7 +270,10 @@ export function ResourceCreateDialog({
 
             {/* Location (optional) */}
             <div className="space-y-1.5">
-              <Label htmlFor="create-resource-location" className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]">
+              <Label
+                htmlFor="create-resource-location"
+                className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+              >
                 Location <span className="text-[#94a3b8] font-normal font-mono">(optional)</span>
               </Label>
               <Input
@@ -267,7 +293,10 @@ export function ResourceCreateDialog({
             {/* Capacity (rooms only) */}
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <Label htmlFor="create-resource-capacity" className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]">
+                <Label
+                  htmlFor="create-resource-capacity"
+                  className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                >
                   Capacity / seats{" "}
                   <span className="text-[#94a3b8] font-normal font-mono">
                     {isRoom ? "(recommended for rooms)" : "(optional)"}

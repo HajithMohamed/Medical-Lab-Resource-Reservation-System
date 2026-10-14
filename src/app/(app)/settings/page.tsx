@@ -239,7 +239,9 @@ export default async function SettingsPage() {
               className="group flex flex-col justify-between overflow-hidden border-[#334155] bg-[#141c2b] transition-all duration-200 hover:shadow-lg hover:border-[#6cd8cb]/40"
             >
               <div>
-                <div className="p-4 bg-[#060e1d] border-b border-[#334155]">{item.illustration}</div>
+                <div className="p-4 bg-[#060e1d] border-b border-[#334155]">
+                  {item.illustration}
+                </div>
 
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between mb-2">
@@ -263,14 +265,15 @@ export default async function SettingsPage() {
                 </CardHeader>
 
                 <CardContent className="pt-0 pb-4">
-                  <p className="text-sm text-slate-400 leading-relaxed">
-                    {item.description}
-                  </p>
+                  <p className="text-sm text-slate-400 leading-relaxed">{item.description}</p>
                 </CardContent>
               </div>
 
               <CardFooter className="pt-0 border-t border-[#334155] bg-[#18202f]/60">
-                <Button asChild className="w-full gap-2 mt-3 bg-[#6cd8cb] text-[#003732] hover:bg-[#29a195] font-bold shadow-xs">
+                <Button
+                  asChild
+                  className="w-full gap-2 mt-3 bg-[#6cd8cb] text-[#003732] hover:bg-[#29a195] font-bold shadow-xs"
+                >
                   <Link href={item.href}>
                     <span>Manage {item.title}</span>
                     <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />

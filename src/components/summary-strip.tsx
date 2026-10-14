@@ -45,7 +45,9 @@ export function SummaryStrip({ items, className }: SummaryStripProps) {
             </div>
 
             <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-2xl font-bold text-white tabular-nums font-mono">{item.value}</span>
+              <span className="text-2xl font-bold text-white tabular-nums font-mono">
+                {item.value}
+              </span>
             </div>
 
             {item.hint && (

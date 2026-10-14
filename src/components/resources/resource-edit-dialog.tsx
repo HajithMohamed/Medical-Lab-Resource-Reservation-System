@@ -169,7 +169,12 @@ export function ResourceEditDialog({
           <div className="space-y-3.5">
             {/* Resource Name */}
             <div className="space-y-1.5">
-              <Label htmlFor={`edit-resource-name-${resource.id}`} className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]">Resource name</Label>
+              <Label
+                htmlFor={`edit-resource-name-${resource.id}`}
+                className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+              >
+                Resource name
+              </Label>
               <Input
                 id={`edit-resource-name-${resource.id}`}
                 name="name"
@@ -188,7 +193,12 @@ export function ResourceEditDialog({
 
             {/* Laboratory Site */}
             <div className="space-y-1.5">
-              <Label htmlFor={`edit-resource-site-${resource.id}`} className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]">Laboratory site</Label>
+              <Label
+                htmlFor={`edit-resource-site-${resource.id}`}
+                className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+              >
+                Laboratory site
+              </Label>
               {isManager ? (
                 <div>
                   <Input
@@ -226,7 +236,12 @@ export function ResourceEditDialog({
 
             {/* Category */}
             <div className="space-y-1.5">
-              <Label htmlFor={`edit-resource-category-${resource.id}`} className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]">Category</Label>
+              <Label
+                htmlFor={`edit-resource-category-${resource.id}`}
+                className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+              >
+                Category
+              </Label>
               <select
                 id={`edit-resource-category-${resource.id}`}
                 name="categoryId"
@@ -249,7 +264,12 @@ export function ResourceEditDialog({
 
             {/* Section */}
             <div className="space-y-1.5">
-              <Label htmlFor={`edit-resource-section-${resource.id}`} className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]">Owning section</Label>
+              <Label
+                htmlFor={`edit-resource-section-${resource.id}`}
+                className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+              >
+                Owning section
+              </Label>
               <select
                 id={`edit-resource-section-${resource.id}`}
                 name="sectionId"
@@ -272,7 +292,10 @@ export function ResourceEditDialog({
 
             {/* Location (optional) */}
             <div className="space-y-1.5">
-              <Label htmlFor={`edit-resource-location-${resource.id}`} className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]">
+              <Label
+                htmlFor={`edit-resource-location-${resource.id}`}
+                className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+              >
                 Location <span className="text-[#94a3b8] font-normal font-mono">(optional)</span>
               </Label>
               <Input
@@ -292,7 +315,10 @@ export function ResourceEditDialog({
             {/* Capacity (rooms only) */}
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <Label htmlFor={`edit-resource-capacity-${resource.id}`} className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]">
+                <Label
+                  htmlFor={`edit-resource-capacity-${resource.id}`}
+                  className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                >
                   Capacity / seats{" "}
                   <span className="text-[#94a3b8] font-normal font-mono">
                     {isRoom ? "(recommended for rooms)" : "(optional)"}

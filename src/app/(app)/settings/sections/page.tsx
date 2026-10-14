@@ -79,7 +79,10 @@ export default async function SectionsPage({ searchParams }: SectionsPageProps) 
             </TableHeader>
             <TableBody>
               {sections.map((section) => (
-                <TableRow key={section.id} className="group hover:bg-[#222a3a]/50 transition-colors duration-150">
+                <TableRow
+                  key={section.id}
+                  className="group hover:bg-[#222a3a]/50 transition-colors duration-150"
+                >
                   <TableCell className="font-semibold text-white py-3.5 px-4 text-sm">
                     <EditSectionDialog
                       section={section}

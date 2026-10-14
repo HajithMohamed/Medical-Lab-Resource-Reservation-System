@@ -194,7 +194,12 @@ export function UserCreateDialog({
 
             <div className="space-y-4">
               <div className="space-y-1.5">
-                <Label htmlFor="create-user-name" className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]">Full name</Label>
+                <Label
+                  htmlFor="create-user-name"
+                  className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                >
+                  Full name
+                </Label>
                 <Input
                   id="create-user-name"
                   name="name"
@@ -212,7 +217,12 @@ export function UserCreateDialog({
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="create-user-email" className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]">Email address</Label>
+                <Label
+                  htmlFor="create-user-email"
+                  className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                >
+                  Email address
+                </Label>
                 <Input
                   id="create-user-email"
                   name="email"
@@ -229,14 +239,26 @@ export function UserCreateDialog({
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <Label htmlFor="create-user-role" className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]">Role</Label>
+                  <Label
+                    htmlFor="create-user-role"
+                    className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                  >
+                    Role
+                  </Label>
                   <Select value={role} onValueChange={(val) => setRole(val as Role)}>
-                    <SelectTrigger id="create-user-role" className="w-full bg-[#060e1d] border-[#334155] text-white">
+                    <SelectTrigger
+                      id="create-user-role"
+                      className="w-full bg-[#060e1d] border-[#334155] text-white"
+                    >
                       <SelectValue placeholder="Select role" />
                     </SelectTrigger>
                     <SelectContent className="bg-[#18202f] border-[#334155] text-white">
                       {allowedRoles.map((r) => (
-                        <SelectItem key={r} value={r} className="hover:bg-[#222a3a] focus:bg-[#222a3a]">
+                        <SelectItem
+                          key={r}
+                          value={r}
+                          className="hover:bg-[#222a3a] focus:bg-[#222a3a]"
+                        >
                           {r === "STAFF"
                             ? "Staff"
                             : r === "MANAGER"
@@ -250,14 +272,26 @@ export function UserCreateDialog({
 
                 {showSiteSelect && (
                   <div className="space-y-1.5">
-                    <Label htmlFor="create-user-site" className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]">Site</Label>
+                    <Label
+                      htmlFor="create-user-site"
+                      className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                    >
+                      Site
+                    </Label>
                     <Select value={siteId} onValueChange={(val) => setSiteId(val)}>
-                      <SelectTrigger id="create-user-site" className="w-full bg-[#060e1d] border-[#334155] text-white">
+                      <SelectTrigger
+                        id="create-user-site"
+                        className="w-full bg-[#060e1d] border-[#334155] text-white"
+                      >
                         <SelectValue placeholder="Select site" />
                       </SelectTrigger>
                       <SelectContent className="bg-[#18202f] border-[#334155] text-white">
                         {sites.map((s) => (
-                          <SelectItem key={s.id} value={s.id} className="hover:bg-[#222a3a] focus:bg-[#222a3a]">
+                          <SelectItem
+                            key={s.id}
+                            value={s.id}
+                            className="hover:bg-[#222a3a] focus:bg-[#222a3a]"
+                          >
                             {s.name}
                           </SelectItem>
                         ))}
@@ -272,19 +306,31 @@ export function UserCreateDialog({
 
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="create-user-section" className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]">
+                  <Label
+                    htmlFor="create-user-section"
+                    className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                  >
                     Section
                   </Label>
                   <span className="text-xs font-mono text-[#879390]">(optional)</span>
                 </div>
                 <Select value={sectionId} onValueChange={(val) => setSectionId(val)}>
-                  <SelectTrigger id="create-user-section" className="w-full bg-[#060e1d] border-[#334155] text-white">
+                  <SelectTrigger
+                    id="create-user-section"
+                    className="w-full bg-[#060e1d] border-[#334155] text-white"
+                  >
                     <SelectValue placeholder="No assigned section" />
                   </SelectTrigger>
                   <SelectContent className="bg-[#18202f] border-[#334155] text-white">
-                    <SelectItem value="none" className="hover:bg-[#222a3a] focus:bg-[#222a3a]">None / Unassigned</SelectItem>
+                    <SelectItem value="none" className="hover:bg-[#222a3a] focus:bg-[#222a3a]">
+                      None / Unassigned
+                    </SelectItem>
                     {sections.map((sec) => (
-                      <SelectItem key={sec.id} value={sec.id} className="hover:bg-[#222a3a] focus:bg-[#222a3a]">
+                      <SelectItem
+                        key={sec.id}
+                        value={sec.id}
+                        className="hover:bg-[#222a3a] focus:bg-[#222a3a]"
+                      >
                         {sec.name}
                       </SelectItem>
                     ))}

@@ -63,10 +63,7 @@ function AlertDialogHeader({ className, ...props }: React.ComponentProps<"div">)
   return (
     <div
       data-slot="alert-dialog-header"
-      className={cn(
-        "grid grid-rows-[auto_1fr] place-items-start gap-1.5 text-left",
-        className,
-      )}
+      className={cn("grid grid-rows-[auto_1fr] place-items-start gap-1.5 text-left", className)}
       {...props}
     />
   );
@@ -105,10 +102,7 @@ function AlertDialogTitle({
   return (
     <AlertDialogPrimitive.Title
       data-slot="alert-dialog-title"
-      className={cn(
-        "text-lg font-bold text-slate-100 tracking-tight",
-        className,
-      )}
+      className={cn("text-lg font-bold text-slate-100 tracking-tight", className)}
       {...props}
     />
   );
@@ -121,10 +115,7 @@ function AlertDialogDescription({
   return (
     <AlertDialogPrimitive.Description
       data-slot="alert-dialog-description"
-      className={cn(
-        "text-xs text-slate-400 leading-relaxed",
-        className,
-      )}
+      className={cn("text-xs text-slate-400 leading-relaxed", className)}
       {...props}
     />
   );

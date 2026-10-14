@@ -91,7 +91,10 @@ export function EditSectionDialog({ section, trigger }: EditSectionDialogProps) 
 
           <div className="space-y-4">
             <div className="space-y-1.5">
-              <Label htmlFor={`edit-section-name-${section.id}`} className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]">
+              <Label
+                htmlFor={`edit-section-name-${section.id}`}
+                className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+              >
                 Section Name
               </Label>
               <Input
@@ -111,7 +114,13 @@ export function EditSectionDialog({ section, trigger }: EditSectionDialogProps) 
               <div className="flex items-center gap-2.5">
                 <span className="text-[#6cd8cb]">ℹ</span>
                 <span className="text-xs text-[#94a3b8] font-mono">
-                  Associated with <strong className="text-white font-semibold">{section._count.resources} resources</strong> and <strong className="text-white font-semibold">{section._count.users} users</strong>.
+                  Associated with{" "}
+                  <strong className="text-white font-semibold">
+                    {section._count.resources} resources
+                  </strong>{" "}
+                  and{" "}
+                  <strong className="text-white font-semibold">{section._count.users} users</strong>
+                  .
                 </span>
               </div>
               <span className="text-xs font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">

@@ -174,9 +174,7 @@ export function ResourceStatusForm({ resource, upcomingBookingsCount }: Resource
                     <span className="size-2 rounded-full bg-slate-400 shrink-0" />
                     <span className="font-bold text-sm text-slate-100">Retired</span>
                   </div>
-                  <p className="text-xs text-slate-400">
-                    Removed for good. History is kept.
-                  </p>
+                  <p className="text-xs text-slate-400">Removed for good. History is kept.</p>
                 </div>
               </label>
             </div>
@@ -236,7 +234,10 @@ export function ResourceStatusForm({ resource, upcomingBookingsCount }: Resource
 
         <CardFooter className="flex items-center justify-between pt-2">
           <Button asChild variant="ghost" type="button" disabled={isPending}>
-            <Link href={`/resources/${resource.id}`} className="text-slate-400 hover:text-slate-100">
+            <Link
+              href={`/resources/${resource.id}`}
+              className="text-slate-400 hover:text-slate-100"
+            >
               Keep as it is
             </Link>
           </Button>

@@ -168,8 +168,14 @@ export function UserRowActions({
               <span className="sr-only">Actions for {user.name}</span>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48 bg-[#18202f] border-[#334155] text-[#dbe2f8] shadow-xl rounded-lg">
-            <DropdownMenuItem onSelect={() => setEditDialogOpen(true)} className="cursor-pointer hover:bg-[#222a3a] focus:bg-[#222a3a]">
+          <DropdownMenuContent
+            align="end"
+            className="w-48 bg-[#18202f] border-[#334155] text-[#dbe2f8] shadow-xl rounded-lg"
+          >
+            <DropdownMenuItem
+              onSelect={() => setEditDialogOpen(true)}
+              className="cursor-pointer hover:bg-[#222a3a] focus:bg-[#222a3a]"
+            >
               <Pencil className="size-3.5 mr-2 text-[#6cd8cb]" />
               <span className="font-mono text-xs">Edit</span>
             </DropdownMenuItem>
