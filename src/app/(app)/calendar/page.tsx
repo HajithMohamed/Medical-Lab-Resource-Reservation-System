@@ -45,6 +45,7 @@ export default async function CalendarPage() {
         name: user.name,
         role: user.role,
         siteName: user.siteName,
+        siteId: user.siteId,
       }}
       resources={resources}
     />

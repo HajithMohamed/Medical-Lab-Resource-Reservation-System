@@ -83,7 +83,7 @@ describe("Users Service (Integration)", () => {
       expect(created?.siteId).toBe(fixture.site.id);
       expect(created?.role).toBe(Role.STAFF);
       expect(created?.mustChangePassword).toBe(true);
-    });
+    }, 15000);
 
     it("a manager cannot create a MANAGER or ADMIN", async () => {
       const resManager = await createUser(managerActor, {

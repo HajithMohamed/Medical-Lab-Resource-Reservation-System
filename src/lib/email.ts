@@ -58,7 +58,7 @@ export function resolveApiKey(): string | undefined {
   try {
     const cwd = process.cwd();
     for (const file of [".env.local", ".env.development.local", ".env"]) {
-      const filePath = path.join(cwd, file);
+      const filePath = path.join(/*turbopackIgnore: true*/ cwd, file);
       if (fs.existsSync(filePath)) {
         const content = fs.readFileSync(filePath, "utf-8");
         const match = content.match(/^RESEND_API_KEY\s*=\s*["']?([^"'\r\n]+)["']?/m);

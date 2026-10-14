@@ -2,6 +2,7 @@ import type { Role } from "@/generated/prisma/client";
 import type { LucideIcon } from "lucide-react";
 import {
   Calendar,
+  CalendarSearch,
   FlaskConical,
   CalendarCheck,
   Wrench,
@@ -26,6 +27,13 @@ export const NAV_ITEMS: readonly NavItem[] = [
     label: "Calendar",
     href: "/calendar",
     icon: Calendar,
+    roles: ["STAFF", "MANAGER", "ADMIN"],
+    group: "main",
+  },
+  {
+    label: "Find a slot",
+    href: "/book",
+    icon: CalendarSearch,
     roles: ["STAFF", "MANAGER", "ADMIN"],
     group: "main",
   },

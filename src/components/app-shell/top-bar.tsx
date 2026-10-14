@@ -55,35 +55,39 @@ export function TopBar() {
       return [{ label: "Home", href: "/", isLast: true }];
     }
 
-    const items = [];
+    const items: Array<{ label: string; href: string; isLast: boolean }> = [];
     let currentPath = "";
 
-    for (let i = 0; i < segments.length; i++) {
-      const seg = segments[i];
+    segments.forEach((seg, index) => {
       currentPath += `/${seg}`;
-      const isLast = i === segments.length - 1;
+      const isLast = index === segments.length - 1;
 
-      const navItem = NAV_ITEMS.find((n) => n.href === currentPath);
-      let label = navItem?.label;
+      // Look up matching nav item label
+      const navMatch = NAV_ITEMS.find((n) => n.href === currentPath);
+      let label = navMatch?.label ?? seg.charAt(0).toUpperCase() + seg.slice(1);
 
-      if (!label) {
-        label = seg.charAt(0).toUpperCase() + seg.slice(1).replace(/-/g, " ");
+      // Handle common ID / action routes
+      if (seg === "new") label = "New";
+      else if (seg === "edit") label = "Edit";
+      else if (seg === "status") label = "Status";
+      else if (seg.length > 20 && !navMatch) {
+        label = `#${seg.slice(0, 8)}`;
       }
 
       items.push({ label, href: currentPath, isLast });
-    }
+    });
 
     return items;
   }, [segments]);
 
   return (
-    <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center justify-between border-b border-[#334155] bg-[#141c2b]/95 px-4 backdrop-blur-md">
+    <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center justify-between gap-4 border-b border-[#334155] bg-[#0b1322]/95 backdrop-blur-md px-4 sm:px-6">
       {/* Left: Sidebar trigger & breadcrumbs */}
       <div className="flex items-center gap-3 min-w-0">
-        <SidebarTrigger className="-ml-1 text-[#dbe2f8] hover:text-white" />
+        <SidebarTrigger className="-ml-1 text-[#94a3b8] hover:text-white" />
         <div className="h-4 w-px bg-[#334155] shrink-0" />
         <Breadcrumb className="truncate">
-          <BreadcrumbList>
+          <BreadcrumbList className="text-xs font-mono">
             {breadcrumbs.map((bc, idx) => (
               <React.Fragment key={bc.href}>
                 {idx > 0 && <BreadcrumbSeparator className="text-[#94a3b8]" />}

@@ -119,6 +119,8 @@ A web-based Resource Reservation Management System that gives all lab staff one 
 
 **Roles.** Staff make and manage their own bookings. Lab managers manage resources, maintenance and all bookings.
 
+**How to book.** Find a slot: choose date, time, duration and filters, pick a free resource. Or click a free slot on the calendar.
+
 **Out of scope for this version.** Patient data, test orders and results (the job of a laboratory information system, or LIMS); connections to analysers; reagent and stock management; staff rosters; approval workflows; email or SMS alerts; billing.
 
 **Relationship to a LIMS.** A LIMS focuses on patients, samples and results. A Sri Lankan study of LIMS needs in four private Colombo hospitals listed requirements from patient registration to report issue, plus support services such as stock management, quality control and statistics; booking shared resources was not among them [11]. This system fills that gap and could connect to a LIMS later.

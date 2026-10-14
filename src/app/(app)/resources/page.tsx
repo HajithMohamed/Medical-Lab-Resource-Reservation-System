@@ -132,7 +132,7 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
                   <TableHead className="w-[8%] py-2.5 px-3 text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
-              <TableBody>
+              <TableBody className="divide-y divide-[#334155]/40">
                 {resources.map((resource) => {
                   const isRoom = resource.category.iconKey === "room";
                   const capacityText =

@@ -68,7 +68,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
                 BenchBook
               </div>
               <div className="text-[#6cd8cb] text-[10.5px] font-bold tracking-[1.2px] uppercase">
-                LAB RESOURCE RESERVATIONS
+                PRECISION CLINICAL OPS
               </div>
             </div>
           </div>
@@ -83,7 +83,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
               More time for discovery.
             </h1>
             <p className="text-slate-400 text-xs sm:text-[13.5px] leading-relaxed mt-1.5 max-w-sm">
-              A single place to reserve equipment, facilities, and shared laboratory resources.
+              Precision instrument allocation, collision prevention, and compliance tracking.
             </p>
           </div>
         </div>
@@ -125,7 +125,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           </div>
 
           <p className="text-[11px] text-slate-400">
-            Designed for a safer, more organized lab experience.
+            Designed for high-throughput diagnostic and research laboratories.
           </p>
         </div>
       </section>
@@ -188,9 +188,8 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           </div>
         </div>
 
-        {/* Bottom footer text */}
-        <div className="text-center text-[11px] text-slate-500">
-          BenchBook · Medical Lab Resource Reservation Management System
+        <div className="text-center text-[11px] text-slate-500 font-mono">
+          BenchBook Pro • Precision Clinical Operations Console
         </div>
       </section>
     </main>

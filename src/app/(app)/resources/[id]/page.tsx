@@ -155,19 +155,34 @@ export default async function ResourceDetailPage({ params }: ResourceDetailPageP
             categories={categories}
             sections={sections}
           />
-          <Button asChild variant="outline" size="sm" className="gap-1.5 h-8">
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="gap-1.5 h-8 border-[#334155] bg-[#18202f] hover:bg-[#222a3a] text-xs"
+          >
             <Link href={`/resources/${resource.id}/status`}>
               <AlertOctagon className="size-3.5" />
               <span>Change status</span>
             </Link>
           </Button>
-          <Button asChild variant="outline" size="sm" className="gap-1.5 h-8">
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="gap-1.5 h-8 border-[#334155] bg-[#18202f] hover:bg-[#222a3a] text-xs"
+          >
             <Link href={`/maintenance/new?resourceId=${resource.id}`}>
               <Wrench className="size-3.5" />
               <span>Block time</span>
             </Link>
           </Button>
-          <Button asChild variant="outline" size="sm" className="gap-1.5 h-8">
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="gap-1.5 h-8 border-rose-500/40 text-rose-400 bg-rose-950/20 hover:bg-rose-950/40 text-xs"
+          >
             <Link href={`/maintenance/new?resourceId=${resource.id}&breakdown=1`}>
               <ShieldAlert className="size-3.5" />
               <span>Report breakdown</span>
@@ -290,12 +305,13 @@ export default async function ResourceDetailPage({ params }: ResourceDetailPageP
                           const isMaint = item.kind === "MAINTENANCE";
 
                           return (
-                            <div
+                            <Link
                               key={item.id}
-                              className={`p-3 rounded-lg border text-sm flex items-start justify-between gap-3 ${
+                              href={`/reservations/${item.id}`}
+                              className={`p-3 rounded-lg border text-sm flex items-start justify-between gap-3 transition-colors ${
                                 isMaint
-                                  ? "border-amber-500/40 bg-amber-950/20 text-amber-200"
-                                  : "border-[#334155] bg-[#18202f] hover:bg-[#222a3a]/70 text-slate-200"
+                                  ? "border-amber-500/40 bg-amber-950/20 text-amber-200 hover:bg-amber-950/30"
+                                  : "border-[#334155] bg-[#18202f] hover:bg-[#222a3a] text-slate-200"
                               }`}
                             >
                               <div className="space-y-1 min-w-0">
@@ -306,7 +322,7 @@ export default async function ResourceDetailPage({ params }: ResourceDetailPageP
                                       <span>Maintenance</span>
                                     </span>
                                   ) : null}
-                                  <span className="font-bold text-slate-100 truncate">
+                                  <span className="font-bold text-slate-100 truncate hover:text-[#6cd8cb] transition-colors">
                                     {item.purpose}
                                   </span>
                                 </div>
@@ -321,10 +337,10 @@ export default async function ResourceDetailPage({ params }: ResourceDetailPageP
 
                               <div className="text-right shrink-0">
                                 <span className="font-mono text-xs font-bold text-[#6cd8cb] tabular-nums">
-                                  {formatTime(item.startAt)} &ndash; {formatTime(item.endAt)}
+                                  {formatTime(item.startAt)} – {formatTime(item.endAt)}
                                 </span>
                               </div>
-                            </div>
+                            </Link>
                           );
                         })}
                       </div>

@@ -24,10 +24,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full antialiased font-sans dark bg-[#0b1322] text-[#f1f5f9]">
-      <body className="min-h-full flex flex-col bg-[#0b1322] text-[#f1f5f9]">
+    <html lang="en" className="dark h-full antialiased font-sans bg-[#0b1322] text-[#f1f5f9]">
+      <body className="min-h-full flex flex-col bg-[#0b1322] text-[#f1f5f9] selection:bg-[#6cd8cb]/20 selection:text-[#6cd8cb]">
         <TooltipProvider>{children}</TooltipProvider>
-        <Toaster theme="dark" />
+        <Toaster theme="dark" position="bottom-right" richColors />
       </body>
     </html>
   );
