@@ -7,6 +7,11 @@ export const MIN_BOOKING_MINUTES = 15; // shortest booking
 export const BOOKING_WINDOW_DAYS = 60; // how far ahead people can book
 export const MAX_CATEGORY_LIMIT_MINUTES = 7 * 24 * 60; // highest per-category limit an admin can set (7 days)
 export const RECENT_DAYS = 30; // "past" and "cancelled" lists show the last 30 days
+export const FIND_SLOT_DEFAULT_DURATION_MINUTES = 60; // first value in the form
+export const FIND_SLOT_DURATIONS_MINUTES = [
+  15, 30, 45, 60, 90, 120, 180, 240, 360, 480, 600, 720,
+]; // choices in the form; the category limit still rules
+export const FIND_SLOT_SUGGESTIONS = 3; // nearest free start times shown for a busy resource
 
 // Sign-in and sessions
 export const SESSION_COOKIE_NAME = "lab_session";
