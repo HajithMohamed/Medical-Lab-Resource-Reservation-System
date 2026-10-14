@@ -3,7 +3,14 @@ import "server-only";
 import { TZDate } from "@date-fns/tz";
 import { startOfWeek } from "date-fns";
 import { db } from "@/lib/db";
-import { labDayStart, addLabDays, getLabTimeZone, labDateString, labToday, formatTimeRange } from "@/lib/time";
+import {
+  labDayStart,
+  addLabDays,
+  getLabTimeZone,
+  labDateString,
+  labToday,
+  formatTimeRange,
+} from "@/lib/time";
 import { ResourceStatus, ReservationStatus, type ReservationKind } from "@/generated/prisma/client";
 
 export interface CalendarReservation {
