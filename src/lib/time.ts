@@ -108,6 +108,14 @@ export function labDayStart(dateString: string, zone: string = env.APP_TIME_ZONE
 }
 
 /**
+ * Returns the Date of 23:59:59.999 that day in the lab time zone.
+ */
+export function labDayEnd(dateString: string, zone: string = env.APP_TIME_ZONE): Date {
+  const [year, month, day] = dateString.split("-").map(Number);
+  return new TZDate(year, month - 1, day, 23, 59, 59, 999, zone);
+}
+
+/**
  * Adds n days to a "YYYY-MM-DD" date string in the lab time zone, returning "YYYY-MM-DD".
  */
 export function addLabDays(
