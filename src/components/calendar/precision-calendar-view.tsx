@@ -45,6 +45,7 @@ export interface PrecisionCalendarViewProps {
   canBlockHere: boolean;
   updatedAt: string;
   zoneCity: string;
+  nowMs: number;
   dayData: {
     site: { id: string; name: string } | null;
     dayStart: string; // ISO
@@ -72,19 +73,6 @@ export interface PrecisionCalendarViewProps {
   } | null;
 }
 
-function subscribeNow(callback: () => void) {
-  const timer = setInterval(callback, 60000);
-  return () => clearInterval(timer);
-}
-
-function getNowSnapshot() {
-  return Date.now();
-}
-
-function getServerNowSnapshot() {
-  return 0;
-}
-
 export function PrecisionCalendarView({
   user,
   view,
@@ -102,6 +90,7 @@ export function PrecisionCalendarView({
   canBookHere,
   updatedAt,
   zoneCity,
+  nowMs,
   dayData,
   weekData,
 }: PrecisionCalendarViewProps) {
@@ -118,8 +107,6 @@ export function PrecisionCalendarView({
       containerRef.current.scrollTop = targetScroll;
     }
   }, []);
-
-  const nowMs = React.useSyncExternalStore(subscribeNow, getNowSnapshot, getServerNowSnapshot);
 
   const totalGridRows = 48; // 24 hours * 2 (30-min slots)
   const isDayView = view === "day";

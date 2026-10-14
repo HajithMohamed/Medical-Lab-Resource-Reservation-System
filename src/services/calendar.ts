@@ -57,6 +57,7 @@ export interface SiteDayResult {
   dayStart: Date;
   dayEnd: Date;
   dateString: string;
+  nowMs: number;
   resources: CalendarResource[];
   reservations: CalendarReservation[];
 }
@@ -73,6 +74,7 @@ export interface ResourceWeekResult {
   weekStart: Date;
   weekEnd: Date;
   mondayDateString: string;
+  nowMs: number;
   days: WeekDayInfo[];
   reservations: CalendarReservation[];
 }
@@ -174,6 +176,7 @@ export async function getSiteDay(
     dayStart,
     dayEnd,
     dateString,
+    nowMs: Date.now(),
     resources,
     reservations,
   };
@@ -228,6 +231,7 @@ export async function getResourceWeek(
       weekStart,
       weekEnd,
       mondayDateString,
+      nowMs: Date.now(),
       days,
       reservations: [],
     };
@@ -277,6 +281,7 @@ export async function getResourceWeek(
     weekStart,
     weekEnd,
     mondayDateString,
+    nowMs: Date.now(),
     days,
     reservations,
   };

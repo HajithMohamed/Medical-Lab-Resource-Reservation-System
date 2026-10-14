@@ -94,14 +94,14 @@ export default async function CalendarPage({ searchParams }: CalendarPageProps) 
     formattedDate = `Week of ${format(dayStartTz, "EEEE d MMMM yyyy")}`;
   }
 
-  const updatedAt = formatLabTime(new Date(), zone);
-
   // 7. Load Data for the Active View
   let dayData = null;
   let weekData = null;
+  let nowMs = 0;
 
   if (view === "day") {
     const rawDay = await getSiteDay(user.id, selectedSiteId, selectedDate, selectedCategoryId);
+    nowMs = rawDay.nowMs;
     const dayTz = new TZDate(rawDay.dayStart, zone);
 
     dayData = {
@@ -118,6 +118,7 @@ export default async function CalendarPage({ searchParams }: CalendarPageProps) 
     if (selectedResourceId) {
       const rawWeek = await getResourceWeek(user.id, selectedResourceId, selectedDate);
 
+      nowMs = rawWeek.nowMs;
       weekData = {
         resource: rawWeek.resource,
         weekStart: rawWeek.weekStart.toISOString(),
@@ -138,6 +139,8 @@ export default async function CalendarPage({ searchParams }: CalendarPageProps) 
       };
     }
   }
+
+  const updatedAt = formatLabTime(new Date(nowMs), zone);
 
   return (
     <div className="space-y-4">
@@ -204,6 +207,7 @@ export default async function CalendarPage({ searchParams }: CalendarPageProps) 
         canBlockHere={canBlockHere}
         updatedAt={updatedAt}
         zoneCity={zoneCity}
+        nowMs={nowMs}
         dayData={dayData}
         weekData={weekData}
       />
