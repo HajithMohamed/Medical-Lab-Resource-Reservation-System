@@ -51,13 +51,13 @@ export default async function ResourceDetailPage({ params }: ResourceDetailPageP
 
   const [sites, categories, sections] = isManagerOrAdmin
     ? await Promise.all([
-        db.site.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } }),
-        db.category.findMany({
-          select: { id: true, name: true, maxBookingMinutes: true, iconKey: true },
-          orderBy: { name: "asc" },
-        }),
-        db.section.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } }),
-      ])
+      db.site.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } }),
+      db.category.findMany({
+        select: { id: true, name: true, maxBookingMinutes: true, iconKey: true },
+        orderBy: { name: "asc" },
+      }),
+      db.section.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } }),
+    ])
     : [[], [], []];
 
   const timeZone = env.APP_TIME_ZONE;
@@ -303,11 +303,10 @@ export default async function ResourceDetailPage({ params }: ResourceDetailPageP
                             <Link
                               key={item.id}
                               href={`/reservations/${item.id}`}
-                              className={`p-3 rounded-lg border text-sm flex items-start justify-between gap-3 transition-colors ${
-                                isMaint
-                                  ? "border-amber-500/40 bg-amber-950/20 text-amber-200 hover:bg-amber-950/30"
-                                  : "border-[#334155] bg-[#18202f] hover:bg-[#222a3a] text-slate-200"
-                              }`}
+                              className={`p-3 rounded-lg border text-sm flex items-start justify-between gap-3 transition-colors ${isMaint
+                                ? "border-amber-500/40 bg-amber-950/20 text-amber-200 hover:bg-amber-950/30"
+                                : "border-[#334155] bg-[#18202f] hover:bg-[#222a3a] text-slate-200"
+                                }`}
                             >
                               <div className="space-y-1 min-w-0">
                                 <div className="flex items-center gap-2">
