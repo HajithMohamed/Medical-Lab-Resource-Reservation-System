@@ -10,6 +10,7 @@ import {
   Wrench,
   AlertTriangle,
   Calendar as CalendarIcon,
+  CalendarSearch,
   CheckCircle2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -20,6 +21,7 @@ export interface PrecisionCalendarViewProps {
     name: string;
     role: string;
     siteName?: string | null;
+    siteId?: string | null;
   };
   resources: Array<{
     id: string;
@@ -445,6 +447,21 @@ export function PrecisionCalendarView({ user, resources }: PrecisionCalendarView
                 </button>
               ))}
             </div>
+
+            {/* Find a slot secondary entry point */}
+            <Button
+              asChild
+              size="sm"
+              variant="outline"
+              className="h-7 px-2.5 text-xs font-mono bg-surface-container-lowest hover:bg-surface-container border-outline-variant text-primary font-semibold"
+            >
+              <Link
+                href={`/book?date=${selectedDate}${user.siteId ? `&siteId=${user.siteId}` : ""}`}
+              >
+                <CalendarSearch className="size-3.5 mr-1.5" />
+                <span>Find a slot</span>
+              </Link>
+            </Button>
           </div>
         </div>
 

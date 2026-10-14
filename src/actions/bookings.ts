@@ -9,6 +9,7 @@ import { createBooking, cancelBooking } from "@/services/bookings";
 export interface BookingActionState {
   error?: string;
   fieldErrors?: Record<string, string[]>;
+  suggestions?: string[];
 }
 
 /**
@@ -66,6 +67,7 @@ export async function createBookingAction(
     return {
       error: result.error,
       fieldErrors: result.fieldErrors,
+      suggestions: result.suggestions,
     };
   }
 

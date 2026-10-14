@@ -1,12 +1,21 @@
 import "server-only";
 
-import { subDays } from "date-fns";
+import { subDays, addDays } from "date-fns";
 import { db } from "@/lib/db";
+import { env } from "@/lib/env";
 import { checkBookingTimes, checkAttendees } from "@/lib/booking-rules";
 import { canCancelReservation } from "@/lib/permissions";
 import { isOverlapError } from "@/lib/db-errors";
-import { formatLabRange } from "@/lib/time";
-import { RECENT_DAYS } from "@/config/rules";
+import {
+  formatLabRange,
+  labDayStart,
+  labDateString,
+  labTimeString,
+  labToday,
+  startOfCurrentSlot,
+} from "@/lib/time";
+import { freeStartTimes, nearestStarts, type TimeRange } from "@/lib/slot-finder";
+import { RECENT_DAYS, SLOT_MINUTES, FIND_SLOT_SUGGESTIONS } from "@/config/rules";
 import type { Reservation, Role } from "@/generated/prisma/client";
 
 export interface BookingActor {
@@ -26,7 +35,12 @@ export interface CreateBookingInput {
 
 export type CreateBookingResult =
   | { ok: true; data: Reservation }
-  | { ok: false; error: string; fieldErrors?: Record<string, string[]> };
+  | {
+      ok: false;
+      error: string;
+      fieldErrors?: Record<string, string[]>;
+      suggestions?: string[];
+    };
 
 /**
  * Creates a confirmed booking for a resource.
@@ -149,9 +163,55 @@ export async function createBooking(
   } catch (error: unknown) {
     // Database exclusion constraint guarantees zero clashes under concurrent race conditions
     if (isOverlapError(error)) {
+      const zone = env.APP_TIME_ZONE;
+      const durationMinutes = Math.round(
+        (input.endAt.getTime() - input.startAt.getTime()) / (60 * 1000),
+      );
+
+      let suggestions: string[] = [];
+      try {
+        const dateStr = labDateString(input.startAt, zone);
+        const dayStart = labDayStart(dateStr, zone);
+        const dayEnd = addDays(dayStart, 1);
+        const searchEnd = new Date(dayEnd.getTime() + durationMinutes * 60 * 1000);
+
+        const dayReservations = await db.reservation.findMany({
+          where: {
+            resourceId: input.resourceId,
+            status: "CONFIRMED",
+            startAt: { lt: searchEnd },
+            endAt: { gt: dayStart },
+          },
+          select: { startAt: true, endAt: true },
+        });
+
+        const busyRanges: TimeRange[] = dayReservations.map((r) => ({
+          start: r.startAt,
+          end: r.endAt,
+        }));
+
+        const isToday = dateStr === labToday(zone);
+        const earliest = isToday ? startOfCurrentSlot(new Date(), zone) : dayStart;
+
+        const available = freeStartTimes({
+          busy: busyRanges,
+          dayStart,
+          dayEnd,
+          earliest,
+          durationMinutes,
+          stepMinutes: SLOT_MINUTES,
+        });
+
+        const nearest = nearestStarts(available, input.startAt, FIND_SLOT_SUGGESTIONS);
+        suggestions = nearest.map((d) => labTimeString(d, zone));
+      } catch {
+        suggestions = [];
+      }
+
       return {
         ok: false,
-        error: "Someone booked this time a moment ago. Please choose another time.",
+        error: `Someone booked ${resource.name} a moment ago.`,
+        suggestions,
       };
     }
     throw error;
