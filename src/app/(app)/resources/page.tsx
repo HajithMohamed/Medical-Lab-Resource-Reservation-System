@@ -10,6 +10,7 @@ import { ResourceStatusTag } from "@/components/resource-status-tag";
 import { EmptyState } from "@/components/empty-state";
 import { Button } from "@/components/ui/button";
 import { formatMinutes } from "@/lib/format";
+import { canBook } from "@/lib/permissions";
 import { ResourceFilters } from "@/components/resources/resource-filters";
 import { ResourceCard } from "@/components/resources/resource-card";
 import { ResourceCreateDialog } from "@/components/resources/resource-create-dialog";
@@ -223,7 +224,7 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
                       </TableCell>
                       <TableCell className="py-2 px-3 text-right overflow-hidden">
                         <div className="inline-flex items-center gap-1 justify-end">
-                          {resource.status === "ACTIVE" ? (
+                          {canBook(user) && resource.status === "ACTIVE" ? (
                             <Button
                               asChild
                               size="icon"
