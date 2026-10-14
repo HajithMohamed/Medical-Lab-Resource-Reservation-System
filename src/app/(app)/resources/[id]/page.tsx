@@ -164,7 +164,7 @@ export default async function ResourceDetailPage({ params }: ResourceDetailPageP
             >
               <Link href={`/resources/${resource.id}/status`}>
                 <AlertOctagon className="size-3.5" />
-                <span>Status</span>
+                <span>Change status</span>
               </Link>
             </Button>
           )}
@@ -176,7 +176,7 @@ export default async function ResourceDetailPage({ params }: ResourceDetailPageP
           >
             <Link href={`/maintenance/new?resourceId=${resource.id}`}>
               <Wrench className="size-3.5" />
-              <span>Block Maintenance</span>
+              <span>Block time</span>
             </Link>
           </Button>
           <Button
@@ -187,7 +187,7 @@ export default async function ResourceDetailPage({ params }: ResourceDetailPageP
           >
             <Link href={`/maintenance/new?resourceId=${resource.id}&breakdown=1`}>
               <ShieldAlert className="size-3.5" />
-              <span>Report Lockout</span>
+              <span>Report breakdown</span>
             </Link>
           </Button>
         </div>
@@ -239,11 +239,11 @@ export default async function ResourceDetailPage({ params }: ResourceDetailPageP
                 <span>Recent maintenance</span>
               </CardTitle>
             </CardHeader>
-            <CardContent className="pt-3">
+            <CardContent>
               {resource.recentMaintenance.length === 0 ? (
                 <p className="text-sm text-slate-500 italic">No maintenance blocks recorded.</p>
               ) : (
-                <div className="space-y-2.5">
+                <div className="space-y-3">
                   {resource.recentMaintenance.map((m) => (
                     <div
                       key={m.id}
@@ -280,10 +280,10 @@ export default async function ResourceDetailPage({ params }: ResourceDetailPageP
               </CardTitle>
               <span className="text-xs text-slate-400 font-mono">
                 {resource.reservationsNext7Days.length}{" "}
-                {resource.reservationsNext7Days.length === 1 ? "run" : "runs"}
+                {resource.reservationsNext7Days.length === 1 ? "booking" : "bookings"}
               </span>
             </CardHeader>
-            <CardContent className="pt-3">
+            <CardContent>
               {resource.reservationsNext7Days.length === 0 ? (
                 <div className="py-8 text-center border border-dashed border-[#334155] rounded-xl bg-[#18202f]/50">
                   <Clock className="size-8 text-slate-500 mx-auto mb-2" />
@@ -295,7 +295,7 @@ export default async function ResourceDetailPage({ params }: ResourceDetailPageP
                   </p>
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-6">
                   {Array.from(reservationsByDay.entries()).map(([dayString, dayReservations]) => (
                     <div key={dayString} className="space-y-2">
                       <div className="text-xs font-bold text-slate-400 uppercase tracking-wider px-1">
@@ -331,7 +331,9 @@ export default async function ResourceDetailPage({ params }: ResourceDetailPageP
                                 <p className="text-xs text-slate-400">
                                   Booked by {item.createdBy.name}
                                   {item.createdBy.site ? ` (${item.createdBy.site.name})` : ""}
-                                  {item.attendeeCount ? ` • ${item.attendeeCount} attendees` : ""}
+                                  {item.attendeeCount
+                                    ? ` &bull; ${item.attendeeCount} attendees`
+                                    : ""}
                                 </p>
                               </div>
 

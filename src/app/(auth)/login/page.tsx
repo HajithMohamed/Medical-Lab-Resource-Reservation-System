@@ -65,7 +65,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
             </div>
             <div>
               <div className="text-white font-bold text-base tracking-tight leading-tight">
-                BenchBook Pro
+                BenchBook
               </div>
               <div className="text-[#6cd8cb] text-[10.5px] font-bold tracking-[1.2px] uppercase">
                 PRECISION CLINICAL OPS
@@ -110,7 +110,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
                 <Check className="size-2.5 text-[#6cd8cb] stroke-[3]" />
               </div>
               <span className="text-[11px] font-medium leading-tight truncate">
-                Zero conflict runs
+                Clear booking requests
               </span>
             </div>
 
@@ -119,7 +119,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
                 <Check className="size-2.5 text-[#6cd8cb] stroke-[3]" />
               </div>
               <span className="text-[11px] font-medium leading-tight truncate">
-                Clinical compliance
+                One shared workspace
               </span>
             </div>
           </div>

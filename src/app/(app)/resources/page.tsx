@@ -24,12 +24,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import { SummaryStrip } from "@/components/summary-strip";
-
 export const metadata = {
-  title: "Resource Registry | BenchBook Pro",
-  description:
-    "Precision Clinical Operations — Registry of shared instruments, cabinets, and rooms.",
+  title: "Resources | BenchBook",
+  description: "Every shared instrument, cabinet, room and van in the network.",
 };
 
 interface ResourcesPageProps {
@@ -84,16 +81,11 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
 
   const canAddResource = user.role === "MANAGER" || user.role === "ADMIN";
 
-  const totalUnits = resources.length;
-  const activeUnits = resources.filter((r) => r.status === "ACTIVE").length;
-  const lockoutUnits = resources.filter((r) => r.status === "OUT_OF_SERVICE").length;
-  const operationalPct = totalUnits > 0 ? Math.round((activeUnits / totalUnits) * 100) : 0;
-
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <PageHeader
-        title="Resource Registry"
-        description="Core diagnostic instruments, biosafety units, and clinical laboratory suites."
+        title="Resources"
+        description="Every shared instrument, cabinet, room and van in the network."
         actions={
           canAddResource ? (
             <ResourceCreateDialog
@@ -105,36 +97,6 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
             />
           ) : undefined
         }
-      />
-
-      {/* 4-Column Operational Summary Metrics Strip */}
-      <SummaryStrip
-        items={[
-          {
-            label: "Operational Instruments",
-            value: `${activeUnits} / ${totalUnits}`,
-            hint: `${operationalPct}% Operational • ${activeUnits} Ready`,
-            dotColor: "primary",
-          },
-          {
-            label: "Registry Total",
-            value: `${totalUnits} Units`,
-            hint: "Precision diagnostic grid",
-            dotColor: "secondary",
-          },
-          {
-            label: "Operational Health",
-            value: lockoutUnits === 0 ? "Optimal" : "Degraded",
-            hint: lockoutUnits === 0 ? "All certified online" : `${lockoutUnits} pending repair`,
-            dotColor: lockoutUnits === 0 ? "primary" : "tertiary",
-          },
-          {
-            label: "Fault Lockout",
-            value: `${lockoutUnits} ${lockoutUnits === 1 ? "Unit" : "Units"}`,
-            hint: lockoutUnits > 0 ? "Safety lockout active" : "Zero lockout incidents",
-            dotColor: lockoutUnits > 0 ? "error" : "primary",
-          },
-        ]}
       />
 
       <ResourceFilters

@@ -81,12 +81,12 @@ export function TopBar() {
   }, [segments]);
 
   return (
-    <header className="sticky top-0 z-20 flex h-14 shrink-0 items-center justify-between gap-4 border-b border-[#334155] bg-[#0b1322]/95 backdrop-blur-md px-4 sm:px-6">
-      {/* Left: Mobile trigger & Breadcrumbs */}
+    <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center justify-between gap-4 border-b border-[#334155] bg-[#0b1322]/95 backdrop-blur-md px-4 sm:px-6">
+      {/* Left: Sidebar trigger & breadcrumbs */}
       <div className="flex items-center gap-3 min-w-0">
-        <SidebarTrigger className="text-[#94a3b8] hover:text-white" />
-        <div className="h-4 w-px bg-[#334155]" />
-        <Breadcrumb>
+        <SidebarTrigger className="-ml-1 text-[#94a3b8] hover:text-white" />
+        <div className="h-4 w-px bg-[#334155] shrink-0" />
+        <Breadcrumb className="truncate">
           <BreadcrumbList className="text-xs font-mono">
             {breadcrumbs.map((bc, idx) => (
               <React.Fragment key={bc.href}>
