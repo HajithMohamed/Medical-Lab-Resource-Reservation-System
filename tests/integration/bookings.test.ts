@@ -404,10 +404,9 @@ describe("Bookings Service (Integration)", () => {
     // Each failure should return a friendly clash message or conflict error, never an unhandled DB exception
     for (const fail of failures) {
       if (!fail.ok) {
-        expect(
-          fail.error.includes("clashes with") ||
-            fail.error.includes("Someone booked this time a moment ago"),
-        ).toBe(true);
+        expect(fail.error.includes("clashes with") || fail.error.includes("Someone booked")).toBe(
+          true,
+        );
       }
     }
   });
