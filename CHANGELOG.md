@@ -57,3 +57,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `/reservations/[id]` Specimen label slip with large tabular timestamps, status pills, diagonal maintenance hatching, and modal cancellation dialog with required reason.
   - Linked reservation slips across `/resources/[id]` 7-day schedule.
 - Unit test suites covering booking rules and permissions; comprehensive integration test suite verifying free slot booking, named person clashes, maintenance clashes, 5-parallel concurrent race condition handling, and site-scoped cancellation rules.
+- Pure slot finding helpers `isFree`, `freeStartTimes`, and `nearestStarts` in `src/lib/slot-finder.ts` for boundary-aware slot calculations and nearest alternate start suggestions.
+- Cross-resource availability search service in `src/services/availability.ts` (`findSlots`) with batched resource and confirmed reservation loading, fallback-safe query sanitization, strict state prioritization, and nearest start suggestion generation.
+- Find a slot search interface (`/book`) with responsive GET form, `aria-live` result banner, category duration guards, and resource cards with direct booking links and alternate time suggestions.
+- Interactive lost-race clash recovery in `/bookings/new` presenting immediate alternative start time buttons on concurrency collision.
+- Navigation integration adding "Find a slot" to sidebar navigation for STAFF, MANAGER, and ADMIN, and secondary toolbar button in precision calendar view.
+- Unit and integration test suites for slot finding calculations, availability filtering, site scoping, query fallbacks, and lost-race handling.

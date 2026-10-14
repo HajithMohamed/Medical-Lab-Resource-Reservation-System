@@ -93,3 +93,11 @@ Each entry records an architectural choice, why it was made, and what trade-offs
 - **Context:** Laboratory operations require consistent schedule boundaries across all devices and shifts. Client browsers may run on differing local system timezones, and naive date parsing (`new Date("YYYY-MM-DDTHH:mm")`) uses the local browser's clock, creating accidental slot shifting and false clash detections.
 - **Decision:** Store all timestamps in PostgreSQL as `TIMESTAMPTZ` normalized to UTC. Parse all date and time inputs using `parseLabDateTime(dateStr, timeStr, zone)` via `@date-fns/tz` `TZDate`, explicitly locked to `APP_TIME_ZONE` (`Asia/Colombo` by default). Format all displayed schedule times using `formatLabRange`, `formatLabDate`, and `formatLabTime` with the lab timezone. Disallow naive parsing of local datetime strings.
 - **Consequences:** Ensures zero timezone drift across staff devices, exact 15-minute slot boundary alignment, and guarantees that bookings, calendar views, and database exclusion ranges match the physical laboratory's operating day.
+
+## D12: Search-first booking without holds
+
+- **Date:** 2026-10-14
+- **Status:** accepted
+- **Context:** Users typically think 'when and what' first (date, time, duration, equipment category, attendees) rather than browsing individual instrument schedules, similar to passenger transit or ticket booking systems. Traditional hold mechanisms introduce complex hold table schemas, timeout sweeps, and seat abandonment locks.
+- **Decision:** Provide a bookmarkable GET search page (`/book`) that computes cross-resource availability across all matching laboratory equipment in two batched queries. Rather than holding slots while users fill out booking details, enforce reservations at the moment of saving through the existing PostgreSQL GiST exclusion constraint (`reservations_no_overlap`). If a race condition occurs and another user confirms the slot first, the booking form gracefully intercepts the clash and immediately suggests the nearest free alternate start times computed by `slot-finder`.
+- **Consequences:** Eliminates reservation hold tables, abandoned cart cleanup cron jobs, and resource locking overhead. Users can share and bookmark searches. In the rare event of a lost race, the user receives actionable instant alternatives.
