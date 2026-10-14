@@ -186,14 +186,10 @@ ReservationStatus (CONFIRMED, CANCELLED).
 
 ## 6. Roles and permissions (src/lib/permissions.ts)
 
-- ADMIN: the whole network, no site. Manages sites, sections, categories,
-  all users (including managers and admins), all resources, maintenance,
-  bookings and the dashboard.
-- MANAGER: belongs to one site (users.site_id). Manages that site's staff
-  accounts, resources, maintenance and bookings; sees that site's
-  dashboard. Cannot create managers or admins, or touch other sites.
-- STAFF: has a home site and section. Views everything; books ACTIVE
-  resources at ANY site; cancels own bookings that have not started.
+- ADMIN: runs the whole network, no site, no section, does NOT book. Sets up sites, sections and categories, manages all users, oversees every site's resources, bookings, equipment and usage.
+- MANAGER: belongs to one site (users.site_id). Does everything staff do, plus that site's staff accounts, resources, equipment care, maintenance, bookings oversight and usage. Cannot create managers or admins, or touch other sites.
+- STAFF: has a home site and section. Finds and books resources at any site for themselves; manages own bookings.
+- The full rules are in docs/permissions.md. Every new feature adds its rows there and its function to permissions.ts.
 - Nobody can deactivate or demote themselves. The last active admin cannot
   be deactivated or demoted.
 - canManageSite(user, siteId): ADMIN -> true; MANAGER -> user.siteId ===
@@ -279,7 +275,7 @@ Follow node_modules/next/dist/docs/01-app/02-guides/authentication.md
   feat(scope): ..., fix(scope): ..., test(scope): ..., refactor(scope): ...,
   docs: ..., chore: ..., ci: ...
   Scopes: setup, db, auth, settings, users, resources, bookings, calendar,
-  maintenance, usage, docs, release.
+  maintenance, usage, access, docs, release.
 - Never commit .env.local, .env.*.local, .env.production, secrets,
   src/generated or coverage output.
 - When you add a feature or make a decision, update CHANGELOG.md

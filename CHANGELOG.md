@@ -63,3 +63,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Interactive lost-race clash recovery in `/bookings/new` presenting immediate alternative start time buttons on concurrency collision.
 - Navigation integration adding "Find a slot" to sidebar navigation for STAFF, MANAGER, and ADMIN, and secondary toolbar button in precision calendar view.
 - Unit and integration test suites for slot finding calculations, availability filtering, site scoping, query fallbacks, and lost-race handling.
+- Complete access rules, permissions matrix, and role breakdown documentation in `docs/permissions.md`.
+- Pure permission functions in `src/lib/permissions.ts`: `canBook`, `canManageSettings`, `canViewUsers`, `canViewUser`, `canChangeRoleOrSite`, `canManageResource`, `canChangeResourceStatus`, `canCancelBooking`, `canManageMaintenance`, `canOverseeBookings`, `bookingOversightSitesFor`, `canViewUsage`, `usageSitesFor`.
+- Bookings oversight interface at `/bookings/manage` with date range filters, site selection for administrators, resource/person filters, status toggling, and in-place cancellation with required audit reasons.
+- `listBookingsForOversight` service in `src/services/bookings.ts` with pagination (`BOOKINGS_PAGE_SIZE = 25`), date range clamping (`USAGE_MAX_DAYS`), and role-based site scoping.
+- Static source code access guard test suite in `tests/unit/access-guards.test.ts` verifying all Server Actions and app pages call `requireUser` or `requireRole`.
+- Comprehensive table-driven permission matrix test suite in `tests/unit/permissions.test.ts` and integration suite in `tests/integration/access-control.test.ts`.
+
+### Changed
+
+- Enforced `[ADMIN-NO-BOOK]` separation of duties: admins manage the network and do not book (`createBooking` rejects admins; `/bookings`, `/book`, and `/bookings/new` redirect admins to `/bookings/manage`; "Book" buttons and slot booking triggers hidden for admins).
+- Sidebar navigation updated in `src/config/navigation.ts`: "Bookings" added to `manage` group for `MANAGER` and `ADMIN`; "My bookings" and "Find a slot" restricted to `STAFF` and `MANAGER`.
+- Resource status transitions in `src/services/resources.ts` strictly reject any changes to `RETIRED` resources (`Constraint C6: RETIRED is final`) and duplicate status requests.
+- Sanitized email service in `src/lib/email.ts` to read exclusively from `env` rather than disk/process.env, and simplified password change link in `buildChangePasswordUrl` to eliminate email address query strings.
+
+### Security
+
+- Centralized server-side access control with pure permission functions across all Server Actions, services, and routes.
+- Prevented unauthorized manager access to resources, users, and booking oversight across different sites.
