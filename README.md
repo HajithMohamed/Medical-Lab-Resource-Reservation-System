@@ -2,7 +2,7 @@
 
 BenchBook gives everyone in a medical laboratory network one live schedule for shared instruments, biosafety cabinets, rooms and sample-transport vans. Bookings can never clash, equipment that is broken or overdue for calibration cannot be booked, people are told when something changes, and managers can see how resources are really used.
 
-**Links:** [ER diagram](ER_DIAGRAM_URL) · [Demo video](DEMO_VIDEO_URL) · [Problem statement (PDF)](docs/problem-statement.pdf) · [Design decisions](docs/decisions.md) · [Permissions](docs/permissions.md)
+**Links:** [ER diagram](docs/er-diagram-chen.svg) · [Demo video](DEMO_VIDEO_URL) · [Problem statement (PDF)](docs/problem-statement.pdf) · [Design decisions](docs/decisions.md) · [Permissions](docs/permissions.md)
 
 > Built for the PrimeWave Lab Software Engineering Internship technical assessment (October 2026).
 
@@ -150,7 +150,7 @@ Need more users? Sign in as admin (any role, any site) or manager (staff at thei
 | Feature                      | What it does                                                                                                                                     |
 | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **Resource register**        | Instruments, cabinets, rooms and vans with category, site, section, location, status (active, out of service, retired) and equipment details.    |
-| **Live calendar**            | Day view per site and week view per resource, with bookings, maintenance blocks and out-of-service equipment. Refreshes automatically.           |
+| **Live calendar**            | Day view per site and week view per resource, with bookings, maintenance blocks and out-of-service equipment. Updates after every change.        |
 | **Find a slot**              | Search by date, time, length and category across all sites; busy resources show the nearest free start times.                                    |
 | **Clash-free booking**       | Overlapping bookings are rejected by the database itself. Category length limits, slot rules and the calibration due day are checked.            |
 | **My bookings**              | Upcoming, past and cancelled bookings, with the reason when someone else cancelled one.                                                          |
@@ -225,7 +225,7 @@ Browser → src/app (pages) → src/actions (server actions) → src/services (r
 - **Equipment safety rules.** Bookings cannot run past an instrument's calibration due day; a failed check takes it out of service at once; it returns to service only after a passing check.
 - **Nothing is deleted.** Bookings are cancelled with a reason, users are deactivated, resources are retired.
 - **Times** are stored in UTC and shown in the lab time zone (`APP_TIME_ZONE`, Asia/Colombo).
-- **Live updates by polling** (notifications and calendar), because the target hosting does not keep socket connections open.
+- **Live updates without sockets.** The notification bell polls every 15 seconds (only while the tab is visible). Every booking, cancellation, maintenance or equipment change calls `revalidatePath`, so the next page load shows fresh data. There is no timer that reloads pages.
 - **Daily reminders** come from one idempotent job: `GET /api/cron/daily` (protected by `CRON_SECRET`) for hosting, or `npm run daily` locally.
 
 All decisions with context and consequences: [docs/decisions.md](docs/decisions.md).
@@ -247,7 +247,7 @@ All decisions with context and consequences: [docs/decisions.md](docs/decisions.
 | `notification_preferences` | Per-user notification settings                                        |
 | `resource_watches`         | "Notify me when it's free" alerts                                     |
 
-**ER diagram:** [ER_DIAGRAM_URL](ER_DIAGRAM_URL) (source: [docs/er-diagram.dbml](docs/er-diagram.dbml)).
+**ER diagram:** [docs/er-diagram-chen.svg](docs/er-diagram-chen.svg) (explained in [docs/er-diagram-explanation.txt](docs/er-diagram-explanation.txt)).
 
 Rules Prisma cannot express (the exclusion constraint, CHECK constraints, partial indexes) are written by hand in the SQL files under `prisma/migrations/`.
 

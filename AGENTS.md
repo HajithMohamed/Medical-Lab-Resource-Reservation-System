@@ -45,9 +45,8 @@ email or SMS, billing, a mobile app.
   cross-env.
 - UI: shadcn/ui components on Radix (copied into src/components/ui by
   `npx shadcn@4 add ...`), lucide-react icons, sonner toasts, and the font
-  Atkinson Hyperlegible Next, self-hosted with
-  @fontsource-variable/atkinson-hyperlegible-next (no Google font
-  downloads).
+  Plus Jakarta Sans, self-hosted with
+  @fontsource-variable/plus-jakarta-sans (no Google font downloads).
 - Never run `npm audit fix --force`; it downgrades eslint-config-next and
   Prisma. Known advisories are explained in docs/decisions.md.
 
@@ -131,8 +130,7 @@ Browser -> src/app (pages) -> src/actions (Server Actions)
   browser confirm()/alert() dialogs (use the ConfirmAction AlertDialog
   component, or a second "Yes, ..." submit button before it exists).
 - The look: follow docs/design-system.md and match
-  docs/design-reference.html (both arrive with the UI foundation branch,
-  U1). Use token classes (bg-primary,
+  docs/design/design-reference-v4.html. Use token classes (bg-primary,
   text-muted-foreground, bg-booking, hatch-maint ...), never raw hex colours
   in components. Sentence case; no all-capital labels.
 - Client components ("use client") never import the Prisma client at
