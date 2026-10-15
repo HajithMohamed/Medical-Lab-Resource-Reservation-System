@@ -17,11 +17,11 @@ The server enforces every rule; `src/lib/permissions.ts` is the code version of 
 
 ## 3. Menus per role
 
-| Role        | Main Group                                    | Manage Group                                             | Admin Group | Top Bar Bell       |
-| :---------- | :-------------------------------------------- | :------------------------------------------------------- | :---------- | :----------------- |
-| **STAFF**   | Calendar, Find a slot, Resources, My bookings | _(none)_                                                 | _(none)_    | _(none)_           |
-| **MANAGER** | Calendar, Find a slot, Resources, My bookings | Bookings, Maintenance, Equipment care (E1), Usage, Users | _(none)_    | Notifications (E2) |
-| **ADMIN**   | Calendar, Resources                           | Bookings, Maintenance, Equipment care (E1), Usage, Users | Settings    | Notifications (E2) |
+| Role        | Main Group                                    | Manage Group                               | Admin Group | Top Bar Bell       |
+| :---------- | :-------------------------------------------- | :----------------------------------------- | :---------- | :----------------- |
+| **STAFF**   | Calendar, Find a slot, Resources, My bookings | _(none)_                                   | _(none)_    | _(none)_           |
+| **MANAGER** | Calendar, Find a slot, Resources, My bookings | Bookings, Maintenance & care, Usage, Users | _(none)_    | Notifications (E2) |
+| **ADMIN**   | Calendar, Resources                           | Bookings, Maintenance & care, Usage, Users | Settings    | Notifications (E2) |
 
 ## 4. Pages and buttons
 
@@ -83,27 +83,23 @@ The server enforces every rule; `src/lib/permissions.ts` is the code version of 
 | Cancel not-started booking with reason | no    | own site | all sites |
 | View who cancelled, when and why       | no    | yes      | yes       |
 
-### Maintenance (`/maintenance`)
+### Maintenance & care (`/equipment`)
 
-| Action / Element                                                | STAFF | MANAGER  | ADMIN     |
-| :-------------------------------------------------------------- | :---- | :------- | :-------- |
-| List upcoming & past blocks                                     | no    | own site | all sites |
-| "Block time" (lists overlapping bookings & cancels with reason) | no    | own site | all sites |
-| "Report breakdown" -> Change status (OUT_OF_SERVICE)            | no    | own site | all sites |
-| "Cancel block" (future blocks)                                  | no    | own site | all sites |
-
-### Equipment care (`/equipment`)
-
-| Action / Element                                                  | STAFF | MANAGER            | ADMIN              |
-| :---------------------------------------------------------------- | :---- | :----------------- | :----------------- |
-| Equipment care page (`/equipment`)                                | no    | own site           | all sites + filter |
-| View "Today" list (due today / overdue tasks)                     | no    | own site           | all sites          |
-| "Mark as done" (Pass / Fail result)                               | no    | own site           | all sites          |
-| "Not done" (reason required; due date does not move)              | no    | own site           | all sites          |
-| View equipment history / audit trail (resource page)              | view  | view               | view               |
-| Record verification / calibration / maintenance / review / repair | no    | own site           | all sites          |
-| Edit / delete equipment records                                   | no    | no _(append-only)_ | no _(append-only)_ |
-| "Block time" (links to maintenance for due items)                 | no    | own site           | all sites          |
+| Action / Element                                                             | STAFF | MANAGER              | ADMIN                |
+| :--------------------------------------------------------------------------- | :---- | :------------------- | :------------------- |
+| View "Today" list (due today / overdue tasks)                                | no    | own site             | all sites            |
+| "Mark as done" (Pass / Fail result)                                          | no    | own site             | all sites            |
+| "Not done" (reason required; due date does not move)                         | no    | own site             | all sites            |
+| Schedule (equipment overview table & lifecycle review)                       | no    | own site             | all sites + filter   |
+| Blocked time list (upcoming & recent maintenance blocks)                     | no    | own site             | all sites + filter   |
+| "Block time" (lists overlapping bookings & cancels with reason)              | no    | own site             | all sites            |
+| Report breakdown: a block that starts now, with a link to set Out of service | no    | own site             | all sites            |
+| End now (running block)                                                      | no    | own site             | all sites            |
+| "Cancel block" (future blocks)                                               | no    | own site             | all sites            |
+| Resource select scope in the form                                            | no    | own site's resources | all, grouped by site |
+| View equipment history / audit trail (resource page)                         | view  | view                 | view                 |
+| Record verification / calibration / maintenance / review / repair            | no    | own site             | all sites            |
+| Edit / delete equipment records                                              | no    | no _(append-only)_   | no _(append-only)_   |
 
 ### Notifications (E2)
 

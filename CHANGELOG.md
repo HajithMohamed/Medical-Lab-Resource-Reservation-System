@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Maintenance and breakdown management integrated into merged "Maintenance & care" (`/equipment` and `/maintenance/new`):
+  - Server service `src/services/maintenance.ts` supporting clash detection (`findClashes`), block creation with atomic clashing booking cancellation (`createMaintenanceBlock`), premature completion (`endBlockNow`), future block cancellation (`cancelBlock`), block listing (`listBlocks`), and authorized resource listings (`listMaintenanceResources`).
+  - Server actions `src/actions/maintenance.ts` enforcing role guards and revalidating affected routes (`/equipment`, `/maintenance`, `/calendar`, `/bookings`, `/bookings/manage`, `/overview`, `/resources/[id]`).
+  - Unified "Maintenance & care" dashboard (`/equipment`) featuring three URL-backed tabs: "Today" (tasks due today / overdue with quick actions and inline "Block time" button), "Schedule" (equipment verification overview and status filtering), and "Blocked time" (upcoming and recent maintenance blocks with "End now" and "Cancel" actions, plus administrator site filter).
+  - Standalone redirect for `/maintenance` directing directly to `/equipment?tab=blocked`.
+  - Interactive "Block time" and "Report a breakdown" card form (`/maintenance/new`) supporting prefilled reasons (`?reason=`), immediate breakdown blocks (`?breakdown=1`), slot boundary validation, site-scoped resource selection, and a clash confirmation panel showing affected bookings before cancellation.
+  - Reservation details page updates for maintenance blocks with dedicated hatch badges and authorized manager/admin action controls.
+  - Navigation menu consolidation removing separate "Maintenance" item and renaming "Equipment care" to "Maintenance & care" with Wrench icon.
+  - Architecture Decision Records D19 ("Maintenance is a reservation of kind MAINTENANCE") and D20 ("One Maintenance & care page").
+
 - Live availability calendar (`/calendar`) supporting Day view per site and Week view per resource with real database schedules.
 - Pure calendar grid math helpers (`rowsPerDay`, `placeOnDay`, `rowLabel`) in `src/lib/calendar-layout.ts`.
 - Server-side calendar service (`src/services/calendar.ts`) providing `getSiteDay`, `getResourceWeek`, and `listCalendarOptions` with timezone normalization.
