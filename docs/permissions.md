@@ -100,6 +100,9 @@ The server enforces every rule; `src/lib/permissions.ts` is the code version of 
 | View equipment history / audit trail (resource page)                         | view  | view                 | view                 |
 | Record verification / calibration / maintenance / review / repair            | no    | own site             | all sites            |
 | Edit / delete equipment records                                              | no    | no _(append-only)_   | no _(append-only)_   |
+| View "Reports" tab & equipment condition summary                             | no    | own site             | all sites + filter   |
+| Download summary report PDF / CSV                                            | no    | own site             | any or all           |
+| Download service record sheet PDF                                            | no    | own site's records   | all records          |
 
 ### Notifications (E2)
 

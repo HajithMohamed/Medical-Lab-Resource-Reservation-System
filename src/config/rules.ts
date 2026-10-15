@@ -49,3 +49,6 @@ export const REPLACEMENT_REVIEW_REPAIRS = 3; // lab policy: this many repairs ..
 export const REPLACEMENT_REVIEW_REPAIR_DAYS = 365; // ... in this many days -> review
 export const CONDITION_LOOKBACK_DAYS = 365; // window for failure and repair history when evaluating equipment condition
 export const EQUIPMENT_HISTORY_ROWS = 10; // rows shown on the resource page
+export const REPORT_DEFAULT_DAYS = 30; // default equipment report period (last 30 days)
+export const REPORT_MAX_DAYS = 365; // longest equipment report period (up to 1 year)
+export const REPORT_LOG_PAGE_SIZE = 10; // rows per page for calibration & service log
