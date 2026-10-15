@@ -177,3 +177,11 @@ Each entry records an architectural choice, why it was made, and what trade-offs
 - **Context:** Resource utilisation, peak hours distribution, and section usage across laboratory equipment must be reported for custom date periods up to 92 days. Computing these aggregates could be done using database SQL views, stored procedures, or in TypeScript in the application layer.
 - **Decision:** Calculate usage in TypeScript from confirmed and cancelled reservations loaded in memory for the scoped site(s) and period. Standard working hours (`STANDARD_WEEKDAYS`, `STANDARD_DAY_START_HOUR` to `STANDARD_DAY_END_HOUR`) clipping, 24-hour peak distribution, and user section grouping are executed with pure mathematical functions in `src/lib/usage.ts`. Simple, testable, fast enough for 92 days of one lab network; a SQL view would be the next step at larger scale.
 - **Consequences:** Provides 100% testable, pure calculation logic with zero migration overhead or complex SQL stored procedures. Keeps utilisation math consistent across the web dashboard and CSV exports.
+
+## D22: Server-side PDF generation with @react-pdf/renderer
+
+- **Date:** 2026-10-15
+- **Status:** accepted
+- **Context:** Regulatory inspections (ISO 15189:2022) and equipment audit compliance require printable, tamper-proof summary reports (A4 landscape) and individual equipment service record sheets. These documents must be rendered reliably on the server with deterministic pagination ("Page x of y"), repeated table headers on page breaks, standard lab branding, and no client-side browser print differences.
+- **Decision:** Use `@react-pdf/renderer` exclusively with built-in standard PDF fonts (Helvetica) without remote font downloads or client-side print dependencies. Configure `@react-pdf/renderer` under `serverExternalPackages` in `next.config.ts` to ensure clean Node.js runtime streaming without Turbopack/Webpack bundling conflicts. Route handlers authenticate callers, verify site-scoping via the service layer, and stream PDF documents with proper `Content-Type: application/pdf` and descriptive filenames.
+- **Consequences:** Ensures 100% deterministic, audit-ready PDF generation with zero external network font dependencies and fast server-side streaming.
