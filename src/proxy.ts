@@ -13,6 +13,11 @@ export default async function proxy(req: NextRequest) {
   const token = req.cookies.get(SESSION_COOKIE_NAME)?.value;
   const session = await verifySessionToken(token);
 
+  // Allow public health and cron endpoints through without session redirection
+  if (path.startsWith("/api/health") || path.startsWith("/api/cron")) {
+    return NextResponse.next();
+  }
+
   // No valid token and not on /login -> redirect to /login.
   // We do NOT redirect away from /login in proxy: a token could be cryptographically valid
   // but stale (user deactivated, password changed, or db reset). Redirecting to /calendar
@@ -25,5 +30,7 @@ export default async function proxy(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!api/health|_next/static|_next/image|favicon\\.ico|icon|apple-icon|.*\\..*).*)"],
+  matcher: [
+    "/((?!api/health|api/cron|_next/static|_next/image|favicon\\.ico|icon|apple-icon|.*\\..*).*)",
+  ],
 };

@@ -33,6 +33,7 @@ import { PaginationControls } from "@/components/pagination-controls";
 import { Button } from "@/components/ui/button";
 import { dbToDay } from "@/lib/equipment-dates";
 import { formatEquipmentDay, formatEquipmentStatusText } from "@/lib/equipment-status";
+import { ensureDailyJobRan } from "@/services/daily-job";
 import { cn } from "@/lib/utils";
 
 export const metadata = {
@@ -60,6 +61,12 @@ interface EquipmentPageProps {
 
 export default async function EquipmentPage({ searchParams }: EquipmentPageProps) {
   const user = await requireRole("MANAGER", "ADMIN");
+
+  // Ensure daily job has been evaluated for equipment due dates and reminders
+  void ensureDailyJobRan().catch((err) => {
+    console.warn("[equipment/page] ensureDailyJobRan error:", err);
+  });
+
   const params = await searchParams;
 
   const activeTab: "today" | "schedule" | "blocked" | "reports" =

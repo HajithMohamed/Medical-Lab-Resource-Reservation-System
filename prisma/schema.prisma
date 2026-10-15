@@ -314,3 +314,12 @@ model ResourceWatch {
   @@index([userId, status])
   @@map("resource_watches")
 }
+
+/// Key-value table for persistent background state (e.g., daily job execution tracker)
+model SystemState {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@map("system_state")
+}

@@ -23,7 +23,6 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { StickyActionBar } from "@/components/ui/sticky-action-bar";
-import { useAutoRefresh } from "@/hooks/use-auto-refresh";
 import { cn } from "@/lib/utils";
 import type { ResourceOption } from "@/components/bookings/booking-create-form";
 
@@ -167,8 +166,6 @@ export function MyBookingsClient({
   past,
   cancelled,
 }: MyBookingsClientProps) {
-  useAutoRefresh();
-
   const searchParams = useSearchParams();
   const highlightId = searchParams.get("highlight");
 

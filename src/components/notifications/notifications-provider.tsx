@@ -32,6 +32,12 @@ export function useNotifications() {
 
 export function NotificationsProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
+  const routerRef = React.useRef(router);
+
+  React.useEffect(() => {
+    routerRef.current = router;
+  }, [router]);
+
   const [unreadCount, setUnreadCount] = React.useState(0);
   const [latestItems, setLatestItems] = React.useState<NotificationListItem[]>([]);
   const [announcement, setAnnouncement] = React.useState<string>("");
@@ -63,6 +69,10 @@ export function NotificationsProvider({ children }: { children: React.ReactNode 
 
       const res = await fetch(url, { cache: "no-store" });
       if (!res.ok) {
+        if (res.status === 401 || res.redirected) {
+          clearTimer();
+          return;
+        }
         throw new Error(`Poll returned ${res.status}`);
       }
 
@@ -97,7 +107,7 @@ export function NotificationsProvider({ children }: { children: React.ReactNode 
               action: {
                 label: "View",
                 onClick: () => {
-                  router.push(item.link);
+                  routerRef.current.push(item.link);
                 },
               },
             });
@@ -109,7 +119,7 @@ export function NotificationsProvider({ children }: { children: React.ReactNode 
               action: {
                 label: "See all",
                 onClick: () => {
-                  router.push("/notifications");
+                  routerRef.current.push("/notifications");
                 },
               },
             });
@@ -132,7 +142,7 @@ export function NotificationsProvider({ children }: { children: React.ReactNode 
         void pollRef.current();
       }, nextDelaySeconds * 1000);
     }
-  }, [router]);
+  }, []);
 
   React.useEffect(() => {
     pollRef.current = poll;
@@ -140,8 +150,8 @@ export function NotificationsProvider({ children }: { children: React.ReactNode 
 
   const refresh = React.useCallback(async () => {
     clearTimer();
-    await poll();
-  }, [poll]);
+    await pollRef.current();
+  }, []);
 
   const markRead = React.useCallback(async (id: string) => {
     await markNotificationReadAction(id);
@@ -158,30 +168,24 @@ export function NotificationsProvider({ children }: { children: React.ReactNode 
   }, []);
 
   React.useEffect(() => {
-    // Initial poll
-    poll();
+    // Initial poll on mount
+    void pollRef.current();
 
     const handleVisibilityChange = () => {
       if (document.visibilityState === "visible") {
-        poll();
+        void pollRef.current();
       } else {
         clearTimer();
       }
     };
 
-    const handleFocus = () => {
-      poll();
-    };
-
     document.addEventListener("visibilitychange", handleVisibilityChange);
-    window.addEventListener("focus", handleFocus);
 
     return () => {
       clearTimer();
       document.removeEventListener("visibilitychange", handleVisibilityChange);
-      window.removeEventListener("focus", handleFocus);
     };
-  }, [poll]);
+  }, []);
 
   return (
     <NotificationsContext.Provider

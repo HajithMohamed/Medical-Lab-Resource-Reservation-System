@@ -12,6 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { createMaintenanceBlockAction, type ActionState } from "@/actions/maintenance";
 import type { MaintenanceResourceItem } from "@/services/maintenance";
 import { StickyActionBar } from "@/components/ui/sticky-action-bar";
+import { cn } from "@/lib/utils";
 
 export interface MaintenanceFormProps {
   resources: MaintenanceResourceItem[];
@@ -49,6 +50,26 @@ export function MaintenanceForm({
     isBreakdown ? "Breakdown: " : defaultReason || "",
   );
   const [cancelConfirmed, setCancelConfirmed] = React.useState<boolean>(false);
+
+  const isEndTimeInvalid = Boolean(
+    startDate && endDate && startDate === endDate && startTime && endTime && endTime <= startTime,
+  );
+
+  const handleStartTimeChange = (newStartTime: string) => {
+    setStartTime(newStartTime);
+    setCancelConfirmed(false);
+    if (!newStartTime) return;
+    if (startDate === endDate) {
+      if (!endTime || endTime <= newStartTime) {
+        const [hoursStr, minutesStr] = newStartTime.split(":");
+        const hours = Number.parseInt(hoursStr ?? "0", 10);
+        const minutes = Number.parseInt(minutesStr ?? "0", 10);
+        const nextHour = (hours + 1) % 24;
+        const advancedTime = `${String(nextHour).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+        setEndTime(advancedTime);
+      }
+    }
+  };
 
   const [state, formAction, isPending] = React.useActionState<ActionState, FormData>(
     async (prevState, formData) => {
@@ -232,10 +253,7 @@ export function MaintenanceForm({
                   step="900"
                   required
                   value={startTime}
-                  onChange={(e) => {
-                    setStartTime(e.target.value);
-                    setCancelConfirmed(false);
-                  }}
+                  onChange={(e) => handleStartTimeChange(e.target.value)}
                   className="h-10 rounded-xl bg-card border-card-edge text-sm text-navy"
                 />
               </div>
@@ -273,13 +291,22 @@ export function MaintenanceForm({
                   type="time"
                   step="900"
                   required
+                  min={startDate === endDate ? startTime : undefined}
                   value={endTime}
                   onChange={(e) => {
                     setEndTime(e.target.value);
                     setCancelConfirmed(false);
                   }}
-                  className="h-10 rounded-xl bg-card border-card-edge text-sm text-navy"
+                  className={cn(
+                    "h-10 rounded-xl bg-card border-card-edge text-sm text-navy",
+                    isEndTimeInvalid && "border-red focus-visible:ring-red",
+                  )}
                 />
+                {isEndTimeInvalid && (
+                  <p className="text-xs font-semibold text-red">
+                    The end time must be after the start time.
+                  </p>
+                )}
               </div>
             </div>
           </div>
@@ -366,7 +393,7 @@ export function MaintenanceForm({
               <Button
                 type="submit"
                 variant="destructive"
-                disabled={!cancelConfirmed || isPending}
+                disabled={!cancelConfirmed || isPending || isEndTimeInvalid}
                 className="h-11 px-6 rounded-xl bg-red hover:bg-red/90 text-white font-bold text-xs"
               >
                 {isPending
@@ -376,7 +403,7 @@ export function MaintenanceForm({
             ) : (
               <Button
                 type="submit"
-                disabled={isPending}
+                disabled={isPending || isEndTimeInvalid}
                 className="h-11 px-6 rounded-xl bg-gradient-to-br from-teal to-teal-deep text-white font-bold text-xs shadow-teal hover:opacity-95"
               >
                 {isPending ? "Blocking..." : "Block time"}
@@ -398,7 +425,7 @@ export function MaintenanceForm({
               <Button
                 type="submit"
                 variant="destructive"
-                disabled={!cancelConfirmed || isPending}
+                disabled={!cancelConfirmed || isPending || isEndTimeInvalid}
                 className="flex-1 h-11 rounded-xl bg-red hover:bg-red/90 text-white font-bold text-xs"
               >
                 {isPending ? "Blocking..." : "Confirm & block"}
@@ -406,7 +433,7 @@ export function MaintenanceForm({
             ) : (
               <Button
                 type="submit"
-                disabled={isPending}
+                disabled={isPending || isEndTimeInvalid}
                 className="flex-1 h-11 rounded-xl bg-gradient-to-br from-teal to-teal-deep text-white font-bold text-xs shadow-teal hover:opacity-95"
               >
                 {isPending ? "Blocking..." : "Block time"}

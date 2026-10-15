@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { revalidateEquipmentViews } from "@/lib/revalidate";
 import { z } from "zod";
 import { requireRole } from "@/lib/auth";
 import { parseLabDateTime } from "@/lib/time";
@@ -87,12 +88,7 @@ export async function createMaintenanceBlockAction(
   }
 
   revalidatePath("/equipment");
-  revalidatePath("/maintenance");
-  revalidatePath("/calendar");
-  revalidatePath("/bookings");
-  revalidatePath("/bookings/manage");
-  revalidatePath("/overview");
-  revalidatePath(`/resources/${resourceId}`);
+  revalidateEquipmentViews(resourceId);
 
   return {
     ok: true,
@@ -117,15 +113,7 @@ export async function endBlockNowAction(formData: FormData): Promise<void> {
     throw new Error(result.error ?? "Failed to end maintenance block.");
   }
 
-  revalidatePath("/equipment");
-  revalidatePath("/maintenance");
-  revalidatePath("/calendar");
-  revalidatePath("/bookings");
-  revalidatePath("/bookings/manage");
-  revalidatePath("/overview");
-  if (resourceId) {
-    revalidatePath(`/resources/${resourceId}`);
-  }
+  revalidateEquipmentViews(resourceId);
 }
 
 /**
@@ -150,15 +138,7 @@ export async function cancelMaintenanceBlockAction(formData: FormData): Promise<
     throw new Error(result.error ?? "Failed to cancel maintenance block.");
   }
 
-  revalidatePath("/equipment");
-  revalidatePath("/maintenance");
-  revalidatePath("/calendar");
-  revalidatePath("/bookings");
-  revalidatePath("/bookings/manage");
-  revalidatePath("/overview");
-  if (resourceId) {
-    revalidatePath(`/resources/${resourceId}`);
-  }
+  revalidateEquipmentViews(resourceId);
 }
 
 /**

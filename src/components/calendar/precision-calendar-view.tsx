@@ -12,7 +12,6 @@ import {
   CalendarX,
   Layers,
 } from "lucide-react";
-import { useAutoRefresh } from "@/hooks/use-auto-refresh";
 import { PeekSheet } from "@/components/ui/peek-sheet";
 import { StatusPill } from "@/components/resource-status-tag";
 import { cn } from "@/lib/utils";
@@ -96,8 +95,6 @@ export function PrecisionCalendarView({
   weekData,
 }: PrecisionCalendarViewProps) {
   const router = useRouter();
-  // Auto refresh
-  useAutoRefresh();
 
   // Mobile view mode: "agenda" (default on small phones) vs "grid"
   const [mobileMode, setMobileMode] = React.useState<"agenda" | "grid">("agenda");

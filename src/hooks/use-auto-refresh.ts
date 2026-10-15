@@ -6,20 +6,26 @@ import { CALENDAR_REFRESH_SECONDS } from "@/config/rules";
 
 /**
  * Periodically refreshes the active route while the browser tab is visible.
- * simple polling: works on any host, no socket server needed
+ * Runs on a quiet, predictable interval (CALENDAR_REFRESH_SECONDS).
  */
 export function useAutoRefresh(intervalSeconds: number = CALENDAR_REFRESH_SECONDS) {
   const router = useRouter();
+  const routerRef = React.useRef(router);
 
   React.useEffect(() => {
-    const intervalMs = intervalSeconds * 1000;
+    routerRef.current = router;
+  }, [router]);
+
+  React.useEffect(() => {
+    if (!intervalSeconds || intervalSeconds <= 0) return;
+    const intervalMs = Math.max(intervalSeconds, 60) * 1000;
 
     const timer = setInterval(() => {
       if (typeof document !== "undefined" && document.visibilityState === "visible") {
-        router.refresh();
+        routerRef.current.refresh();
       }
     }, intervalMs);
 
     return () => clearInterval(timer);
-  }, [router, intervalSeconds]);
+  }, [intervalSeconds]);
 }

@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { revalidateBookingViews } from "@/lib/revalidate";
 import { requireRole } from "@/lib/auth";
 import * as usersService from "@/services/users";
 import { Role } from "@/generated/prisma/client";
@@ -126,6 +127,9 @@ export async function setActiveAction(id: string, isActive: boolean): Promise<Us
 
   revalidatePath("/users");
   revalidatePath(`/users/${id}`);
+  if (!isActive) {
+    revalidateBookingViews();
+  }
   return {
     ok: true,
     message: result.message,

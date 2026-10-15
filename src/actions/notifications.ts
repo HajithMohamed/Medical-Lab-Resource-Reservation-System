@@ -6,17 +6,19 @@ import { markRead, markAllRead, updateMyPreference } from "@/services/notificati
 import { createWatch, cancelMyWatch } from "@/services/watches";
 import { NotificationKind, ResourceWatchKind } from "@/generated/prisma/client";
 
+import { revalidateNotificationViews } from "@/lib/revalidate";
+
 export async function markNotificationReadAction(notificationId: string) {
   const user = await requireUser();
   const result = await markRead(user, notificationId);
-  revalidatePath("/notifications");
+  revalidateNotificationViews();
   return result;
 }
 
 export async function markAllNotificationsReadAction() {
   const user = await requireUser();
   const result = await markAllRead(user);
-  revalidatePath("/notifications");
+  revalidateNotificationViews();
   return result;
 }
 

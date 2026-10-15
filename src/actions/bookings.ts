@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidateBookingViews } from "@/lib/revalidate";
 import { requireUser } from "@/lib/auth";
 import { parseLabDateTime } from "@/lib/time";
 import { createBooking, cancelBooking } from "@/services/bookings";
@@ -72,9 +72,7 @@ export async function createBookingAction(
     };
   }
 
-  revalidatePath("/bookings");
-  revalidatePath("/calendar");
-  revalidatePath(`/resources/${resourceId}`);
+  revalidateBookingViews(resourceId);
 
   return {
     ok: true,
@@ -109,13 +107,6 @@ export async function cancelBookingAction(
     return { ok: false, error: result.error };
   }
 
-  revalidatePath("/bookings");
-  revalidatePath("/bookings/manage");
-  revalidatePath("/calendar");
-  revalidatePath(`/reservations/${reservationId}`);
-  if (result.data.resourceId) {
-    revalidatePath(`/resources/${result.data.resourceId}`);
-  }
-
+  revalidateBookingViews(result.data.resourceId);
   return { ok: true };
 }
