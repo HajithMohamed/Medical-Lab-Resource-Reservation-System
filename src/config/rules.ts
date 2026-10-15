@@ -25,10 +25,8 @@ export const TEMP_PASSWORD_GROUPS = 4; // temporary password = 4 groups ...
 export const TEMP_PASSWORD_GROUP_LENGTH = 4; // ... of 4 characters, e.g. k7mq-x4tr-9hwz-3pfd
 export const TEMP_PASSWORD_ALPHABET = "abcdefghjkmnpqrstuvwxyz23456789"; // no 0/o or 1/l/i: easy to read aloud
 
-// Calendar
-export const CALENDAR_ROW_MINUTES = 30; // one grid row = 30 minutes
-export const CALENDAR_SCROLL_TO_HOUR = 7; // the grid opens at 07:00
-export const CALENDAR_REFRESH_SECONDS = 60; // live view: reload the data every minute
+// Calendar: the grid shows 07:00 to 19:00 (see precision-calendar-view.tsx)
+// Live updates come from the notification poll and from revalidatePath after each change.
 
 // Usage dashboard
 export const STANDARD_WEEKDAYS = [1, 2, 3, 4, 5]; // Monday-Friday (0 = Sunday, as in date-fns getDay)

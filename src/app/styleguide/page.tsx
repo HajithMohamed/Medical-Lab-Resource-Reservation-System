@@ -37,7 +37,7 @@ export default function StyleguidePage() {
       <div className="space-y-10 max-w-6xl">
         <PageHeader
           title="Design system styleguide"
-          description="Visual test bed comparing BenchBook Tailwind & shadcn tokens against docs/design-reference.html."
+          description="Visual test bed comparing BenchBook Tailwind & shadcn tokens against docs/design/design-reference-v4.html."
         />
 
         {/* 1. BUTTONS */}
@@ -346,9 +346,9 @@ export default function StyleguidePage() {
               9. Static Calendar Sample (Signature Grid)
             </h2>
             <p className="text-sm text-muted-foreground">
-              Matches docs/design-reference.html: one booking block, one &quot;mine&quot; block with
-              &quot;You&quot; chip, one hatch-maint block, and one hatch-oos column with Out of
-              service tag.
+              Matches docs/design/design-reference-v4.html: one booking block, one &quot;mine&quot;
+              block with &quot;You&quot; chip, one hatch-maint block, and one hatch-oos column with
+              Out of service tag.
             </p>
           </div>
 
