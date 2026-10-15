@@ -33,11 +33,11 @@ export function UserFilterBar({
     params.delete("page");
 
     const qs = params.toString();
-    router.push(qs ? `${pathname}?${qs}` : pathname);
+    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
   };
 
   const handleClearFilters = () => {
-    router.push(pathname);
+    router.replace(pathname, { scroll: false });
   };
 
   const hasActiveFilters = Boolean(currentSiteId || currentRole || currentStatus);

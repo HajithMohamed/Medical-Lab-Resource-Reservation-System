@@ -1,9 +1,8 @@
 "use client";
 
 import * as React from "react";
-import Link from "next/link";
 import { Search } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { AutoFilter, ClearFiltersButton } from "@/components/auto-filter";
 
 interface ResourceFiltersProps {
   sites: Array<{ id: string; name: string }>;
@@ -33,8 +32,7 @@ export function ResourceFilters({
   );
 
   return (
-    <form
-      method="GET"
+    <AutoFilter
       action="/resources"
       className="flex flex-wrap items-center gap-2 bg-[#141c2b] p-2.5 rounded-lg border border-[#334155] shadow-xs"
     >
@@ -121,23 +119,12 @@ export function ResourceFilters({
         </select>
       </div>
 
-      {/* Action Buttons */}
-      <div className="flex items-center gap-1.5 ml-auto shrink-0">
-        <Button
-          type="submit"
-          size="sm"
-          className="h-8 px-3 bg-[#6cd8cb] hover:bg-[#29a195] text-[#003732] font-semibold text-xs font-mono active:scale-95 shadow-2xs"
-        >
-          Apply
-        </Button>
-        {hasActiveFilters && (
-          <Button asChild variant="ghost" size="sm" className="h-8 px-2 text-xs font-mono">
-            <Link href="/resources" className="text-[#94a3b8] hover:text-white">
-              Clear
-            </Link>
-          </Button>
-        )}
-      </div>
-    </form>
+      {/* Clear Filters Button */}
+      {hasActiveFilters && (
+        <div className="ml-auto shrink-0">
+          <ClearFiltersButton href="/resources" />
+        </div>
+      )}
+    </AutoFilter>
   );
 }

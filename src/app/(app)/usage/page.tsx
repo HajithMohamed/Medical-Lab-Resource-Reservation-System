@@ -11,6 +11,7 @@ import { UtilisationBar } from "@/components/utilisation-bar";
 import { EmptyState } from "@/components/empty-state";
 import { PeakHoursChart } from "@/components/usage/peak-hours-chart";
 import { SectionUsageChart } from "@/components/usage/section-usage-chart";
+import { AutoFilter } from "@/components/auto-filter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { STANDARD_DAY_START_HOUR, STANDARD_DAY_END_HOUR } from "@/config/rules";
@@ -89,9 +90,8 @@ export default async function UsagePage({ searchParams }: UsagePageProps) {
         }
       />
 
-      {/* Filter Bar (GET form) */}
-      <form
-        method="GET"
+      {/* Filter Bar (AutoFilter without Apply button) */}
+      <AutoFilter
         action="/usage"
         className="flex flex-wrap items-center justify-between gap-4 bg-[#141c2b] p-3.5 rounded-xl border border-[#334155] shadow-xs text-xs font-mono"
       >
@@ -107,7 +107,7 @@ export default async function UsagePage({ searchParams }: UsagePageProps) {
               type="date"
               defaultValue={data.fromDate}
               required
-              className="h-8 w-36 bg-[#060e1d] border-[#334155] text-xs font-mono text-slate-100"
+              className="h-8 w-36 bg-[#060e1d] border-[#334155] text-xs font-mono text-slate-100 cursor-pointer"
             />
           </div>
 
@@ -121,7 +121,7 @@ export default async function UsagePage({ searchParams }: UsagePageProps) {
               type="date"
               defaultValue={data.toDate}
               required
-              className="h-8 w-36 bg-[#060e1d] border-[#334155] text-xs font-mono text-slate-100"
+              className="h-8 w-36 bg-[#060e1d] border-[#334155] text-xs font-mono text-slate-100 cursor-pointer"
             />
           </div>
 
@@ -154,16 +154,7 @@ export default async function UsagePage({ searchParams }: UsagePageProps) {
             </div>
           )}
         </div>
-
-        <div className="flex items-center gap-2">
-          <Button
-            type="submit"
-            className="bg-[#6cd8cb] text-[#003732] hover:bg-[#29a195] font-bold text-xs h-8 px-4"
-          >
-            Apply
-          </Button>
-        </div>
-      </form>
+      </AutoFilter>
 
       {/* Summary Statistics Strip */}
       <SummaryStrip
