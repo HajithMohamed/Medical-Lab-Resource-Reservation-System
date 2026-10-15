@@ -5,7 +5,6 @@ import {
   Clock,
   ClipboardCheck,
   AlertCircle,
-  ExternalLink,
   ChevronLeft,
   ChevronRight,
   Calendar,

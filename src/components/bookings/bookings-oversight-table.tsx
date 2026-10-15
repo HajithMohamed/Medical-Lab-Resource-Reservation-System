@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { toast } from "sonner";
-import { XCircle, MapPin, Inbox, Eye, CalendarX } from "lucide-react";
+import { MapPin, Inbox, Eye, CalendarX } from "lucide-react";
 import { CategoryIcon } from "@/components/category-icon";
 import { ConfirmAction } from "@/components/confirm-action";
 import { Button } from "@/components/ui/button";
@@ -189,7 +189,8 @@ export function BookingsOversightTable({
                             className="bg-[#0b1322] border-[#334155] text-xs text-slate-100"
                           />
                           <p className="text-[11px] text-slate-400">
-                            This reason will be recorded and shown in the owner&apos;s bookings view.
+                            This reason will be recorded and shown in the owner&apos;s bookings
+                            view.
                           </p>
                         </div>
                       </ConfirmAction>
