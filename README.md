@@ -1,20 +1,41 @@
-# Resource Reservation Management System
+# BenchBook — Lab Resource Reservation System
 
-**Shared resource reservation in medical laboratories** · PrimeWave Lab (Pvt) Ltd, Software Engineering Internship technical assessment
+BenchBook gives everyone in a medical laboratory network one live schedule for shared instruments, biosafety cabinets, rooms and sample-transport vans. Bookings can never clash, equipment that is broken or overdue for calibration cannot be booked, people are told when something changes, and managers can see how resources are really used.
 
-**Stack:** Next.js (App Router) · TypeScript · PostgreSQL
+**Links:** [ER diagram](ER_DIAGRAM_URL) · [Demo video](DEMO_VIDEO_URL) · [Problem statement (PDF)](docs/problem-statement.pdf) · [Design decisions](docs/decisions.md) · [Permissions](docs/permissions.md)
 
-**Project documents:** [Problem statement, version 1.0 (PDF)](docs/problem-statement.pdf) · ER diagram: _dbdiagram.io link (add when published)_
+> Built for the PrimeWave Lab Software Engineering Internship technical assessment (October 2026).
 
 ---
 
-## 1. Problem statement
+## Contents
 
-> Medical laboratories share a limited set of instruments, biosafety cabinets, rooms and, in lab networks, sample-transport vehicles among many staff and sections. When their use is coordinated through paper logbooks, sign-up sheets, phone calls and chat groups, nobody has one up-to-date view of what is free, what is booked and what is out of service. As a result, bookings can clash, work can be planned on equipment that is broken or due for maintenance, staff may not be told when a booked resource becomes unavailable, and managers cannot easily see which resources are overloaded and which sit idle. This costs staff time, can delay test results and makes complete equipment records hard to keep, at a time when labs face rising workloads, staff shortages and tight budgets [4, 8, 9].
+1. [The problem](#1-the-problem)
+2. [Quick start](#2-quick-start)
+3. [Demo accounts](#3-demo-accounts)
+4. [Features](#4-features)
+5. [Roles](#5-roles)
+6. [Tech stack](#6-tech-stack)
+7. [Authentication and security](#7-authentication-and-security)
+8. [Architecture and key decisions](#8-architecture-and-key-decisions)
+9. [Database](#9-database)
+10. [Project structure](#10-project-structure)
+11. [Scripts](#11-scripts)
+12. [Testing and CI](#12-testing-and-ci)
+13. [Troubleshooting](#13-troubleshooting)
+14. [Scope and next steps](#14-scope-and-next-steps)
+
+---
+
+## 1. The problem
+
+The assessment describes an organisation that shares resources through informal messages and manual records, which leads to overlapping reservations and no clear view of availability. I applied it to the setting where this hurts most: **medical diagnostic labs**.
+
+> Medical laboratories share a limited set of instruments, biosafety cabinets, rooms and, in lab networks, sample-transport vehicles among many staff and sections. When their use is coordinated through paper logbooks, sign-up sheets, phone calls and chat groups, nobody has one up-to-date view of what is free, what is booked and what is out of service. As a result, bookings can clash, work can be planned on equipment that is broken or due for maintenance, staff may not be told when a booked resource becomes unavailable, and managers cannot easily see which resources are overloaded and which sit idle. This costs staff time, can delay test results and makes complete equipment records hard to keep, at a time when labs face rising workloads, staff shortages and tight budgets.
 
 **Our question:** How can we give every lab staff member one trustworthy, live view of shared resources, so that bookings never clash, unusable equipment is never booked, and managers can see how resources are really used?
 
-**Our answer:** a web-based Resource Reservation Management System that gives all lab staff one live schedule, makes clashing bookings impossible, keeps broken and under-maintenance equipment off the schedule, and shows managers how each resource is used ([section 8](#8-what-the-system-will-do)).
+**Our answer:** a web-based Resource Reservation Management System that gives all lab staff one live schedule, makes clashing bookings impossible, keeps broken and under-maintenance equipment off the schedule, and shows managers how each resource is used ([features](#4-features)).
 
 ### The problem at a glance
 
@@ -50,194 +71,261 @@ _Illustrative example, not a documented incident._
 | 10:30      | The service engineer arrives for a calibration visit that was agreed by phone with the lab manager.                                   |
 | **Result** | Two runs and a service visit compete for one machine. One run waits until the afternoon, and no record shows how often this happens.  |
 
-## 2. Background
+### How BenchBook answers each problem
 
-Medical laboratories test patient samples so that doctors can diagnose and treat. They work in hospitals, private diagnostic networks, and public health and reference services. A typical lab has sections such as Clinical Biochemistry, Haematology, Microbiology, Molecular Diagnostics and Histopathology. Many labs work as networks, where collection centres and branch labs send samples to a main lab.
+| Problem                                                         | BenchBook's answer                                                                                         |
+| --------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| **P1** No single, up-to-date view                               | One live calendar and "Find a slot" across every site                                                      |
+| **P2** Bookings can clash                                       | The database rejects overlapping bookings, even at the same moment                                         |
+| **P3** Broken or under-maintenance equipment can be planned     | Maintenance blocks, out-of-service status, calibration due-day rule, failed checks take equipment offline |
+| **P3** Staff may not hear about changes                         | Cancellations with reasons, in-app notifications and "notify me" alerts                                    |
+| **P5** Managers can't see what's busy or idle                   | Usage dashboard and equipment reports                                                                      |
 
-The main analysers run all day for routine tests, so they are usually not booked. Many other resources, however, are shared, and staff take turns to use them:
+International lab guidance (WHO laboratory quality handbook, ISO 15189) expects labs to control equipment use, service schedules and equipment records. The full problem statement, evidence and sources are in [docs/problem-statement.pdf](docs/problem-statement.pdf).
 
-- **Instruments for runs or special tests:** real-time PCR machines, nucleic-acid extraction systems, HPLC analysers (for example, for HbA1c), ELISA readers and washers, flow cytometers and fluorescence microscopes.
-- **Safety and storage spaces:** biosafety cabinets and cold rooms.
-- **Rooms:** training and meeting rooms.
-- **Vehicles:** vans or motorbikes that carry samples between collection centres, branches and the main lab.
+**Scope boundary.** Patient data, test requests and results belong to the lab's LIMS (laboratory information system) and are deliberately out of scope. When an instrument is at another site, labs usually send the samples, not the people, so BenchBook schedules the sample vans and the receiving lab's instrument time.
 
-These resources are limited and expensive, so labs must manage them carefully. WHO’s laboratory quality handbook tells labs to “designate those authorized to use the equipment and when it is to be used”, to schedule routine service “so as not to interrupt the flow of work”, and to keep a logbook for each instrument [1]. ISO 15189, the international standard for medical laboratories, requires equipment to be operated by trained, authorized and competent staff, faulty equipment to be taken out of service and clearly labelled, and records to be kept for each item of equipment [2].
+---
 
-## 3. Why this problem is common to medical labs everywhere
+## 2. Quick start
 
-- **Same rules everywhere.** WHO guidance and ISO 15189 are international, so their equipment expectations are the same wherever they are used [1, 2]. In 2024, more than 114,600 laboratories worldwide (testing, calibration and medical labs together) were accredited by bodies in the ILAC international recognition arrangement [3].
-- **Same kinds of shared resources.** Hospital labs, private networks, and public health and reference labs typically share instruments, cabinets and rooms, and many move samples between sites. In Sri Lanka, a cluster laboratory system already runs in the Kalmunai health region [9], and primary care institutions send samples to apex laboratories [8]. Sample transport delays are also reported in Nepal and the Philippines [4].
-- **Same pressures.** Labs in Sri Lanka and across the Asia–Pacific report rising demand, staff shortages and limited funding and equipment [4, 8, 9]. Lean studies from the USA and Spain also found manual steps, such as data processing and sample registration, to be waste [5], so this is not only a problem for low-resource labs.
-- **One design fits many labs.** Each lab sets its own sites, sections, resource categories, booking limits and time zone, so the same system can serve a single hospital lab or a national lab network.
+**You need:** [Node.js](https://nodejs.org/) 22.12 or newer (24 LTS recommended, see `.nvmrc`), npm, and [Docker Desktop](https://www.docker.com/products/docker-desktop/) running.
 
-## 4. Who is affected
+```bash
+git clone https://github.com/HajithMohamed/Medical-Lab-Resource-Reservation-System.git
+cd Medical-Lab-Resource-Reservation-System
+npm install
+npm run setup
+npm run dev
+```
 
-| Who                                                 | What they need                                                                           | What goes wrong without a shared schedule                                                                 |
-| --------------------------------------------------- | ---------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| **Medical laboratory technologists and scientists** | To see quickly whether a resource is free and working, and to reserve it                 | They check logbooks, walk to the instrument or phone around. Clashes are found on arrival, and runs wait. |
-| **Section heads and supervisors**                   | To plan each day’s runs across shared resources                                          | Time goes on settling clashes and re-planning work.                                                       |
-| **Lab manager and quality manager**                 | To use costly equipment well, keep equipment records for audits and plan purchases       | No reliable usage data. Records are spread across logbooks and messages.                                  |
-| **Equipment officer or biomedical engineer**        | To schedule service without disrupting work, and to take faulty equipment out of service | Cannot see bookings when planning service, and has no easy way to warn everyone affected.                 |
-| **Doctors and patients (indirectly)**               | Test results on time                                                                     | When work is re-planned, results come later.                                                              |
+Open **http://localhost:3000** and sign in with one of the [demo accounts](#3-demo-accounts).
 
-## 5. The main problems and the evidence
+`npm run setup` runs once. It starts PostgreSQL in Docker, creates the tables and database rules from the migrations, and loads the demo accounts and starter data. You do **not** need to create an `.env` file: `.env.development` is committed with local-only values.
 
-| Problem                                                                                            | What the evidence shows                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| -------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **P1. No single, up-to-date view of resources**                                                    | Sri Lanka’s Medical Research Institute (MRI) reported that its manual, paper-based system caused “incorrect data entries, data duplication, increased clerical work” and difficulty tracking samples [7]. A 2024 systematic review notes that “clerical work and phone calls do not add value to the laboratory result”, which is why removing them cut waiting times in one study [5]. Digital tools are still limited: only a few Sri Lankan public institutions use a laboratory information system [9], and smaller Sri Lankan facilities may lack internet access entirely [4].                                                                                                                        |
-| **P2. Bookings clash**                                                                             | Paper logbooks, phone calls and chat messages cannot check a new booking against existing ones, so two people can plan the same slot without knowing it. No study we found measures how often this happens, so it must be confirmed with users ([section 10](#10-assumptions-limits-and-validation)).                                                                                                                                                                                                                                                                                                                                                                                                       |
-| **P3. Broken or under-maintenance equipment still gets planned, and breakdowns are not passed on** | WHO tells labs to schedule routine service “so as not to interrupt the flow of work”, to record when equipment was removed from service and returned to use, and to place a note on faulty equipment so all staff know it is not in use [1]. ISO 15189 requires faulty equipment to be taken out of service and clearly labelled until it is shown to work [2]. At Teaching Hospital Kalutara, problems including equipment functionality contributed to “long patient waiting times, missed investigations, and inconsistencies in report quality” [10]. In Sri Lankan primary care institutions, health workers named poor maintenance of the auto analyser among the reasons tests were unavailable [8]. |
-| **P4. Nothing checks who may use an instrument**                                                   | WHO says “only personnel who have been trained specifically to properly use the equipment should be authorized as operators” [1], and ISO 15189 requires equipment to be operated by trained, authorized and competent staff [2]. A name written in a logbook is usually not checked against any list of authorised users.                                                                                                                                                                                                                                                                                                                                                                                  |
-| **P5. Managers cannot see how resources are used**                                                 | A 2023 overview of Sri Lankan public laboratory services notes that many institutions, including MRI, “are not using the costly machinery at night”, that “the efficiency of usage in the day is also below the expected level”, and that improper use increases downtime and repair costs [9]. MRI reported that its manual system made it hard to “generate timely statistical data” [7]. Lack of equipment and funding are among the challenges reported by Asia–Pacific labs [4], so the equipment a lab already has must be used well.                                                                                                                                                                 |
+<details>
+<summary>The same setup, step by step</summary>
 
-## 6. Why it matters
+```bash
+npm run db:up       # start PostgreSQL 17 in Docker (also creates the test database)
+npm run db:deploy   # create tables and rules from prisma/migrations
+npm run db:seed     # add demo accounts, sites, sections, categories and resources
+```
 
-- **Staff time.** Clerical work and phone calls “do not add value to the laboratory result” [5]. Staff are short: 20% of Asia–Pacific survey respondents cited staff shortages [4], and medical laboratory technicians (MLTs) were present in only 3 of the 9 Sri Lankan primary care institutions studied [8]. Every hour counts.
-- **Turnaround time and patients.** In one hospital, the tasks in the inpatient blood-test process added up to a theoretical minimum of 47 minutes, yet delays between tasks, caused by work schedules and policies such as batching, meant the lead time could be over 40 hours [6]. In a 2024 review of seven lean studies, changes such as barcoding and process redesign cut the studies’ combined turnaround time by more than 70%, although results varied widely [5]. At Teaching Hospital Kalutara, process and equipment problems contributed to long waiting times and missed investigations [10].
-- **Money.** In Sri Lanka’s public sector, costly machines often stand unused at night, and improper use raises downtime and repair costs [9].
-- **Quality and audits.** WHO guidance and ISO 15189 expect clear equipment status, authorised use and complete records [1, 2]. Records spread across logbooks, sheets and messages are hard to keep complete and to check.
+</details>
 
-## 7. Root causes
+<details>
+<summary>No Docker? Use your own PostgreSQL</summary>
 
-1. **Information lives in many places:** logbooks, sign-up sheets, whiteboards, phones and chat groups.
-2. **Nothing checks a booking when it is made:** not for overlaps, length limits, equipment status or authorisation.
-3. **Equipment status and maintenance are recorded apart from the schedule,** so the schedule does not “know” when a machine is down.
-4. **Use is not recorded in a form that can be counted,** so there is no usage data.
+Create `.env.local` with your connection string (PostgreSQL 15 or newer):
 
-## 8. What the system will do
+```bash
+DATABASE_URL="postgresql://USER:PASSWORD@localhost:5432/lab_reservations"
+```
 
-A web-based Resource Reservation Management System that gives all lab staff one live, trustworthy schedule for shared resources. Each feature answers one or more of the problems in [section 5](#5-the-main-problems-and-the-evidence).
+Then run `npm run db:deploy`, `npm run db:seed` and `npm run dev`.
 
-| Feature                                             | What it does                                                                                                                                                                                                                   | Solves |
-| --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------ |
-| **1. Resource register**                            | Lists every shared resource with its category, section, site, location and status: active, out of service or retired. Retired resources keep their history.                                                                    | P1, P5 |
-| **2. Live availability**                            | Day and week views for each resource and each site, showing bookings and blocked time.                                                                                                                                         | P1     |
-| **3. Clash-free booking**                           | The database itself rejects overlapping bookings, even when two people book the same slot at the same moment. Simple rules: no bookings in the past, a maximum length per category, only working resources, and room capacity. | P2     |
-| **4. Maintenance and breakdowns**                   | Managers block time for service or mark a resource out of service. One action cancels the affected bookings and records the reason, which each person sees in “My bookings”.                                                   | P3     |
-| **5. Usage dashboard**                              | Shows busy and idle resources, peak hours and use by section, so managers can plan.                                                                                                                                            | P5     |
-| **6. Equipment calibration, care & lifecycle (E1)** | Calibration and maintenance schedules entered when resources are registered, per ISO 15189:2022. Append-only verification history, booking blocks past calibration due day, and immediate removal from service upon failure.   | P3, P5 |
-| **Optional: authorised users**                      | Only staff authorised for a resource can book it.                                                                                                                                                                              | P4     |
+</details>
 
-### Roles and menus
+---
 
-The system enforces separation of duties across three roles with strict server-side authorization:
+## 3. Demo accounts
 
-- **STAFF:** A lab worker at one site and section. Finds and books resources at any site for themselves and manages their own bookings. Sees equipment verification history and status tags (`Current`, `Due soon`, `Due today`, `Overdue`, `Failed`).
-- **MANAGER:** The manager of one site. Does everything staff do, plus manages their site's staff accounts, resources, equipment care, maintenance, bookings oversight, and usage. On `/equipment`, manages the "Today" task list (`Mark as done`, `Not done`) and records verification results.
-- **ADMIN:** Runs the whole network. Has no site or section and does not book (`[ADMIN-NO-BOOK]`). Configures sites, sections, categories, and oversees all users, resources, equipment care, bookings, and system-wide usage.
+Created automatically by the seed. **Local development only**; they come from `.env.development` and must be changed or removed for any real deployment.
 
-The complete access rules, permission matrix, and role menus are documented in [docs/permissions.md](docs/permissions.md).
+| Role    | Email                 | Password                | Can do                                                                        |
+| ------- | --------------------- | ----------------------- | ----------------------------------------------------------------------------- |
+| Admin   | `admin@lab.example`   | `blue-river-lamp-2026`  | Runs the whole network: sites, sections, categories, all users and resources  |
+| Manager | `manager@lab.example` | `green-hill-cloud-2026` | Manages the Main Laboratory, Colombo: staff, resources, equipment care, usage |
+| Staff   | `staff@lab.example`   | `amber-leaf-stone-2026` | Finds and books resources at any site; manages own bookings                   |
 
-### Equipment care and data model
+Need more users? Sign in as admin (any role, any site) or manager (staff at their own site) and use **Users → Add user**. Each new account gets a one-time temporary password.
 
-Equipment care follows **ISO 15189:2022** clauses 6.4.5, 6.4.7, and 6.5.2 and **WHO LQMS** chapter 3:
+**Starter data:** three sites (Colombo, Kandy, Galle), lab sections, six resource categories and about a dozen resources with calibration and service schedules. There are no bookings, so you start from a clean schedule.
 
-- **Equipment details entered at registration:** When creating a resource, managers enter its manufacturer, model, serial number, entry into service date, and service life. For instruments, calibration and maintenance intervals are set from manufacturer manuals.
-- **Initial verification record:** Entering a last calibrated or serviced date automatically records the initial `PASS` event in one transaction.
-- **Append-only records:** In compliance with ISO 15189 6.4.7, `equipment_records` cannot be edited or deleted. Errors are corrected by recording a new outcome with explanatory notes.
-- **Calibration booking rule:** Bookings cannot run past the resource's calibration due day (`endAt <= endOfLabDay(nextCalibrationDueOn)`).
-- **Defective equipment isolation:** A failed calibration or performance check takes the instrument `OUT_OF_SERVICE` and cancels future unstarted bookings with the recorded reason. It cannot be returned to `ACTIVE` until a passing check is recorded.
+---
 
-**How to book.** Find a slot: choose date, time, duration and filters, pick a free resource. Or click a free slot on the calendar.
+## 4. Features
 
-**Out of scope for this version.** Patient data, test orders and results (the job of a laboratory information system, or LIMS); connections to analysers; reagent and stock management; staff rosters; approval workflows; email or SMS alerts; billing.
+| Feature                    | What it does                                                                                                                                       |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Resource register**      | Instruments, cabinets, rooms and vans with category, site, section, location, status (active, out of service, retired) and equipment details.      |
+| **Live calendar**          | Day view per site and week view per resource, with bookings, maintenance blocks and out-of-service equipment. Refreshes automatically.             |
+| **Find a slot**            | Search by date, time, length and category across all sites; busy resources show the nearest free start times.                                      |
+| **Clash-free booking**     | Overlapping bookings are rejected by the database itself. Category length limits, slot rules and the calibration due day are checked.             |
+| **My bookings**            | Upcoming, past and cancelled bookings, with the reason when someone else cancelled one.                                                           |
+| **Maintenance & breakdowns** | Managers block time or report a breakdown; affected bookings are listed first and cancelled together, with the reason recorded.                  |
+| **Equipment care**         | Calibration and service schedules, a Today list of due and overdue work, append-only calibration/service/repair records, and a condition rating. |
+| **Equipment reports**      | Condition of every instrument and a calibration and service log, with **PDF** and **CSV** downloads for audits.                                    |
+| **Notifications**          | In-app bell that updates by itself: cancelled bookings, equipment taken out of service, due and overdue reminders.                                 |
+| **"Notify me" alerts**     | When a resource is busy or out of service, staff can ask to be told when it becomes free.                                                          |
+| **Usage dashboard**        | Utilisation, busy and idle resources, peak hours and use by section, with CSV export.                                                             |
+| **Users and settings**     | Accounts with roles, temporary passwords, deactivation; sites, sections and categories with booking limits.                                       |
+| **Responsive design**      | Works on desktop, tablet and phone.                                                                                                               |
 
-**Relationship to a LIMS.** A LIMS focuses on patients, samples and results. A Sri Lankan study of LIMS needs in four private Colombo hospitals listed requirements from patient registration to report issue, plus support services such as stock management, quality control and statistics; booking shared resources was not among them [11]. This system fills that gap and could connect to a LIMS later.
+---
 
-## 9. How we will know it works
+## 5. Roles
 
-Targets for the first version, checked by automated tests and in the demo:
+| Role        | Scope              | Main abilities                                                                                                                                   |
+| ----------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Staff**   | Own account        | Sees every site's availability, books resources at any site, cancels own bookings that have not started, sets "notify me" alerts.               |
+| **Manager** | One site           | Everything staff can do, plus that site's staff accounts, resources, maintenance blocks, equipment care, bookings oversight and usage.           |
+| **Admin**   | The whole network  | Sites, sections, categories, all users, all resources, equipment care and usage across sites. Admins do not book (separation of duties).        |
 
-- Zero overlapping confirmed bookings for any resource, guaranteed by the database and proven by an automated test that sends two booking requests at the same moment.
-- Zero bookings accepted for out-of-service resources or during maintenance blocks.
-- Every booking cancelled by a breakdown shows its reason to the person who made it.
-- A staff member can find a free slot and book it in under one minute (checked in a short user test).
-- A manager can see four weeks of use by resource and by section.
+The full permission matrix is in [docs/permissions.md](docs/permissions.md).
 
-## 10. Assumptions, limits and validation
+---
 
-**Assumptions**
+## 6. Tech stack
 
-- An internal tool for lab staff only. It stores no patient data.
-- One organisation with several sites in one time zone. The demo uses Sri Lanka time; the time zone is a setting.
-- Each physical unit is its own resource: two PCR machines are two resources.
-- Main analysers that run all day are not booked.
-- It runs in a web browser and needs a network connection to its server. A site without internet [4] could use an installation on its local network.
+| Area             | Choice                                                                 |
+| ---------------- | ---------------------------------------------------------------------- |
+| Framework        | Next.js 16 (App Router), React 19                                      |
+| Language         | TypeScript                                                             |
+| Database         | PostgreSQL 17                                                          |
+| ORM              | Prisma 7 with `@prisma/adapter-pg`                                     |
+| UI               | Tailwind CSS 4, shadcn/ui (Radix), lucide-react icons                  |
+| Validation       | Zod 4 (every input is validated on the server)                         |
+| Authentication   | Own session code, following the official Next.js authentication guide |
+| Password hashing | bcrypt via `bcryptjs` (cost factor 12)                                 |
+| Sessions         | Signed JWT (`jose`, HS256) in an httpOnly cookie                       |
+| Dates and times  | date-fns + `@date-fns/tz`                                              |
+| PDF reports      | `@react-pdf/renderer`                                                  |
+| Testing          | Vitest (unit + integration against a real PostgreSQL)                  |
+| CI               | GitHub Actions                                                         |
+| Local database   | Docker Compose                                                         |
 
-**Limits of the evidence**
+---
 
-The sources show the pressures labs face, what the standards require and the cost of manual processes. None of them measures how often booking clashes happen. The Asia–Pacific survey had a response rate of only 1.2% [4], and the Sri Lankan studies cover particular settings. So, before a real rollout, the problem should be confirmed with users: interview a lab manager, two or three technologists and an equipment officer, and ask:
+## 7. Authentication and security
 
-- How are shared instruments, cabinets, rooms and vehicles booked today?
-- How do you find out whether something is free, in use or out of service?
-- How often do two people plan the same resource, and what happens then?
-- How are service visits and breakdowns announced?
-- What would managers like to know about how resources are used?
+- **No auth library.** Sign-in follows the official Next.js authentication guide (stateless session + data access layer), so every rule is visible and tested.
+- **Password hashing:** bcrypt (`bcryptjs`) with cost factor 12. Hashes are never sent to the browser.
+- **Password rules (NIST SP 800-63B):** 15–64 characters, checked against a list of common passwords, and must not contain the email name. No arbitrary symbol or capital-letter rules.
+- **Sessions:** a JWT signed with `jose` (HS256) holding only the user id and a session version, stored in an **httpOnly**, **SameSite=Lax** cookie (**Secure** in production) that lasts one 8-hour shift.
+- **Every request re-checks the user** in the database, so a deactivated user or a changed password ends the session immediately. Increasing the **session version** signs a user out everywhere.
+- **Brute-force protection:** 5 wrong tries lock the account for 15 minutes. The decision runs in a short transaction that locks the user row, so parallel guesses cannot get past the limit. The error message is the same for every failure, so it never reveals whether an email exists.
+- **Accounts:** no public sign-up. Admins and managers create accounts; each gets a unique temporary password, shown once, stored only as a hash, and changed at first sign-in.
+- **Authorisation:** every page and server action checks the user's role and site on the server. `src/proxy.ts` is only a first filter that sends visitors without a session to the sign-in page.
 
-## Getting started
+---
 
-### Prerequisites
+## 8. Architecture and key decisions
 
-- **Node.js**: 24 LTS (or 22.12+)
-- **npm**: v10+
-- **Docker Desktop** (or a local **PostgreSQL 17** instance)
+```
+Browser → src/app (pages) → src/actions (server actions) → src/services (rules + Prisma) → PostgreSQL
+```
 
-### Setup and Run Steps
+- **Layered folders.** Pages render, actions check the user and validate input, services hold all business rules and database access. Services never import Next.js, so they are tested directly.
+- **The clash rule lives in the database.** A PostgreSQL exclusion constraint (`reservations_no_overlap`) rejects overlapping confirmed reservations, even when two people book at the same moment.
+- **One transaction per multi-step change.** Taking equipment out of service, cancelling the affected bookings and notifying people happen together or not at all.
+- **Maintenance is a reservation.** A maintenance block is a reservation of kind `MAINTENANCE`, so the same clash rule protects it.
+- **Equipment records are append-only** (ISO 15189). Calibration, service, check and repair results are never edited or deleted; a mistake is corrected by a new record.
+- **Equipment safety rules.** Bookings cannot run past an instrument's calibration due day; a failed check takes it out of service at once; it returns to service only after a passing check.
+- **Nothing is deleted.** Bookings are cancelled with a reason, users are deactivated, resources are retired.
+- **Times** are stored in UTC and shown in the lab time zone (`APP_TIME_ZONE`, Asia/Colombo).
+- **Live updates by polling** (notifications and calendar), because the target hosting does not keep socket connections open.
+- **Daily reminders** come from one idempotent job: `GET /api/cron/daily` (protected by `CRON_SECRET`) for hosting, or `npm run daily` locally.
 
-1. **Clone the repository:**
-   ```bash
-   git clone <repo-url>
-   cd Medical-Lab-Resource-Reservation-System
-   ```
-2. **Install dependencies** (also generates the Prisma client via `postinstall`):
-   ```bash
-   npm install
-   ```
-3. **Start the database container:**
-   ```bash
-   npm run db:up
-   ```
-4. **Apply database migrations:**
-   ```bash
-   npm run db:deploy
-   ```
-5. **Seed the database:**
-   ```bash
-   npm run db:seed
-   ```
-   > **Note:** Demo user accounts and credentials are configured in `.env.development`.
-6. **Start the development server:**
-   ```bash
-   npm run dev
-   ```
-7. Open [http://localhost:3000](http://localhost:3000) in your browser.
+All decisions with context and consequences: [docs/decisions.md](docs/decisions.md).
 
-### Useful scripts
+---
 
-| Script                | Description                                            |
-| --------------------- | ------------------------------------------------------ |
-| `npm run db:up`       | Start the local PostgreSQL 17 Docker container         |
-| `npm run db:down`     | Stop the local PostgreSQL container                    |
-| `npm run db:migrate`  | Create and apply development migrations locally        |
-| `npm run db:deploy`   | Apply migrations in production or CI without prompt    |
-| `npm run db:generate` | Generate the Prisma client into `src/generated/prisma` |
-| `npm run db:seed`     | Seed database users and demo laboratory network        |
-| `npm run db:reset`    | Reset database and re-run seed (interactive/dev only)  |
-| `npm run db:studio`   | Open Prisma Studio GUI in the browser                  |
-| `npm run test`        | Run both unit tests and integration tests              |
-| `npm run check`       | Run linter, typecheck, format check, and all tests     |
-| `npm run build`       | Build the production Next.js application               |
+## 9. Database
 
-## References
+| Table                      | Holds                                                                   |
+| -------------------------- | ----------------------------------------------------------------------- |
+| `sites`                    | Main lab and branch labs                                                |
+| `sections`                 | Lab sections (Haematology, Microbiology, …)                             |
+| `categories`               | Resource types with the maximum booking length                          |
+| `resources`                | Bookable things, with equipment details and calibration/service dates   |
+| `users`                    | Accounts, role, site, sign-in and lockout fields                        |
+| `reservations`             | Bookings and maintenance blocks (one table, one clash rule)             |
+| `equipment_records`        | Append-only calibration, service, check, repair and review history      |
+| `notifications`            | In-app notifications per user                                           |
+| `notification_preferences` | Per-user notification settings                                          |
+| `resource_watches`         | "Notify me when it's free" alerts                                       |
 
-1. World Health Organization. _Laboratory quality management system: handbook_. Chapter 3, Equipment. Geneva: WHO; 2011. [PDF](https://extranet.who.int/lqsi/sites/default/files/attachedfiles/LQMS%203.Equipment.pdf) · [Handbook](https://www.who.int/publications/i/item/9789241548274)
-2. International Organization for Standardization. _ISO 15189:2022 Medical laboratories: requirements for quality and competence_. 4th ed. (clauses 6.4.4, 6.4.5 and 6.4.7). Geneva: ISO; 2022. [Link](https://www.iso.org/standard/76677.html)
-3. International Laboratory Accreditation Cooperation (ILAC). _Facts and figures_. Accessed 12 October 2026. [Link](https://ilac.org/about-ilac/facts-and-figures/)
-4. Maharjan AS, Zhang YV, Rej R, Ramanathan L, Targowski A, Cosby K, et al. Current challenges and needs of clinical laboratories in the Asia–Pacific region: a cross-country assessment. _J Appl Lab Med._ 2026;11(4):939–953. [doi:10.1093/jalm/jfag020](https://doi.org/10.1093/jalm/jfag020)
-5. Cherie N, Berta DM, Tamir M, Yiheyis Z, Angelo AA, Tarekegn AM, et al. Improving laboratory turnaround times in clinical settings: a systematic review of the impact of lean methodology application. _PLoS One._ 2024;19(10):e0312033. [doi:10.1371/journal.pone.0312033](https://doi.org/10.1371/journal.pone.0312033)
-6. Silvester K. Systems engineering case study: improving patient safety and system productivity by reducing lead-times for blood tests. _Future Healthc J._ 2019;6(1):25–29. [doi:10.7861/futurehosp.6-1-25](https://doi.org/10.7861/futurehosp.6-1-25)
-7. Medical Research Institute, Sri Lanka. _Medical laboratory information management system (MLIMS)_. Accessed 12 October 2026. [Link](https://www.mri.gov.lk/mlims/)
-8. Thekkur P, Fernando M, Nair D, Kumar AMV, Satyanarayana S, Chandraratne N, et al. Primary health care system strengthening project in Sri Lanka: status and challenges with human resources, information systems, drugs and laboratory services. _Healthcare._ 2022;10(11):2251. [doi:10.3390/healthcare10112251](https://doi.org/10.3390/healthcare10112251)
-9. Ibrahim SM. An overview of strategies to overcome the rising demand for laboratory services in the Sri Lankan public health sector. _Int J Sci Res Eng Dev._ 2023;6(6):490–497. [PDF](https://ijsred.com/volume6/issue6/IJSRED-V6I6P57.pdf)
-10. Dissanayake DMAK, Samarawickrama MS, Premadasa N, Bandara RAMCH. Improving the laboratory investigation process at the outpatient department of Teaching Hospital Kalutara: a quality improvement initiative. _Sri Lanka J Med Adm._ 2025;26(1):45–48. [Link](https://sljma.sljol.info/articles/10.4038/sljma.v26i1.5512)
-11. Fernando HHLK, Fernando NS, Abeykoon I, Sahama T. Analysis of user needs to facilitate in designing a laboratory information management system for selected hospitals in Sri Lanka. KDU International Research Conference, abstracts; 2023. [Link](https://ir.kdu.ac.lk/handle/345/6808)
+**ER diagram:** [ER_DIAGRAM_URL](ER_DIAGRAM_URL) (source: [docs/er-diagram.dbml](docs/er-diagram.dbml)).
+
+Rules Prisma cannot express (the exclusion constraint, CHECK constraints, partial indexes) are written by hand in the SQL files under `prisma/migrations/`.
+
+---
+
+## 10. Project structure
+
+```
+prisma/             schema, migrations (with hand-written SQL rules), seed
+src/app/            pages and route handlers (App Router)
+src/actions/        server actions: auth check → validate → one service call
+src/services/       business rules and database access
+src/lib/            session, auth, permissions, time, pure helpers
+src/components/     UI components (shadcn/ui based)
+src/config/         business numbers (rules.ts), navigation, actions
+tests/unit/         pure function tests
+tests/integration/  service tests against a real PostgreSQL test database
+docs/               problem statement, decisions, permissions, design system, ER diagram
+.github/workflows/  CI
+```
+
+---
+
+## 11. Scripts
+
+| Command                   | What it does                                                    |
+| ------------------------- | --------------------------------------------------------------- |
+| `npm run setup`           | One-time local setup: database up, migrations, seed             |
+| `npm run dev`             | Start the app at http://localhost:3000                          |
+| `npm run build` / `start` | Production build / run it                                       |
+| `npm run db:up` / `down`  | Start / stop the local PostgreSQL container                     |
+| `npm run db:deploy`       | Apply migrations                                                |
+| `npm run db:seed`         | Load demo accounts and starter data (safe to run again)         |
+| `npm run db:reset`        | **Delete all local data**, re-apply migrations and seed         |
+| `npm run db:studio`       | Browse the database in Prisma Studio                            |
+| `npm run daily`           | Run the daily reminder job once                                 |
+| `npm run test`            | Unit and integration tests                                      |
+| `npm run check`           | Lint, type check, format check and all tests                    |
+
+---
+
+## 12. Testing and CI
+
+```bash
+npm run db:up        # the test database (lab_reservations_test) is created automatically
+npm run test         # unit tests, then integration tests (applies migrations to the test DB first)
+npm run check        # everything CI runs except the build
+```
+
+Integration tests run against a real PostgreSQL test database, never the development one, and cover the business rules and the "not allowed" cases for each role.
+
+**GitHub Actions** runs on every push and pull request to `develop` and `main`: lint, type check, format check, unit tests, integration tests against PostgreSQL 17, and a production build.
+
+---
+
+## 13. Troubleshooting
+
+| Problem                                   | Fix                                                                                          |
+| ----------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `npm run setup` fails at the database step | Start Docker Desktop and run it again.                                                      |
+| Port 5432 is already in use               | Stop the other PostgreSQL, or change the port in `docker-compose.yml` and `DATABASE_URL`.     |
+| Can't sign in with the demo accounts      | Run `npm run setup` (or `npm run db:seed`) — the database has no accounts yet.               |
+| Start again from a clean database         | `npm run db:reset` (deletes all local data).                                                 |
+| Reminders don't appear                    | Run `npm run daily`, or open Maintenance & care.                                             |
+
+---
+
+## 14. Scope and next steps
+
+**Deliberately out of scope:** patient data, test requests and results (the lab's LIMS), analyser connections, stock, staff rosters, billing, email and SMS (notifications are in-app; email delivery is off).
+
+**Possible next steps:**
+
+- Email alerts for urgent notifications.
+- A per-category setting for whether other sites can book a resource.
+- Linking a booking to a LIMS batch number so samples, van runs and instrument time can be traced together.
+- A second-person check on calibration results.
+
+---
+
+**Author:** Hajith Mohamed · PrimeWave Lab Software Engineering Internship technical assessment, October 2026.
