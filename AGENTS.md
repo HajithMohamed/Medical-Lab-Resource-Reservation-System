@@ -159,12 +159,17 @@ Browser -> src/app (pages) -> src/actions (Server Actions)
 
 ## 5. Data model (prisma/schema.prisma is the source of truth)
 
-Tables: sites, sections, categories, resources, users, reservations, equipment_records.
+Tables: sites, sections, categories, resources, users, reservations, equipment_records,
+notifications, notification_preferences, resource_watches.
 Enums: Role (STAFF, MANAGER, ADMIN), ResourceStatus (ACTIVE,
 OUT_OF_SERVICE, RETIRED), ReservationKind (BOOKING, MAINTENANCE),
 ReservationStatus (CONFIRMED, CANCELLED), EquipmentRecordKind (CALIBRATION,
 PREVENTIVE_MAINTENANCE, PERFORMANCE_CHECK, REPAIR, REPLACEMENT_REVIEW),
-EquipmentOutcome (PASS, FAIL, NOT_DONE, KEEP_IN_SERVICE, REPLACE).
+EquipmentOutcome (PASS, FAIL, NOT_DONE, KEEP_IN_SERVICE, REPLACE),
+NotificationKind (BOOKING_CANCELLED, EQUIPMENT_OUT_OF_SERVICE, DUE_SOON,
+DUE_TODAY, OVERDUE, REVIEW_DUE, RESOURCE_BACK_IN_SERVICE, SLOT_FREE),
+ResourceWatchKind (BACK_IN_SERVICE, SLOT_FREE),
+ResourceWatchStatus (ACTIVE, SENT, EXPIRED, CANCELLED).
 
 - `resources` has equipment identity and schedule columns: manufacturer, model,
   serial_number, in_service_on, expected_service_life_years, replacement_review_due_on,
@@ -176,6 +181,8 @@ EquipmentOutcome (PASS, FAIL, NOT_DONE, KEEP_IN_SERVICE, REPLACE).
   clash rule protects it.
 - Nothing is deleted: reservations are cancelled (reason, who, when),
   users are deactivated, resources are retired.
+- `notifications`: in-app alerts with UNIQUE (user_id, dedupe_key) and link starting with '/'.
+- `resource_watches`: "notify me when it's free" or "back in service" alerts with partial UNIQUE on active watches.
 - Rules written by hand in the migrations (Prisma cannot express them):
     reservations_no_overlap  EXCLUDE USING gist (resource_id WITH =,
       tstzrange(start_at, end_at, '[)') WITH &&) WHERE (status = 'CONFIRMED')
@@ -192,7 +199,12 @@ EquipmentOutcome (PASS, FAIL, NOT_DONE, KEEP_IN_SERVICE, REPLACE).
       equipment_records_next_due_after_performed,
       equipment_records_work_performed_when_done,
       equipment_records_work_performed_length,
-      equipment_records_external_company_length
+      equipment_records_external_company_length,
+      notifications_link_starts_with_slash,
+      resource_watches_kind_fields
+    Partial Indexes: notifications_user_id_unread_idx,
+      resource_watches_user_resource_kind_active_idx,
+      resource_watches_resource_active_idx
 - New migrations: `npx prisma migrate dev --name <name> --create-only`, then
   READ the SQL. If it drops any rule above or the btree_gist extension,
   delete those lines. Then run `npx prisma migrate dev` and

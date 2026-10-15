@@ -18,9 +18,31 @@ const globalForPrisma = globalThis as unknown as {
   prismaGlobal: PrismaClient | undefined;
 };
 
-export const db: PrismaClient = globalForPrisma.prismaGlobal ?? createPrismaClient();
+function getPrismaClient(): PrismaClient {
+  const current = globalForPrisma.prismaGlobal;
+  if (
+    current &&
+    "notification" in (current as unknown as Record<string, unknown>) &&
+    "resourceWatch" in (current as unknown as Record<string, unknown>)
+  ) {
+    return current;
+  }
+  const client = createPrismaClient();
+  if (env.NODE_ENV !== "production") {
+    globalForPrisma.prismaGlobal = client;
+  }
+  return client;
+}
+
+export const db: PrismaClient = new Proxy({} as PrismaClient, {
+  get(_target, prop, receiver) {
+    const client = getPrismaClient();
+    const value = Reflect.get(client, prop, receiver);
+    if (typeof value === "function") {
+      return value.bind(client);
+    }
+    return value;
+  },
+});
 export const prisma = db;
 
-if (env.NODE_ENV !== "production") {
-  globalForPrisma.prismaGlobal = db;
-}

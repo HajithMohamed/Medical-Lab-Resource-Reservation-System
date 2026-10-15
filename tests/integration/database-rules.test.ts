@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { db } from "@/lib/db";
-import { isOverlapError, isCheckError } from "@/lib/db-errors";
+import { isOverlapError, isCheckError, isUniqueError } from "@/lib/db-errors";
 import { resetDatabase, createTestData, makeTestTime } from "../helpers/db";
 import {
   Role,
@@ -8,6 +8,9 @@ import {
   ReservationStatus,
   EquipmentRecordKind,
   EquipmentOutcome,
+  NotificationKind,
+  ResourceWatchKind,
+  ResourceWatchStatus,
 } from "@/generated/prisma/client";
 
 describe("Database Rules & Constraints", () => {
@@ -639,6 +642,97 @@ describe("Database Rules & Constraints", () => {
     }
     expect(
       isCheckError(externalCompanyLengthError, "equipment_records_external_company_length"),
+    ).toBe(true);
+  });
+
+  it("10. notifications_link_starts_with_slash CHECK constraint rejects links not starting with '/'", async () => {
+    let thrownError: unknown;
+    try {
+      await db.notification.create({
+        data: {
+          userId: fixture.staffUser.id,
+          kind: NotificationKind.BOOKING_CANCELLED,
+          title: "Test Notification",
+          body: "This has an invalid link",
+          link: "https://evil.com/phishing",
+        },
+      });
+    } catch (err) {
+      thrownError = err;
+    }
+
+    expect(thrownError).toBeDefined();
+    expect(isCheckError(thrownError, "notifications_link_starts_with_slash")).toBe(true);
+  });
+
+  it("11. resource_watches_kind_fields CHECK constraint validates kind-specific fields", async () => {
+    // 11a. SLOT_FREE missing wanted_start
+    let missingSlotFieldsError: unknown;
+    try {
+      await db.resourceWatch.create({
+        data: {
+          userId: fixture.staffUser.id,
+          resourceId: fixture.resource1.id,
+          kind: ResourceWatchKind.SLOT_FREE,
+          expiresAt: makeTestTime(2, "12:00"),
+        },
+      });
+    } catch (err) {
+      missingSlotFieldsError = err;
+    }
+    expect(isCheckError(missingSlotFieldsError, "resource_watches_kind_fields")).toBe(true);
+
+    // 11b. BACK_IN_SERVICE with unwanted wanted_start
+    let extraBackInServiceError: unknown;
+    try {
+      await db.resourceWatch.create({
+        data: {
+          userId: fixture.staffUser.id,
+          resourceId: fixture.resource1.id,
+          kind: ResourceWatchKind.BACK_IN_SERVICE,
+          wantedStart: makeTestTime(1, "10:00"),
+          expiresAt: makeTestTime(30, "12:00"),
+        },
+      });
+    } catch (err) {
+      extraBackInServiceError = err;
+    }
+    expect(isCheckError(extraBackInServiceError, "resource_watches_kind_fields")).toBe(true);
+  });
+
+  it("12. resource_watches_user_resource_kind_active_idx enforces unique active watch per user/resource/kind/start", async () => {
+    // 12a. First BACK_IN_SERVICE active watch succeeds
+    await db.resourceWatch.create({
+      data: {
+        userId: fixture.staffUser.id,
+        resourceId: fixture.resource1.id,
+        kind: ResourceWatchKind.BACK_IN_SERVICE,
+        status: ResourceWatchStatus.ACTIVE,
+        expiresAt: makeTestTime(30, "12:00"),
+      },
+    });
+
+    // Duplicate BACK_IN_SERVICE active watch for same user & resource is rejected
+    let duplicateBackInServiceError: unknown;
+    try {
+      await db.resourceWatch.create({
+        data: {
+          userId: fixture.staffUser.id,
+          resourceId: fixture.resource1.id,
+          kind: ResourceWatchKind.BACK_IN_SERVICE,
+          status: ResourceWatchStatus.ACTIVE,
+          expiresAt: makeTestTime(30, "12:00"),
+        },
+      });
+    } catch (err) {
+      duplicateBackInServiceError = err;
+    }
+    expect(duplicateBackInServiceError).toBeDefined();
+    expect(
+      isUniqueError(duplicateBackInServiceError) ||
+        (duplicateBackInServiceError as { message?: string }).message?.includes(
+          "resource_watches_user_resource_kind_active_idx",
+        ),
     ).toBe(true);
   });
 });

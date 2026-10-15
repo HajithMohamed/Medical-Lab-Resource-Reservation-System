@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { NAV_ITEMS } from "@/config/navigation";
 import { MapPin } from "lucide-react";
+import { NotificationsBell } from "@/components/notifications/notifications-bell";
 
 export function TopBar() {
   const pathname = usePathname();
@@ -121,8 +122,10 @@ export function TopBar() {
         <span className="text-[#94a3b8] text-[10px]">Colombo (UTC+5:30)</span>
       </div>
 
-      {/* Right: Location & Context */}
+      {/* Right: Notifications Bell & Location */}
       <div className="flex items-center gap-3 shrink-0">
+        <NotificationsBell />
+        <div className="h-4 w-px bg-[#334155] shrink-0" />
         <div className="flex items-center gap-2 text-xs text-[#94a3b8]">
           <MapPin className="size-3.5 text-[#6cd8cb] shrink-0" />
           <span className="font-medium text-white">Main Lab</span>

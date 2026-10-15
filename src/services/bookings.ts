@@ -19,6 +19,8 @@ import {
   labTimeString,
   labToday,
   startOfCurrentSlot,
+  formatLabDate,
+  formatLabTime,
 } from "@/lib/time";
 import { freeStartTimes, nearestStarts, type TimeRange } from "@/lib/slot-finder";
 import {
@@ -28,7 +30,9 @@ import {
   BOOKINGS_PAGE_SIZE,
   USAGE_MAX_DAYS,
 } from "@/config/rules";
-import type { Reservation, Role } from "@/generated/prisma/client";
+import { NotificationKind, type Reservation, type Role } from "@/generated/prisma/client";
+import { notifyInTx } from "@/services/notifications";
+import { checkWatchesForResource } from "@/services/watches";
 
 export interface BookingActor {
   id: string;
@@ -265,7 +269,7 @@ export async function cancelBooking(
     where: { id: reservationId },
     include: {
       resource: {
-        select: { siteId: true },
+        select: { id: true, name: true, siteId: true },
       },
     },
   });
@@ -306,15 +310,40 @@ export async function cancelBooking(
     };
   }
 
-  const updated = await db.reservation.update({
-    where: { id: reservationId },
-    data: {
-      status: "CANCELLED",
-      cancelReason: trimmedReason,
-      cancelledAt: now,
-      cancelledById: actor.id,
-    },
+  const updated = await db.$transaction(async (tx) => {
+    const res = await tx.reservation.update({
+      where: { id: reservationId },
+      data: {
+        status: "CANCELLED",
+        cancelReason: trimmedReason,
+        cancelledAt: now,
+        cancelledById: actor.id,
+      },
+    });
+
+    if (reservation.createdById !== actor.id) {
+      const zone = env.APP_TIME_ZONE;
+      await notifyInTx(
+        tx,
+        [reservation.createdById],
+        {
+          kind: NotificationKind.BOOKING_CANCELLED,
+          title: `Booking cancelled: ${reservation.resource.name}`,
+          body: `Your booking for ${reservation.resource.name} on ${formatLabDate(reservation.startAt, zone)} from ${formatLabTime(reservation.startAt, zone)} to ${formatLabTime(reservation.endAt, zone)} was cancelled. Reason: ${trimmedReason}.`,
+          link: "/bookings?tab=cancelled",
+          resourceId: reservation.resource.id,
+          dedupeKey: `booking-cancelled:${reservation.id}`,
+          actorId: actor.id,
+        },
+      );
+    }
+
+    return res;
   });
+
+  checkWatchesForResource(reservation.resource.id).catch((err) =>
+    console.error("[watches] Error checking watches on cancelBooking:", err),
+  );
 
   return { ok: true, data: updated };
 }

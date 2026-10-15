@@ -10,6 +10,7 @@ import {
   ReservationStatus,
   EquipmentRecordKind,
   EquipmentOutcome,
+  NotificationKind,
   type Prisma,
 } from "@/generated/prisma/client";
 import {
@@ -21,8 +22,10 @@ import {
 } from "@/config/rules";
 import { equipmentPartsFor } from "@/config/equipment";
 import { isValidDay, dayToDb, dbToDay, addYearsToDay } from "@/lib/equipment-dates";
-import { labToday } from "@/lib/time";
+import { labToday, formatLabDate, formatLabTime } from "@/lib/time";
 import { trackerStatus, type TrackerStatus } from "@/lib/equipment-status";
+import { notifyInTx } from "@/services/notifications";
+import { checkWatchesForResource } from "@/services/watches";
 
 export type ServiceResult<T = void> =
   | { ok: true; data: T; message?: string; totalCount?: number; totalPages?: number }
@@ -696,27 +699,56 @@ export async function takeResourceOutOfServiceInTx(
   reason: string,
 ): Promise<number> {
   const now = new Date();
-  const updateResult = await tx.reservation.updateMany({
+  const bookingsToCancel = await tx.reservation.findMany({
     where: {
       resourceId,
       kind: ReservationKind.BOOKING,
       status: ReservationStatus.CONFIRMED,
       startAt: { gt: now },
     },
-    data: {
-      status: ReservationStatus.CANCELLED,
-      cancelReason: `Resource out of service: ${reason}`,
-      cancelledAt: now,
-      cancelledById: actorId,
+    include: {
+      resource: { select: { id: true, name: true } },
     },
   });
+
+  if (bookingsToCancel.length > 0) {
+    await tx.reservation.updateMany({
+      where: {
+        id: { in: bookingsToCancel.map((b) => b.id) },
+      },
+      data: {
+        status: ReservationStatus.CANCELLED,
+        cancelReason: `Resource out of service: ${reason}`,
+        cancelledAt: now,
+        cancelledById: actorId,
+      },
+    });
+
+    for (const b of bookingsToCancel) {
+      if (b.createdById !== actorId) {
+        await notifyInTx(
+          tx,
+          [b.createdById],
+          {
+            kind: NotificationKind.BOOKING_CANCELLED,
+            title: `Booking cancelled: ${b.resource.name}`,
+            body: `Your booking for ${b.resource.name} on ${formatLabDate(b.startAt)} from ${formatLabTime(b.startAt)} to ${formatLabTime(b.endAt)} was cancelled. Reason: ${reason}.`,
+            link: "/bookings?tab=cancelled",
+            resourceId: b.resourceId,
+            dedupeKey: `booking-cancelled:${b.id}`,
+            actorId,
+          },
+        );
+      }
+    }
+  }
 
   await tx.resource.update({
     where: { id: resourceId },
     data: { status: ResourceStatus.OUT_OF_SERVICE },
   });
 
-  return updateResult.count;
+  return bookingsToCancel.length;
 }
 
 /**
@@ -1347,22 +1379,51 @@ export async function changeStatus(
   } else if (newStatus === ResourceStatus.RETIRED) {
     const cancelReason = `Resource retired: ${trimmedReason}`;
     await db.$transaction(async (tx) => {
-      const updateResult = await tx.reservation.updateMany({
+      const bookingsToCancel = await tx.reservation.findMany({
         where: {
           resourceId: id,
           kind: ReservationKind.BOOKING,
           status: ReservationStatus.CONFIRMED,
           startAt: { gt: now },
         },
-        data: {
-          status: ReservationStatus.CANCELLED,
-          cancelReason,
-          cancelledAt: now,
-          cancelledById: actor.id,
+        include: {
+          resource: { select: { id: true, name: true } },
         },
       });
 
-      cancelledCount = updateResult.count;
+      if (bookingsToCancel.length > 0) {
+        await tx.reservation.updateMany({
+          where: {
+            id: { in: bookingsToCancel.map((b) => b.id) },
+          },
+          data: {
+            status: ReservationStatus.CANCELLED,
+            cancelReason,
+            cancelledAt: now,
+            cancelledById: actor.id,
+          },
+        });
+
+        for (const b of bookingsToCancel) {
+          if (b.createdById !== actor.id) {
+            await notifyInTx(
+              tx,
+              [b.createdById],
+              {
+                kind: NotificationKind.BOOKING_CANCELLED,
+                title: `Booking cancelled: ${b.resource.name}`,
+                body: `Your booking for ${b.resource.name} on ${formatLabDate(b.startAt)} from ${formatLabTime(b.startAt)} to ${formatLabTime(b.endAt)} was cancelled. Reason: ${cancelReason}.`,
+                link: "/bookings?tab=cancelled",
+                resourceId: b.resourceId,
+                dedupeKey: `booking-cancelled:${b.id}`,
+                actorId: actor.id,
+              },
+            );
+          }
+        }
+      }
+
+      cancelledCount = bookingsToCancel.length;
 
       await tx.resource.update({
         where: { id },
@@ -1375,6 +1436,10 @@ export async function changeStatus(
       where: { id },
       data: { status: ResourceStatus.ACTIVE },
     });
+    // Trigger watches check after status change commits
+    checkWatchesForResource(id).catch((err) =>
+      console.error("[watches] Error checking watches on status ACTIVE:", err),
+    );
   }
 
   let message = "Changes saved";

@@ -61,6 +61,35 @@ enum EquipmentOutcome {
   @@map("equipment_outcome")
 }
 
+enum NotificationKind {
+  BOOKING_CANCELLED
+  EQUIPMENT_OUT_OF_SERVICE
+  DUE_SOON
+  DUE_TODAY
+  OVERDUE
+  REVIEW_DUE
+  RESOURCE_BACK_IN_SERVICE
+  SLOT_FREE
+
+  @@map("notification_kind")
+}
+
+enum ResourceWatchKind {
+  BACK_IN_SERVICE
+  SLOT_FREE
+
+  @@map("resource_watch_kind")
+}
+
+enum ResourceWatchStatus {
+  ACTIVE
+  SENT
+  EXPIRED
+  CANCELLED
+
+  @@map("resource_watch_status")
+}
+
 /// A place where the lab works, e.g. the main lab or a branch lab.
 model Site {
   id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
@@ -135,6 +164,8 @@ model Resource {
   section          Section           @relation(fields: [sectionId], references: [id], onDelete: Restrict)
   reservations     Reservation[]
   equipmentRecords EquipmentRecord[]
+  notifications    Notification[]
+  resourceWatches  ResourceWatch[]
 
   @@unique([siteId, name])
   @@index([categoryId])
@@ -163,11 +194,14 @@ model User {
   createdAt          DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt          DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  site                  Site?             @relation(fields: [siteId], references: [id], onDelete: Restrict)
-  section               Section?          @relation(fields: [sectionId], references: [id], onDelete: Restrict)
-  reservationsMade      Reservation[]     @relation("ReservationCreatedBy")
-  reservationsCancelled Reservation[]     @relation("ReservationCancelledBy")
-  equipmentRecords      EquipmentRecord[]
+  site                    Site?                    @relation(fields: [siteId], references: [id], onDelete: Restrict)
+  section                 Section?                 @relation(fields: [sectionId], references: [id], onDelete: Restrict)
+  reservationsMade        Reservation[]            @relation("ReservationCreatedBy")
+  reservationsCancelled   Reservation[]            @relation("ReservationCancelledBy")
+  equipmentRecords        EquipmentRecord[]
+  notifications           Notification[]
+  notificationPreferences NotificationPreference[]
+  resourceWatches         ResourceWatch[]
 
   @@index([siteId])
   @@map("users")
@@ -222,4 +256,61 @@ model Reservation {
   @@index([resourceId, startAt])
   @@index([createdById, startAt])
   @@map("reservations")
+}
+
+/// In-app notification for a user.
+model Notification {
+  id         String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId     String           @map("user_id") @db.Uuid
+  kind       NotificationKind
+  title      String
+  body       String
+  link       String
+  resourceId String?          @map("resource_id") @db.Uuid
+  dedupeKey  String?          @map("dedupe_key")
+  readAt     DateTime?        @map("read_at") @db.Timestamptz(6)
+  createdAt  DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  resource Resource? @relation(fields: [resourceId], references: [id], onDelete: SetNull)
+
+  @@unique([userId, dedupeKey])
+  @@index([userId, createdAt(sort: Desc)])
+  @@map("notifications")
+}
+
+/// Notification preferences per user and kind. Missing row = default in config.
+model NotificationPreference {
+  userId String           @map("user_id") @db.Uuid
+  kind   NotificationKind
+  inApp  Boolean          @default(true) @map("in_app")
+  email  Boolean          @default(false) @map("email")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, kind])
+  @@map("notification_preferences")
+}
+
+/// "Notify me when it's free" or "back in service" alert.
+model ResourceWatch {
+  id              String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId          String              @map("user_id") @db.Uuid
+  resourceId      String              @map("resource_id") @db.Uuid
+  kind            ResourceWatchKind
+  status          ResourceWatchStatus @default(ACTIVE)
+  wantedStart     DateTime?           @map("wanted_start") @db.Timestamptz(6)
+  wantedEnd       DateTime?           @map("wanted_end") @db.Timestamptz(6)
+  durationMinutes Int?                @map("duration_minutes")
+  flexibleDay     Boolean             @default(false) @map("flexible_day")
+  expiresAt       DateTime            @map("expires_at") @db.Timestamptz(6)
+  sentAt          DateTime?           @map("sent_at") @db.Timestamptz(6)
+  createdAt       DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Restrict)
+  resource Resource @relation(fields: [resourceId], references: [id], onDelete: Restrict)
+
+  @@index([resourceId])
+  @@index([userId, status])
+  @@map("resource_watches")
 }

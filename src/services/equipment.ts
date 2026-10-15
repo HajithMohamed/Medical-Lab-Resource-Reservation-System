@@ -14,6 +14,7 @@ import {
   ResourceStatus,
   ReservationKind,
   ReservationStatus,
+  NotificationKind,
 } from "@/generated/prisma/client";
 import {
   CALIBRATION_DUE_SOON_DAYS,
@@ -27,6 +28,8 @@ import { isValidDay, dayToDb, dbToDay, addDaysToDay, daysBetween } from "@/lib/e
 import { labToday, endOfLabDay } from "@/lib/time";
 import { trackerStatus, formatEquipmentDay, type TrackerStatus } from "@/lib/equipment-status";
 import { takeResourceOutOfServiceInTx } from "@/services/resources";
+import { notifyInTx, recipientsForSite } from "@/services/notifications";
+import { checkWatchesForResource } from "@/services/watches";
 
 export type ServiceResult<T = void> =
   | { ok: true; data: T; message?: string }
@@ -421,7 +424,21 @@ export async function addEquipmentRecord(
       const failReason = `Failed ${kindLabel} on ${formatEquipmentDay(input.performedOn)}: ${input.notes ?? ""}`;
       cancelledCount = await takeResourceOutOfServiceInTx(tx, resourceId, actor.id, failReason);
 
-      // E2: notifications (CHECK_FAILED notification trigger)
+      // EQUIPMENT_OUT_OF_SERVICE notification: site managers + admins
+      const recipients = await recipientsForSite(tx, resource.siteId, { includeAdmins: true });
+      await notifyInTx(
+        tx,
+        recipients,
+        {
+          kind: NotificationKind.EQUIPMENT_OUT_OF_SERVICE,
+          title: `Equipment out of service: ${resource.name}`,
+          body: `${resource.name} taken out of service: ${failReason}`,
+          link: `/resources/${resourceId}`,
+          resourceId,
+          dedupeKey: `equipment-oos:${resourceId}:${createdRecord.id}`,
+          actorId: actor.id,
+        },
+      );
 
       resultMessage = `Result recorded. ${resource.name} taken out of service; ${cancelledCount} bookings cancelled.`;
     }
@@ -467,10 +484,15 @@ export async function addEquipmentRecord(
       }
     }
 
-    // E2: notifications (resolve open notifications for passing calibration / maintenance)
-
     return createdRecord;
   });
+
+  // If passing check moved calibration due date, trigger watch check
+  if (input.outcome === EquipmentOutcome.PASS && input.kind === EquipmentRecordKind.CALIBRATION) {
+    checkWatchesForResource(resourceId).catch((err) =>
+      console.error("[watches] Error checking watches on calibration pass:", err),
+    );
+  }
 
   return {
     ok: true,
