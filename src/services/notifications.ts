@@ -2,11 +2,7 @@ import "server-only";
 
 import { z } from "zod";
 import { db } from "@/lib/db";
-import {
-  NotificationKind,
-  Role,
-  type Prisma,
-} from "@/generated/prisma/client";
+import { NotificationKind, Role, type Prisma } from "@/generated/prisma/client";
 import type { UserLike } from "@/lib/permissions";
 import {
   getNotificationConfig,
@@ -63,11 +59,7 @@ export async function notifyInTx(
 
   // 1. Drop the actor and filter invalid IDs
   const filteredRecipients = Array.from(
-    new Set(
-      recipientIds.filter(
-        (id): id is string => Boolean(id) && id !== actorIdToDrop,
-      ),
-    ),
+    new Set(recipientIds.filter((id): id is string => Boolean(id) && id !== actorIdToDrop)),
   );
 
   if (filteredRecipients.length === 0) {
@@ -95,7 +87,7 @@ export async function notifyInTx(
     // inApp preference: if mandatory, always true; else check pref, fallback to default
     const inAppAllowed = !kindConfig.canTurnOffInApp
       ? true
-      : userPref?.inApp ?? kindConfig.defaultInApp;
+      : (userPref?.inApp ?? kindConfig.defaultInApp);
 
     if (inAppAllowed) {
       inAppRecipients.push(recipientId);
@@ -298,9 +290,7 @@ export async function markRead(
 /**
  * Marks all unread notifications for the actor as read.
  */
-export async function markAllRead(
-  actor: UserLike,
-): Promise<{ ok: boolean; count: number }> {
+export async function markAllRead(actor: UserLike): Promise<{ ok: boolean; count: number }> {
   if (!actor.id) {
     return { ok: false, count: 0 };
   }
@@ -322,9 +312,7 @@ export async function markAllRead(
  * Retrieves the notification preferences for the signed-in actor,
  * merged with system defaults and role-scoped permissions.
  */
-export async function getMyPreferences(
-  actor: UserLike,
-): Promise<UserNotificationPreferenceItem[]> {
+export async function getMyPreferences(actor: UserLike): Promise<UserNotificationPreferenceItem[]> {
   if (!actor.id) {
     return [];
   }
@@ -342,7 +330,7 @@ export async function getMyPreferences(
       kind: config.kind as NotificationKind,
       label: config.label,
       description: config.description,
-      inApp: !config.canTurnOffInApp ? true : saved?.inApp ?? config.defaultInApp,
+      inApp: !config.canTurnOffInApp ? true : (saved?.inApp ?? config.defaultInApp),
       email: saved?.email ?? config.defaultEmail,
       canTurnOffInApp: config.canTurnOffInApp,
     };

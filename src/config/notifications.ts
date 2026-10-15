@@ -34,7 +34,8 @@ export const NOTIFICATION_CONFIGS: readonly NotificationKindConfig[] = [
   {
     kind: "EQUIPMENT_OUT_OF_SERVICE",
     label: "Equipment out of service",
-    description: "When laboratory equipment fails a verification check and is taken out of service.",
+    description:
+      "When laboratory equipment fails a verification check and is taken out of service.",
     defaultInApp: true,
     defaultEmail: false,
     canTurnOffInApp: true,

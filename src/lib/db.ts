@@ -45,4 +45,3 @@ export const db: PrismaClient = new Proxy({} as PrismaClient, {
   },
 });
 export const prisma = db;
-

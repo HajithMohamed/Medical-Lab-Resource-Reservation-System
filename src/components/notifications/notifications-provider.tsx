@@ -119,10 +119,7 @@ export function NotificationsProvider({ children }: { children: React.ReactNode 
     } catch (err) {
       console.warn("[notifications] Polling error, backing off:", err);
       // Increment backoff on error
-      backoffIndexRef.current = Math.min(
-        backoffIndexRef.current + 1,
-        BACKOFF_INTERVALS.length - 1,
-      );
+      backoffIndexRef.current = Math.min(backoffIndexRef.current + 1, BACKOFF_INTERVALS.length - 1);
     } finally {
       // Schedule next poll
       clearTimer();
@@ -157,9 +154,7 @@ export function NotificationsProvider({ children }: { children: React.ReactNode 
   const markAllRead = React.useCallback(async () => {
     await markAllNotificationsReadAction();
     setUnreadCount(0);
-    setLatestItems((prev) =>
-      prev.map((item) => ({ ...item, readAt: new Date() })),
-    );
+    setLatestItems((prev) => prev.map((item) => ({ ...item, readAt: new Date() })));
   }, []);
 
   React.useEffect(() => {

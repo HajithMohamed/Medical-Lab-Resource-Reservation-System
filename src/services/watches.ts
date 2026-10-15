@@ -28,11 +28,7 @@ import {
   labDayStart,
   endOfLabDay,
 } from "@/lib/time";
-import {
-  checkBookingTimes,
-  checkCalibrationDue,
-  formatDurationWords,
-} from "@/lib/booking-rules";
+import { checkBookingTimes, checkCalibrationDue, formatDurationWords } from "@/lib/booking-rules";
 import { isFree, freeStartTimes } from "@/lib/slot-finder";
 import { notifyInTx } from "@/services/notifications";
 
@@ -365,18 +361,14 @@ export async function checkWatchesForResource(
             },
           });
 
-          await notifyInTx(
-            tx,
-            [watch.userId],
-            {
-              kind: NotificationKind.RESOURCE_BACK_IN_SERVICE,
-              title: `${resource.name} is back in service`,
-              body: `${resource.name} is now back in service and available for booking. Bookings are first come, first served.`,
-              link: `/bookings/new?resourceId=${resource.id}`,
-              resourceId: resource.id,
-              dedupeKey: `watch:${watch.id}`,
-            },
-          );
+          await notifyInTx(tx, [watch.userId], {
+            kind: NotificationKind.RESOURCE_BACK_IN_SERVICE,
+            title: `${resource.name} is back in service`,
+            body: `${resource.name} is now back in service and available for booking. Bookings are first come, first served.`,
+            link: `/bookings/new?resourceId=${resource.id}`,
+            resourceId: resource.id,
+            dedupeKey: `watch:${watch.id}`,
+          });
         });
         continue;
       }
@@ -463,18 +455,14 @@ export async function checkWatchesForResource(
               },
             });
 
-            await notifyInTx(
-              tx,
-              [watch.userId],
-              {
-                kind: NotificationKind.SLOT_FREE,
-                title: `Time slot available: ${resource.name}`,
-                body: `A time slot on ${resource.name} is now available on ${dateLabel} from ${startTimeLabel} to ${endTimeLabel}. Bookings are first come, first served.`,
-                link: `/bookings/new?resourceId=${resource.id}&start=${startIso}&end=${endIso}`,
-                resourceId: resource.id,
-                dedupeKey: `watch:${watch.id}`,
-              },
-            );
+            await notifyInTx(tx, [watch.userId], {
+              kind: NotificationKind.SLOT_FREE,
+              title: `Time slot available: ${resource.name}`,
+              body: `A time slot on ${resource.name} is now available on ${dateLabel} from ${startTimeLabel} to ${endTimeLabel}. Bookings are first come, first served.`,
+              link: `/bookings/new?resourceId=${resource.id}&start=${startIso}&end=${endIso}`,
+              resourceId: resource.id,
+              dedupeKey: `watch:${watch.id}`,
+            });
           });
         }
       }

@@ -726,19 +726,15 @@ export async function takeResourceOutOfServiceInTx(
 
     for (const b of bookingsToCancel) {
       if (b.createdById !== actorId) {
-        await notifyInTx(
-          tx,
-          [b.createdById],
-          {
-            kind: NotificationKind.BOOKING_CANCELLED,
-            title: `Booking cancelled: ${b.resource.name}`,
-            body: `Your booking for ${b.resource.name} on ${formatLabDate(b.startAt)} from ${formatLabTime(b.startAt)} to ${formatLabTime(b.endAt)} was cancelled. Reason: ${reason}.`,
-            link: "/bookings?tab=cancelled",
-            resourceId: b.resourceId,
-            dedupeKey: `booking-cancelled:${b.id}`,
-            actorId,
-          },
-        );
+        await notifyInTx(tx, [b.createdById], {
+          kind: NotificationKind.BOOKING_CANCELLED,
+          title: `Booking cancelled: ${b.resource.name}`,
+          body: `Your booking for ${b.resource.name} on ${formatLabDate(b.startAt)} from ${formatLabTime(b.startAt)} to ${formatLabTime(b.endAt)} was cancelled. Reason: ${reason}.`,
+          link: "/bookings?tab=cancelled",
+          resourceId: b.resourceId,
+          dedupeKey: `booking-cancelled:${b.id}`,
+          actorId,
+        });
       }
     }
   }
@@ -1406,19 +1402,15 @@ export async function changeStatus(
 
         for (const b of bookingsToCancel) {
           if (b.createdById !== actor.id) {
-            await notifyInTx(
-              tx,
-              [b.createdById],
-              {
-                kind: NotificationKind.BOOKING_CANCELLED,
-                title: `Booking cancelled: ${b.resource.name}`,
-                body: `Your booking for ${b.resource.name} on ${formatLabDate(b.startAt)} from ${formatLabTime(b.startAt)} to ${formatLabTime(b.endAt)} was cancelled. Reason: ${cancelReason}.`,
-                link: "/bookings?tab=cancelled",
-                resourceId: b.resourceId,
-                dedupeKey: `booking-cancelled:${b.id}`,
-                actorId: actor.id,
-              },
-            );
+            await notifyInTx(tx, [b.createdById], {
+              kind: NotificationKind.BOOKING_CANCELLED,
+              title: `Booking cancelled: ${b.resource.name}`,
+              body: `Your booking for ${b.resource.name} on ${formatLabDate(b.startAt)} from ${formatLabTime(b.startAt)} to ${formatLabTime(b.endAt)} was cancelled. Reason: ${cancelReason}.`,
+              link: "/bookings?tab=cancelled",
+              resourceId: b.resourceId,
+              dedupeKey: `booking-cancelled:${b.id}`,
+              actorId: actor.id,
+            });
           }
         }
       }

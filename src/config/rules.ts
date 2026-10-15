@@ -61,4 +61,3 @@ export const NOTIFICATION_KEEP_DAYS = 90; // read notifications older than this 
 // Resource watches ("Notify me when it's free" / "back in service")
 export const WATCH_MAX_ACTIVE = 10; // maximum active alerts per user
 export const WATCH_BACK_IN_SERVICE_DAYS = 30; // back-in-service watch expires after 30 days
-

@@ -11,9 +11,7 @@ export interface NotificationSettingsFormProps {
   initialPreferences: UserNotificationPreferenceItem[];
 }
 
-export function NotificationSettingsForm({
-  initialPreferences,
-}: NotificationSettingsFormProps) {
+export function NotificationSettingsForm({ initialPreferences }: NotificationSettingsFormProps) {
   const [preferences, setPreferences] = React.useState(initialPreferences);
   const [updatingKind, setUpdatingKind] = React.useState<string | null>(null);
 
@@ -83,9 +81,7 @@ export function NotificationSettingsForm({
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-[#94a3b8] leading-relaxed">
-                    {item.description}
-                  </p>
+                  <p className="text-xs text-[#94a3b8] leading-relaxed">{item.description}</p>
                   {isMandatory && (
                     <p className="text-[11px] text-[#64748b] italic">
                       This alert cannot be disabled to prevent missed lab schedule disruptions.

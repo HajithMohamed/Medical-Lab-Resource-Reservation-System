@@ -323,19 +323,15 @@ export async function cancelBooking(
 
     if (reservation.createdById !== actor.id) {
       const zone = env.APP_TIME_ZONE;
-      await notifyInTx(
-        tx,
-        [reservation.createdById],
-        {
-          kind: NotificationKind.BOOKING_CANCELLED,
-          title: `Booking cancelled: ${reservation.resource.name}`,
-          body: `Your booking for ${reservation.resource.name} on ${formatLabDate(reservation.startAt, zone)} from ${formatLabTime(reservation.startAt, zone)} to ${formatLabTime(reservation.endAt, zone)} was cancelled. Reason: ${trimmedReason}.`,
-          link: "/bookings?tab=cancelled",
-          resourceId: reservation.resource.id,
-          dedupeKey: `booking-cancelled:${reservation.id}`,
-          actorId: actor.id,
-        },
-      );
+      await notifyInTx(tx, [reservation.createdById], {
+        kind: NotificationKind.BOOKING_CANCELLED,
+        title: `Booking cancelled: ${reservation.resource.name}`,
+        body: `Your booking for ${reservation.resource.name} on ${formatLabDate(reservation.startAt, zone)} from ${formatLabTime(reservation.startAt, zone)} to ${formatLabTime(reservation.endAt, zone)} was cancelled. Reason: ${trimmedReason}.`,
+        link: "/bookings?tab=cancelled",
+        resourceId: reservation.resource.id,
+        dedupeKey: `booking-cancelled:${reservation.id}`,
+        actorId: actor.id,
+      });
     }
 
     return res;

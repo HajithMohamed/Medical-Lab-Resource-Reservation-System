@@ -320,4 +320,3 @@ export function canViewNotifications(actor: UserLike): boolean {
 export function canWatchResource(actor: UserLike): boolean {
   return canBook(actor);
 }
-

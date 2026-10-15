@@ -18,9 +18,7 @@ export function NotificationsBell() {
   const [open, setOpen] = React.useState(false);
 
   const accessibleLabel =
-    unreadCount > 0
-      ? `Notifications, ${unreadCount} unread`
-      : "Notifications, no unread";
+    unreadCount > 0 ? `Notifications, ${unreadCount} unread` : "Notifications, no unread";
 
   const handleItemClick = async (item: { id: string; link: string; readAt: Date | null }) => {
     if (!item.readAt) {

@@ -61,39 +61,33 @@ export default async function ResourceDetailPage({ params }: ResourceDetailPageP
   const resource = result.data;
   const canManage = canManageResource(user, resource);
 
-  const [
-    sites,
-    categories,
-    sections,
-    historyResult,
-    upcomingBookingsCount,
-    activeWatchCount,
-  ] = await Promise.all([
-    canManage
-      ? db.site.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } })
-      : Promise.resolve([]),
-    canManage
-      ? db.category.findMany({
-          select: { id: true, name: true, maxBookingMinutes: true, iconKey: true },
-          orderBy: { name: "asc" },
-        })
-      : Promise.resolve([]),
-    canManage
-      ? db.section.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } })
-      : Promise.resolve([]),
-    equipmentService.getEquipmentHistory(resource.id),
-    countUpcomingBookings(resource.id),
-    canWatchResource(user) && resource.status === "OUT_OF_SERVICE"
-      ? db.resourceWatch.count({
-          where: {
-            userId: user.id,
-            resourceId: resource.id,
-            kind: "BACK_IN_SERVICE",
-            status: "ACTIVE",
-          },
-        })
-      : Promise.resolve(0),
-  ]);
+  const [sites, categories, sections, historyResult, upcomingBookingsCount, activeWatchCount] =
+    await Promise.all([
+      canManage
+        ? db.site.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } })
+        : Promise.resolve([]),
+      canManage
+        ? db.category.findMany({
+            select: { id: true, name: true, maxBookingMinutes: true, iconKey: true },
+            orderBy: { name: "asc" },
+          })
+        : Promise.resolve([]),
+      canManage
+        ? db.section.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } })
+        : Promise.resolve([]),
+      equipmentService.getEquipmentHistory(resource.id),
+      countUpcomingBookings(resource.id),
+      canWatchResource(user) && resource.status === "OUT_OF_SERVICE"
+        ? db.resourceWatch.count({
+            where: {
+              userId: user.id,
+              resourceId: resource.id,
+              kind: "BACK_IN_SERVICE",
+              status: "ACTIVE",
+            },
+          })
+        : Promise.resolve(0),
+    ]);
 
   const isWatchingBackInService = activeWatchCount > 0;
 

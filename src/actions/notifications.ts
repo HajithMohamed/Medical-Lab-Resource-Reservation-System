@@ -2,15 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { requireUser } from "@/lib/auth";
-import {
-  markRead,
-  markAllRead,
-  updateMyPreference,
-} from "@/services/notifications";
-import {
-  createWatch,
-  cancelMyWatch,
-} from "@/services/watches";
+import { markRead, markAllRead, updateMyPreference } from "@/services/notifications";
+import { createWatch, cancelMyWatch } from "@/services/watches";
 import { NotificationKind, ResourceWatchKind } from "@/generated/prisma/client";
 
 export async function markNotificationReadAction(notificationId: string) {

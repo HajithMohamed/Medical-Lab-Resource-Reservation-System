@@ -254,19 +254,15 @@ export async function createMaintenanceBlock(
 
         for (const b of clashingBookings) {
           if (b.createdBy.id !== actor.id) {
-            await notifyInTx(
-              tx,
-              [b.createdBy.id],
-              {
-                kind: NotificationKind.BOOKING_CANCELLED,
-                title: `Booking cancelled: ${resource.name}`,
-                body: `Your booking for ${resource.name} on ${formatLabDate(b.startAt, zone)} from ${formatLabTime(b.startAt, zone)} to ${formatLabTime(b.endAt, zone)} was cancelled. Reason: Maintenance: ${reason}.`,
-                link: "/bookings?tab=cancelled",
-                resourceId: resource.id,
-                dedupeKey: `booking-cancelled:${b.id}`,
-                actorId: actor.id,
-              },
-            );
+            await notifyInTx(tx, [b.createdBy.id], {
+              kind: NotificationKind.BOOKING_CANCELLED,
+              title: `Booking cancelled: ${resource.name}`,
+              body: `Your booking for ${resource.name} on ${formatLabDate(b.startAt, zone)} from ${formatLabTime(b.startAt, zone)} to ${formatLabTime(b.endAt, zone)} was cancelled. Reason: Maintenance: ${reason}.`,
+              link: "/bookings?tab=cancelled",
+              resourceId: resource.id,
+              dedupeKey: `booking-cancelled:${b.id}`,
+              actorId: actor.id,
+            });
           }
         }
       }

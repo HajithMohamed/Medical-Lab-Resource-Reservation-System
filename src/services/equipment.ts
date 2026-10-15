@@ -426,19 +426,15 @@ export async function addEquipmentRecord(
 
       // EQUIPMENT_OUT_OF_SERVICE notification: site managers + admins
       const recipients = await recipientsForSite(tx, resource.siteId, { includeAdmins: true });
-      await notifyInTx(
-        tx,
-        recipients,
-        {
-          kind: NotificationKind.EQUIPMENT_OUT_OF_SERVICE,
-          title: `Equipment out of service: ${resource.name}`,
-          body: `${resource.name} taken out of service: ${failReason}`,
-          link: `/resources/${resourceId}`,
-          resourceId,
-          dedupeKey: `equipment-oos:${resourceId}:${createdRecord.id}`,
-          actorId: actor.id,
-        },
-      );
+      await notifyInTx(tx, recipients, {
+        kind: NotificationKind.EQUIPMENT_OUT_OF_SERVICE,
+        title: `Equipment out of service: ${resource.name}`,
+        body: `${resource.name} taken out of service: ${failReason}`,
+        link: `/resources/${resourceId}`,
+        resourceId,
+        dedupeKey: `equipment-oos:${resourceId}:${createdRecord.id}`,
+        actorId: actor.id,
+      });
 
       resultMessage = `Result recorded. ${resource.name} taken out of service; ${cancelledCount} bookings cancelled.`;
     }

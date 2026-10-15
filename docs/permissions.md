@@ -106,17 +106,16 @@ The server enforces every rule; `src/lib/permissions.ts` is the code version of 
 
 ### Notifications (`/notifications`) & Alerts
 
-| Action / Element                                     | STAFF    | MANAGER                   | ADMIN                     |
-| :--------------------------------------------------- | :------- | :------------------------ | :------------------------ |
-| View notification inbox (`/notifications`)           | own only | own only                  | own only                  |
-| Mark read / Mark all read                            | own only | own only                  | own only                  |
-| Top bar bell dropdown & unread counter               | yes      | yes                       | yes                       |
-| Background polling & toast notifications             | yes      | yes                       | yes                       |
-| Notification settings (`/notifications/settings`)    | own only | own only                  | own only                  |
-| Toggle equipment reminder settings                   | no       | yes                       | yes                       |
-| Create resource watch ("free slot" / "back in serv") | yes      | yes                       | no _(cannot book)_        |
-| View & cancel resource watches ("My alerts" tab)     | own only | own only                  | no _(cannot book)_        |
-
+| Action / Element                                     | STAFF    | MANAGER  | ADMIN              |
+| :--------------------------------------------------- | :------- | :------- | :----------------- |
+| View notification inbox (`/notifications`)           | own only | own only | own only           |
+| Mark read / Mark all read                            | own only | own only | own only           |
+| Top bar bell dropdown & unread counter               | yes      | yes      | yes                |
+| Background polling & toast notifications             | yes      | yes      | yes                |
+| Notification settings (`/notifications/settings`)    | own only | own only | own only           |
+| Toggle equipment reminder settings                   | no       | yes      | yes                |
+| Create resource watch ("free slot" / "back in serv") | yes      | yes      | no _(cannot book)_ |
+| View & cancel resource watches ("My alerts" tab)     | own only | own only | no _(cannot book)_ |
 
 ### Usage (`/usage`)
 

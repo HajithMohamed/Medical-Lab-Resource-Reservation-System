@@ -2,11 +2,7 @@ import "server-only";
 
 import { subDays } from "date-fns";
 import { db } from "@/lib/db";
-import {
-  ResourceStatus,
-  ResourceWatchStatus,
-  NotificationKind,
-} from "@/generated/prisma/client";
+import { ResourceStatus, ResourceWatchStatus, NotificationKind } from "@/generated/prisma/client";
 import {
   CALIBRATION_DUE_SOON_DAYS,
   MAINTENANCE_DUE_SOON_DAYS,
@@ -32,10 +28,7 @@ export interface DailyJobResult {
 export async function syncEquipmentReminders(
   todayOrNow: string | Date = labToday(),
 ): Promise<number> {
-  const today =
-    typeof todayOrNow === "string"
-      ? todayOrNow
-      : labToday(undefined, todayOrNow);
+  const today = typeof todayOrNow === "string" ? todayOrNow : labToday(undefined, todayOrNow);
   const resources = await db.resource.findMany({
     where: {
       status: { not: ResourceStatus.RETIRED },
@@ -190,10 +183,7 @@ export async function runDailyJob(
   todayOrNow: string | Date = labToday(),
   now: Date = new Date(),
 ): Promise<DailyJobResult> {
-  const today =
-    typeof todayOrNow === "string"
-      ? todayOrNow
-      : labToday(undefined, todayOrNow);
+  const today = typeof todayOrNow === "string" ? todayOrNow : labToday(undefined, todayOrNow);
   const nowInstant = todayOrNow instanceof Date ? todayOrNow : now;
 
   // 1. Equipment reminders
