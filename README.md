@@ -73,13 +73,13 @@ _Illustrative example, not a documented incident._
 
 ### How BenchBook answers each problem
 
-| Problem                                                         | BenchBook's answer                                                                                         |
-| --------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| **P1** No single, up-to-date view                               | One live calendar and "Find a slot" across every site                                                      |
-| **P2** Bookings can clash                                       | The database rejects overlapping bookings, even at the same moment                                         |
-| **P3** Broken or under-maintenance equipment can be planned     | Maintenance blocks, out-of-service status, calibration due-day rule, failed checks take equipment offline |
-| **P3** Staff may not hear about changes                         | Cancellations with reasons, in-app notifications and "notify me" alerts                                    |
-| **P5** Managers can't see what's busy or idle                   | Usage dashboard and equipment reports                                                                      |
+| Problem                                                     | BenchBook's answer                                                                                        |
+| ----------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| **P1** No single, up-to-date view                           | One live calendar and "Find a slot" across every site                                                     |
+| **P2** Bookings can clash                                   | The database rejects overlapping bookings, even at the same moment                                        |
+| **P3** Broken or under-maintenance equipment can be planned | Maintenance blocks, out-of-service status, calibration due-day rule, failed checks take equipment offline |
+| **P3** Staff may not hear about changes                     | Cancellations with reasons, in-app notifications and "notify me" alerts                                   |
+| **P5** Managers can't see what's busy or idle               | Usage dashboard and equipment reports                                                                     |
 
 International lab guidance (WHO laboratory quality handbook, ISO 15189) expects labs to control equipment use, service schedules and equipment records. The full problem statement, evidence and sources are in [docs/problem-statement.pdf](docs/problem-statement.pdf).
 
@@ -147,31 +147,31 @@ Need more users? Sign in as admin (any role, any site) or manager (staff at thei
 
 ## 4. Features
 
-| Feature                    | What it does                                                                                                                                       |
-| -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Resource register**      | Instruments, cabinets, rooms and vans with category, site, section, location, status (active, out of service, retired) and equipment details.      |
-| **Live calendar**          | Day view per site and week view per resource, with bookings, maintenance blocks and out-of-service equipment. Refreshes automatically.             |
-| **Find a slot**            | Search by date, time, length and category across all sites; busy resources show the nearest free start times.                                      |
-| **Clash-free booking**     | Overlapping bookings are rejected by the database itself. Category length limits, slot rules and the calibration due day are checked.             |
-| **My bookings**            | Upcoming, past and cancelled bookings, with the reason when someone else cancelled one.                                                           |
+| Feature                      | What it does                                                                                                                                     |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Resource register**        | Instruments, cabinets, rooms and vans with category, site, section, location, status (active, out of service, retired) and equipment details.    |
+| **Live calendar**            | Day view per site and week view per resource, with bookings, maintenance blocks and out-of-service equipment. Refreshes automatically.           |
+| **Find a slot**              | Search by date, time, length and category across all sites; busy resources show the nearest free start times.                                    |
+| **Clash-free booking**       | Overlapping bookings are rejected by the database itself. Category length limits, slot rules and the calibration due day are checked.            |
+| **My bookings**              | Upcoming, past and cancelled bookings, with the reason when someone else cancelled one.                                                          |
 | **Maintenance & breakdowns** | Managers block time or report a breakdown; affected bookings are listed first and cancelled together, with the reason recorded.                  |
-| **Equipment care**         | Calibration and service schedules, a Today list of due and overdue work, append-only calibration/service/repair records, and a condition rating. |
-| **Equipment reports**      | Condition of every instrument and a calibration and service log, with **PDF** and **CSV** downloads for audits.                                    |
-| **Notifications**          | In-app bell that updates by itself: cancelled bookings, equipment taken out of service, due and overdue reminders.                                 |
-| **"Notify me" alerts**     | When a resource is busy or out of service, staff can ask to be told when it becomes free.                                                          |
-| **Usage dashboard**        | Utilisation, busy and idle resources, peak hours and use by section, with CSV export.                                                             |
-| **Users and settings**     | Accounts with roles, temporary passwords, deactivation; sites, sections and categories with booking limits.                                       |
-| **Responsive design**      | Works on desktop, tablet and phone.                                                                                                               |
+| **Equipment care**           | Calibration and service schedules, a Today list of due and overdue work, append-only calibration/service/repair records, and a condition rating. |
+| **Equipment reports**        | Condition of every instrument and a calibration and service log, with **PDF** and **CSV** downloads for audits.                                  |
+| **Notifications**            | In-app bell that updates by itself: cancelled bookings, equipment taken out of service, due and overdue reminders.                               |
+| **"Notify me" alerts**       | When a resource is busy or out of service, staff can ask to be told when it becomes free.                                                        |
+| **Usage dashboard**          | Utilisation, busy and idle resources, peak hours and use by section, with CSV export.                                                            |
+| **Users and settings**       | Accounts with roles, temporary passwords, deactivation; sites, sections and categories with booking limits.                                      |
+| **Responsive design**        | Works on desktop, tablet and phone.                                                                                                              |
 
 ---
 
 ## 5. Roles
 
-| Role        | Scope              | Main abilities                                                                                                                                   |
-| ----------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Staff**   | Own account        | Sees every site's availability, books resources at any site, cancels own bookings that have not started, sets "notify me" alerts.               |
-| **Manager** | One site           | Everything staff can do, plus that site's staff accounts, resources, maintenance blocks, equipment care, bookings oversight and usage.           |
-| **Admin**   | The whole network  | Sites, sections, categories, all users, all resources, equipment care and usage across sites. Admins do not book (separation of duties).        |
+| Role        | Scope             | Main abilities                                                                                                                           |
+| ----------- | ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| **Staff**   | Own account       | Sees every site's availability, books resources at any site, cancels own bookings that have not started, sets "notify me" alerts.        |
+| **Manager** | One site          | Everything staff can do, plus that site's staff accounts, resources, maintenance blocks, equipment care, bookings oversight and usage.   |
+| **Admin**   | The whole network | Sites, sections, categories, all users, all resources, equipment care and usage across sites. Admins do not book (separation of duties). |
 
 The full permission matrix is in [docs/permissions.md](docs/permissions.md).
 
@@ -179,22 +179,22 @@ The full permission matrix is in [docs/permissions.md](docs/permissions.md).
 
 ## 6. Tech stack
 
-| Area             | Choice                                                                 |
-| ---------------- | ---------------------------------------------------------------------- |
-| Framework        | Next.js 16 (App Router), React 19                                      |
-| Language         | TypeScript                                                             |
-| Database         | PostgreSQL 17                                                          |
-| ORM              | Prisma 7 with `@prisma/adapter-pg`                                     |
-| UI               | Tailwind CSS 4, shadcn/ui (Radix), lucide-react icons                  |
-| Validation       | Zod 4 (every input is validated on the server)                         |
+| Area             | Choice                                                                |
+| ---------------- | --------------------------------------------------------------------- |
+| Framework        | Next.js 16 (App Router), React 19                                     |
+| Language         | TypeScript                                                            |
+| Database         | PostgreSQL 17                                                         |
+| ORM              | Prisma 7 with `@prisma/adapter-pg`                                    |
+| UI               | Tailwind CSS 4, shadcn/ui (Radix), lucide-react icons                 |
+| Validation       | Zod 4 (every input is validated on the server)                        |
 | Authentication   | Own session code, following the official Next.js authentication guide |
-| Password hashing | bcrypt via `bcryptjs` (cost factor 12)                                 |
-| Sessions         | Signed JWT (`jose`, HS256) in an httpOnly cookie                       |
-| Dates and times  | date-fns + `@date-fns/tz`                                              |
-| PDF reports      | `@react-pdf/renderer`                                                  |
-| Testing          | Vitest (unit + integration against a real PostgreSQL)                  |
-| CI               | GitHub Actions                                                         |
-| Local database   | Docker Compose                                                         |
+| Password hashing | bcrypt via `bcryptjs` (cost factor 12)                                |
+| Sessions         | Signed JWT (`jose`, HS256) in an httpOnly cookie                      |
+| Dates and times  | date-fns + `@date-fns/tz`                                             |
+| PDF reports      | `@react-pdf/renderer`                                                 |
+| Testing          | Vitest (unit + integration against a real PostgreSQL)                 |
+| CI               | GitHub Actions                                                        |
+| Local database   | Docker Compose                                                        |
 
 ---
 
@@ -234,18 +234,18 @@ All decisions with context and consequences: [docs/decisions.md](docs/decisions.
 
 ## 9. Database
 
-| Table                      | Holds                                                                   |
-| -------------------------- | ----------------------------------------------------------------------- |
-| `sites`                    | Main lab and branch labs                                                |
-| `sections`                 | Lab sections (Haematology, Microbiology, …)                             |
-| `categories`               | Resource types with the maximum booking length                          |
-| `resources`                | Bookable things, with equipment details and calibration/service dates   |
-| `users`                    | Accounts, role, site, sign-in and lockout fields                        |
-| `reservations`             | Bookings and maintenance blocks (one table, one clash rule)             |
-| `equipment_records`        | Append-only calibration, service, check, repair and review history      |
-| `notifications`            | In-app notifications per user                                           |
-| `notification_preferences` | Per-user notification settings                                          |
-| `resource_watches`         | "Notify me when it's free" alerts                                       |
+| Table                      | Holds                                                                 |
+| -------------------------- | --------------------------------------------------------------------- |
+| `sites`                    | Main lab and branch labs                                              |
+| `sections`                 | Lab sections (Haematology, Microbiology, …)                           |
+| `categories`               | Resource types with the maximum booking length                        |
+| `resources`                | Bookable things, with equipment details and calibration/service dates |
+| `users`                    | Accounts, role, site, sign-in and lockout fields                      |
+| `reservations`             | Bookings and maintenance blocks (one table, one clash rule)           |
+| `equipment_records`        | Append-only calibration, service, check, repair and review history    |
+| `notifications`            | In-app notifications per user                                         |
+| `notification_preferences` | Per-user notification settings                                        |
+| `resource_watches`         | "Notify me when it's free" alerts                                     |
 
 **ER diagram:** [ER_DIAGRAM_URL](ER_DIAGRAM_URL) (source: [docs/er-diagram.dbml](docs/er-diagram.dbml)).
 
@@ -273,19 +273,19 @@ docs/               problem statement, decisions, permissions, design system, ER
 
 ## 11. Scripts
 
-| Command                   | What it does                                                    |
-| ------------------------- | --------------------------------------------------------------- |
-| `npm run setup`           | One-time local setup: database up, migrations, seed             |
-| `npm run dev`             | Start the app at http://localhost:3000                          |
-| `npm run build` / `start` | Production build / run it                                       |
-| `npm run db:up` / `down`  | Start / stop the local PostgreSQL container                     |
-| `npm run db:deploy`       | Apply migrations                                                |
-| `npm run db:seed`         | Load demo accounts and starter data (safe to run again)         |
-| `npm run db:reset`        | **Delete all local data**, re-apply migrations and seed         |
-| `npm run db:studio`       | Browse the database in Prisma Studio                            |
-| `npm run daily`           | Run the daily reminder job once                                 |
-| `npm run test`            | Unit and integration tests                                      |
-| `npm run check`           | Lint, type check, format check and all tests                    |
+| Command                   | What it does                                            |
+| ------------------------- | ------------------------------------------------------- |
+| `npm run setup`           | One-time local setup: database up, migrations, seed     |
+| `npm run dev`             | Start the app at http://localhost:3000                  |
+| `npm run build` / `start` | Production build / run it                               |
+| `npm run db:up` / `down`  | Start / stop the local PostgreSQL container             |
+| `npm run db:deploy`       | Apply migrations                                        |
+| `npm run db:seed`         | Load demo accounts and starter data (safe to run again) |
+| `npm run db:reset`        | **Delete all local data**, re-apply migrations and seed |
+| `npm run db:studio`       | Browse the database in Prisma Studio                    |
+| `npm run daily`           | Run the daily reminder job once                         |
+| `npm run test`            | Unit and integration tests                              |
+| `npm run check`           | Lint, type check, format check and all tests            |
 
 ---
 
@@ -305,13 +305,13 @@ Integration tests run against a real PostgreSQL test database, never the develop
 
 ## 13. Troubleshooting
 
-| Problem                                   | Fix                                                                                          |
-| ----------------------------------------- | -------------------------------------------------------------------------------------------- |
-| `npm run setup` fails at the database step | Start Docker Desktop and run it again.                                                      |
-| Port 5432 is already in use               | Stop the other PostgreSQL, or change the port in `docker-compose.yml` and `DATABASE_URL`.     |
-| Can't sign in with the demo accounts      | Run `npm run setup` (or `npm run db:seed`) — the database has no accounts yet.               |
-| Start again from a clean database         | `npm run db:reset` (deletes all local data).                                                 |
-| Reminders don't appear                    | Run `npm run daily`, or open Maintenance & care.                                             |
+| Problem                                    | Fix                                                                                       |
+| ------------------------------------------ | ----------------------------------------------------------------------------------------- |
+| `npm run setup` fails at the database step | Start Docker Desktop and run it again.                                                    |
+| Port 5432 is already in use                | Stop the other PostgreSQL, or change the port in `docker-compose.yml` and `DATABASE_URL`. |
+| Can't sign in with the demo accounts       | Run `npm run setup` (or `npm run db:seed`) — the database has no accounts yet.            |
+| Start again from a clean database          | `npm run db:reset` (deletes all local data).                                              |
+| Reminders don't appear                     | Run `npm run daily`, or open Maintenance & care.                                          |
 
 ---
 
