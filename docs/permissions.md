@@ -107,9 +107,11 @@ _Added by E2._
 
 ### Usage (`/usage`)
 
-| Action / Element        | STAFF | MANAGER       | ADMIN                        |
-| :---------------------- | :---- | :------------ | :--------------------------- |
-| Usage overview & charts | no    | own site only | all sites + network overview |
+| Action / Element  | STAFF | MANAGER                           | ADMIN                 |
+| :---------------- | :---- | :-------------------------------- | :-------------------- |
+| Usage page        | no    | own site only, site filter hidden | any site or All sites |
+| A site in the URL | -     | ignored, always own site          | used                  |
+| CSV export        | no    | own site                          | any or all            |
 
 ### Users (`/users`)
 

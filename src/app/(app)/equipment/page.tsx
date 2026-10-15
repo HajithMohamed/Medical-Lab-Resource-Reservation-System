@@ -10,7 +10,6 @@ import {
   ChevronRight,
   Calendar,
   History,
-  Building2,
 } from "lucide-react";
 import { requireRole } from "@/lib/auth";
 import { db } from "@/lib/db";

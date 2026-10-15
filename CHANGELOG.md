@@ -9,6 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Usage dashboard (`/usage` and `/usage/export`):
+  - Pure mathematical functions in `src/lib/usage.ts` (`overlapMinutes`, `standardWindows`, `standardMinutes`, `bookedStandardMinutes`, `utilisationPercent`, `minutesByHourOfDay`, `minutesBySection`, `classify`) with parameterised timezone support.
+  - Server service `src/services/usage.ts` with strict site-scoping (`usageSitesFor`), date range clipping (max 92 days), standard hours available calculations, confirmed bookings and maintenance aggregates, peak hours breakdown, and section distribution.
+  - Role-based dashboard page (`src/app/(app)/usage/page.tsx`) protected by `requireRole("MANAGER", "ADMIN")`:
+    - Dynamic PageHeader displaying scope name ("All sites" or site name) and formatted date period.
+    - FilterBar GET form with date pickers, site selector for administrators, static site name for managers, and "Apply" button.
+    - SummaryStrip with total booked hours, average utilisation, maintenance downtime hours, and cancelled booking counts.
+    - Native CSS Peak Hours Chart (24 vertical hourly bars, busiest hour highlighted in dark navy) and Section Usage Chart (horizontal bars with hours and percentage shares), both accompanied by visually hidden accessible `<table>` elements.
+    - Resources table with CategoryIcon, UtilisationBar, percentage values, and Busy (solid teal pill) / Idle (grey outline pill) status tags.
+    - Footnote explaining the standard working hours utilisation formula.
+    - EmptyState component ("No bookings in this period." with "Show the last 4 weeks" button) when no reservations exist in the selected period.
+    - Skeleton loading state (`src/app/(app)/usage/loading.tsx`).
+  - Streaming CSV export Route Handler (`GET /usage/export?from&to&site`) with `getCurrentUser` session validation, 401/403 guards, manager site-isolation enforcement, and formatted attachment header.
+  - Comprehensive unit test suite (`tests/unit/usage.test.ts`) and role-scoped integration test suite (`tests/integration/usage.test.ts`).
+  - Architectural Decision Record D21 ("Usage is calculated in TypeScript from reservations").
+
 - Maintenance and breakdown management integrated into merged "Maintenance & care" (`/equipment` and `/maintenance/new`):
   - Server service `src/services/maintenance.ts` supporting clash detection (`findClashes`), block creation with atomic clashing booking cancellation (`createMaintenanceBlock`), premature completion (`endBlockNow`), future block cancellation (`cancelBlock`), block listing (`listBlocks`), and authorized resource listings (`listMaintenanceResources`).
   - Server actions `src/actions/maintenance.ts` enforcing role guards and revalidating affected routes (`/equipment`, `/maintenance`, `/calendar`, `/bookings`, `/bookings/manage`, `/overview`, `/resources/[id]`).
