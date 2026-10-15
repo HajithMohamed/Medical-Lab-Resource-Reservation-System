@@ -25,6 +25,7 @@ const envSchema = z
     RESEND_API_KEY: z.string().optional(),
     EMAIL_FROM: z.string().default("BenchBook <onboarding@resend.dev>"),
     APP_BASE_URL: z.string().default("http://localhost:3000"),
+    CRON_SECRET: z.string().optional(),
   })
   .superRefine((data, ctx) => {
     if (data.NODE_ENV === "production") {
@@ -57,6 +58,7 @@ function loadEnv(): Env {
       RESEND_API_KEY: process.env.RESEND_API_KEY,
       EMAIL_FROM: process.env.EMAIL_FROM || "BenchBook <onboarding@resend.dev>",
       APP_BASE_URL: process.env.APP_BASE_URL || "http://localhost:3000",
+      CRON_SECRET: process.env.CRON_SECRET,
     };
   }
 

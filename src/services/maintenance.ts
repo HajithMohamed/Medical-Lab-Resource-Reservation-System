@@ -11,14 +11,19 @@ import {
   ceilToSlot,
   formatTimeRange,
   formatLabRange,
+  formatLabDate,
+  formatLabTime,
 } from "@/lib/time";
 import { SLOT_MINUTES, RECENT_DAYS, BOOKINGS_PAGE_SIZE } from "@/config/rules";
 import {
   ReservationKind,
   ReservationStatus,
   ResourceStatus,
+  NotificationKind,
   type Reservation,
 } from "@/generated/prisma/client";
+import { notifyInTx } from "@/services/notifications";
+import { checkWatchesForResource } from "@/services/watches";
 
 export interface ClashingBookingInfo {
   id: string;
@@ -246,6 +251,20 @@ export async function createMaintenanceBlock(
           },
         });
         cancelledCount = updateResult.count;
+
+        for (const b of clashingBookings) {
+          if (b.createdBy.id !== actor.id) {
+            await notifyInTx(tx, [b.createdBy.id], {
+              kind: NotificationKind.BOOKING_CANCELLED,
+              title: `Booking cancelled: ${resource.name}`,
+              body: `Your booking for ${resource.name} on ${formatLabDate(b.startAt, zone)} from ${formatLabTime(b.startAt, zone)} to ${formatLabTime(b.endAt, zone)} was cancelled. Reason: Maintenance: ${reason}.`,
+              link: "/bookings?tab=cancelled",
+              resourceId: resource.id,
+              dedupeKey: `booking-cancelled:${b.id}`,
+              actorId: actor.id,
+            });
+          }
+        }
       }
 
       const block = await tx.reservation.create({
@@ -321,6 +340,10 @@ export async function endBlockNow(
     data: { endAt: newEndAt },
   });
 
+  checkWatchesForResource(block.resource.id).catch((err) =>
+    console.error("[watches] Error checking watches on endBlockNow:", err),
+  );
+
   return { ok: true };
 }
 
@@ -368,6 +391,10 @@ export async function cancelBlock(
       cancelledById: actor.id,
     },
   });
+
+  checkWatchesForResource(block.resource.id).catch((err) =>
+    console.error("[watches] Error checking watches on cancelBlock:", err),
+  );
 
   return { ok: true };
 }

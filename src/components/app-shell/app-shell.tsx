@@ -2,6 +2,7 @@ import * as React from "react";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-shell/app-sidebar";
 import { TopBar } from "@/components/app-shell/top-bar";
+import { NotificationsProvider } from "@/components/notifications/notifications-provider";
 
 export interface AppShellProps {
   user: {
@@ -22,18 +23,20 @@ export function AppShell({ user, logoutAction, children }: AppShellProps) {
       >
         Skip to content
       </a>
-      <SidebarProvider className="bg-[#0b1322] min-h-screen text-[#f1f5f9] overflow-x-hidden">
-        <AppSidebar user={user} logoutAction={logoutAction} />
-        <SidebarInset
-          id="main"
-          className="flex flex-col min-h-screen bg-[#0b1322] text-[#f1f5f9] w-full max-w-full overflow-x-hidden"
-        >
-          <TopBar />
-          <div className="flex-1 p-4 sm:p-6 lg:p-8 bg-[#0b1322] text-[#f1f5f9] w-full max-w-full overflow-x-hidden">
-            {children}
-          </div>
-        </SidebarInset>
-      </SidebarProvider>
+      <NotificationsProvider>
+        <SidebarProvider className="bg-[#0b1322] min-h-screen text-[#f1f5f9] overflow-x-hidden">
+          <AppSidebar user={user} logoutAction={logoutAction} />
+          <SidebarInset
+            id="main"
+            className="flex flex-col min-h-screen bg-[#0b1322] text-[#f1f5f9] w-full max-w-full overflow-x-hidden"
+          >
+            <TopBar />
+            <div className="flex-1 p-4 sm:p-6 lg:p-8 bg-[#0b1322] text-[#f1f5f9] w-full max-w-full overflow-x-hidden">
+              {children}
+            </div>
+          </SidebarInset>
+        </SidebarProvider>
+      </NotificationsProvider>
     </>
   );
 }

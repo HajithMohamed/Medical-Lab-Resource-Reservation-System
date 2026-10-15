@@ -20,7 +20,7 @@ export async function resetDatabase(): Promise<void> {
   }
 
   await db.$executeRawUnsafe(
-    `TRUNCATE TABLE equipment_records, reservations, resources, users, categories, sections, sites CASCADE;`,
+    `TRUNCATE TABLE resource_watches, notification_preferences, notifications, equipment_records, reservations, resources, users, categories, sections, sites CASCADE;`,
   );
 }
 

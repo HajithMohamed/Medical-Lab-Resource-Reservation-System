@@ -52,3 +52,12 @@ export const EQUIPMENT_HISTORY_ROWS = 10; // rows shown on the resource page
 export const REPORT_DEFAULT_DAYS = 30; // default equipment report period (last 30 days)
 export const REPORT_MAX_DAYS = 365; // longest equipment report period (up to 1 year)
 export const REPORT_LOG_PAGE_SIZE = 10; // rows per page for calibration & service log
+
+// Notifications & live updates
+export const NOTIFICATION_POLL_SECONDS = 15; // client poll interval while page is visible
+export const NOTIFICATION_TOAST_MAX = 3; // maximum individual toasts shown for new notifications before grouping
+export const NOTIFICATION_KEEP_DAYS = 90; // read notifications older than this are purged by the daily job
+
+// Resource watches ("Notify me when it's free" / "back in service")
+export const WATCH_MAX_ACTIVE = 10; // maximum active alerts per user
+export const WATCH_BACK_IN_SERVICE_DAYS = 30; // back-in-service watch expires after 30 days

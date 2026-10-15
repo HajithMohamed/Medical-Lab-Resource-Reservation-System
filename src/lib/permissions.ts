@@ -305,3 +305,18 @@ export function calendarOptionsFor(user: UserLike, siteId: string): CalendarOpti
     canBlockHere: canManageMaintenance(user, { siteId }),
   };
 }
+
+/**
+ * Rule: All signed-in roles (STAFF, MANAGER, ADMIN) can view notifications and preferences.
+ */
+export function canViewNotifications(actor: UserLike): boolean {
+  return actor.role === "STAFF" || actor.role === "MANAGER" || actor.role === "ADMIN";
+}
+
+/**
+ * Rule: STAFF and MANAGER can create resource watches ("Notify me when it's free" / "back in service").
+ * ADMIN cannot watch resources because ADMIN does not book ([ADMIN-NO-BOOK]).
+ */
+export function canWatchResource(actor: UserLike): boolean {
+  return canBook(actor);
+}

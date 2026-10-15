@@ -12,9 +12,15 @@ import {
 } from "lucide-react";
 import { requireUser } from "@/lib/auth";
 import { getResource } from "@/services/resources";
-import { canBook, canManageResource, canChangeResourceStatus } from "@/lib/permissions";
+import {
+  canBook,
+  canManageResource,
+  canChangeResourceStatus,
+  canWatchResource,
+} from "@/lib/permissions";
 import { CategoryIcon } from "@/components/category-icon";
 import { ResourceStatusTag } from "@/components/resource-status-tag";
+import { WatchButton } from "@/components/notifications/watch-button";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatMinutes } from "@/lib/format";
@@ -55,22 +61,35 @@ export default async function ResourceDetailPage({ params }: ResourceDetailPageP
   const resource = result.data;
   const canManage = canManageResource(user, resource);
 
-  const [sites, categories, sections, historyResult, upcomingBookingsCount] = await Promise.all([
-    canManage
-      ? db.site.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } })
-      : Promise.resolve([]),
-    canManage
-      ? db.category.findMany({
-          select: { id: true, name: true, maxBookingMinutes: true, iconKey: true },
-          orderBy: { name: "asc" },
-        })
-      : Promise.resolve([]),
-    canManage
-      ? db.section.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } })
-      : Promise.resolve([]),
-    equipmentService.getEquipmentHistory(resource.id),
-    countUpcomingBookings(resource.id),
-  ]);
+  const [sites, categories, sections, historyResult, upcomingBookingsCount, activeWatchCount] =
+    await Promise.all([
+      canManage
+        ? db.site.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } })
+        : Promise.resolve([]),
+      canManage
+        ? db.category.findMany({
+            select: { id: true, name: true, maxBookingMinutes: true, iconKey: true },
+            orderBy: { name: "asc" },
+          })
+        : Promise.resolve([]),
+      canManage
+        ? db.section.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } })
+        : Promise.resolve([]),
+      equipmentService.getEquipmentHistory(resource.id),
+      countUpcomingBookings(resource.id),
+      canWatchResource(user) && resource.status === "OUT_OF_SERVICE"
+        ? db.resourceWatch.count({
+            where: {
+              userId: user.id,
+              resourceId: resource.id,
+              kind: "BACK_IN_SERVICE",
+              status: "ACTIVE",
+            },
+          })
+        : Promise.resolve(0),
+    ]);
+
+  const isWatchingBackInService = activeWatchCount > 0;
 
   const history = historyResult.ok ? historyResult.data : [];
   const lastNotDoneCalib = history.find(
@@ -157,6 +176,16 @@ export default async function ResourceDetailPage({ params }: ResourceDetailPageP
                 <span>Book this resource</span>
               </Link>
             </Button>
+          )}
+
+          {canWatchResource(user) && resource.status === "OUT_OF_SERVICE" && (
+            <WatchButton
+              resourceId={resource.id}
+              resourceName={resource.name}
+              kind="BACK_IN_SERVICE"
+              size="lg"
+              initialWatched={isWatchingBackInService}
+            />
           )}
         </div>
       </div>

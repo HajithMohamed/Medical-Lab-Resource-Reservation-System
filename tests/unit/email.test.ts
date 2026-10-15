@@ -94,8 +94,9 @@ describe("Email Service & Templates", () => {
 
   describe("sendUserWelcomeEmail without API key", () => {
     it("returns ok: false with informative message instead of throwing an error", async () => {
-      const emailModule = await import("@/lib/email");
-      const spy = vi.spyOn(emailModule, "resolveApiKey").mockReturnValue(undefined);
+      const envModule = await import("@/lib/env");
+      const originalKey = envModule.env.RESEND_API_KEY;
+      (envModule.env as { RESEND_API_KEY?: string }).RESEND_API_KEY = undefined;
 
       const res = await sendUserWelcomeEmail({
         to: "recipient@lab.example",
@@ -106,7 +107,7 @@ describe("Email Service & Templates", () => {
       expect(res.ok).toBe(false);
       expect(res.error).toBeDefined();
 
-      spy.mockRestore();
+      (envModule.env as { RESEND_API_KEY?: string }).RESEND_API_KEY = originalKey;
     });
   });
 });

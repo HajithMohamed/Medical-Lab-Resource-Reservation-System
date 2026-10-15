@@ -11,7 +11,8 @@ import {
 } from "lucide-react";
 import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth";
-import { canBook } from "@/lib/permissions";
+import { canBook, canWatchResource } from "@/lib/permissions";
+import { db } from "@/lib/db";
 import {
   findSlots,
   listBookingFilterOptions,
@@ -22,6 +23,7 @@ import { formatMinutes } from "@/lib/format";
 import { formatLabRange, labTimeString, getLabTimeZone } from "@/lib/time";
 import { CategoryIcon } from "@/components/category-icon";
 import { ResourceStatusTag } from "@/components/resource-status-tag";
+import { WatchButton } from "@/components/notifications/watch-button";
 import { Button } from "@/components/ui/button";
 
 export const metadata = {
@@ -65,6 +67,18 @@ export default async function FindSlotPage({ searchParams }: FindSlotPageProps) 
 
   // Load dropdown master data in parallel via service
   const { sites, categories, sections } = await listBookingFilterOptions();
+
+  const userCanWatch = canWatchResource(user);
+  const activeWatches =
+    userCanWatch && result.items.length > 0
+      ? await db.resourceWatch.findMany({
+          where: {
+            userId: user.id,
+            status: "ACTIVE",
+            resourceId: { in: result.items.map((i) => i.id) },
+          },
+        })
+      : [];
 
   // Selected category helper for duration and people field hints
   const selectedCategory = categories.find((c) => c.id === result.query.categoryId);
@@ -557,18 +571,51 @@ export default async function FindSlotPage({ searchParams }: FindSlotPageProps) 
                           No other free time this day
                         </p>
                       )}
+
+                      {userCanWatch && (
+                        <div className="pt-2 flex items-center justify-between gap-2 border-t border-[#334155]/40 mt-1">
+                          <span className="text-[11px] text-slate-400 font-mono">
+                            Need this time?
+                          </span>
+                          <WatchButton
+                            resourceId={item.id}
+                            resourceName={item.name}
+                            kind="SLOT_FREE"
+                            wantedStart={result.requestedStartAt.toISOString()}
+                            wantedEnd={result.requestedEndAt.toISOString()}
+                            durationMinutes={result.query.duration}
+                            initialWatched={activeWatches.some(
+                              (w) =>
+                                w.resourceId === item.id &&
+                                w.kind === "SLOT_FREE" &&
+                                w.wantedStart?.getTime() === result.requestedStartAt.getTime(),
+                            )}
+                          />
+                        </div>
+                      )}
                     </div>
                   )}
 
                   {/* Case 3: OUT_OF_SERVICE */}
                   {isOutOfService && (
-                    <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center justify-between gap-2 flex-wrap">
                       <span className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-rose-400 bg-rose-950/40 border border-rose-500/30 px-2 py-0.5 rounded">
                         Out of service
                       </span>
-                      <span className="text-[11px] text-slate-500 italic font-mono">
-                        Unavailable for booking
-                      </span>
+                      {userCanWatch ? (
+                        <WatchButton
+                          resourceId={item.id}
+                          resourceName={item.name}
+                          kind="BACK_IN_SERVICE"
+                          initialWatched={activeWatches.some(
+                            (w) => w.resourceId === item.id && w.kind === "BACK_IN_SERVICE",
+                          )}
+                        />
+                      ) : (
+                        <span className="text-[11px] text-slate-500 italic font-mono">
+                          Unavailable for booking
+                        </span>
+                      )}
                     </div>
                   )}
 

@@ -17,11 +17,11 @@ The server enforces every rule; `src/lib/permissions.ts` is the code version of 
 
 ## 3. Menus per role
 
-| Role        | Main Group                                    | Manage Group                               | Admin Group | Top Bar Bell       |
-| :---------- | :-------------------------------------------- | :----------------------------------------- | :---------- | :----------------- |
-| **STAFF**   | Calendar, Find a slot, Resources, My bookings | _(none)_                                   | _(none)_    | _(none)_           |
-| **MANAGER** | Calendar, Find a slot, Resources, My bookings | Bookings, Maintenance & care, Usage, Users | _(none)_    | Notifications (E2) |
-| **ADMIN**   | Calendar, Resources                           | Bookings, Maintenance & care, Usage, Users | Settings    | Notifications (E2) |
+| Role        | Main Group                                                   | Manage Group                               | Admin Group | Top Bar Bell  |
+| :---------- | :----------------------------------------------------------- | :----------------------------------------- | :---------- | :------------ |
+| **STAFF**   | Calendar, Find a slot, Resources, My bookings, Notifications | _(none)_                                   | _(none)_    | Notifications |
+| **MANAGER** | Calendar, Find a slot, Resources, My bookings, Notifications | Bookings, Maintenance & care, Usage, Users | _(none)_    | Notifications |
+| **ADMIN**   | Calendar, Resources, Notifications                           | Bookings, Maintenance & care, Usage, Users | Settings    | Notifications |
 
 ## 4. Pages and buttons
 
@@ -104,9 +104,18 @@ The server enforces every rule; `src/lib/permissions.ts` is the code version of 
 | Download summary report PDF / CSV                                            | no    | own site             | any or all           |
 | Download service record sheet PDF                                            | no    | own site's records   | all records          |
 
-### Notifications (E2)
+### Notifications (`/notifications`) & Alerts
 
-_Added by E2._
+| Action / Element                                     | STAFF    | MANAGER  | ADMIN              |
+| :--------------------------------------------------- | :------- | :------- | :----------------- |
+| View notification inbox (`/notifications`)           | own only | own only | own only           |
+| Mark read / Mark all read                            | own only | own only | own only           |
+| Top bar bell dropdown & unread counter               | yes      | yes      | yes                |
+| Background polling & toast notifications             | yes      | yes      | yes                |
+| Notification settings (`/notifications/settings`)    | own only | own only | own only           |
+| Toggle equipment reminder settings                   | no       | yes      | yes                |
+| Create resource watch ("free slot" / "back in serv") | yes      | yes      | no _(cannot book)_ |
+| View & cancel resource watches ("My alerts" tab)     | own only | own only | no _(cannot book)_ |
 
 ### Usage (`/usage`)
 
