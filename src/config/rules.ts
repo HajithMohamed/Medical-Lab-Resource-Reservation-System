@@ -47,4 +47,5 @@ export const MAX_EQUIPMENT_INTERVAL_DAYS = 1095; // longest interval accepted (3
 export const MAX_SERVICE_LIFE_YEARS = 30; // longest service life accepted
 export const REPLACEMENT_REVIEW_REPAIRS = 3; // lab policy: this many repairs ...
 export const REPLACEMENT_REVIEW_REPAIR_DAYS = 365; // ... in this many days -> review
+export const CONDITION_LOOKBACK_DAYS = 365; // window for failure and repair history when evaluating equipment condition
 export const EQUIPMENT_HISTORY_ROWS = 10; // rows shown on the resource page
