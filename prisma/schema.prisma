@@ -181,9 +181,11 @@ model EquipmentRecord {
   outcome      EquipmentOutcome
   performedOn  DateTime            @map("performed_on") @db.Date
   performedBy  String              @map("performed_by")
-  reference    String?
-  notes        String?
-  nextDueOn    DateTime?           @map("next_due_on") @db.Date
+  reference       String?
+  notes           String?
+  workPerformed   String?             @map("work_performed")
+  externalCompany String?             @map("external_company")
+  nextDueOn       DateTime?           @map("next_due_on") @db.Date
   recordedById String              @map("recorded_by_id") @db.Uuid
   createdAt    DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
 

@@ -37,6 +37,8 @@ export async function addEquipmentRecordAction(
     performedBy: typeof performedBy === "string" ? performedBy.trim() : "",
     reference: getOptionalString(formData, "reference"),
     notes: getOptionalString(formData, "notes"),
+    workPerformed: getOptionalString(formData, "workPerformed"),
+    externalCompany: getOptionalString(formData, "externalCompany"),
     nextDueOn: getOptionalString(formData, "nextDueOn"),
   });
 
@@ -77,6 +79,8 @@ export async function markDoneAction(
     performedBy: typeof performedBy === "string" ? performedBy.trim() : "",
     reference: getOptionalString(formData, "reference"),
     notes: getOptionalString(formData, "notes"),
+    workPerformed: getOptionalString(formData, "workPerformed"),
+    externalCompany: getOptionalString(formData, "externalCompany"),
     nextDueOn: getOptionalString(formData, "nextDueOn"),
   });
 

@@ -573,5 +573,72 @@ describe("Database Rules & Constraints", () => {
       reviewNeedsDateError = err;
     }
     expect(isCheckError(reviewNeedsDateError, "equipment_records_review_needs_date")).toBe(true);
+
+    // 9j. equipment_records_work_performed_when_done (CALIBRATION/PASS requires non-empty work_performed)
+    let workPerformedWhenDoneError: unknown;
+    try {
+      await db.equipmentRecord.create({
+        data: {
+          resourceId: fixture.resource1.id,
+          kind: EquipmentRecordKind.CALIBRATION,
+          outcome: EquipmentOutcome.PASS,
+          performedOn: new Date("2026-10-14"),
+          performedBy: "Service Tech",
+          nextDueOn: new Date("2026-11-14"),
+          recordedById: fixture.managerUser.id,
+          workPerformed: "   ", // blank is rejected
+        },
+      });
+    } catch (err) {
+      workPerformedWhenDoneError = err;
+    }
+    expect(
+      isCheckError(workPerformedWhenDoneError, "equipment_records_work_performed_when_done"),
+    ).toBe(true);
+
+    // 9k. equipment_records_work_performed_length (max 1000 characters)
+    let workPerformedLengthError: unknown;
+    try {
+      await db.equipmentRecord.create({
+        data: {
+          resourceId: fixture.resource1.id,
+          kind: EquipmentRecordKind.CALIBRATION,
+          outcome: EquipmentOutcome.PASS,
+          performedOn: new Date("2026-10-14"),
+          performedBy: "Service Tech",
+          nextDueOn: new Date("2026-11-14"),
+          recordedById: fixture.managerUser.id,
+          workPerformed: "A".repeat(1001),
+        },
+      });
+    } catch (err) {
+      workPerformedLengthError = err;
+    }
+    expect(isCheckError(workPerformedLengthError, "equipment_records_work_performed_length")).toBe(
+      true,
+    );
+
+    // 9l. equipment_records_external_company_length (max 120 characters)
+    let externalCompanyLengthError: unknown;
+    try {
+      await db.equipmentRecord.create({
+        data: {
+          resourceId: fixture.resource1.id,
+          kind: EquipmentRecordKind.CALIBRATION,
+          outcome: EquipmentOutcome.PASS,
+          performedOn: new Date("2026-10-14"),
+          performedBy: "Service Tech",
+          nextDueOn: new Date("2026-11-14"),
+          recordedById: fixture.managerUser.id,
+          workPerformed: "Cleaned lenses and calibrated optical sensors",
+          externalCompany: "B".repeat(121),
+        },
+      });
+    } catch (err) {
+      externalCompanyLengthError = err;
+    }
+    expect(
+      isCheckError(externalCompanyLengthError, "equipment_records_external_company_length"),
+    ).toBe(true);
   });
 });
