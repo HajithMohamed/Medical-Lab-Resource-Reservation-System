@@ -24,6 +24,7 @@ import { EquipmentStatusTag } from "@/components/equipment/equipment-status-tag"
 import { MarkDoneDialog } from "@/components/equipment/mark-done-dialog";
 import { MarkNotDoneDialog } from "@/components/equipment/mark-not-done-dialog";
 import { BlockTimeButton } from "@/components/equipment/block-time-button";
+import { BlockedSiteFilter } from "@/components/maintenance/blocked-site-filter";
 import { MaintenanceTable } from "@/components/maintenance/maintenance-table";
 import { PaginationControls } from "@/components/pagination-controls";
 import { Button } from "@/components/ui/button";
@@ -637,26 +638,11 @@ export default async function EquipmentPage({ searchParams }: EquipmentPageProps
 
             {/* Admin Site Filter */}
             {isAdmin && sites.length > 0 && (
-              <div className="flex items-center gap-2">
-                <Building2 className="size-3.5 text-[#879390]" />
-                <form method="GET" action="/equipment" className="flex items-center gap-2">
-                  <input type="hidden" name="tab" value="blocked" />
-                  <input type="hidden" name="range" value={blockedRange} />
-                  <select
-                    name="siteId"
-                    defaultValue={blockedSiteId || ""}
-                    onChange={(e) => e.target.form?.submit()}
-                    className="h-8 rounded-md bg-[#060e1d] border border-[#334155] px-2.5 text-xs text-slate-200 font-mono focus:border-[#6cd8cb] focus:outline-hidden"
-                  >
-                    <option value="">All sites</option>
-                    {sites.map((s) => (
-                      <option key={s.id} value={s.id}>
-                        {s.name}
-                      </option>
-                    ))}
-                  </select>
-                </form>
-              </div>
+              <BlockedSiteFilter
+                sites={sites}
+                selectedSiteId={blockedSiteId}
+                range={blockedRange}
+              />
             )}
           </div>
 
