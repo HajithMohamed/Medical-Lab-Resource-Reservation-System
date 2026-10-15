@@ -52,11 +52,11 @@ export function EquipmentLogSection({
   csvDownloadUrl,
 }: EquipmentLogSectionProps) {
   return (
-    <section className="space-y-4 pt-4 border-t border-[#334155]/60">
+    <section className="space-y-4 pt-4 border-t border-card-edge">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <FileText className="size-4 text-[#7bd0ff]" />
-          <h2 className="text-sm font-bold text-white uppercase tracking-wider font-mono">
+          <FileText className="size-4 text-teal" />
+          <h2 className="text-sm font-bold text-navy uppercase tracking-wider">
             Section B: Calibration & Service Log
           </h2>
         </div>
@@ -67,10 +67,10 @@ export function EquipmentLogSection({
             asChild
             variant="outline"
             size="sm"
-            className="h-8 px-3 text-xs font-mono bg-[#141c2b] border-[#334155] text-white hover:bg-[#1e293b] hover:text-[#6cd8cb]"
+            className="h-8 px-3 text-xs font-semibold bg-card border-card-edge text-navy hover:bg-mint hover:text-teal rounded-xl shadow-2xs"
           >
             <a href={csvDownloadUrl} download>
-              <FileSpreadsheet className="size-3.5 mr-1.5 text-emerald-400" />
+              <FileSpreadsheet className="size-3.5 mr-1.5 text-teal" />
               <span>Download CSV</span>
             </a>
           </Button>
@@ -78,10 +78,10 @@ export function EquipmentLogSection({
             asChild
             variant="outline"
             size="sm"
-            className="h-8 px-3 text-xs font-mono bg-[#141c2b] border-[#334155] text-white hover:bg-[#1e293b] hover:text-[#7bd0ff]"
+            className="h-8 px-3 text-xs font-semibold bg-card border-card-edge text-navy hover:bg-mint hover:text-teal rounded-xl shadow-2xs"
           >
             <a href={pdfDownloadUrl} target="_blank" rel="noopener noreferrer">
-              <Download className="size-3.5 mr-1.5 text-[#7bd0ff]" />
+              <Download className="size-3.5 mr-1.5 text-teal" />
               <span>Download PDF</span>
             </a>
           </Button>
@@ -126,25 +126,25 @@ export function EquipmentLogSection({
         />
       ) : (
         <div className="space-y-3">
-          <div className="rounded-xl border border-[#334155]/60 bg-[#060e1d]/80 shadow-xs overflow-x-auto max-w-full">
+          <div className="rounded-2xl border border-card-edge bg-card shadow-v4 overflow-x-auto max-w-full">
             <Table className="min-w-[900px]">
-              <TableHeader className="bg-[#141c2b]/80 border-b border-[#334155]/80">
-                <TableRow className="border-b border-[#334155]/80 hover:bg-transparent">
-                  <TableHead className="text-xs font-mono text-[#94a3b8] py-3 pl-4">Date</TableHead>
-                  <TableHead className="text-xs font-mono text-[#94a3b8] py-3">
+              <TableHeader className="bg-canvas/80 border-b border-card-edge">
+                <TableRow className="border-b border-card-edge hover:bg-transparent">
+                  <TableHead className="text-xs font-black uppercase tracking-wider text-navy/90 py-3.5 pl-4">Date</TableHead>
+                  <TableHead className="text-xs font-black uppercase tracking-wider text-navy/90 py-3.5">
                     Equipment / Site
                   </TableHead>
-                  <TableHead className="text-xs font-mono text-[#94a3b8] py-3">Type</TableHead>
-                  <TableHead className="text-xs font-mono text-[#94a3b8] py-3">
+                  <TableHead className="text-xs font-black uppercase tracking-wider text-navy/90 py-3.5">Type</TableHead>
+                  <TableHead className="text-xs font-black uppercase tracking-wider text-navy/90 py-3.5">
                     Performed by
                   </TableHead>
-                  <TableHead className="text-xs font-mono text-[#94a3b8] py-3">Work done</TableHead>
-                  <TableHead className="text-xs font-mono text-[#94a3b8] py-3">Result</TableHead>
-                  <TableHead className="text-xs font-mono text-[#94a3b8] py-3">Next due</TableHead>
-                  <TableHead className="text-xs font-mono text-[#94a3b8] py-3">
+                  <TableHead className="text-xs font-black uppercase tracking-wider text-navy/90 py-3.5">Work done</TableHead>
+                  <TableHead className="text-xs font-black uppercase tracking-wider text-navy/90 py-3.5">Result</TableHead>
+                  <TableHead className="text-xs font-black uppercase tracking-wider text-navy/90 py-3.5">Next due</TableHead>
+                  <TableHead className="text-xs font-black uppercase tracking-wider text-navy/90 py-3.5">
                     Recorded by
                   </TableHead>
-                  <TableHead className="text-xs font-mono text-[#94a3b8] py-3 pr-4 text-right">
+                  <TableHead className="text-xs font-black uppercase tracking-wider text-navy/90 py-3.5 pr-4 text-right">
                     PDF
                   </TableHead>
                 </TableRow>
@@ -153,78 +153,78 @@ export function EquipmentLogSection({
                 {rows.map((row) => (
                   <TableRow
                     key={row.id}
-                    className="border-b border-[#334155]/40 hover:bg-[#141c2b]/50 transition-colors"
+                    className="border-b border-card-edge hover:bg-mint/40 transition-colors"
                   >
-                    <TableCell className="py-3 pl-4 font-mono text-xs text-white whitespace-nowrap">
+                    <TableCell className="py-3 pl-4 text-xs text-navy font-bold whitespace-nowrap">
                       {formatEquipmentDay(row.date)}
                     </TableCell>
 
-                    <TableCell className="py-3 font-mono text-xs">
+                    <TableCell className="py-3 text-xs">
                       <Link
                         href={`/resources/${row.resourceId}`}
-                        className="text-white hover:text-[#6cd8cb] font-medium transition-colors"
+                        className="text-navy hover:text-teal font-bold transition-colors block"
                       >
                         {row.resourceName}
                       </Link>
-                      <div className="text-[11px] text-[#64748b]">
+                      <div className="text-[11.5px] text-slate-700 font-medium">
                         {row.siteName} {row.sectionName ? `• ${row.sectionName}` : ""}
                       </div>
                     </TableCell>
 
-                    <TableCell className="py-3 font-mono text-xs text-[#cbd5e1] whitespace-nowrap">
+                    <TableCell className="py-3 font-bold text-xs text-navy whitespace-nowrap uppercase tracking-wider">
                       {row.kind.replace(/_/g, " ")}
                     </TableCell>
 
-                    <TableCell className="py-3 font-mono text-xs">
-                      <div className="text-white">{row.performedBy}</div>
+                    <TableCell className="py-3 text-xs">
+                      <div className="text-navy font-bold">{row.performedBy}</div>
                       {row.externalCompany && (
-                        <div className="text-[11px] text-[#94a3b8]">{row.externalCompany}</div>
+                        <div className="text-[11.5px] text-slate-700 font-medium">{row.externalCompany}</div>
                       )}
                     </TableCell>
 
-                    <TableCell className="py-3 font-mono text-xs text-[#94a3b8] max-w-[200px]">
+                    <TableCell className="py-3 text-xs text-slate-700 font-medium max-w-[200px]">
                       <div className="truncate" title={row.workPerformed ?? undefined}>
                         {row.workPerformed || "-"}
                       </div>
                     </TableCell>
 
-                    <TableCell className="py-3 font-mono text-xs whitespace-nowrap">
+                    <TableCell className="py-3 text-xs whitespace-nowrap">
                       {row.outcome === "PASS" && (
-                        <span className="inline-flex items-center gap-1 text-emerald-400 font-medium">
+                        <span className="inline-flex items-center gap-1 text-green font-bold">
                           <CheckCircle2 className="size-3.5" /> Pass
                         </span>
                       )}
                       {row.outcome === "FAIL" && (
-                        <span className="inline-flex items-center gap-1 text-rose-400 font-bold">
+                        <span className="inline-flex items-center gap-1 text-red font-bold">
                           <XCircle className="size-3.5" /> Fail
                         </span>
                       )}
                       {row.outcome === "NOT_DONE" && (
-                        <span className="inline-flex items-center gap-1 text-amber-300 font-medium">
+                        <span className="inline-flex items-center gap-1 text-amber-strong font-bold">
                           <HelpCircle className="size-3.5" /> Not done
                         </span>
                       )}
                       {row.outcome === "REPLACE" && (
-                        <span className="inline-flex items-center gap-1 text-rose-300 font-bold">
+                        <span className="inline-flex items-center gap-1 text-red font-bold">
                           Replace
                         </span>
                       )}
                     </TableCell>
 
-                    <TableCell className="py-3 font-mono text-xs text-[#cbd5e1] whitespace-nowrap">
+                    <TableCell className="py-3 text-xs text-navy font-bold whitespace-nowrap">
                       {row.nextDueOn ? formatEquipmentDay(row.nextDueOn) : "-"}
                     </TableCell>
 
-                    <TableCell className="py-3 font-mono text-xs text-[#94a3b8] whitespace-nowrap">
+                    <TableCell className="py-3 text-xs text-slate-700 font-semibold whitespace-nowrap">
                       {row.recordedByName}
                     </TableCell>
 
-                    <TableCell className="py-3 pr-4 text-right font-mono text-xs">
+                    <TableCell className="py-3 pr-4 text-right text-xs">
                       <Button
                         asChild
                         variant="ghost"
                         size="sm"
-                        className="h-7 px-2 text-[11px] text-[#7bd0ff] hover:text-white hover:bg-[#334155]/60"
+                        className="h-7 px-2 text-[11px] text-teal hover:text-teal-deep hover:bg-mint"
                       >
                         <a
                           href={`/equipment/records/${row.id}/pdf`}

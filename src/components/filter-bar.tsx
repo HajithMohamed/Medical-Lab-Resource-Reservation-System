@@ -23,7 +23,7 @@ export function FilterBar({
     <AutoFilter
       action={action}
       className={cn(
-        "flex flex-wrap items-center justify-between gap-3 bg-[#141c2b] p-3.5 rounded-xl border border-[#334155] shadow-xs",
+        "flex flex-wrap items-center justify-between gap-3 bg-card p-3.5 rounded-2xl border border-card-edge shadow-v4",
         className,
       )}
     >

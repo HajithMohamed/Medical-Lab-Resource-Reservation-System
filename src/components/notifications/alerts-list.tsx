@@ -53,52 +53,52 @@ export function AlertsList({ watches: initialWatches }: AlertsListProps) {
 
   return (
     <div className="space-y-4">
-      <div className="text-xs text-[#94a3b8] px-1">
+      <div className="text-xs text-muted px-1">
         Showing {watches.length} alert{watches.length === 1 ? "" : "s"}
       </div>
 
-      <div className="divide-y divide-[#334155]/60 border border-[#334155] rounded-xl overflow-hidden bg-[#141c2b]">
+      <div className="divide-y divide-line border border-card-edge rounded-[20px] overflow-hidden bg-card shadow-v4">
         {watches.map((watch) => {
           const isActive = watch.status === "ACTIVE";
           const isSent = watch.status === "SENT";
           const isExpired = watch.status === "EXPIRED";
 
-          let statusBadgeClass = "bg-[#334155]/40 text-[#94a3b8] border-[#334155]";
+          let statusBadgeClass = "bg-canvas text-muted border-card-edge";
           if (isActive) {
-            statusBadgeClass = "bg-[#6cd8cb]/15 text-[#6cd8cb] border-[#6cd8cb]/30";
+            statusBadgeClass = "bg-teal-soft text-teal-deep border border-teal-line";
           } else if (isSent) {
-            statusBadgeClass = "bg-blue-500/15 text-blue-400 border-blue-500/30";
+            statusBadgeClass = "bg-blue-soft text-blue border border-blue/20";
           } else if (isExpired) {
-            statusBadgeClass = "bg-amber-500/15 text-amber-400 border-amber-500/30";
+            statusBadgeClass = "bg-amber-soft text-amber border border-amber-line";
           }
 
           return (
             <div
               key={watch.id}
-              className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-[#1a2335] transition-colors"
+              className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-mint/30 transition-colors"
             >
               <div className="space-y-1.5 min-w-0 flex-1">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="font-semibold text-white text-sm tracking-tight">
+                  <span className="font-bold text-navy text-sm tracking-tight">
                     {watch.resource.name}
                   </span>
-                  <span className="text-xs text-[#94a3b8]">({watch.resource.site.name})</span>
+                  <span className="text-xs text-muted">({watch.resource.site.name})</span>
                   <span
-                    className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${statusBadgeClass}`}
+                    className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider ${statusBadgeClass}`}
                   >
                     {watch.status}
                   </span>
                 </div>
 
-                <div className="text-xs text-[#94a3b8] space-y-1">
+                <div className="text-xs text-muted space-y-1">
                   {watch.kind === "BACK_IN_SERVICE" ? (
-                    <div className="flex items-center gap-1.5 text-[#cbd5e1]">
-                      <Bell className="size-3.5 text-[#6cd8cb]" />
+                    <div className="flex items-center gap-1.5 text-navy font-medium">
+                      <Bell className="size-3.5 text-teal" />
                       <span>Alert when back in service</span>
                     </div>
                   ) : (
-                    <div className="flex items-center gap-1.5 flex-wrap text-[#cbd5e1]">
-                      <Clock className="size-3.5 text-[#6cd8cb]" />
+                    <div className="flex items-center gap-1.5 flex-wrap text-navy font-medium">
+                      <Clock className="size-3.5 text-teal" />
                       <span>
                         Wanted slot:{" "}
                         {watch.wantedStart ? formatClientLabDate(watch.wantedStart) : ""} (
@@ -106,18 +106,18 @@ export function AlertsList({ watches: initialWatches }: AlertsListProps) {
                         {watch.wantedEnd ? formatClientLabTime(watch.wantedEnd) : ""})
                       </span>
                       {watch.flexibleDay && (
-                        <span className="text-[11px] px-1.5 py-0.2 rounded bg-[#222a3a] text-[#6cd8cb] border border-[#6cd8cb]/20 font-mono">
+                        <span className="text-[11px] px-2 py-0.5 rounded-full bg-teal-soft text-teal font-bold">
                           Any free {watch.durationMinutes}m that day
                         </span>
                       )}
                     </div>
                   )}
 
-                  <div className="text-[11px] text-[#64748b] font-mono flex items-center gap-3 pt-0.5">
+                  <div className="text-[11px] text-faint flex items-center gap-3 pt-0.5">
                     <span>Created: {formatClientLabDate(watch.createdAt)}</span>
                     {isActive && <span>Expires: {formatClientLabDate(watch.expiresAt)}</span>}
                     {isSent && watch.sentAt && (
-                      <span className="text-blue-400">
+                      <span className="text-blue-500 font-bold">
                         Notification sent on {formatClientLabDate(watch.sentAt)}
                       </span>
                     )}
@@ -132,7 +132,7 @@ export function AlertsList({ watches: initialWatches }: AlertsListProps) {
                     size="sm"
                     onClick={() => handleCancel(watch.id)}
                     disabled={cancellingId === watch.id}
-                    className="h-8 text-xs border-[#f43f5e]/30 bg-[#f43f5e]/10 text-[#f43f5e] hover:bg-[#f43f5e]/20 hover:text-white"
+                    className="h-9 px-3 rounded-xl text-xs font-bold border-red/30 bg-red-soft text-red hover:bg-red hover:text-white transition-colors"
                   >
                     <XCircle className="size-3.5 mr-1" />
                     <span>Cancel alert</span>

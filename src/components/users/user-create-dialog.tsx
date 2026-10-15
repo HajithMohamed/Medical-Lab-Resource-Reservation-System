@@ -141,7 +141,7 @@ export function UserCreateDialog({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         {trigger ?? (
-          <Button className="gap-2 bg-[#6cd8cb] hover:bg-[#29a195] text-[#003732] font-semibold text-xs font-mono shadow-xs">
+          <Button className="gap-2 bg-gradient-to-br from-teal to-teal-deep text-white font-bold text-xs rounded-xl shadow-teal">
             <UserPlus className="size-4" />
             <span>Add user</span>
           </Button>
@@ -165,11 +165,11 @@ export function UserCreateDialog({
               onAddAnother={handleAddAnother}
             />
 
-            <DialogFooter className="pt-3 border-t border-[#334155]/40">
+            <DialogFooter className="pt-3 border-t border-line">
               <Button
                 type="button"
                 onClick={() => handleOpenChange(false)}
-                className="bg-[#6cd8cb] hover:bg-[#29a195] text-[#003732] font-semibold text-xs font-mono px-5 py-2 rounded-lg"
+                className="bg-gradient-to-br from-teal to-teal-deep text-white font-bold text-xs rounded-xl shadow-teal px-5 py-2"
               >
                 Done
               </Button>
@@ -339,20 +339,20 @@ export function UserCreateDialog({
               </div>
             </div>
 
-            <DialogFooter className="pt-3 border-t border-[#334155]/40">
+            <DialogFooter className="pt-3 border-t border-line">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => handleOpenChange(false)}
                 disabled={isPending}
-                className="text-[#dbe2f8] hover:bg-[#222a3a]"
+                className="rounded-xl border-card-edge bg-card text-navy font-bold text-xs"
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
                 disabled={isPending}
-                className="bg-[#6cd8cb] hover:bg-[#29a195] text-[#003732] font-semibold text-xs font-mono px-5 py-2 rounded-lg transition-all duration-150 active:scale-[0.98]"
+                className="bg-gradient-to-br from-teal to-teal-deep text-white font-bold text-xs rounded-xl shadow-teal px-5 py-2"
               >
                 {isPending ? "Creating..." : "Create user"}
               </Button>

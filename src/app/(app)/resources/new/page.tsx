@@ -34,18 +34,19 @@ export default async function NewResourcePage() {
   ]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 w-full">
       <div>
         <Link
           href="/resources"
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground mb-3 transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs font-bold text-teal hover:underline mb-3 transition-colors"
         >
-          <ArrowLeft className="size-4" />
-          <span>Back to Resources</span>
+          <ArrowLeft className="size-3.5" />
+          <span>Back to resources</span>
         </Link>
         <PageHeader
+          eyebrow="Resources / New"
           title="Add resource"
-          description="Register shared laboratory equipment, cabinets, rooms or vehicles."
+          description="Fill in the basics. Equipment and schedule sections appear only for instruments."
         />
       </div>
 

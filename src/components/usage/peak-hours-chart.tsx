@@ -11,18 +11,18 @@ export function PeakHoursChart({ data }: PeakHoursChartProps) {
   const maxMinutes = Math.max(...hourlyMinutes, 1);
 
   return (
-    <div className="rounded-2xl bg-[#0f172a]/70 border border-[#1e293b] p-5 shadow-xs space-y-4">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#1e293b] pb-3">
+    <div className="rounded-2xl bg-card border border-card-edge p-5 shadow-v4 space-y-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-line pb-3">
         <div className="flex items-center gap-2">
-          <Clock className="size-4 text-[#6cd8cb]" />
-          <h2 className="text-sm font-bold text-white uppercase tracking-wider font-mono">
+          <Clock className="size-4 text-teal" />
+          <h2 className="text-sm font-bold text-navy uppercase tracking-wider">
             Peak hours
           </h2>
         </div>
-        <div className="text-xs font-mono text-[#94a3b8]">
+        <div className="text-xs text-muted">
           {busiestHourMinutes > 0 ? (
             <span>
-              Busiest hour: <strong className="text-[#6cd8cb]">{busiestHourLabel}</strong> (
+              Busiest hour: <strong className="text-teal-deep font-bold">{busiestHourLabel}</strong> (
               {Math.round((busiestHourMinutes / 60) * 10) / 10} h booked)
             </span>
           ) : (
@@ -50,7 +50,7 @@ export function PeakHoursChart({ data }: PeakHoursChartProps) {
               >
                 {/* Tooltip on hover */}
                 <div className="absolute -top-8 hidden group-hover:flex flex-col items-center z-10 pointer-events-none">
-                  <div className="bg-[#141c2b] text-white border border-[#334155] rounded px-2 py-0.5 text-[10px] font-mono whitespace-nowrap shadow-md">
+                  <div className="bg-navy text-white rounded-lg px-2 py-0.5 text-[10px] font-semibold whitespace-nowrap shadow-md">
                     {hourLabel}: {Math.round((mins / 60) * 10) / 10} h ({mins}m)
                   </div>
                 </div>
@@ -59,10 +59,10 @@ export function PeakHoursChart({ data }: PeakHoursChartProps) {
                 <div
                   className={`w-full rounded-t transition-all duration-300 ${
                     isBusiest
-                      ? "bg-[#6cd8cb] shadow-[0_0_12px_rgba(108,216,203,0.6)]"
+                      ? "bg-teal shadow-xs"
                       : mins > 0
-                        ? "bg-[#0E6A85] hover:bg-[#1282a3]"
-                        : "bg-[#1e293b]/40"
+                        ? "bg-teal/70 hover:bg-teal"
+                        : "bg-card-edge/50"
                   }`}
                   style={{ height: `${heightPercent}%` }}
                 />
@@ -72,7 +72,7 @@ export function PeakHoursChart({ data }: PeakHoursChartProps) {
         </div>
 
         {/* X-Axis Hour Labels (Every 2 hours) */}
-        <div className="flex justify-between text-[10px] font-mono text-[#94a3b8] pt-2 border-t border-[#1e293b] mt-1">
+        <div className="flex justify-between text-[10px] text-muted pt-2 border-t border-line mt-1 font-medium">
           {Array.from({ length: 12 }).map((_, i) => {
             const hour = i * 2;
             return <span key={hour}>{String(hour).padStart(2, "0")}:00</span>;

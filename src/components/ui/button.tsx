@@ -8,25 +8,25 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-[#6cd8cb] hover:bg-[#29a195] text-[#003732] font-semibold font-mono shadow-xs",
+        default: "bg-teal hover:bg-teal-deep text-white font-semibold shadow-xs",
         outline:
-          "border border-[#334155] bg-[#18202f] hover:bg-[#222a3a] text-[#dbe2f8] hover:text-white hover:border-[#6cd8cb]/50",
+          "border border-card-edge bg-card hover:bg-mint text-navy hover:text-teal hover:border-teal/40 shadow-xs",
         secondary:
-          "bg-[#18202f] text-[#dbe2f8] hover:bg-[#222a3a] hover:text-white border border-[#334155]",
-        ghost: "text-[#dbe2f8] hover:bg-[#222a3a] hover:text-white border border-transparent",
+          "bg-canvas text-navy hover:bg-mint border border-card-edge",
+        ghost: "text-muted hover:bg-mint hover:text-navy border border-transparent",
         destructive:
-          "bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 hover:text-rose-300 border border-rose-500/30 hover:border-rose-500/50",
-        link: "text-[#6cd8cb] underline-offset-4 hover:underline",
+          "bg-red-soft text-red hover:bg-red/10 border border-red/20",
+        link: "text-teal underline-offset-4 hover:underline",
       },
       size: {
-        default: "h-9 gap-2 px-4 text-xs font-mono",
-        xs: "h-6 gap-1 rounded-md px-2 text-[11px] font-mono",
-        sm: "h-8 gap-1.5 px-3 text-xs font-mono",
-        lg: "h-10 gap-2 px-5 text-sm font-mono",
-        icon: "size-9",
+        default: "h-9 gap-2 px-4 text-xs font-medium",
+        xs: "h-6 gap-1 rounded-md px-2 text-[11px] font-medium",
+        sm: "h-8 gap-1.5 px-3 text-xs font-medium",
+        lg: "h-10 gap-2 px-5 text-sm font-medium",
+        icon: "size-9 rounded-lg",
         "icon-xs": "size-6 rounded-md",
         "icon-sm": "size-8 rounded-md",
-        "icon-lg": "size-10",
+        "icon-lg": "size-10 rounded-xl",
       },
     },
     defaultVariants: {

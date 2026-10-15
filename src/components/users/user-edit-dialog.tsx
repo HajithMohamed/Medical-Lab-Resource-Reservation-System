@@ -172,7 +172,7 @@ export function UserEditDialog({
               title="Temporary password generated"
             />
 
-            <DialogFooter className="pt-3 border-t border-[#334155]/40">
+            <DialogFooter className="pt-3 border-t border-line">
               <Button
                 type="button"
                 onClick={() => {
@@ -180,7 +180,7 @@ export function UserEditDialog({
                   setOpen(false);
                   router.refresh();
                 }}
-                className="bg-[#6cd8cb] hover:bg-[#29a195] text-[#003732] font-semibold text-xs font-mono px-5 py-2 rounded-lg"
+                className="bg-gradient-to-br from-teal to-teal-deep text-white font-bold text-xs rounded-xl shadow-teal px-5 py-2"
               >
                 Done
               </Button>
@@ -208,7 +208,7 @@ export function UserEditDialog({
               <div className="space-y-1.5">
                 <Label
                   htmlFor={`edit-user-name-${user.id}`}
-                  className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                  className="text-xs font-bold text-navy uppercase tracking-wider"
                 >
                   Full name
                 </Label>
@@ -220,16 +220,17 @@ export function UserEditDialog({
                   required
                   minLength={2}
                   maxLength={80}
+                  className="h-10 rounded-xl border-card-edge bg-card text-navy font-semibold text-sm"
                 />
                 {fieldErrors.name && (
-                  <p className="text-xs font-mono text-rose-400">{fieldErrors.name[0]}</p>
+                  <p className="text-xs font-semibold text-red">{fieldErrors.name[0]}</p>
                 )}
               </div>
 
               <div className="space-y-1.5">
                 <Label
                   htmlFor={`edit-user-email-${user.id}`}
-                  className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                  className="text-xs font-bold text-navy uppercase tracking-wider"
                 >
                   Email address
                 </Label>
@@ -237,7 +238,7 @@ export function UserEditDialog({
                   id={`edit-user-email-${user.id}`}
                   value={user.email}
                   disabled
-                  className="bg-[#141c2b] text-[#94a3b8] cursor-not-allowed font-mono text-xs"
+                  className="h-10 rounded-xl bg-canvas border border-card-edge text-muted font-semibold text-xs cursor-not-allowed"
                 />
               </div>
 
@@ -360,8 +361,8 @@ export function UserEditDialog({
               </div>
 
               {/* Security & Action Shortcuts inside Dialog */}
-              <div className="rounded-lg border border-[#334155]/60 bg-[#18202f] p-3 space-y-2.5">
-                <div className="text-[11px] font-mono font-semibold text-[#94a3b8] uppercase tracking-wider">
+              <div className="rounded-2xl border border-card-edge bg-canvas p-3.5 space-y-2.5">
+                <div className="text-[11px] font-bold text-muted uppercase tracking-wider">
                   Account security & status
                 </div>
 
@@ -372,9 +373,9 @@ export function UserEditDialog({
                         type="button"
                         variant="outline"
                         size="sm"
-                        className="gap-1.5 text-xs font-mono h-8 bg-[#141c2b] text-[#dbe2f8] border-[#334155] hover:bg-[#222a3a]"
+                        className="gap-1.5 text-xs font-bold h-8 rounded-xl bg-card text-navy border-card-edge hover:bg-canvas"
                       >
-                        <KeyRound className="size-3.5 text-[#6cd8cb]" />
+                        <KeyRound className="size-3.5 text-teal" />
                         <span>Reset password</span>
                       </Button>
                     }
@@ -400,7 +401,7 @@ export function UserEditDialog({
                           type="button"
                           variant="destructive"
                           size="sm"
-                          className="gap-1.5 text-xs font-mono h-8"
+                          className="gap-1.5 text-xs font-bold h-8 rounded-xl"
                         >
                           <UserMinus className="size-3.5" />
                           <span>Deactivate</span>
@@ -430,7 +431,7 @@ export function UserEditDialog({
                           type="button"
                           variant="outline"
                           size="sm"
-                          className="gap-1.5 text-xs font-mono h-8 border-emerald-500/30 text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20"
+                          className="gap-1.5 text-xs font-bold h-8 rounded-xl border-teal-soft text-teal bg-mint/50 hover:bg-mint"
                         >
                           <UserCheck className="size-3.5" />
                           <span>Reactivate</span>
@@ -455,20 +456,20 @@ export function UserEditDialog({
               </div>
             </div>
 
-            <DialogFooter className="pt-3 border-t border-[#334155]/40">
+            <DialogFooter className="pt-3 border-t border-line">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => handleOpenChange(false)}
                 disabled={isPending}
-                className="text-[#dbe2f8] hover:bg-[#222a3a]"
+                className="rounded-xl border-card-edge bg-card text-navy font-bold text-xs"
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
                 disabled={isPending}
-                className="bg-[#6cd8cb] hover:bg-[#29a195] text-[#003732] font-semibold text-xs font-mono px-5 py-2 rounded-lg transition-all duration-150 active:scale-[0.98]"
+                className="bg-gradient-to-br from-teal to-teal-deep text-white font-bold text-xs rounded-xl shadow-teal px-5 py-2"
               >
                 {isPending ? "Saving..." : "Save changes"}
               </Button>

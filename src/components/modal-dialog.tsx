@@ -73,40 +73,40 @@ export function ModalDialog({
       {/* Backdrop */}
       <div
         onClick={handleClose}
-        className="fixed inset-0 bg-black/75 backdrop-blur-[4px] animate-in fade-in duration-150"
+        className="fixed inset-0 bg-navy/40 backdrop-blur-xs animate-in fade-in duration-150"
         aria-hidden="true"
       />
 
       {/* Modal Window (max 85vh, internal scroll) */}
       <div
         className={cn(
-          "relative z-10 w-full max-h-[85vh] flex flex-col rounded-2xl border border-[#334155] bg-[#0f172a] text-slate-100 shadow-2xl overflow-hidden animate-in fade-in-0 zoom-in-95 duration-150",
+          "relative z-10 w-full max-h-[85vh] flex flex-col rounded-3xl border border-card-edge bg-card text-ink shadow-v4 overflow-hidden animate-in fade-in-0 zoom-in-95 duration-150",
           maxWidthClass,
           className,
         )}
       >
         {/* Modal Header */}
-        <div className="flex items-center justify-between px-5 py-3.5 border-b border-[#334155]/60 bg-[#141c2b] shrink-0">
+        <div className="flex items-center justify-between px-5 py-3.5 border-b border-card-edge bg-canvas/60 shrink-0">
           <div className="min-w-0 pr-4">
             {title && (
-              <h2 className="text-base font-bold text-white tracking-tight truncate">{title}</h2>
+              <h2 className="text-base font-bold text-navy tracking-tight truncate">{title}</h2>
             )}
             {description && (
-              <p className="text-xs font-mono text-[#94a3b8] mt-0.5 truncate">{description}</p>
+              <p className="text-xs text-muted mt-0.5 truncate">{description}</p>
             )}
           </div>
           <button
             type="button"
             onClick={handleClose}
             aria-label="Close dialog"
-            className="rounded-lg p-1.5 text-[#94a3b8] hover:text-white hover:bg-[#1e293b] transition-colors cursor-pointer shrink-0 ml-auto"
+            className="rounded-xl p-1.5 text-muted hover:text-navy hover:bg-mint transition-colors cursor-pointer shrink-0 ml-auto border border-transparent hover:border-card-edge"
           >
             <X className="size-4" />
           </button>
         </div>
 
         {/* Scrollable Content Inside (85vh bounded) */}
-        <div className="flex-1 overflow-y-auto p-5 sm:p-6 scrollbar-thin scrollbar-thumb-slate-700">
+        <div className="flex-1 overflow-y-auto p-5 sm:p-6">
           {children}
         </div>
       </div>

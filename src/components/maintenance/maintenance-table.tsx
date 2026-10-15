@@ -43,11 +43,11 @@ export function MaintenanceTable({ blocks, isAdmin = false }: MaintenanceTablePr
   }
 
   return (
-    <div className="rounded-xl border border-[#334155] bg-[#141c2b] overflow-hidden shadow-xs">
+    <div className="rounded-2xl border border-card-edge bg-card overflow-hidden shadow-v4">
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse text-xs">
           <thead>
-            <tr className="border-b border-[#334155] bg-[#060e1d] text-[#879390] uppercase font-mono tracking-wider text-[11px]">
+            <tr className="border-b border-card-edge bg-canvas/80 text-muted uppercase font-bold text-[11px]">
               <th className="py-2.5 px-3 font-semibold w-12 text-center">Type</th>
               <th className="py-2.5 px-3 font-semibold">Resource</th>
               {isAdmin && <th className="py-2.5 px-3 font-semibold">Site</th>}
@@ -57,29 +57,29 @@ export function MaintenanceTable({ blocks, isAdmin = false }: MaintenanceTablePr
               <th className="py-2.5 px-3 font-semibold text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#334155]/60 font-mono">
+          <tbody className="divide-y divide-card-edge">
             {blocks.map((block) => (
-              <tr key={block.id} className="hover:bg-[#18202f]/50 transition-colors">
+              <tr key={block.id} className="hover:bg-mint/40 transition-colors">
                 {/* Hatch Swatch */}
-                <td className="py-2 px-3 text-center">
+                <td className="py-2.5 px-3 text-center">
                   <div
                     title="Maintenance"
-                    className="size-5 rounded border border-amber-500/50 bg-amber-500/20 hatch-maint inline-block shadow-2xs"
+                    className="size-5 rounded-md border border-amber/40 bg-amber-soft inline-block shadow-2xs"
                   />
                 </td>
 
                 {/* Resource */}
-                <td className="py-2 px-3">
+                <td className="py-2.5 px-3">
                   <div className="flex items-center gap-2.5">
-                    <CategoryIcon iconKey={block.iconKey} className="size-6 shrink-0 rounded" />
+                    <CategoryIcon iconKey={block.iconKey} className="size-6 shrink-0 rounded-lg" />
                     <div className="min-w-0">
                       <Link
                         href={`/resources/${block.resourceId}`}
-                        className="font-bold text-white hover:text-[#6cd8cb] transition-colors truncate block"
+                        className="font-bold text-navy hover:text-teal transition-colors truncate block"
                       >
                         {block.resourceName}
                       </Link>
-                      <span className="text-[11px] text-[#879390] block truncate">
+                      <span className="text-[11px] text-muted block truncate">
                         {block.categoryName}
                       </span>
                     </div>
@@ -88,50 +88,50 @@ export function MaintenanceTable({ blocks, isAdmin = false }: MaintenanceTablePr
 
                 {/* Site (admin only) */}
                 {isAdmin && (
-                  <td className="py-2 px-3 text-slate-300 font-medium whitespace-nowrap">
+                  <td className="py-2.5 px-3 text-muted font-medium whitespace-nowrap">
                     {block.siteName}
                   </td>
                 )}
 
                 {/* Schedule */}
-                <td className="py-2 px-3 tabular-nums text-white whitespace-nowrap">
+                <td className="py-2.5 px-3 tabular-nums text-navy font-semibold whitespace-nowrap">
                   <div>{block.rangeFormatted}</div>
                   {block.isRunning && (
-                    <span className="inline-flex items-center gap-1 text-[10px] text-amber-400 font-bold bg-amber-400/10 px-1.5 py-0.2 rounded border border-amber-400/30 mt-0.5">
-                      <span className="size-1.5 rounded-full bg-amber-400 animate-pulse" />
+                    <span className="inline-flex items-center gap-1 text-[10px] text-amber-strong font-bold bg-amber-soft px-1.5 py-0.2 rounded border border-amber/30 mt-0.5">
+                      <span className="size-1.5 rounded-full bg-amber-strong animate-pulse" />
                       Running now
                     </span>
                   )}
                 </td>
 
                 {/* Reason */}
-                <td className="py-2 px-3 text-slate-200 max-w-xs break-words">
+                <td className="py-2.5 px-3 text-navy max-w-xs break-words">
                   <Link
                     href={`/reservations/${block.id}`}
-                    className="hover:text-[#6cd8cb] transition-colors line-clamp-2"
+                    className="hover:text-teal transition-colors line-clamp-2"
                   >
                     {block.purpose}
                   </Link>
                 </td>
 
                 {/* Created By */}
-                <td className="py-2 px-3 text-[#879390] whitespace-nowrap">
+                <td className="py-2.5 px-3 text-muted whitespace-nowrap">
                   {block.createdByName}
                 </td>
 
                 {/* Actions */}
-                <td className="py-2 px-3 text-right whitespace-nowrap">
+                <td className="py-2.5 px-3 text-right whitespace-nowrap">
                   <div className="flex items-center justify-end gap-1">
                     <Button
                       asChild
                       variant="ghost"
                       size="icon"
-                      className="size-9 rounded-md text-[#94a3b8] hover:text-white hover:bg-[#18202f] border border-transparent hover:border-[#334155] transition-all"
+                      className="size-8 rounded-xl text-muted hover:text-navy hover:bg-mint border border-card-edge transition-all shadow-2xs"
                       title="View block details"
                       aria-label={`View block details for ${block.resourceName}`}
                     >
                       <Link href={`/reservations/${block.id}`}>
-                        <Eye className="size-4" />
+                        <Eye className="size-4 text-teal" />
                       </Link>
                     </Button>
 
@@ -148,11 +148,11 @@ export function MaintenanceTable({ blocks, isAdmin = false }: MaintenanceTablePr
                           <Button
                             variant="outline"
                             size="icon"
-                            className="size-9 rounded-md border-amber-500/40 text-amber-300 bg-amber-950/20 hover:bg-amber-900/40"
+                            className="size-8 rounded-xl border border-amber/30 text-amber-strong bg-amber-soft hover:bg-amber-soft/80 shadow-2xs"
                             title="End maintenance now"
                             aria-label="End maintenance now"
                           >
-                            <StopCircle className="size-4 text-amber-400" />
+                            <StopCircle className="size-4 text-amber-strong" />
                           </Button>
                         }
                       >
@@ -175,11 +175,11 @@ export function MaintenanceTable({ blocks, isAdmin = false }: MaintenanceTablePr
                           <Button
                             variant="outline"
                             size="icon"
-                            className="size-9 rounded-md border-rose-500/40 text-rose-300 bg-rose-950/20 hover:bg-rose-900/40"
+                            className="size-8 rounded-xl border border-red/20 text-red bg-red-soft hover:bg-red-soft/80 shadow-2xs"
                             title="Cancel maintenance block"
                             aria-label="Cancel maintenance block"
                           >
-                            <XCircle className="size-4 text-rose-400" />
+                            <XCircle className="size-4 text-red" />
                           </Button>
                         }
                       >
@@ -188,9 +188,9 @@ export function MaintenanceTable({ blocks, isAdmin = false }: MaintenanceTablePr
                         <div className="space-y-1.5 pt-1 text-left">
                           <Label
                             htmlFor="cancelReason"
-                            className="text-xs font-mono text-slate-200"
+                            className="text-xs font-semibold text-navy"
                           >
-                            Reason for cancellation <span className="text-rose-400">*</span>
+                            Reason for cancellation <span className="text-red">*</span>
                           </Label>
                           <Input
                             id="cancelReason"
@@ -199,14 +199,14 @@ export function MaintenanceTable({ blocks, isAdmin = false }: MaintenanceTablePr
                             minLength={3}
                             maxLength={200}
                             placeholder="e.g. Technician visit rescheduled"
-                            className="h-9 bg-[#060e1d] border-[#334155] text-xs font-mono text-slate-100"
+                            className="h-10 bg-card border-card-edge text-xs text-navy rounded-xl focus:border-teal"
                           />
                         </div>
                       </ConfirmAction>
                     )}
 
                     {!block.isRunning && !block.isFuture && (
-                      <span className="text-[11px] text-[#879390] italic">Past</span>
+                      <span className="text-[11px] text-muted italic">Past</span>
                     )}
                   </div>
                 </td>

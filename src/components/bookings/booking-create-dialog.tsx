@@ -113,7 +113,7 @@ export function BookingCreateDialog({
         {trigger ?? (
           <Button
             size="sm"
-            className="h-8 gap-1.5 bg-[#6cd8cb] hover:bg-[#29a195] text-[#003732] font-semibold text-xs font-mono active:scale-95 transition-all shadow-xs"
+            className="h-9 gap-1.5 bg-teal hover:bg-teal-deep text-white font-bold text-xs rounded-xl active:scale-95 transition-all shadow-2xs cursor-pointer"
           >
             <Plus className="size-3.5 stroke-[2.5]" />
             <span>Book a resource</span>
@@ -121,23 +121,23 @@ export function BookingCreateDialog({
         )}
       </DialogTrigger>
 
-      <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-y-auto p-0 bg-[#141c2b] border-[#334155] rounded-xl shadow-2xl">
-        <DialogHeader className="px-5 py-4 border-b border-[#334155]/60 bg-[#18202f] flex flex-row items-center justify-between">
+      <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-y-auto p-0 bg-card border border-card-edge rounded-3xl shadow-v4">
+        <DialogHeader className="px-6 py-4 border-b border-card-edge bg-canvas/60 flex flex-row items-center justify-between">
           <div>
-            <div className="flex items-center gap-2 text-xs font-mono text-[#6cd8cb] uppercase tracking-wider mb-1">
+            <div className="flex items-center gap-2 text-[11px] font-extrabold text-teal uppercase tracking-wider mb-0.5">
               <Calendar className="size-3.5" />
               <span>Clinical Reservation</span>
             </div>
-            <DialogTitle className="text-base font-semibold text-white tracking-tight">
+            <DialogTitle className="text-base font-bold text-navy tracking-tight">
               Book a resource
             </DialogTitle>
-            <DialogDescription className="text-xs text-[#94a3b8]">
+            <DialogDescription className="text-xs text-muted font-normal">
               Reserve a shared instrument, biosafety cabinet, or room across the clinical network.
             </DialogDescription>
           </div>
           <Link
             href={`/bookings/new${selectedResourceId ? `?resourceId=${selectedResourceId}` : ""}`}
-            className="text-[11px] font-mono text-[#94a3b8] hover:text-[#6cd8cb] flex items-center gap-1 transition-colors mr-6"
+            className="text-xs font-semibold text-muted hover:text-teal flex items-center gap-1 transition-colors mr-6"
             title="Open full page view"
           >
             <Maximize2 className="size-3" />
@@ -145,21 +145,21 @@ export function BookingCreateDialog({
           </Link>
         </DialogHeader>
 
-        <form action={formAction} className="p-5 space-y-4">
+        <form action={formAction} className="p-6 space-y-4">
           {/* Clash or Global Error Alert */}
           {state?.error && (
             <div
               role="alert"
-              className="p-3.5 rounded-lg border border-rose-500/50 bg-rose-950/30 text-rose-200 text-xs font-mono space-y-2 animate-in fade-in"
+              className="p-3.5 rounded-2xl border border-red/30 bg-red-soft text-red text-xs space-y-2 animate-in fade-in"
             >
               <div className="flex items-start gap-2.5">
-                <div className="flex-1 leading-relaxed">{state.error}</div>
+                <div className="flex-1 leading-relaxed font-semibold">{state.error}</div>
               </div>
-              <div className="pt-1 border-t border-rose-500/20 flex justify-end">
+              <div className="pt-1.5 border-t border-red/20 flex justify-end">
                 <Link
                   href={calendarLink}
                   onClick={() => setOpen(false)}
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#6cd8cb] hover:text-white transition-colors"
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-teal hover:underline transition-colors"
                 >
                   <span>See this day in the calendar</span>
                   <ArrowRight className="size-3" />
@@ -175,9 +175,9 @@ export function BookingCreateDialog({
           <div className="space-y-1.5">
             <Label
               htmlFor="modalResourceSelect"
-              className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+              className="text-xs font-bold text-navy"
             >
-              Resource <span className="text-[#6cd8cb]">*</span>
+              Resource <span className="text-teal">*</span>
             </Label>
             <Select
               value={selectedResourceId}
@@ -185,29 +185,29 @@ export function BookingCreateDialog({
             >
               <SelectTrigger
                 id="modalResourceSelect"
-                className="w-full h-10 bg-[#060e1d] border-[#334155] text-slate-100 text-xs font-mono focus-visible:border-[#6cd8cb]"
+                className="w-full h-10 bg-card border-card-edge text-navy text-xs font-semibold focus-visible:border-teal rounded-xl shadow-2xs"
               >
                 <SelectValue placeholder="Select a resource..." />
               </SelectTrigger>
-              <SelectContent className="bg-[#141c2b] border-[#334155] text-slate-100 max-h-72">
+              <SelectContent className="bg-card border-card-edge text-ink max-h-72 rounded-2xl shadow-v4">
                 {groupedBySite.map(([siteId, group]) => (
                   <SelectGroup key={siteId}>
-                    <SelectLabel className="text-[11px] font-mono uppercase text-[#6cd8cb] tracking-wider px-2 py-1.5 bg-[#18202f]">
+                    <SelectLabel className="text-[10.5px] font-extrabold uppercase text-muted tracking-wider px-2.5 py-1.5 bg-canvas">
                       {group.siteName}
                     </SelectLabel>
                     {group.items.map((res) => (
                       <SelectItem
                         key={res.id}
                         value={res.id}
-                        className="text-xs font-mono py-2 hover:bg-[#222a3a] cursor-pointer"
+                        className="text-xs font-semibold py-2 hover:bg-mint cursor-pointer rounded-xl"
                       >
                         <div className="flex items-center gap-2">
                           <CategoryIcon
                             iconKey={res.category.iconKey}
-                            className="size-4 shrink-0 text-[#6cd8cb]"
+                            className="size-4 shrink-0 text-teal"
                           />
-                          <span className="font-medium text-white">{res.name}</span>
-                          <span className="text-[#94a3b8] text-[11px]">
+                          <span className="font-bold text-navy">{res.name}</span>
+                          <span className="text-muted text-[11px] font-normal">
                             ({formatMinutes(res.category.maxBookingMinutes)} max)
                           </span>
                         </div>
@@ -220,24 +220,24 @@ export function BookingCreateDialog({
 
             {/* Dynamic Resource Hint */}
             {selectedResource && (
-              <div className="text-[11px] font-mono text-[#94a3b8] pt-1 pl-0.5 space-y-0.5">
+              <div className="text-xs text-muted pt-1 pl-0.5 space-y-0.5 font-normal">
                 <p>
-                  <span className="text-[#6cd8cb] font-semibold">
+                  <span className="text-teal-deep font-bold">
                     {selectedResource.category.name}
                   </span>{" "}
                   can be booked for up to{" "}
-                  <span className="text-white font-semibold">
+                  <span className="text-navy font-bold">
                     {formatMinutes(selectedResource.category.maxBookingMinutes)}
                   </span>
                   .
                 </p>
                 {selectedResource.capacity ? (
-                  <p className="text-emerald-400">
+                  <p className="text-teal font-semibold">
                     Holds up to {selectedResource.capacity} people.
                   </p>
                 ) : null}
                 {calibrationDueSoonText && (
-                  <p className="text-amber-400 font-semibold flex items-center gap-1.5 pt-0.5">
+                  <p className="text-amber font-bold flex items-center gap-1.5 pt-0.5">
                     <AlertCircle className="size-3.5 shrink-0" />
                     <span>{calibrationDueSoonText}</span>
                   </p>
@@ -245,7 +245,7 @@ export function BookingCreateDialog({
               </div>
             )}
             {state?.fieldErrors?.resourceId && (
-              <p className="text-[11px] font-mono text-rose-400">
+              <p className="text-[11px] font-semibold text-red">
                 {state.fieldErrors.resourceId[0]}
               </p>
             )}
@@ -256,9 +256,9 @@ export function BookingCreateDialog({
             <div className="space-y-1.5">
               <Label
                 htmlFor="modalStartDate"
-                className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                className="text-xs font-bold text-navy"
               >
-                Start Date <span className="text-[#6cd8cb]">*</span>
+                Start Date <span className="text-teal">*</span>
               </Label>
               <Input
                 id="modalStartDate"
@@ -267,10 +267,10 @@ export function BookingCreateDialog({
                 required
                 value={startDate}
                 onChange={handleStartDateChange}
-                className="h-10 bg-[#060e1d] border-[#334155] text-white text-xs font-mono tabular-nums focus-visible:border-[#6cd8cb]"
+                className="h-10 bg-card border-card-edge text-navy text-xs font-semibold tabular-nums focus-visible:border-teal rounded-xl shadow-2xs"
               />
               {state?.fieldErrors?.startDate && (
-                <p className="text-[11px] font-mono text-rose-400">
+                <p className="text-[11px] font-semibold text-red">
                   {state.fieldErrors.startDate[0]}
                 </p>
               )}
@@ -279,9 +279,9 @@ export function BookingCreateDialog({
             <div className="space-y-1.5">
               <Label
                 htmlFor="modalStartTime"
-                className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                className="text-xs font-bold text-navy"
               >
-                Start Time <span className="text-[#6cd8cb]">*</span>
+                Start Time <span className="text-teal">*</span>
               </Label>
               <Input
                 id="modalStartTime"
@@ -291,10 +291,10 @@ export function BookingCreateDialog({
                 required
                 value={startTime}
                 onChange={(e) => setStartTime(e.target.value)}
-                className="h-10 bg-[#060e1d] border-[#334155] text-white text-xs font-mono tabular-nums focus-visible:border-[#6cd8cb]"
+                className="h-10 bg-card border-card-edge text-navy text-xs font-semibold tabular-nums focus-visible:border-teal rounded-xl shadow-2xs"
               />
               {state?.fieldErrors?.startTime && (
-                <p className="text-[11px] font-mono text-rose-400">
+                <p className="text-[11px] font-semibold text-red">
                   {state.fieldErrors.startTime[0]}
                 </p>
               )}
@@ -306,9 +306,9 @@ export function BookingCreateDialog({
             <div className="space-y-1.5">
               <Label
                 htmlFor="modalEndDate"
-                className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                className="text-xs font-bold text-navy"
               >
-                End Date <span className="text-[#6cd8cb]">*</span>
+                End Date <span className="text-teal">*</span>
               </Label>
               <Input
                 id="modalEndDate"
@@ -317,10 +317,10 @@ export function BookingCreateDialog({
                 required
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="h-10 bg-[#060e1d] border-[#334155] text-white text-xs font-mono tabular-nums focus-visible:border-[#6cd8cb]"
+                className="h-10 bg-card border-card-edge text-navy text-xs font-semibold tabular-nums focus-visible:border-teal rounded-xl shadow-2xs"
               />
               {state?.fieldErrors?.endDate && (
-                <p className="text-[11px] font-mono text-rose-400">
+                <p className="text-[11px] font-semibold text-red">
                   {state.fieldErrors.endDate[0]}
                 </p>
               )}
@@ -329,9 +329,9 @@ export function BookingCreateDialog({
             <div className="space-y-1.5">
               <Label
                 htmlFor="modalEndTime"
-                className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                className="text-xs font-bold text-navy"
               >
-                End Time <span className="text-[#6cd8cb]">*</span>
+                End Time <span className="text-teal">*</span>
               </Label>
               <Input
                 id="modalEndTime"
@@ -341,10 +341,10 @@ export function BookingCreateDialog({
                 required
                 value={endTime}
                 onChange={(e) => setEndTime(e.target.value)}
-                className="h-10 bg-[#060e1d] border-[#334155] text-white text-xs font-mono tabular-nums focus-visible:border-[#6cd8cb]"
+                className="h-10 bg-card border-card-edge text-navy text-xs font-semibold tabular-nums focus-visible:border-teal rounded-xl shadow-2xs"
               />
               {state?.fieldErrors?.endTime && (
-                <p className="text-[11px] font-mono text-rose-400">
+                <p className="text-[11px] font-semibold text-red">
                   {state.fieldErrors.endTime[0]}
                 </p>
               )}
@@ -355,9 +355,9 @@ export function BookingCreateDialog({
           <div className="space-y-1.5">
             <Label
               htmlFor="modalPurpose"
-              className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+              className="text-xs font-bold text-navy"
             >
-              Purpose <span className="text-[#6cd8cb]">*</span>
+              Purpose <span className="text-teal">*</span>
             </Label>
             <Input
               id="modalPurpose"
@@ -367,24 +367,24 @@ export function BookingCreateDialog({
               minLength={3}
               maxLength={200}
               placeholder="e.g. HbA1c batch"
-              className="h-10 bg-[#060e1d] border-[#334155] text-white text-xs font-mono focus-visible:border-[#6cd8cb]"
+              className="h-10 bg-card border-card-edge text-navy text-xs font-semibold focus-visible:border-teal rounded-xl shadow-2xs"
             />
-            <p className="text-[10px] font-mono text-[#94a3b8]">
+            <p className="text-[11px] text-muted font-normal">
               3 to 200 characters describing the diagnostic or research work.
             </p>
             {state?.fieldErrors?.purpose && (
-              <p className="text-[11px] font-mono text-rose-400">{state.fieldErrors.purpose[0]}</p>
+              <p className="text-[11px] font-semibold text-red">{state.fieldErrors.purpose[0]}</p>
             )}
           </div>
 
           {/* Attendees */}
           {selectedResource?.capacity ? (
-            <div className="space-y-1.5 p-3 rounded-lg border border-[#334155] bg-[#060e1d]/60">
+            <div className="space-y-1.5 p-3.5 rounded-2xl border border-card-edge bg-canvas/60">
               <Label
                 htmlFor="modalAttendeeCount"
-                className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                className="text-xs font-bold text-navy"
               >
-                Expected Attendees <span className="text-[#6cd8cb]">*</span>
+                Expected Attendees <span className="text-teal">*</span>
               </Label>
               <Input
                 id="modalAttendeeCount"
@@ -394,38 +394,38 @@ export function BookingCreateDialog({
                 max={selectedResource.capacity}
                 required
                 placeholder={`1 to ${selectedResource.capacity}`}
-                className="h-10 bg-[#060e1d] border-[#334155] text-white text-xs font-mono tabular-nums focus-visible:border-[#6cd8cb]"
+                className="h-10 bg-card border-card-edge text-navy text-xs font-semibold tabular-nums focus-visible:border-teal rounded-xl shadow-2xs"
               />
-              <p className="text-[10px] font-mono text-[#94a3b8]">
+              <p className="text-[11px] text-muted font-normal">
                 This room holds a maximum of {selectedResource.capacity} persons.
               </p>
               {state?.fieldErrors?.attendeeCount && (
-                <p className="text-[11px] font-mono text-rose-400">
+                <p className="text-[11px] font-semibold text-red">
                   {state.fieldErrors.attendeeCount[0]}
                 </p>
               )}
             </div>
           ) : null}
 
-          {/* Telemetry Stats Callout (like clinical-precision-reference.html) */}
-          <div className="p-3 bg-[#18202f] border border-[#334155]/60 rounded-lg flex items-center justify-between text-xs font-mono text-[#94a3b8]">
+          {/* Telemetry Stats Callout */}
+          <div className="p-3.5 bg-canvas border border-card-edge rounded-2xl flex items-center justify-between text-xs text-muted font-medium">
             <span className="flex items-center gap-1.5">
-              <span className="text-[#6cd8cb]">ℹ</span>
+              <span className="text-teal font-bold">ℹ</span>
               <span>15-min slot boundary alignment enforced</span>
             </span>
-            <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-mint text-teal-deep border border-teal-line font-extrabold uppercase tracking-wider">
               Clash-Free
             </span>
           </div>
 
           {/* Footer Actions */}
-          <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#334155]/40">
+          <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-card-edge">
             <Button
               type="button"
               variant="outline"
               size="sm"
               onClick={() => setOpen(false)}
-              className="px-4 py-2 rounded-lg text-xs font-mono text-[#dbe2f8] hover:bg-[#222a3a] border-[#334155]"
+              className="px-4 py-2 rounded-xl text-xs font-semibold text-muted hover:text-navy hover:bg-mint border border-card-edge bg-card shadow-2xs cursor-pointer"
             >
               Cancel
             </Button>
@@ -433,7 +433,7 @@ export function BookingCreateDialog({
               type="submit"
               size="sm"
               disabled={isPending}
-              className="bg-[#6cd8cb] hover:bg-[#29a195] text-[#003732] font-semibold text-xs font-mono px-5 py-2 rounded-lg transition-all duration-150 active:scale-[0.98] shadow-sm"
+              className="bg-teal hover:bg-teal-deep text-white font-bold text-xs px-5 py-2 rounded-xl transition-all shadow-2xs cursor-pointer"
             >
               {isPending ? (
                 <>

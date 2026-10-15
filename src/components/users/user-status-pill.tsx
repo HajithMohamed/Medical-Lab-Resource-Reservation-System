@@ -51,14 +51,11 @@ export function UserStatusPill({
       return (
         <span
           className={cn(
-            "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/30",
+            "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-teal-soft text-teal-deep border border-teal-line",
             className,
           )}
         >
-          <span
-            className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0"
-            aria-hidden="true"
-          />
+          <span className="size-1.5 rounded-full bg-teal shrink-0" aria-hidden="true" />
           Active
         </span>
       );
@@ -67,7 +64,7 @@ export function UserStatusPill({
       return (
         <span
           className={cn(
-            "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-[#6cd8cb]/15 text-[#6cd8cb] border border-[#6cd8cb]/30",
+            "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-teal-soft text-teal border border-teal-soft",
             className,
           )}
         >
@@ -79,11 +76,11 @@ export function UserStatusPill({
       return (
         <span
           className={cn(
-            "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-amber-500/20 text-amber-300 border border-amber-500/40",
+            "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-soft text-amber border border-amber/30",
             className,
           )}
         >
-          <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" aria-hidden="true" />
+          <span className="size-1.5 rounded-full bg-amber shrink-0" aria-hidden="true" />
           Locked
         </span>
       );
@@ -92,7 +89,7 @@ export function UserStatusPill({
       return (
         <span
           className={cn(
-            "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-[#18202f] text-[#94a3b8] border border-[#334155]",
+            "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-canvas text-muted border border-card-edge",
             className,
           )}
         >

@@ -1,138 +1,106 @@
 "use client";
 
 import * as React from "react";
-import { usePathname } from "next/navigation";
-import Link from "next/link";
-import { SidebarTrigger } from "@/components/ui/sidebar";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import { NAV_ITEMS } from "@/config/navigation";
-import { MapPin } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { Menu, Search } from "lucide-react";
 import { NotificationsBell } from "@/components/notifications/notifications-bell";
+import { UserMenu } from "@/components/app-shell/user-menu";
+import { NAV_ITEMS } from "@/config/navigation";
 
-export function TopBar() {
+export interface TopBarProps {
+  onMenuClick: () => void;
+  user: {
+    name: string;
+    role: string;
+    siteName?: string;
+  };
+  logoutAction?: () => void | Promise<void>;
+}
+
+export function TopBar({ onMenuClick, user, logoutAction }: TopBarProps) {
   const pathname = usePathname();
-  const segments = pathname.split("/").filter(Boolean);
+  const router = useRouter();
+  const [searchVal, setSearchVal] = React.useState("");
 
-  // Live Asia/Colombo Chronometer
-  const [colomboTime, setColomboTime] = React.useState<{
-    dateStr: string;
-    timeStr: string;
-  } | null>(null);
-
-  React.useEffect(() => {
-    const updateTime = () => {
-      const now = new Date();
-      const dateStr = new Intl.DateTimeFormat("en-GB", {
-        weekday: "short",
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-        timeZone: "Asia/Colombo",
-      }).format(now);
-      const timeStr = new Intl.DateTimeFormat("en-GB", {
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: false,
-        timeZone: "Asia/Colombo",
-      }).format(now);
-      setColomboTime({ dateStr, timeStr });
-    };
-
-    updateTime();
-    const interval = setInterval(updateTime, 1000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const breadcrumbs = React.useMemo(() => {
-    if (segments.length === 0) {
-      return [{ label: "Home", href: "/", isLast: true }];
-    }
-
-    const items: Array<{ label: string; href: string; isLast: boolean }> = [];
-    let currentPath = "";
-
-    segments.forEach((seg, index) => {
-      currentPath += `/${seg}`;
-      const isLast = index === segments.length - 1;
-
-      // Look up matching nav item label
-      const navMatch = NAV_ITEMS.find((n) => n.href === currentPath);
-      let label = navMatch?.label ?? seg.charAt(0).toUpperCase() + seg.slice(1);
-
-      // Handle common ID / action routes
-      if (seg === "new") label = "New";
-      else if (seg === "edit") label = "Edit";
-      else if (seg === "status") label = "Status";
-      else if (seg.length > 20 && !navMatch) {
-        label = `#${seg.slice(0, 8)}`;
+  // Determine current page title for the mobile eyebrow
+  const pageTitle = React.useMemo(() => {
+    const navMatch = NAV_ITEMS.find((item) => {
+      if (item.href.includes("?")) {
+        return pathname === item.href.split("?")[0];
       }
-
-      items.push({ label, href: currentPath, isLast });
+      return pathname === item.href;
     });
+    if (navMatch) return navMatch.label.toUpperCase();
+    if (pathname.startsWith("/resources/")) return "RESOURCE DETAILS";
+    if (pathname.startsWith("/reservations/")) return "BOOKING DETAILS";
+    if (pathname.startsWith("/equipment")) return "EQUIPMENT CARE";
+    if (pathname.startsWith("/settings")) return "SETTINGS";
+    return "WORKSPACE";
+  }, [pathname]);
 
-    return items;
-  }, [segments]);
+  const siteDisplay = user.siteName ?? (user.role === "ADMIN" ? "All sites" : "Colombo site");
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchVal.trim()) {
+      router.push(`/resources?search=${encodeURIComponent(searchVal.trim())}`);
+    }
+  };
 
   return (
-    <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center justify-between gap-4 border-b border-[#334155] bg-[#0b1322]/95 backdrop-blur-md px-4 sm:px-6">
-      {/* Left: Sidebar trigger & breadcrumbs */}
-      <div className="flex items-center gap-3 min-w-0">
-        <SidebarTrigger className="-ml-1 text-[#94a3b8] hover:text-white" />
-        <div className="h-4 w-px bg-[#334155] shrink-0" />
-        <Breadcrumb className="truncate">
-          <BreadcrumbList className="text-xs font-mono">
-            {breadcrumbs.map((bc, idx) => (
-              <React.Fragment key={bc.href}>
-                {idx > 0 && <BreadcrumbSeparator className="text-[#94a3b8]" />}
-                <BreadcrumbItem>
-                  {bc.isLast ? (
-                    <BreadcrumbPage className="font-semibold text-white truncate">
-                      {bc.label}
-                    </BreadcrumbPage>
-                  ) : (
-                    <BreadcrumbLink asChild>
-                      <Link href={bc.href} className="text-[#94a3b8] hover:text-white">
-                        {bc.label}
-                      </Link>
-                    </BreadcrumbLink>
-                  )}
-                </BreadcrumbItem>
-              </React.Fragment>
-            ))}
-          </BreadcrumbList>
-        </Breadcrumb>
+    <header className="sticky top-0 z-20 w-full bg-canvas/85 backdrop-blur-md border-b border-card-edge px-4 sm:px-6 lg:px-8 py-3 transition-colors">
+      {/* Mobile Top Bar (< 768px) */}
+      <div className="flex md:hidden items-center justify-between gap-3">
+        <div className="flex items-center gap-3 min-w-0">
+          <button
+            type="button"
+            onClick={onMenuClick}
+            aria-label="Open menu"
+            className="w-10 h-10 rounded-xl bg-card border border-card-edge flex items-center justify-center text-navy shadow-2xs hover:bg-mint transition-colors cursor-pointer shrink-0"
+          >
+            <Menu className="size-5" />
+          </button>
+          <div className="flex flex-col min-w-0">
+            <span className="text-[10px] font-extrabold tracking-[0.14em] text-teal uppercase leading-tight truncate">
+              BENCHBOOK / {pageTitle}
+            </span>
+            <span className="text-[12px] font-bold text-navy leading-tight truncate mt-0.5">
+              {siteDisplay}
+            </span>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 shrink-0">
+          <NotificationsBell />
+          <UserMenu user={user} logoutAction={logoutAction} minimal />
+        </div>
       </div>
 
-      {/* Center: Live Asia/Colombo Precision Chronometer */}
-      <div className="hidden lg:flex items-center gap-2 px-3 py-1 rounded bg-[#060e1d] border border-[#334155] font-mono text-xs shadow-2xs">
-        <span className="w-2 h-2 rounded-full bg-[#6cd8cb] animate-pulse" />
-        <span className="text-[#94a3b8]">{colomboTime?.dateStr ?? "Asia/Colombo"}</span>
-        <span className="text-[#334155]">•</span>
-        <span className="text-[#6cd8cb] font-bold tabular-nums tracking-wider">
-          {colomboTime?.timeStr ?? "--:--:--"}
-        </span>
-        <span className="text-[#94a3b8] text-[10px]">Colombo (UTC+5:30)</span>
-      </div>
-
-      {/* Right: Notifications Bell & Location */}
-      <div className="flex items-center gap-3 shrink-0">
-        <NotificationsBell />
-        <div className="h-4 w-px bg-[#334155] shrink-0" />
-        <div className="flex items-center gap-2 text-xs text-[#94a3b8]">
-          <MapPin className="size-3.5 text-[#6cd8cb] shrink-0" />
-          <span className="font-medium text-white">Main Lab</span>
-          <span className="text-[#334155]">/</span>
-          <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-[#222a3a] text-[#6cd8cb] border border-[#6cd8cb]/30">
-            Core Grid
+      {/* Desktop Top Header Bar (>= 768px) */}
+      <div className="hidden md:flex items-center justify-between gap-4">
+        <div className="flex items-center gap-2">
+          <span className="text-[11px] font-extrabold tracking-[0.14em] text-teal uppercase">
+            BenchBook
           </span>
+          <span className="text-muted text-xs">/</span>
+          <span className="text-xs font-bold text-navy">{siteDisplay}</span>
+        </div>
+
+        {/* Right Tools: Search input, Bell, User */}
+        <div className="flex items-center gap-3">
+          <form onSubmit={handleSearchSubmit} className="relative">
+            <Search className="size-4 text-muted absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <input
+              type="search"
+              value={searchVal}
+              onChange={(e) => setSearchVal(e.target.value)}
+              placeholder="Search resources"
+              className="h-10 w-44 xl:w-60 pl-9 pr-3 rounded-xl border border-card-edge bg-card text-xs text-navy font-semibold placeholder:text-muted/80 shadow-2xs outline-none focus:border-teal focus:ring-2 focus:ring-focus transition-all"
+            />
+          </form>
+
+          <NotificationsBell />
+          <UserMenu user={user} logoutAction={logoutAction} minimal />
         </div>
       </div>
     </header>

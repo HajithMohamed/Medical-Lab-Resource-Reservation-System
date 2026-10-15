@@ -2,13 +2,16 @@ import * as React from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
-  ArrowLeft,
   Wrench,
   AlertOctagon,
-  CalendarCheck,
+  CalendarPlus,
   Calendar,
   Clock,
   ShieldAlert,
+  Layers,
+  MapPin,
+  Users,
+  CheckCircle,
 } from "lucide-react";
 import { requireUser } from "@/lib/auth";
 import { getResource } from "@/services/resources";
@@ -18,16 +21,19 @@ import {
   canChangeResourceStatus,
   canWatchResource,
 } from "@/lib/permissions";
-import { CategoryIcon } from "@/components/category-icon";
-import { ResourceStatusTag } from "@/components/resource-status-tag";
+import { StatusPill } from "@/components/resource-status-tag";
 import { WatchButton } from "@/components/notifications/watch-button";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { PageHeader } from "@/components/page-header";
+import { StatRow, StatCard } from "@/components/ui/stat-card";
+import { SectionCard } from "@/components/ui/section-card";
+import { cn } from "@/lib/utils";
+import { DefinitionGrid } from "@/components/ui/definition-grid";
+import { StickyActionBar } from "@/components/ui/sticky-action-bar";
 import { formatMinutes } from "@/lib/format";
 import { env } from "@/lib/env";
 import { db } from "@/lib/db";
 import { ResourceEditDialog } from "@/components/resources/resource-edit-dialog";
-
 import { DueDayBanner } from "@/components/equipment/due-day-banner";
 import { EquipmentCarePanel } from "@/components/equipment/equipment-care-panel";
 import * as equipmentService from "@/services/equipment";
@@ -129,71 +135,50 @@ export default async function ResourceDetailPage({ params }: ResourceDetailPageP
   }
 
   const isRoom = resource.category.iconKey === "room";
-  const capacityText =
-    isRoom && resource.capacity ? `${resource.capacity} seats` : "Not applicable";
+  const capacityText = isRoom && resource.capacity ? `${resource.capacity} seats` : "1 unit";
 
   return (
-    <div className="space-y-6 max-w-5xl">
-      {/* Back button */}
-      <div>
-        <Link
-          href="/resources"
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-400 hover:text-[#6cd8cb] mb-3 transition-colors"
-        >
-          <ArrowLeft className="size-4" />
-          <span>Back to Resources</span>
-        </Link>
+    <div className="space-y-6 pb-20 md:pb-6">
+      {/* 1. PAGE HEADER: Back link, title, status pill, and actions */}
+      <PageHeader
+        backHref="/resources"
+        backLabel="Back to resources"
+        eyebrow={`${resource.site.name} / ${resource.section.name}`}
+        title={resource.name}
+        status={<StatusPill status={resource.status} />}
+        description={`${resource.category.name} · Limit: ${formatMinutes(resource.category.maxBookingMinutes)}`}
+        actions={
+          <div className="flex flex-wrap items-center gap-2">
+            {canBook(user) && resource.status === "ACTIVE" && (
+              <Button
+                asChild
+                size="lg"
+                className="bg-gradient-to-br from-teal to-teal-deep text-white font-bold text-xs h-10 px-5 rounded-xl shadow-xs hover:opacity-95"
+              >
+                <Link href={`/bookings/new?resourceId=${resource.id}`}>
+                  <CalendarPlus className="size-4 mr-1.5" />
+                  <span>Book this resource</span>
+                </Link>
+              </Button>
+            )}
 
-        {/* Resource Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2">
-          <div className="flex items-center gap-3.5">
-            <CategoryIcon
-              iconKey={resource.category.iconKey}
-              className="size-12 rounded-xl shrink-0"
-            />
-            <div>
-              <div className="flex flex-wrap items-center gap-3">
-                <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-100">
-                  {resource.name}
-                </h1>
-                <ResourceStatusTag status={resource.status} />
-              </div>
-              <p className="text-sm text-slate-400 mt-0.5">
-                {resource.category.name} &bull; {resource.site.name} &bull; {resource.section.name}
-              </p>
-            </div>
+            {canWatchResource(user) && resource.status === "OUT_OF_SERVICE" && (
+              <WatchButton
+                resourceId={resource.id}
+                resourceName={resource.name}
+                kind="BACK_IN_SERVICE"
+                size="lg"
+                initialWatched={isWatchingBackInService}
+              />
+            )}
           </div>
+        }
+      />
 
-          {/* Primary Action: Book this resource */}
-          {canBook(user) && resource.status === "ACTIVE" && (
-            <Button
-              asChild
-              size="lg"
-              className="font-bold shrink-0 gap-2 bg-[#6cd8cb] text-[#003732] hover:bg-[#29a195] hover:text-[#002421] shadow-xs"
-            >
-              <Link href={`/bookings/new?resourceId=${resource.id}`}>
-                <CalendarCheck className="size-5" />
-                <span>Book this resource</span>
-              </Link>
-            </Button>
-          )}
-
-          {canWatchResource(user) && resource.status === "OUT_OF_SERVICE" && (
-            <WatchButton
-              resourceId={resource.id}
-              resourceName={resource.name}
-              kind="BACK_IN_SERVICE"
-              size="lg"
-              initialWatched={isWatchingBackInService}
-            />
-          )}
-        </div>
-      </div>
-
-      {/* Manager Actions Row */}
+      {/* Manager quick bar if manager */}
       {canManage && (
-        <div className="flex flex-wrap items-center gap-2.5 p-3 rounded-xl border border-[#334155] bg-[#141c2b] shadow-xs">
-          <span className="text-xs font-bold uppercase tracking-wider text-slate-400 mr-1">
+        <div className="rounded-[16px] bg-card border border-card-edge p-3 shadow-v4 flex flex-wrap items-center gap-2.5">
+          <span className="text-xs font-bold uppercase tracking-wider text-muted mr-1">
             Manage:
           </span>
           <ResourceEditDialog
@@ -209,10 +194,10 @@ export default async function ResourceDetailPage({ params }: ResourceDetailPageP
               asChild
               variant="outline"
               size="sm"
-              className="gap-1.5 h-8 border-[#334155] bg-[#18202f] hover:bg-[#222a3a] text-xs"
+              className="gap-1.5 h-8 border-card-edge bg-card hover:bg-canvas text-xs font-semibold text-navy rounded-lg"
             >
               <Link href={`/resources/${resource.id}/status`}>
-                <AlertOctagon className="size-3.5" />
+                <AlertOctagon className="size-3.5 text-muted" />
                 <span>Change status</span>
               </Link>
             </Button>
@@ -221,12 +206,12 @@ export default async function ResourceDetailPage({ params }: ResourceDetailPageP
             asChild
             variant="outline"
             size="sm"
-            className="gap-1.5 h-8 border-[#334155] bg-[#18202f] hover:bg-[#222a3a] text-xs"
+            className="gap-1.5 h-8 border-card-edge bg-card hover:bg-canvas text-xs font-semibold text-navy rounded-lg"
           >
             <Link
               href={`/maintenance/new?resourceId=${resource.id}&returnTo=${encodeURIComponent(`/resources/${resource.id}`)}`}
             >
-              <Wrench className="size-3.5" />
+              <Wrench className="size-3.5 text-muted" />
               <span>Block time</span>
             </Link>
           </Button>
@@ -234,7 +219,7 @@ export default async function ResourceDetailPage({ params }: ResourceDetailPageP
             asChild
             variant="outline"
             size="sm"
-            className="gap-1.5 h-8 border-rose-500/40 text-rose-400 bg-rose-950/20 hover:bg-rose-950/40 text-xs"
+            className="gap-1.5 h-8 border-red/30 text-red bg-red-soft hover:bg-red/10 text-xs font-semibold rounded-lg"
           >
             <Link
               href={`/maintenance/new?resourceId=${resource.id}&breakdown=1&returnTo=${encodeURIComponent(`/resources/${resource.id}`)}`}
@@ -246,7 +231,45 @@ export default async function ResourceDetailPage({ params }: ResourceDetailPageP
         </div>
       )}
 
-      {/* Due Day Banner (shown if calibration or service is due today or overdue) */}
+      {/* 2. STAT ROW: 4 key facts (2x2 on phones, 4 cols on desktop) */}
+      <StatRow>
+        <StatCard
+          label="Category"
+          value={resource.category.name}
+          hint={`Max: ${formatMinutes(resource.category.maxBookingMinutes)}`}
+          hintVariant="muted"
+          icon={<Layers className="size-4 text-teal" />}
+        />
+        <StatCard
+          label="Capacity"
+          value={capacityText}
+          hint={resource.location ?? resource.site.name}
+          hintVariant="muted"
+          icon={
+            isRoom ? (
+              <Users className="size-4 text-teal" />
+            ) : (
+              <MapPin className="size-4 text-teal" />
+            )
+          }
+        />
+        <StatCard
+          label="Bookings"
+          value={resource.reservationsNext7Days.length}
+          hint="Next 7 days"
+          hintVariant="muted"
+          icon={<Calendar className="size-4 text-blue" />}
+        />
+        <StatCard
+          label="Status"
+          value={resource.status === "ACTIVE" ? "Operational" : resource.status}
+          hint={resource.status === "ACTIVE" ? "Available to book" : "Non-operational"}
+          hintVariant={resource.status === "ACTIVE" ? "good" : "danger"}
+          icon={<CheckCircle className="size-4 text-green" />}
+        />
+      </StatRow>
+
+      {/* Due Day Banner if calibration or maintenance due */}
       <DueDayBanner
         actor={user}
         actorName={user.name}
@@ -276,176 +299,169 @@ export default async function ResourceDetailPage({ params }: ResourceDetailPageP
         }
       />
 
-      {/* Equipment Care Panel */}
-      <EquipmentCarePanel
-        actor={user}
-        actorName={user.name}
-        resource={resource}
-        history={history}
-        affectedBookingsCount={upcomingBookingsCount}
-      />
+      {/* Equipment Care Panel for non-rooms */}
+      {!isRoom && (
+        <EquipmentCarePanel
+          actor={user}
+          actorName={user.name}
+          resource={resource}
+          history={history}
+          affectedBookingsCount={upcomingBookingsCount}
+        />
+      )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Column: Details panel */}
-        <div className="lg:col-span-1 space-y-6">
-          <Card className="bg-[#141c2b] border-[#334155]">
-            <CardHeader>
-              <CardTitle className="text-base font-bold text-slate-100">Details</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <dl className="divide-y divide-[#334155]/60 text-sm">
-                <div className="py-2.5">
-                  <dt className="text-xs text-slate-400 font-medium">Category & limit</dt>
-                  <dd className="font-semibold text-slate-200 mt-0.5">
-                    {resource.category.name} (up to{" "}
-                    {formatMinutes(resource.category.maxBookingMinutes)})
-                  </dd>
-                </div>
-                <div className="py-2.5">
-                  <dt className="text-xs text-slate-400 font-medium">Laboratory site</dt>
-                  <dd className="font-semibold text-slate-200 mt-0.5">{resource.site.name}</dd>
-                </div>
-                <div className="py-2.5">
-                  <dt className="text-xs text-slate-400 font-medium">Owning section</dt>
-                  <dd className="font-semibold text-slate-200 mt-0.5">{resource.section.name}</dd>
-                </div>
-                <div className="py-2.5">
-                  <dt className="text-xs text-slate-400 font-medium">Location</dt>
-                  <dd className="font-semibold text-slate-200 mt-0.5">
-                    {resource.location ?? <span className="text-slate-500 italic">Not set</span>}
-                  </dd>
-                </div>
-                <div className="py-2.5">
-                  <dt className="text-xs text-slate-400 font-medium">Capacity</dt>
-                  <dd className="font-semibold text-slate-200 mt-0.5">{capacityText}</dd>
-                </div>
-              </dl>
-            </CardContent>
-          </Card>
+      {/* 3. TWO-COLUMN LAYOUT (≈ 60/40 on desktop, 1 col on phone) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        {/* Left Column (approx 7 of 12 = ~60%) */}
+        <div className="lg:col-span-7 space-y-6">
+          {/* Specifications & Location */}
+          <SectionCard
+            title="Specifications & location"
+            description="Operational parameters and laboratory placement"
+          >
+            <DefinitionGrid
+              items={[
+                { label: "Category", value: resource.category.name },
+                { label: "Laboratory site", value: resource.site.name },
+                { label: "Owning section", value: resource.section.name },
+                { label: "Location", value: resource.location || "Main floor" },
+                { label: "Capacity / Units", value: capacityText },
+                {
+                  label: "Booking limit",
+                  value: `Up to ${formatMinutes(resource.category.maxBookingMinutes)} per booking`,
+                },
+              ]}
+            />
+          </SectionCard>
 
-          {/* Recent Maintenance */}
-          <Card className="bg-[#141c2b] border-[#334155]">
-            <CardHeader>
-              <CardTitle className="text-base font-bold flex items-center gap-2 text-slate-100">
-                <Wrench className="size-4 text-amber-400" />
-                <span>Recent maintenance</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {resource.recentMaintenance.length === 0 ? (
-                <p className="text-sm text-slate-500 italic">No maintenance blocks recorded.</p>
-              ) : (
-                <div className="space-y-3">
-                  {resource.recentMaintenance.map((m) => (
-                    <div
-                      key={m.id}
-                      className="p-3 rounded-lg border border-[#334155] bg-[#18202f] text-xs space-y-1"
-                    >
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="font-bold text-slate-200 truncate">{m.purpose}</span>
-                        <span className="text-slate-400 font-mono shrink-0 tabular-nums">
-                          {formatDateDay(m.startAt)}
-                        </span>
-                      </div>
-                      <p className="text-slate-400">
-                        {formatTime(m.startAt)} to {formatTime(m.endAt)} &bull; logged by{" "}
-                        {m.createdBy.name}
-                      </p>
-                      {m.cancelReason && (
-                        <p className="text-rose-400 font-medium">Cancelled: {m.cancelReason}</p>
-                      )}
+          {/* Recent Maintenance Blocks */}
+          <SectionCard
+            title="Recent maintenance blocks"
+            description="Service, calibration, and downtime records"
+          >
+            {resource.recentMaintenance.length === 0 ? (
+              <p className="text-xs text-muted italic py-4">No maintenance blocks recorded.</p>
+            ) : (
+              <div className="space-y-2.5">
+                {resource.recentMaintenance.map((m) => (
+                  <div
+                    key={m.id}
+                    className="p-3.5 rounded-xl border border-card-edge bg-canvas/30 text-xs space-y-1"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-bold text-navy truncate">{m.purpose}</span>
+                      <span className="text-muted font-medium shrink-0 tabular-nums">
+                        {formatDateDay(m.startAt)}
+                      </span>
                     </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
+                    <p className="text-muted">
+                      {formatTime(m.startAt)}–{formatTime(m.endAt)} · logged by {m.createdBy.name}
+                    </p>
+                    {m.cancelReason && (
+                      <p className="text-red font-medium">Cancelled: {m.cancelReason}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </SectionCard>
         </div>
 
-        {/* Right Column: Next 7 days schedule */}
-        <div className="lg:col-span-2 space-y-6">
-          <Card className="bg-[#141c2b] border-[#334155]">
-            <CardHeader className="flex flex-row items-center justify-between pb-3">
-              <CardTitle className="text-base font-bold flex items-center gap-2 text-slate-100">
-                <Calendar className="size-4 text-[#6cd8cb]" />
-                <span>Next 7 days</span>
-              </CardTitle>
-              <span className="text-xs text-slate-400 font-mono">
-                {resource.reservationsNext7Days.length}{" "}
-                {resource.reservationsNext7Days.length === 1 ? "booking" : "bookings"}
-              </span>
-            </CardHeader>
-            <CardContent>
-              {resource.reservationsNext7Days.length === 0 ? (
-                <div className="py-8 text-center border border-dashed border-[#334155] rounded-xl bg-[#18202f]/50">
-                  <Clock className="size-8 text-slate-500 mx-auto mb-2" />
-                  <p className="text-sm font-semibold text-slate-200">
-                    No bookings in the next 7 days
-                  </p>
-                  <p className="text-xs text-slate-400 mt-0.5">
-                    This resource is free for reservations throughout the upcoming week.
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-6">
-                  {Array.from(reservationsByDay.entries()).map(([dayString, dayReservations]) => (
-                    <div key={dayString} className="space-y-2">
-                      <div className="text-xs font-bold text-slate-400 uppercase tracking-wider px-1">
-                        {dayString}
-                      </div>
-
-                      <div className="space-y-2">
-                        {dayReservations.map((item) => {
-                          const isMaint = item.kind === "MAINTENANCE";
-
-                          return (
-                            <Link
-                              key={item.id}
-                              href={`/reservations/${item.id}`}
-                              className={`p-3 rounded-lg border text-sm flex items-start justify-between gap-3 transition-colors ${
-                                isMaint
-                                  ? "border-amber-500/40 bg-amber-950/20 text-amber-200 hover:bg-amber-950/30"
-                                  : "border-[#334155] bg-[#18202f] hover:bg-[#222a3a] text-slate-200"
-                              }`}
-                            >
-                              <div className="space-y-1 min-w-0">
-                                <div className="flex items-center gap-2">
-                                  {isMaint ? (
-                                    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-bold bg-amber-600 text-slate-950 shrink-0">
-                                      <Wrench className="size-3" />
-                                      <span>Maintenance</span>
-                                    </span>
-                                  ) : null}
-                                  <span className="font-bold text-slate-100 truncate hover:text-[#6cd8cb] transition-colors">
-                                    {item.purpose}
-                                  </span>
-                                </div>
-                                <p className="text-xs text-slate-400">
-                                  Booked by {item.createdBy.name}
-                                  {item.createdBy.site ? ` (${item.createdBy.site.name})` : ""}
-                                  {item.attendeeCount
-                                    ? ` &bull; ${item.attendeeCount} attendees`
-                                    : ""}
-                                </p>
-                              </div>
-
-                              <div className="text-right shrink-0">
-                                <span className="font-mono text-xs font-bold text-[#6cd8cb] tabular-nums">
-                                  {formatTime(item.startAt)} – {formatTime(item.endAt)}
-                                </span>
-                              </div>
-                            </Link>
-                          );
-                        })}
-                      </div>
+        {/* Right Column (approx 5 of 12 = ~40%): Next 7 days schedule */}
+        <div className="lg:col-span-5 space-y-6">
+          <SectionCard
+            title="Schedule (next 7 days)"
+            description={`${resource.reservationsNext7Days.length} reservation${
+              resource.reservationsNext7Days.length === 1 ? "" : "s"
+            } scheduled`}
+          >
+            {resource.reservationsNext7Days.length === 0 ? (
+              <div className="py-8 text-center border border-dashed border-teal-line rounded-2xl bg-mint/40 p-6 space-y-2">
+                <Clock className="size-6 text-teal mx-auto" />
+                <h4 className="font-bold text-navy text-sm">Free all week</h4>
+                <p className="text-xs text-muted">
+                  No reservations are scheduled for this resource over the next 7 days.
+                </p>
+                {canBook(user) && resource.status === "ACTIVE" && (
+                  <div className="pt-2">
+                    <Button
+                      asChild
+                      size="sm"
+                      className="bg-teal text-white hover:bg-teal-deep text-xs font-bold rounded-lg"
+                    >
+                      <Link href={`/bookings/new?resourceId=${resource.id}`}>Book a slot</Link>
+                    </Button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {Array.from(reservationsByDay.entries()).map(([dayString, dayReservations]) => (
+                  <div key={dayString} className="space-y-2">
+                    <div className="text-[11px] font-extrabold text-muted uppercase tracking-wider">
+                      {dayString}
                     </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
+
+                    <div className="space-y-2">
+                      {dayReservations.map((item) => {
+                        const isMaint = item.kind === "MAINTENANCE";
+
+                        return (
+                          <Link
+                            key={item.id}
+                            href={`/reservations/${item.id}`}
+                            className={cn(
+                              "p-3 rounded-xl border text-xs flex items-start justify-between gap-3 transition-colors",
+                              isMaint
+                                ? "border-amber-line bg-amber-soft text-amber hover:bg-amber-soft/80"
+                                : "border-card-edge bg-card hover:bg-canvas text-navy shadow-2xs",
+                            )}
+                          >
+                            <div className="space-y-0.5 min-w-0">
+                              <div className="flex items-center gap-1.5">
+                                {isMaint && (
+                                  <span className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded text-[10px] font-extrabold bg-amber-strong text-white shrink-0">
+                                    <Wrench className="size-2.5" />
+                                    <span>Maint</span>
+                                  </span>
+                                )}
+                                <span className="font-bold text-navy truncate">{item.purpose}</span>
+                              </div>
+                              <p className="text-muted text-[11px]">
+                                {item.createdBy.name}
+                                {item.attendeeCount ? ` · ${item.attendeeCount} attendees` : ""}
+                              </p>
+                            </div>
+
+                            <span className="font-bold text-teal tabular-nums shrink-0">
+                              {formatTime(item.startAt)}–{formatTime(item.endAt)}
+                            </span>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </SectionCard>
         </div>
       </div>
+
+      {/* 4. MOBILE FIXED BOTTOM ACTION BAR (< 768px) */}
+      {canBook(user) && resource.status === "ACTIVE" && (
+        <div className="md:hidden">
+          <StickyActionBar>
+            <Link
+              href={`/bookings/new?resourceId=${resource.id}`}
+              className="w-full h-12 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-br from-teal to-teal-deep text-white font-bold text-sm shadow-md active:scale-[0.98] transition-transform"
+            >
+              <CalendarPlus className="size-4" />
+              <span>Book this resource</span>
+            </Link>
+          </StickyActionBar>
+        </div>
+      )}
     </div>
   );
 }

@@ -51,23 +51,23 @@ export function PaginationControls({
   return (
     <div
       className={cn(
-        "p-3 bg-[#18202f] border-t border-[#334155] rounded-b-lg flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-mono text-[#94a3b8]",
+        "p-3.5 bg-canvas border-t border-line flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-muted font-medium",
         className,
       )}
     >
       <div>
         Showing{" "}
-        <strong className="text-white font-semibold">
+        <strong className="text-navy font-bold tab">
           {start}-{end}
         </strong>{" "}
-        of <strong className="text-white font-semibold">{totalCount}</strong> {itemLabel}
+        of <strong className="text-navy font-bold tab">{totalCount}</strong> {itemLabel}
       </div>
 
       <div className="flex items-center gap-2 self-end sm:self-auto">
         {currentPage > 1 ? (
           <Link
             href={getPageUrl(currentPage - 1)}
-            className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-[#141c2b] border border-[#334155]/60 text-[#dbe2f8] hover:bg-[#222a3a] hover:text-white transition-colors"
+            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-card border border-card-edge text-navy font-bold text-xs hover:bg-mint transition-colors shadow-2xs"
           >
             <ChevronLeft className="size-3.5" />
             <span>Previous</span>
@@ -76,21 +76,21 @@ export function PaginationControls({
           <button
             type="button"
             disabled
-            className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-[#141c2b] border border-[#334155]/60 text-[#879390] opacity-50 cursor-not-allowed"
+            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-card border border-card-edge text-faint font-bold text-xs opacity-50 cursor-not-allowed shadow-2xs"
           >
             <ChevronLeft className="size-3.5" />
             <span>Previous</span>
           </button>
         )}
 
-        <span className="px-2 text-[#6cd8cb] font-semibold">
+        <span className="px-2 text-teal-deep font-extrabold tab">
           Page {currentPage} of {totalPages}
         </span>
 
         {currentPage < totalPages ? (
           <Link
             href={getPageUrl(currentPage + 1)}
-            className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-[#141c2b] border border-[#334155]/60 text-[#dbe2f8] hover:bg-[#222a3a] hover:text-white transition-colors"
+            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-card border border-card-edge text-navy font-bold text-xs hover:bg-mint transition-colors shadow-2xs"
           >
             <span>Next</span>
             <ChevronRight className="size-3.5" />
@@ -99,7 +99,7 @@ export function PaginationControls({
           <button
             type="button"
             disabled
-            className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-[#141c2b] border border-[#334155]/60 text-[#879390] opacity-50 cursor-not-allowed"
+            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-card border border-card-edge text-faint font-bold text-xs opacity-50 cursor-not-allowed shadow-2xs"
           >
             <span>Next</span>
             <ChevronRight className="size-3.5" />

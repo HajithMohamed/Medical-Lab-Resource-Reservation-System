@@ -360,6 +360,8 @@ export interface OversightBookingItem {
   startAt: Date;
   endAt: Date;
   formattedRange: string;
+  formattedDate: string;
+  formattedTime: string;
   purpose: string;
   status: string;
   hasStarted: boolean;
@@ -557,6 +559,8 @@ export async function listBookingsForOversight(
       startAt: r.startAt,
       endAt: r.endAt,
       formattedRange: formatLabRange(r.startAt, r.endAt, zone),
+      formattedDate: formatLabDate(r.startAt, zone),
+      formattedTime: `${formatLabTime(r.startAt, zone)} – ${formatLabTime(r.endAt, zone)}`,
       purpose: r.purpose,
       status: r.status,
       hasStarted,

@@ -168,13 +168,13 @@ export function EquipmentFields({
   }
 
   return (
-    <div className="space-y-6 pt-3 border-t border-[#1e293b]">
+    <div className="space-y-6 pt-3 border-t border-card-edge">
       {/* Part 2: Equipment details */}
       {hasDetails && (
         <div className="space-y-3.5">
           <div>
-            <h3 className="text-sm font-semibold text-white tracking-tight">Equipment details</h3>
-            <p className="text-xs text-[#94a3b8]">
+            <h3 className="text-sm font-bold text-navy tracking-tight">Equipment details</h3>
+            <p className="text-xs text-muted">
               Manufacturer identity, serial number, and operational lifespan.
             </p>
           </div>
@@ -183,7 +183,7 @@ export function EquipmentFields({
             <div className="space-y-1.5">
               <Label
                 htmlFor="eq-manufacturer"
-                className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                className="text-xs font-bold uppercase tracking-wider text-muted"
               >
                 Manufacturer
               </Label>
@@ -195,6 +195,7 @@ export function EquipmentFields({
                 placeholder="e.g. Thermo Fisher Scientific"
                 disabled={disabled}
                 maxLength={100}
+                className="bg-card border-card-edge text-navy font-semibold text-xs"
               />
               {fieldErrors.manufacturer && (
                 <p className="text-xs font-medium text-destructive">
@@ -206,7 +207,7 @@ export function EquipmentFields({
             <div className="space-y-1.5">
               <Label
                 htmlFor="eq-model"
-                className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                className="text-xs font-bold uppercase tracking-wider text-muted"
               >
                 Model
               </Label>
@@ -218,6 +219,7 @@ export function EquipmentFields({
                 placeholder="e.g. QuantStudio 5"
                 disabled={disabled}
                 maxLength={100}
+                className="bg-card border-card-edge text-navy font-semibold text-xs"
               />
               {fieldErrors.model && (
                 <p className="text-xs font-medium text-destructive">{fieldErrors.model[0]}</p>
@@ -229,7 +231,7 @@ export function EquipmentFields({
             <div className="space-y-1.5">
               <Label
                 htmlFor="eq-serial"
-                className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                className="text-xs font-bold uppercase tracking-wider text-muted"
               >
                 {labels.serialNumber}
               </Label>
@@ -241,6 +243,7 @@ export function EquipmentFields({
                 placeholder={iconKey === "vehicle" ? "e.g. WP CAA-1234" : "e.g. QS5-2024-0089"}
                 disabled={disabled}
                 maxLength={100}
+                className="bg-card border-card-edge text-navy font-semibold text-xs"
               />
               {fieldErrors.serialNumber && (
                 <p className="text-xs font-medium text-destructive">
@@ -252,7 +255,7 @@ export function EquipmentFields({
             <div className="space-y-1.5">
               <Label
                 htmlFor="eq-in-service"
-                className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                className="text-xs font-bold uppercase tracking-wider text-muted"
               >
                 In service since
               </Label>
@@ -263,6 +266,7 @@ export function EquipmentFields({
                 value={values.inServiceOn}
                 onChange={handleInServiceChange}
                 disabled={disabled}
+                className="bg-card border-card-edge text-navy font-semibold text-xs"
               />
               {fieldErrors.inServiceOn && (
                 <p className="text-xs font-medium text-destructive">{fieldErrors.inServiceOn[0]}</p>
@@ -274,7 +278,7 @@ export function EquipmentFields({
             <div className="space-y-1.5">
               <Label
                 htmlFor="eq-service-life"
-                className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                className="text-xs font-bold uppercase tracking-wider text-muted"
               >
                 Expected service life (years)
               </Label>
@@ -288,8 +292,9 @@ export function EquipmentFields({
                 onChange={handleLifeYearsChange}
                 placeholder="From the manufacturer"
                 disabled={disabled}
+                className="bg-card border-card-edge text-navy font-semibold text-xs"
               />
-              <p className="text-[11px] text-[#94a3b8]">From the manufacturer</p>
+              <p className="text-[11px] text-muted font-medium">From the manufacturer</p>
               {fieldErrors.expectedServiceLifeYears && (
                 <p className="text-xs font-medium text-destructive">
                   {fieldErrors.expectedServiceLifeYears[0]}
@@ -300,7 +305,7 @@ export function EquipmentFields({
             <div className="space-y-1.5">
               <Label
                 htmlFor="eq-review-due"
-                className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                className="text-xs font-bold uppercase tracking-wider text-muted"
               >
                 Replacement review due
               </Label>
@@ -311,6 +316,7 @@ export function EquipmentFields({
                 value={values.replacementReviewDueOn}
                 onChange={handleReviewDueChange}
                 disabled={disabled}
+                className="bg-card border-card-edge text-navy font-semibold text-xs"
               />
               {fieldErrors.replacementReviewDueOn && (
                 <p className="text-xs font-medium text-destructive">
@@ -324,16 +330,16 @@ export function EquipmentFields({
 
       {/* Part 3: Calibration */}
       {hasCalibration && (
-        <div className="space-y-3.5 pt-3 border-t border-[#1e293b]">
+        <div className="space-y-3.5 pt-3 border-t border-card-edge">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-semibold text-white tracking-tight">Calibration</h3>
-              <p className="text-xs text-[#94a3b8]">
+              <h3 className="text-sm font-bold text-navy tracking-tight">Calibration</h3>
+              <p className="text-xs text-muted">
                 Regular verification schedule to ensure analytical accuracy.
               </p>
             </div>
             <div className="flex items-center gap-2">
-              <Label htmlFor="switch-calibration" className="text-xs text-[#bcc9c6] cursor-pointer">
+              <Label htmlFor="switch-calibration" className="text-xs font-bold text-navy cursor-pointer">
                 Needs calibration
               </Label>
               <Switch
@@ -353,12 +359,12 @@ export function EquipmentFields({
           </div>
 
           {values.needsCalibration && (
-            <div className="space-y-3 p-3.5 rounded-md bg-[#0a101f] border border-[#1e293b]">
+            <div className="space-y-3 p-3.5 rounded-xl bg-canvas border border-card-edge">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1.5">
                   <Label
                     htmlFor="eq-calib-interval"
-                    className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                    className="text-xs font-bold uppercase tracking-wider text-muted"
                   >
                     Interval (days) *
                   </Label>
@@ -372,8 +378,9 @@ export function EquipmentFields({
                     onChange={handleCalibIntervalChange}
                     placeholder="e.g. 365"
                     disabled={disabled}
+                    className="bg-card border-card-edge text-navy font-semibold text-xs"
                   />
-                  <p className="text-[11px] text-[#94a3b8]">
+                  <p className="text-[11px] text-muted font-medium">
                     Use the interval in the manufacturer&apos;s manual
                   </p>
                   {fieldErrors.calibrationIntervalDays && (
@@ -386,7 +393,7 @@ export function EquipmentFields({
                 <div className="space-y-1.5">
                   <Label
                     htmlFor="eq-calib-next-due"
-                    className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                    className="text-xs font-bold uppercase tracking-wider text-muted"
                   >
                     Next calibration due *
                   </Label>
@@ -397,6 +404,7 @@ export function EquipmentFields({
                     value={values.nextCalibrationDueOn}
                     onChange={handleCalibDueChange}
                     disabled={disabled}
+                    className="bg-card border-card-edge text-navy font-semibold text-xs"
                   />
                   {fieldErrors.nextCalibrationDueOn && (
                     <p className="text-xs font-medium text-destructive">
@@ -406,11 +414,11 @@ export function EquipmentFields({
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-[#1e293b]">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-card-edge">
                 <div className="space-y-1.5">
                   <Label
                     htmlFor="eq-last-calibrated"
-                    className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                    className="text-xs font-bold uppercase tracking-wider text-muted"
                   >
                     Last calibrated on
                   </Label>
@@ -421,8 +429,9 @@ export function EquipmentFields({
                     value={values.lastCalibratedOn}
                     onChange={handleLastCalibratedOnChange}
                     disabled={disabled}
+                    className="bg-card border-card-edge text-navy font-semibold text-xs"
                   />
-                  <p className="text-[11px] text-[#94a3b8]">
+                  <p className="text-[11px] text-muted font-medium">
                     Leave empty for a brand new instrument
                   </p>
                   {fieldErrors.lastCalibratedOn && (
@@ -435,7 +444,7 @@ export function EquipmentFields({
                 <div className="space-y-1.5">
                   <Label
                     htmlFor="eq-calibrated-by"
-                    className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                    className="text-xs font-bold uppercase tracking-wider text-muted"
                   >
                     Calibrated by
                   </Label>
@@ -449,8 +458,9 @@ export function EquipmentFields({
                     placeholder="Person or service company"
                     disabled={disabled}
                     maxLength={120}
+                    className="bg-card border-card-edge text-navy font-semibold text-xs"
                   />
-                  <p className="text-[11px] text-[#94a3b8]">Required if last calibrated is set</p>
+                  <p className="text-[11px] text-muted font-medium">Required if last calibrated is set</p>
                   {fieldErrors.calibratedBy && (
                     <p className="text-xs font-medium text-destructive">
                       {fieldErrors.calibratedBy[0]}
@@ -462,7 +472,7 @@ export function EquipmentFields({
               <div className="space-y-1.5">
                 <Label
                   htmlFor="eq-calib-ref"
-                  className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                  className="text-xs font-bold uppercase tracking-wider text-muted"
                 >
                   Certificate or reference
                 </Label>
@@ -476,6 +486,7 @@ export function EquipmentFields({
                   placeholder="e.g. CERT-2026-CAL-042"
                   disabled={disabled}
                   maxLength={120}
+                  className="bg-card border-card-edge text-navy font-semibold text-xs"
                 />
                 {fieldErrors.calibrationReference && (
                   <p className="text-xs font-medium text-destructive">
@@ -490,18 +501,18 @@ export function EquipmentFields({
 
       {/* Part 4: Preventive maintenance */}
       {hasMaintenance && (
-        <div className="space-y-3.5 pt-3 border-t border-[#1e293b]">
+        <div className="space-y-3.5 pt-3 border-t border-card-edge">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-semibold text-white tracking-tight">
+              <h3 className="text-sm font-bold text-navy tracking-tight">
                 {labels.maintenance}
               </h3>
-              <p className="text-xs text-[#94a3b8]">
+              <p className="text-xs text-muted">
                 Scheduled servicing to maintain equipment safety and reliability.
               </p>
             </div>
             <div className="flex items-center gap-2">
-              <Label htmlFor="switch-maintenance" className="text-xs text-[#bcc9c6] cursor-pointer">
+              <Label htmlFor="switch-maintenance" className="text-xs font-bold text-navy cursor-pointer">
                 Needs servicing
               </Label>
               <Switch
@@ -521,12 +532,12 @@ export function EquipmentFields({
           </div>
 
           {values.needsMaintenance && (
-            <div className="space-y-3 p-3.5 rounded-md bg-[#0a101f] border border-[#1e293b]">
+            <div className="space-y-3 p-3.5 rounded-xl bg-canvas border border-card-edge">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1.5">
                   <Label
                     htmlFor="eq-maint-interval"
-                    className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                    className="text-xs font-bold uppercase tracking-wider text-muted"
                   >
                     Interval (days) *
                   </Label>
@@ -540,8 +551,9 @@ export function EquipmentFields({
                     onChange={handleMaintIntervalChange}
                     placeholder="e.g. 180"
                     disabled={disabled}
+                    className="bg-card border-card-edge text-navy font-semibold text-xs"
                   />
-                  <p className="text-[11px] text-[#94a3b8]">
+                  <p className="text-[11px] text-muted font-medium">
                     Use the interval in the manufacturer&apos;s manual
                   </p>
                   {fieldErrors.maintenanceIntervalDays && (
@@ -554,7 +566,7 @@ export function EquipmentFields({
                 <div className="space-y-1.5">
                   <Label
                     htmlFor="eq-maint-next-due"
-                    className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                    className="text-xs font-bold uppercase tracking-wider text-muted"
                   >
                     Next service due *
                   </Label>
@@ -565,6 +577,7 @@ export function EquipmentFields({
                     value={values.nextMaintenanceDueOn}
                     onChange={handleMaintDueChange}
                     disabled={disabled}
+                    className="bg-card border-card-edge text-navy font-semibold text-xs"
                   />
                   {fieldErrors.nextMaintenanceDueOn && (
                     <p className="text-xs font-medium text-destructive">
@@ -574,11 +587,11 @@ export function EquipmentFields({
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-[#1e293b]">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-card-edge">
                 <div className="space-y-1.5">
                   <Label
                     htmlFor="eq-last-serviced"
-                    className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                    className="text-xs font-bold uppercase tracking-wider text-muted"
                   >
                     Last serviced on
                   </Label>
@@ -589,6 +602,7 @@ export function EquipmentFields({
                     value={values.lastServicedOn}
                     onChange={handleLastServicedOnChange}
                     disabled={disabled}
+                    className="bg-card border-card-edge text-navy font-semibold text-xs"
                   />
                   {fieldErrors.lastServicedOn && (
                     <p className="text-xs font-medium text-destructive">
@@ -600,7 +614,7 @@ export function EquipmentFields({
                 <div className="space-y-1.5">
                   <Label
                     htmlFor="eq-serviced-by"
-                    className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                    className="text-xs font-bold uppercase tracking-wider text-muted"
                   >
                     Serviced by
                   </Label>
@@ -612,8 +626,9 @@ export function EquipmentFields({
                     placeholder="Person or service company"
                     disabled={disabled}
                     maxLength={120}
+                    className="bg-card border-card-edge text-navy font-semibold text-xs"
                   />
-                  <p className="text-[11px] text-[#94a3b8]">Required if last serviced is set</p>
+                  <p className="text-[11px] text-muted font-medium">Required if last serviced is set</p>
                   {fieldErrors.servicedBy && (
                     <p className="text-xs font-medium text-destructive">
                       {fieldErrors.servicedBy[0]}

@@ -104,8 +104,8 @@ export function ResourceStatusForm({ resource, upcomingBookingsCount }: Resource
               <label
                 className={`flex items-start gap-3 p-3.5 rounded-xl border cursor-pointer transition-colors ${
                   selectedStatus === "ACTIVE"
-                    ? "border-[#6cd8cb] bg-[#6cd8cb]/10 ring-1 ring-[#6cd8cb]"
-                    : "border-[#334155] bg-[#18202f] hover:bg-[#222a3a]"
+                    ? "border-teal bg-mint/40 ring-1 ring-teal"
+                    : "border-card-edge bg-canvas hover:bg-card"
                 }`}
               >
                 <input
@@ -114,14 +114,14 @@ export function ResourceStatusForm({ resource, upcomingBookingsCount }: Resource
                   value="ACTIVE"
                   checked={selectedStatus === "ACTIVE"}
                   onChange={() => setSelectedStatus("ACTIVE")}
-                  className="mt-1 size-4 accent-[#6cd8cb]"
+                  className="mt-1 size-4 accent-teal"
                 />
                 <div className="space-y-0.5">
                   <div className="flex items-center gap-2">
-                    <span className="size-2 rounded-full bg-emerald-400 shrink-0" />
-                    <span className="font-bold text-sm text-slate-100">Active</span>
+                    <span className="size-2 rounded-full bg-teal shrink-0" />
+                    <span className="font-bold text-sm text-navy">Active</span>
                   </div>
-                  <p className="text-xs text-slate-400">Can be booked.</p>
+                  <p className="text-xs text-muted">Can be booked.</p>
                 </div>
               </label>
 
@@ -129,8 +129,8 @@ export function ResourceStatusForm({ resource, upcomingBookingsCount }: Resource
               <label
                 className={`flex items-start gap-3 p-3.5 rounded-xl border cursor-pointer transition-colors ${
                   selectedStatus === "OUT_OF_SERVICE"
-                    ? "border-rose-500 bg-rose-500/10 ring-1 ring-rose-500"
-                    : "border-[#334155] bg-[#18202f] hover:bg-[#222a3a]"
+                    ? "border-red bg-red-soft ring-1 ring-red"
+                    : "border-card-edge bg-canvas hover:bg-card"
                 }`}
               >
                 <input
@@ -139,14 +139,14 @@ export function ResourceStatusForm({ resource, upcomingBookingsCount }: Resource
                   value="OUT_OF_SERVICE"
                   checked={selectedStatus === "OUT_OF_SERVICE"}
                   onChange={() => setSelectedStatus("OUT_OF_SERVICE")}
-                  className="mt-1 size-4 accent-rose-500"
+                  className="mt-1 size-4 accent-red"
                 />
                 <div className="space-y-0.5">
                   <div className="flex items-center gap-2">
-                    <span className="size-2 rounded-full bg-rose-500 shrink-0" />
-                    <span className="font-bold text-sm text-slate-100">Out of service</span>
+                    <span className="size-2 rounded-full bg-red shrink-0" />
+                    <span className="font-bold text-sm text-navy">Out of service</span>
                   </div>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-muted">
                     Cannot be booked until it is set back to active. Upcoming bookings are
                     cancelled.
                   </p>
@@ -157,8 +157,8 @@ export function ResourceStatusForm({ resource, upcomingBookingsCount }: Resource
               <label
                 className={`flex items-start gap-3 p-3.5 rounded-xl border cursor-pointer transition-colors ${
                   selectedStatus === "RETIRED"
-                    ? "border-slate-400 bg-slate-800/60 ring-1 ring-slate-400"
-                    : "border-[#334155] bg-[#18202f] hover:bg-[#222a3a]"
+                    ? "border-muted bg-canvas ring-1 ring-muted"
+                    : "border-card-edge bg-canvas hover:bg-card"
                 }`}
               >
                 <input
@@ -167,14 +167,14 @@ export function ResourceStatusForm({ resource, upcomingBookingsCount }: Resource
                   value="RETIRED"
                   checked={selectedStatus === "RETIRED"}
                   onChange={() => setSelectedStatus("RETIRED")}
-                  className="mt-1 size-4 accent-slate-400"
+                  className="mt-1 size-4 accent-muted"
                 />
                 <div className="space-y-0.5">
                   <div className="flex items-center gap-2">
-                    <span className="size-2 rounded-full bg-slate-400 shrink-0" />
-                    <span className="font-bold text-sm text-slate-100">Retired</span>
+                    <span className="size-2 rounded-full bg-muted shrink-0" />
+                    <span className="font-bold text-sm text-navy">Retired</span>
                   </div>
-                  <p className="text-xs text-slate-400">Removed for good. History is kept.</p>
+                  <p className="text-xs text-muted">Removed for good. History is kept.</p>
                 </div>
               </label>
             </div>
@@ -183,8 +183,8 @@ export function ResourceStatusForm({ resource, upcomingBookingsCount }: Resource
           {/* Cancellation Notice and Reason for OUT_OF_SERVICE or RETIRED */}
           {isChangingToDown && (
             <div className="space-y-4 pt-1">
-              <Alert className="border-amber-500/40 bg-amber-500/10 text-amber-950 dark:text-amber-200">
-                <AlertTriangle className="size-4 text-amber-600 dark:text-amber-400" />
+              <Alert className="border-amber-line bg-amber-soft text-amber">
+                <AlertTriangle className="size-4 text-amber-strong" />
                 <AlertTitle className="font-bold text-sm">
                   {upcomingBookingsCount === 1
                     ? "1 upcoming booking will be cancelled"
@@ -196,7 +196,7 @@ export function ResourceStatusForm({ resource, upcomingBookingsCount }: Resource
                   when it will be working again, use{" "}
                   <Link
                     href={`/maintenance/new?resourceId=${resource.id}&returnTo=${encodeURIComponent(`/resources/${resource.id}`)}`}
-                    className="font-bold underline hover:text-amber-900"
+                    className="font-bold underline text-amber-strong"
                   >
                     Block time
                   </Link>{" "}
@@ -206,10 +206,10 @@ export function ResourceStatusForm({ resource, upcomingBookingsCount }: Resource
 
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="status-reason" className="text-sm font-semibold">
+                  <Label htmlFor="status-reason" className="text-sm font-semibold text-navy">
                     Reason for status change
                   </Label>
-                  <span className="text-xs text-muted-foreground">3 to 200 characters</span>
+                  <span className="text-xs text-muted">3 to 200 characters</span>
                 </div>
                 <Textarea
                   id="status-reason"
@@ -236,7 +236,7 @@ export function ResourceStatusForm({ resource, upcomingBookingsCount }: Resource
           <Button asChild variant="ghost" type="button" disabled={isPending}>
             <Link
               href={`/resources/${resource.id}`}
-              className="text-slate-400 hover:text-slate-100"
+              className="text-muted hover:text-navy font-bold text-xs"
             >
               Keep as it is
             </Link>

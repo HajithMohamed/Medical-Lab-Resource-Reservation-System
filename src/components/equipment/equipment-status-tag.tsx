@@ -21,13 +21,11 @@ export function EquipmentStatusTag({
     return (
       <span
         className={cn(
-          "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/30",
+          "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-green-soft text-green border border-green/20",
           className,
         )}
       >
-        {showDot && (
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" aria-hidden="true" />
-        )}
+        {showDot && <span className="size-1.5 rounded-full bg-green shrink-0" aria-hidden="true" />}
         <span>{displayText}</span>
       </span>
     );
@@ -37,13 +35,11 @@ export function EquipmentStatusTag({
     return (
       <span
         className={cn(
-          "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-amber-500/15 text-amber-300 border border-amber-500/30",
+          "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-soft text-amber border border-amber-line",
           className,
         )}
       >
-        {showDot && (
-          <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" aria-hidden="true" />
-        )}
+        {showDot && <span className="size-1.5 rounded-full bg-amber shrink-0" aria-hidden="true" />}
         <span>{displayText}</span>
       </span>
     );
@@ -53,15 +49,12 @@ export function EquipmentStatusTag({
     return (
       <span
         className={cn(
-          "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-amber-500/25 text-amber-200 border border-amber-500/50 shadow-xs",
+          "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-amber-soft text-amber-strong border border-amber-line shadow-2xs",
           className,
         )}
       >
         {showDot && (
-          <span
-            className="w-1.5 h-1.5 rounded-full bg-amber-300 animate-pulse shrink-0"
-            aria-hidden="true"
-          />
+          <span className="size-1.5 rounded-full bg-amber-strong shrink-0" aria-hidden="true" />
         )}
         <span>{displayText}</span>
       </span>
@@ -72,13 +65,11 @@ export function EquipmentStatusTag({
     return (
       <span
         className={cn(
-          "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-rose-500/15 text-rose-300 border border-rose-500/40",
+          "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-red-soft text-red border border-red/30",
           className,
         )}
       >
-        {showDot && (
-          <span className="w-1.5 h-1.5 rounded-full bg-rose-400 shrink-0" aria-hidden="true" />
-        )}
+        {showDot && <span className="size-1.5 rounded-full bg-red shrink-0" aria-hidden="true" />}
         <span>{displayText}</span>
       </span>
     );
@@ -88,13 +79,11 @@ export function EquipmentStatusTag({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-mono font-normal bg-slate-500/10 text-slate-400 border border-slate-500/20",
+        "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-canvas text-muted border border-line",
         className,
       )}
     >
-      {showDot && (
-        <span className="w-1.5 h-1.5 rounded-full bg-slate-400 shrink-0" aria-hidden="true" />
-      )}
+      {showDot && <span className="size-1.5 rounded-full bg-faint shrink-0" aria-hidden="true" />}
       <span>{displayText}</span>
     </span>
   );

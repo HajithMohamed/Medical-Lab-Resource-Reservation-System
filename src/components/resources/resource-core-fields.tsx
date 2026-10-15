@@ -60,7 +60,7 @@ export function ResourceCoreFields({
       <div className="space-y-1.5">
         <Label
           htmlFor={`${idPrefix}-name`}
-          className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+          className="text-xs font-bold text-navy uppercase tracking-wider"
         >
           Resource name
         </Label>
@@ -74,6 +74,7 @@ export function ResourceCoreFields({
           minLength={2}
           maxLength={80}
           disabled={disabled}
+          className="h-10 rounded-xl border-card-edge bg-card text-navy font-semibold text-sm"
         />
         {fieldErrors.name && (
           <p className="text-xs font-medium text-destructive">{fieldErrors.name[0]}</p>
@@ -84,7 +85,7 @@ export function ResourceCoreFields({
       <div className="space-y-1.5">
         <Label
           htmlFor={`${idPrefix}-site`}
-          className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+          className="text-xs font-bold text-navy uppercase tracking-wider"
         >
           Laboratory site
         </Label>
@@ -94,10 +95,10 @@ export function ResourceCoreFields({
               id={`${idPrefix}-site`}
               value={currentSiteName}
               disabled
-              className="bg-[#141c2b] text-[#94a3b8]"
+              className="h-10 rounded-xl bg-canvas border-card-edge text-muted font-semibold text-sm"
             />
             <input type="hidden" name="siteId" value={actorSiteId ?? ""} />
-            <p className="text-xs text-[#94a3b8] mt-1 font-mono">
+            <p className="text-xs text-muted mt-1 font-medium">
               Site managers may only manage resources for their assigned laboratory.
             </p>
           </div>
@@ -109,7 +110,7 @@ export function ResourceCoreFields({
             onChange={(e) => setSiteId(e.target.value)}
             disabled={disabled}
             required
-            className="h-10 w-full rounded-md border border-[#334155] bg-[#060e1d] px-3 text-sm text-white focus:border-[#6cd8cb] focus:outline-none cursor-pointer transition-colors"
+            className="h-10 w-full rounded-xl border border-card-edge bg-card px-3 text-sm font-semibold text-navy focus:border-teal focus:outline-none cursor-pointer transition-colors"
           >
             {sites.map((s) => (
               <option key={s.id} value={s.id}>
@@ -127,7 +128,7 @@ export function ResourceCoreFields({
       <div className="space-y-1.5">
         <Label
           htmlFor={`${idPrefix}-category`}
-          className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+          className="text-xs font-bold text-navy uppercase tracking-wider"
         >
           Category
         </Label>
@@ -138,7 +139,7 @@ export function ResourceCoreFields({
           onChange={(e) => setCategoryId(e.target.value)}
           disabled={disabled}
           required
-          className="h-10 w-full rounded-md border border-[#334155] bg-[#060e1d] px-3 text-sm text-white focus:border-[#6cd8cb] focus:outline-none cursor-pointer transition-colors"
+          className="h-10 w-full rounded-xl border border-card-edge bg-card px-3 text-sm font-semibold text-navy focus:border-teal focus:outline-none cursor-pointer transition-colors"
         >
           {categories.map((c) => (
             <option key={c.id} value={c.id}>
@@ -155,7 +156,7 @@ export function ResourceCoreFields({
       <div className="space-y-1.5">
         <Label
           htmlFor={`${idPrefix}-section`}
-          className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+          className="text-xs font-bold text-navy uppercase tracking-wider"
         >
           Owning section
         </Label>
@@ -166,7 +167,7 @@ export function ResourceCoreFields({
           onChange={(e) => setSectionId(e.target.value)}
           disabled={disabled}
           required
-          className="h-10 w-full rounded-md border border-[#334155] bg-[#060e1d] px-3 text-sm text-white focus:border-[#6cd8cb] focus:outline-none cursor-pointer transition-colors"
+          className="h-10 w-full rounded-xl border border-card-edge bg-card px-3 text-sm font-semibold text-navy focus:border-teal focus:outline-none cursor-pointer transition-colors"
         >
           {sections.map((s) => (
             <option key={s.id} value={s.id}>
@@ -183,7 +184,7 @@ export function ResourceCoreFields({
       <div className="space-y-1.5">
         <Label
           htmlFor={`${idPrefix}-location`}
-          className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+          className="text-xs font-bold text-navy uppercase tracking-wider"
         >
           Physical location
         </Label>
@@ -195,6 +196,7 @@ export function ResourceCoreFields({
           placeholder="e.g. Room 204, East Wing Bench 3"
           maxLength={120}
           disabled={disabled}
+          className="h-10 rounded-xl border-card-edge bg-card text-navy font-semibold text-sm"
         />
         {fieldErrors.location && (
           <p className="text-xs font-medium text-destructive">{fieldErrors.location[0]}</p>
@@ -206,7 +208,7 @@ export function ResourceCoreFields({
         <div className="space-y-1.5">
           <Label
             htmlFor={`${idPrefix}-capacity`}
-            className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+            className="text-xs font-bold text-navy uppercase tracking-wider"
           >
             Seating capacity
           </Label>
@@ -220,8 +222,9 @@ export function ResourceCoreFields({
             onChange={(e) => setCapacity(e.target.value)}
             placeholder="e.g. 20"
             disabled={disabled}
+            className="h-10 rounded-xl border-card-edge bg-card text-navy font-semibold text-sm"
           />
-          <p className="text-xs text-[#94a3b8] font-mono">
+          <p className="text-xs text-muted font-medium">
             Rooms require attendee limits for laboratory safety and seating control.
           </p>
           {fieldErrors.capacity && (

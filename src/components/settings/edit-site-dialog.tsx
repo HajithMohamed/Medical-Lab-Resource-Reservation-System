@@ -70,9 +70,9 @@ export function EditSiteDialog({ site, trigger }: EditSiteDialogProps) {
           <Button
             variant="outline"
             size="sm"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-[#18202f] hover:bg-[#222a3a] text-xs font-mono font-medium text-[#dbe2f8] hover:text-white border border-[#334155] hover:border-[#6cd8cb]/50 transition-all duration-150 active:scale-[0.98]"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-card hover:bg-mint text-xs font-semibold text-navy hover:text-teal border border-card-edge shadow-2xs transition-all duration-150 active:scale-95"
           >
-            <Pencil className="size-3.5 text-[#6cd8cb]" />
+            <Pencil className="size-3.5 text-teal" />
             <span>Edit</span>
           </Button>
         )}
@@ -96,7 +96,7 @@ export function EditSiteDialog({ site, trigger }: EditSiteDialogProps) {
             <div className="space-y-1.5">
               <Label
                 htmlFor={`edit-site-name-${site.id}`}
-                className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                className="text-xs font-semibold text-navy"
               >
                 Site Name
               </Label>
@@ -109,6 +109,7 @@ export function EditSiteDialog({ site, trigger }: EditSiteDialogProps) {
                 required
                 minLength={2}
                 maxLength={80}
+                className="h-10 bg-card border-card-edge text-navy text-xs rounded-xl focus-visible:border-teal"
               />
             </div>
 
@@ -116,11 +117,11 @@ export function EditSiteDialog({ site, trigger }: EditSiteDialogProps) {
               <div className="flex items-center justify-between">
                 <Label
                   htmlFor={`edit-site-address-${site.id}`}
-                  className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                  className="text-xs font-semibold text-navy"
                 >
                   Address
                 </Label>
-                <span className="text-xs font-mono text-[#879390]">(optional)</span>
+                <span className="text-xs text-muted font-normal">(optional)</span>
               </div>
               <Input
                 id={`edit-site-address-${site.id}`}
@@ -129,42 +130,43 @@ export function EditSiteDialog({ site, trigger }: EditSiteDialogProps) {
                 onChange={(e) => setAddress(e.target.value)}
                 placeholder="e.g. Colombo 07"
                 maxLength={200}
+                className="h-10 bg-card border-card-edge text-navy text-xs rounded-xl focus-visible:border-teal"
               />
             </div>
 
             {/* Telemetry Stats Callout */}
-            <div className="p-3 bg-[#18202f] border border-[#334155]/60 rounded-lg flex items-center justify-between">
+            <div className="p-3 bg-canvas border border-card-edge rounded-xl flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <span className="text-[#6cd8cb]">ℹ</span>
-                <span className="text-xs text-[#94a3b8] font-mono">
+                <span className="text-teal font-bold">ℹ</span>
+                <span className="text-xs text-muted">
                   Associated with{" "}
-                  <strong className="text-white font-semibold">
+                  <strong className="text-navy font-semibold">
                     {site._count.resources} resources
                   </strong>{" "}
                   and{" "}
-                  <strong className="text-white font-semibold">{site._count.users} users</strong>.
+                  <strong className="text-navy font-semibold">{site._count.users} users</strong>.
                 </span>
               </div>
-              <span className="text-xs font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-teal-soft text-teal-deep border border-teal/20">
                 Operational
               </span>
             </div>
           </div>
 
-          <DialogFooter className="pt-3 border-t border-[#334155]/40">
+          <DialogFooter className="pt-3 border-t border-card-edge">
             <Button
               type="button"
               variant="outline"
               onClick={() => setOpen(false)}
               disabled={isPending}
-              className="text-[#dbe2f8] hover:bg-[#222a3a]"
+              className="text-navy hover:bg-mint rounded-xl border-card-edge"
             >
               Cancel
             </Button>
             <Button
               type="submit"
               disabled={isPending}
-              className="bg-[#6cd8cb] hover:bg-[#29a195] text-[#003732] font-semibold text-xs font-mono px-5 py-2 rounded-lg transition-all duration-150 active:scale-[0.98]"
+              className="bg-teal hover:bg-teal-deep text-white font-bold text-xs px-5 py-2 rounded-xl shadow-2xs transition-all active:scale-95"
             >
               {isPending ? "Saving..." : "Save changes"}
             </Button>

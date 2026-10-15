@@ -80,25 +80,25 @@ export function DueDayBanner({
         <div
           className={`p-4 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
             calibrationStatus === "OVERDUE"
-              ? "bg-rose-500/10 border-rose-500/30 text-rose-200"
-              : "bg-amber-500/10 border-amber-500/30 text-amber-200"
+              ? "bg-red-soft border-red/30 text-red"
+              : "bg-amber-soft border-amber-line text-amber"
           }`}
         >
           <div className="space-y-1">
-            <div className="flex items-center gap-2 font-semibold">
+            <div className="flex items-center gap-2 font-bold">
               {calibrationStatus === "OVERDUE" ? (
-                <AlertCircle className="size-4 text-rose-400 shrink-0" />
+                <AlertCircle className="size-4 text-red shrink-0" />
               ) : (
-                <Clock className="size-4 text-amber-300 shrink-0" />
+                <Clock className="size-4 text-amber-strong shrink-0" />
               )}
-              <span className="text-white text-sm">
+              <span className={`text-sm ${calibrationStatus === "OVERDUE" ? "text-red" : "text-amber-strong"}`}>
                 {calibrationStatus === "OVERDUE"
                   ? `Calibration overdue since ${formatEquipmentDay(calibDueStr)}`
                   : "Calibration due today"}
               </span>
             </div>
             {lastNotDoneCalibration && (
-              <p className="text-xs text-[#94a3b8] pl-6">
+              <p className="text-xs text-navy/80 pl-6 font-medium">
                 Not done recorded: &ldquo;{lastNotDoneCalibration.notes}&rdquo;
                 {lastNotDoneCalibration.plannedDate &&
                   ` &bull; Planned for ${formatEquipmentDay(lastNotDoneCalibration.plannedDate)}`}
@@ -138,25 +138,25 @@ export function DueDayBanner({
         <div
           className={`p-4 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
             maintenanceStatus === "OVERDUE"
-              ? "bg-rose-500/10 border-rose-500/30 text-rose-200"
-              : "bg-amber-500/10 border-amber-500/30 text-amber-200"
+              ? "bg-red-soft border-red/30 text-red"
+              : "bg-amber-soft border-amber-line text-amber"
           }`}
         >
           <div className="space-y-1">
-            <div className="flex items-center gap-2 font-semibold">
+            <div className="flex items-center gap-2 font-bold">
               {maintenanceStatus === "OVERDUE" ? (
-                <AlertCircle className="size-4 text-rose-400 shrink-0" />
+                <AlertCircle className="size-4 text-red shrink-0" />
               ) : (
-                <Clock className="size-4 text-amber-300 shrink-0" />
+                <Clock className="size-4 text-amber-strong shrink-0" />
               )}
-              <span className="text-white text-sm">
+              <span className={`text-sm ${maintenanceStatus === "OVERDUE" ? "text-red" : "text-amber-strong"}`}>
                 {maintenanceStatus === "OVERDUE"
                   ? `Service overdue since ${formatEquipmentDay(maintDueStr)}`
                   : "Service due today"}
               </span>
             </div>
             {lastNotDoneMaintenance && (
-              <p className="text-xs text-[#94a3b8] pl-6">
+              <p className="text-xs text-navy/80 pl-6 font-medium">
                 Not done recorded: &ldquo;{lastNotDoneMaintenance.notes}&rdquo;
                 {lastNotDoneMaintenance.plannedDate &&
                   ` &bull; Planned for ${formatEquipmentDay(lastNotDoneMaintenance.plannedDate)}`}

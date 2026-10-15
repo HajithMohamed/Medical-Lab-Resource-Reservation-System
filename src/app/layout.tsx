@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import "@fontsource-variable/atkinson-hyperlegible-next";
+import "@fontsource-variable/plus-jakarta-sans";
 import "./globals.css";
 import { APP_NAME, APP_TAGLINE, BRAND_COLORS } from "@/config/brand";
 import { Toaster } from "@/components/ui/sonner";
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: BRAND_COLORS.navy,
+  themeColor: BRAND_COLORS.teal,
 };
 
 export default function RootLayout({
@@ -24,10 +24,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark h-full antialiased font-sans bg-[#0b1322] text-[#f1f5f9]">
-      <body className="min-h-full flex flex-col bg-[#0b1322] text-[#f1f5f9] selection:bg-[#6cd8cb]/20 selection:text-[#6cd8cb]">
+    <html lang="en" className="h-full antialiased font-sans" style={{ colorScheme: "light" }}>
+      <body className="min-h-full flex flex-col selection:bg-teal-soft selection:text-teal-deep">
         <TooltipProvider>{children}</TooltipProvider>
-        <Toaster theme="dark" position="bottom-right" richColors />
+        <Toaster theme="light" position="bottom-right" richColors />
       </body>
     </html>
   );

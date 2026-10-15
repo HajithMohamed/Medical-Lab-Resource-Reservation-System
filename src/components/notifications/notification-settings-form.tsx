@@ -48,20 +48,20 @@ export function NotificationSettingsForm({ initialPreferences }: NotificationSet
 
   return (
     <div className="space-y-6 max-w-4xl">
-      <div className="rounded-xl border border-[#334155] bg-[#141c2b] overflow-hidden">
-        <div className="p-4 sm:p-5 border-b border-[#334155]/60 flex items-center justify-between">
+      <div className="rounded-2xl border border-card-edge bg-card shadow-v4 overflow-hidden">
+        <div className="p-4 sm:p-5 border-b border-card-edge bg-canvas/60 flex items-center justify-between">
           <div>
-            <h2 className="text-base font-semibold text-white flex items-center gap-2">
-              <Bell className="size-4 text-[#6cd8cb]" />
+            <h2 className="text-base font-bold text-navy flex items-center gap-2">
+              <Bell className="size-4 text-teal" />
               In-App Notification Channels
             </h2>
-            <p className="text-xs text-[#94a3b8] mt-0.5">
+            <p className="text-xs text-muted mt-0.5">
               Choose which events trigger real-time toasts and appear in your notification feed.
             </p>
           </div>
         </div>
 
-        <div className="divide-y divide-[#334155]/50">
+        <div className="divide-y divide-line">
           {preferences.map((item) => {
             const isMandatory = !item.canTurnOffInApp;
             const isUpdating = updatingKind === item.kind;
@@ -69,29 +69,29 @@ export function NotificationSettingsForm({ initialPreferences }: NotificationSet
             return (
               <div
                 key={item.kind}
-                className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-[#182234] transition-colors"
+                className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-mint/30 transition-colors"
               >
                 <div className="space-y-1 max-w-2xl">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-sm font-medium text-white">{item.label}</span>
+                    <span className="text-sm font-bold text-navy">{item.label}</span>
                     {isMandatory && (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium bg-amber-500/10 text-amber-300 border border-amber-500/20">
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-soft text-amber border border-amber-line">
                         <Lock className="size-2.5" />
                         Mandatory
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-[#94a3b8] leading-relaxed">{item.description}</p>
+                  <p className="text-xs text-muted leading-relaxed font-normal">{item.description}</p>
                   {isMandatory && (
-                    <p className="text-[11px] text-[#64748b] italic">
+                    <p className="text-[11px] text-faint italic font-normal">
                       This alert cannot be disabled to prevent missed lab schedule disruptions.
                     </p>
                   )}
                 </div>
 
                 <div className="flex items-center gap-3 shrink-0 self-start sm:self-center">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-mono text-[#94a3b8]">
+                  <div className="flex items-center gap-2.5">
+                    <span className="text-xs font-semibold text-muted">
                       {item.inApp ? "Enabled" : "Disabled"}
                     </span>
                     <Switch

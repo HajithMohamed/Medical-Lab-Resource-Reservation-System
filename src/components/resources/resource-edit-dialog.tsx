@@ -255,16 +255,16 @@ export function ResourceEditDialog({
               type="button"
               variant="outline"
               size="sm"
-              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#18202f] hover:bg-[#222a3a] text-xs font-mono font-medium text-[#dbe2f8] hover:text-white border border-[#334155] hover:border-[#6cd8cb]/50 transition-all duration-150 active:scale-[0.98]"
+              className="inline-flex items-center gap-1.5 h-8 px-2.5 rounded-xl border-card-edge bg-card hover:bg-canvas text-navy font-semibold text-xs transition-colors"
             >
-              <Pencil className="size-3.5 text-[#6cd8cb]" />
+              <Pencil className="size-3.5 text-teal" />
               <span>Edit</span>
             </Button>
           )}
         </DialogTrigger>
         <DialogContent className="sm:max-w-xl max-h-[85vh] flex flex-col p-0 overflow-hidden">
           <form onSubmit={handleSubmit} className="flex flex-col h-full min-h-0 overflow-hidden">
-            <DialogHeader className="p-6 pb-4 border-b border-[#1e293b]">
+            <DialogHeader className="p-6 pb-4 border-b border-line">
               <DialogTitle>Edit {resource.name}</DialogTitle>
               <DialogDescription>
                 Update equipment specifications, location or assigned department.
@@ -311,19 +311,20 @@ export function ResourceEditDialog({
               />
             </div>
 
-            <DialogFooter className="p-4 border-t border-[#1e293b] bg-[#141c2b] flex items-center justify-end gap-3">
+            <DialogFooter className="p-4 border-t border-line bg-canvas/40 flex items-center justify-end gap-3">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => setOpen(false)}
                 disabled={isPending}
+                className="rounded-xl border-card-edge bg-card text-navy font-bold text-xs"
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
                 disabled={isPending}
-                className="bg-[#6cd8cb] hover:bg-[#29a195] text-[#003732] font-semibold"
+                className="bg-gradient-to-br from-teal to-teal-deep text-white font-bold text-xs rounded-xl shadow-teal hover:opacity-95"
               >
                 {isPending ? "Saving..." : "Save changes"}
               </Button>

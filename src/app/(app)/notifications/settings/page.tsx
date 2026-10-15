@@ -34,7 +34,7 @@ export default async function NotificationSettingsPage() {
             asChild
             variant="outline"
             size="sm"
-            className="border-[#334155] bg-[#141c2b] text-[#94a3b8] hover:text-white hover:bg-[#1a2335] text-xs gap-2"
+            className="border-card-edge bg-card text-navy hover:text-navy hover:bg-mint text-xs font-semibold rounded-xl gap-2 shadow-2xs"
           >
             <Link href="/notifications">
               <ArrowLeft className="size-3.5" />

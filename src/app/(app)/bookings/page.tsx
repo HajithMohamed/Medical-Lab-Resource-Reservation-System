@@ -47,6 +47,7 @@ export default async function BookingsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
+        eyebrow="Workspace / Bookings"
         title="My bookings"
         description="Your upcoming, past and cancelled reservations across the clinical lab network."
         actions={
@@ -56,17 +57,16 @@ export default async function BookingsPage() {
               trigger={
                 <Button
                   size="sm"
-                  className="h-8 gap-1.5 bg-[#6cd8cb] hover:bg-[#29a195] text-[#003732] font-semibold text-xs font-mono active:scale-95 transition-all shadow-xs"
+                  className="bg-gradient-to-br from-teal to-teal-deep text-white font-bold text-xs shadow-xs hover:opacity-95 transition-all"
                 >
-                  <Plus className="size-3.5 stroke-[2.5]" />
+                  <Plus className="size-3.5 mr-1" />
                   <span>Book a resource</span>
                 </Button>
               }
             />
-            {/* Direct fallback link for full page navigation */}
             <Link
               href="/bookings/new"
-              className="sr-only focus:not-sr-only text-xs font-mono text-[#6cd8cb]"
+              className="sr-only focus:not-sr-only text-xs font-bold text-teal"
             >
               Book a resource (page)
             </Link>

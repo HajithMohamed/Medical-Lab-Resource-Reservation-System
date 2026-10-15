@@ -123,29 +123,29 @@ export function RecordEquipmentForm({
 
         {isCheckOrRepair && (
           <div className="space-y-1.5">
-            <Label className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]">
+            <Label className="text-xs font-bold text-navy uppercase tracking-wider">
               Activity type *
             </Label>
             <div className="flex gap-4 pt-1">
-              <label className="flex items-center gap-2 cursor-pointer text-sm text-white">
+              <label className="flex items-center gap-2 cursor-pointer text-sm font-bold text-navy">
                 <input
                   type="radio"
                   name="activity-kind"
                   value="PERFORMANCE_CHECK"
                   checked={kind === "PERFORMANCE_CHECK"}
                   onChange={() => setKind("PERFORMANCE_CHECK")}
-                  className="accent-[#6cd8cb]"
+                  className="accent-teal"
                 />
                 <span>Performance check</span>
               </label>
-              <label className="flex items-center gap-2 cursor-pointer text-sm text-white">
+              <label className="flex items-center gap-2 cursor-pointer text-sm font-bold text-navy">
                 <input
                   type="radio"
                   name="activity-kind"
                   value="REPAIR"
                   checked={kind === "REPAIR"}
                   onChange={() => setKind("REPAIR")}
-                  className="accent-[#6cd8cb]"
+                  className="accent-teal"
                 />
                 <span>Repair</span>
               </label>
@@ -157,7 +157,7 @@ export function RecordEquipmentForm({
           <div className="space-y-1.5">
             <Label
               htmlFor="rec-performed-on"
-              className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+              className="text-xs font-bold text-navy uppercase tracking-wider"
             >
               Date performed *
             </Label>
@@ -168,6 +168,7 @@ export function RecordEquipmentForm({
               onChange={(e) => setPerformedOn(e.target.value)}
               required
               disabled={isPending}
+              className="h-10 rounded-xl bg-canvas border-card-edge text-navy font-semibold text-xs"
             />
             {fieldErrors.performedOn && (
               <p className="text-xs font-medium text-destructive">{fieldErrors.performedOn[0]}</p>
@@ -175,56 +176,56 @@ export function RecordEquipmentForm({
           </div>
 
           <div className="space-y-1.5">
-            <Label className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]">
+            <Label className="text-xs font-bold text-navy uppercase tracking-wider">
               Result / Outcome *
             </Label>
             <div className="flex flex-wrap gap-3 pt-2">
               {isReview ? (
                 <>
-                  <label className="flex items-center gap-1.5 cursor-pointer text-xs text-emerald-300">
+                  <label className="flex items-center gap-1.5 cursor-pointer text-xs font-bold text-teal">
                     <input
                       type="radio"
                       name="rec-outcome"
                       value="KEEP_IN_SERVICE"
                       checked={outcome === "KEEP_IN_SERVICE"}
                       onChange={() => setOutcome("KEEP_IN_SERVICE")}
-                      className="accent-emerald-500"
+                      className="accent-teal"
                     />
                     <span>Keep</span>
                   </label>
-                  <label className="flex items-center gap-1.5 cursor-pointer text-xs text-rose-300">
+                  <label className="flex items-center gap-1.5 cursor-pointer text-xs font-bold text-red">
                     <input
                       type="radio"
                       name="rec-outcome"
                       value="REPLACE"
                       checked={outcome === "REPLACE"}
                       onChange={() => setOutcome("REPLACE")}
-                      className="accent-rose-500"
+                      className="accent-red"
                     />
                     <span>Replace</span>
                   </label>
                 </>
               ) : (
                 <>
-                  <label className="flex items-center gap-1.5 cursor-pointer text-xs text-emerald-300">
+                  <label className="flex items-center gap-1.5 cursor-pointer text-xs font-bold text-teal">
                     <input
                       type="radio"
                       name="rec-outcome"
                       value="PASS"
                       checked={outcome === "PASS"}
                       onChange={() => setOutcome("PASS")}
-                      className="accent-emerald-500"
+                      className="accent-teal"
                     />
                     <span>Pass</span>
                   </label>
-                  <label className="flex items-center gap-1.5 cursor-pointer text-xs text-rose-300">
+                  <label className="flex items-center gap-1.5 cursor-pointer text-xs font-bold text-red">
                     <input
                       type="radio"
                       name="rec-outcome"
                       value="FAIL"
                       checked={outcome === "FAIL"}
                       onChange={() => setOutcome("FAIL")}
-                      className="accent-rose-500"
+                      className="accent-red"
                     />
                     <span>Fail</span>
                   </label>
@@ -238,7 +239,7 @@ export function RecordEquipmentForm({
           <div className="space-y-1.5">
             <Label
               htmlFor="rec-performed-by"
-              className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+              className="text-xs font-bold text-navy uppercase tracking-wider"
             >
               Performed by *
             </Label>
@@ -250,6 +251,7 @@ export function RecordEquipmentForm({
               required
               maxLength={120}
               disabled={isPending}
+              className="h-10 rounded-xl bg-canvas border-card-edge text-navy font-semibold text-xs"
             />
             {fieldErrors.performedBy && (
               <p className="text-xs font-medium text-destructive">{fieldErrors.performedBy[0]}</p>
@@ -259,7 +261,7 @@ export function RecordEquipmentForm({
           <div className="space-y-1.5">
             <Label
               htmlFor="rec-company"
-              className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+              className="text-xs font-bold text-navy uppercase tracking-wider"
             >
               Company (if external)
             </Label>
@@ -270,6 +272,7 @@ export function RecordEquipmentForm({
               placeholder="e.g. Thermo Fisher"
               maxLength={120}
               disabled={isPending}
+              className="h-10 rounded-xl bg-canvas border-card-edge text-navy font-semibold text-xs"
             />
             {fieldErrors.externalCompany && (
               <p className="text-xs font-medium text-destructive">
@@ -284,11 +287,11 @@ export function RecordEquipmentForm({
           <div className="flex items-center justify-between">
             <Label
               htmlFor="rec-work-done"
-              className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+              className="text-xs font-bold text-navy uppercase tracking-wider"
             >
               Work done / changes made {isWorkRequired ? "*" : "(optional)"}
             </Label>
-            <span className="text-[11px] font-mono text-[#879390]">
+            <span className="text-[11px] text-muted font-medium">
               {workPerformed.length}/1000
             </span>
           </div>
@@ -301,7 +304,7 @@ export function RecordEquipmentForm({
             required={isWorkRequired}
             maxLength={1000}
             disabled={isPending}
-            className="w-full rounded-md border border-[#334155] bg-[#060e1d] p-2.5 text-xs text-white placeholder:text-[#64748b] focus:border-[#6cd8cb] focus:outline-none resize-none"
+            className="w-full rounded-xl border border-card-edge bg-canvas p-3 text-xs text-navy font-semibold placeholder:text-muted focus:border-teal outline-none resize-none"
           />
           {fieldErrors.workPerformed && (
             <p className="text-xs font-medium text-destructive">{fieldErrors.workPerformed[0]}</p>
@@ -312,7 +315,7 @@ export function RecordEquipmentForm({
           <div className="space-y-1.5">
             <Label
               htmlFor="rec-ref"
-              className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+              className="text-xs font-bold text-navy uppercase tracking-wider"
             >
               Certificate / Ref no.
             </Label>
@@ -323,6 +326,7 @@ export function RecordEquipmentForm({
               placeholder="Optional cert or service #"
               maxLength={120}
               disabled={isPending}
+              className="h-10 rounded-xl bg-canvas border-card-edge text-navy font-semibold text-xs"
             />
             {fieldErrors.reference && (
               <p className="text-xs font-medium text-destructive">{fieldErrors.reference[0]}</p>
@@ -333,7 +337,7 @@ export function RecordEquipmentForm({
             <div className="space-y-1.5">
               <Label
                 htmlFor="rec-next-due"
-                className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                className="text-xs font-bold text-navy uppercase tracking-wider"
               >
                 {isReview
                   ? outcome === "KEEP_IN_SERVICE"
@@ -348,6 +352,7 @@ export function RecordEquipmentForm({
                 onChange={(e) => setNextDueOn(e.target.value)}
                 required={isReview}
                 disabled={isPending}
+                className="h-10 rounded-xl bg-canvas border-card-edge text-navy font-semibold text-xs"
               />
               {fieldErrors.nextDueOn && (
                 <p className="text-xs font-medium text-destructive">{fieldErrors.nextDueOn[0]}</p>
@@ -359,7 +364,7 @@ export function RecordEquipmentForm({
         <div className="space-y-1.5">
           <Label
             htmlFor="rec-notes"
-            className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+            className="text-xs font-bold text-navy uppercase tracking-wider"
           >
             Notes {outcome === "FAIL" || outcome === "REPLACE" ? "*" : "(optional)"}
           </Label>
@@ -378,7 +383,7 @@ export function RecordEquipmentForm({
             required={outcome === "FAIL" || outcome === "REPLACE"}
             maxLength={500}
             disabled={isPending}
-            className="w-full rounded-md border border-[#334155] bg-[#060e1d] p-2.5 text-xs text-white placeholder:text-[#64748b] focus:border-[#6cd8cb] focus:outline-none resize-none"
+            className="w-full rounded-xl border border-card-edge bg-canvas p-3 text-xs text-navy font-semibold placeholder:text-muted focus:border-teal outline-none resize-none"
           />
           {fieldErrors.notes && (
             <p className="text-xs font-medium text-destructive">{fieldErrors.notes[0]}</p>
@@ -386,17 +391,23 @@ export function RecordEquipmentForm({
         </div>
       </div>
 
-      <div className="p-4 border-t border-[#1e293b] bg-[#141c2b] flex items-center justify-end gap-3">
-        <Button type="button" variant="outline" onClick={onCancel} disabled={isPending}>
+      <div className="p-4 border-t border-line bg-canvas/40 flex items-center justify-end gap-3">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onCancel}
+          disabled={isPending}
+          className="rounded-xl border-card-edge bg-card text-navy font-bold text-xs"
+        >
           Cancel
         </Button>
         <Button
           type="submit"
           disabled={isPending}
           className={
-            outcome === "FAIL"
-              ? "bg-rose-600 hover:bg-rose-700 text-white font-semibold"
-              : "bg-[#6cd8cb] hover:bg-[#29a195] text-[#003732] font-semibold"
+            outcome === "FAIL" || outcome === "REPLACE"
+              ? "bg-red hover:opacity-95 text-white font-bold text-xs rounded-xl shadow-xs"
+              : "bg-gradient-to-br from-teal to-teal-deep text-white font-bold text-xs rounded-xl shadow-teal hover:opacity-95"
           }
         >
           {isPending ? "Saving..." : outcome === "FAIL" ? "Record failure" : "Save result"}

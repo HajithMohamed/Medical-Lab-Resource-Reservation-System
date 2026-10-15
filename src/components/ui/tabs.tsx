@@ -21,11 +21,11 @@ function Tabs({
 }
 
 const tabsListVariants = cva(
-  "group/tabs-list inline-flex w-fit items-center justify-center rounded-xl p-1 text-slate-400 group-data-horizontal/tabs:h-10 group-data-vertical/tabs:h-fit group-data-vertical/tabs:flex-col data-[variant=line]:rounded-none bg-[#060e1d] border border-[#334155]",
+  "group/tabs-list inline-flex w-fit items-center justify-center rounded-xl p-1 text-muted group-data-horizontal/tabs:h-10 group-data-vertical/tabs:h-fit group-data-vertical/tabs:flex-col data-[variant=line]:rounded-none bg-canvas border border-card-edge",
   {
     variants: {
       variant: {
-        default: "bg-[#060e1d]",
+        default: "bg-canvas",
         line: "gap-1 bg-transparent border-0",
       },
     },
@@ -55,7 +55,7 @@ function TabsTrigger({ className, ...props }: React.ComponentProps<typeof TabsPr
     <TabsPrimitive.Trigger
       data-slot="tabs-trigger"
       className={cn(
-        "relative inline-flex h-[calc(100%-2px)] flex-1 items-center justify-center gap-1.5 rounded-lg border border-transparent px-3 py-1 text-sm font-semibold whitespace-nowrap text-slate-400 transition-all group-data-vertical/tabs:w-full group-data-vertical/tabs:justify-start hover:text-slate-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#6cd8cb] disabled:pointer-events-none disabled:opacity-50 data-active:bg-[#18202f] data-active:text-[#6cd8cb] data-active:border-[#334155] data-active:shadow-xs",
+        "relative inline-flex h-[calc(100%-2px)] flex-1 items-center justify-center gap-1.5 rounded-lg border border-transparent px-3 py-1 text-xs font-semibold whitespace-nowrap text-muted transition-all group-data-vertical/tabs:w-full group-data-vertical/tabs:justify-start hover:text-navy focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-teal disabled:pointer-events-none disabled:opacity-50 data-active:bg-card data-active:text-teal data-active:border-card-edge data-active:shadow-xs",
         className,
       )}
       {...props}

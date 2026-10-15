@@ -201,7 +201,7 @@ export function ResourceCreateDialog({
         </DialogTrigger>
         <DialogContent className="sm:max-w-xl max-h-[85vh] flex flex-col p-0 overflow-hidden">
           <form onSubmit={handleSubmit} className="flex flex-col h-full min-h-0 overflow-hidden">
-            <DialogHeader className="p-6 pb-4 border-b border-[#1e293b]">
+            <DialogHeader className="p-6 pb-4 border-b border-line">
               <DialogTitle>Add resource</DialogTitle>
               <DialogDescription>
                 Register an instrument, biosafety cabinet, room or van into the network.
@@ -248,19 +248,20 @@ export function ResourceCreateDialog({
               />
             </div>
 
-            <DialogFooter className="p-4 border-t border-[#1e293b] bg-[#141c2b] flex items-center justify-end gap-3">
+            <DialogFooter className="p-4 border-t border-line bg-canvas/40 flex items-center justify-end gap-3">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => setOpen(false)}
                 disabled={isPending}
+                className="rounded-xl border-card-edge bg-card text-navy font-bold text-xs"
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
                 disabled={isPending}
-                className="bg-[#6cd8cb] hover:bg-[#29a195] text-[#003732] font-semibold"
+                className="bg-gradient-to-br from-teal to-teal-deep text-white font-bold text-xs rounded-xl shadow-teal hover:opacity-95"
               >
                 {isPending ? "Adding..." : "Add resource"}
               </Button>

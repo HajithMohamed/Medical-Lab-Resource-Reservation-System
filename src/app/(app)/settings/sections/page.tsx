@@ -47,7 +47,7 @@ export default async function SectionsPage({ searchParams }: SectionsPageProps) 
       <div>
         <Link
           href="/settings"
-          className="inline-flex items-center gap-1 text-xs font-mono text-[#94a3b8] hover:text-[#6cd8cb] mb-3 transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-muted hover:text-teal mb-3 transition-colors"
         >
           <ArrowLeft className="size-3.5" />
           <span>Back to Settings</span>
@@ -67,56 +67,58 @@ export default async function SectionsPage({ searchParams }: SectionsPageProps) 
           action={<SectionDialog />}
         />
       ) : (
-        <div className="rounded-lg border border-[#334155] bg-[#141c2b] overflow-hidden shadow-sm">
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-[#222a3a]/70 border-b border-[#334155] text-xs font-mono uppercase tracking-wider text-[#94a3b8]">
-                <TableHead>Section Name</TableHead>
-                <TableHead className="text-right">Resources</TableHead>
-                <TableHead className="text-right">Users</TableHead>
-                <TableHead className="w-28 text-right pr-4">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {sections.map((section) => (
-                <TableRow
-                  key={section.id}
-                  className="group hover:bg-[#222a3a]/50 transition-colors duration-150"
-                >
-                  <TableCell className="font-semibold text-white py-3.5 px-4 text-sm">
-                    <EditSectionDialog
-                      section={section}
-                      trigger={
-                        <button
-                          type="button"
-                          className="font-semibold text-white hover:text-[#6cd8cb] transition-colors text-left cursor-pointer"
-                        >
-                          {section.name}
-                        </button>
-                      }
-                    />
-                  </TableCell>
-                  <TableCell className="text-right tabular-nums text-white font-mono text-xs py-3.5 px-4">
-                    {section._count.resources}
-                  </TableCell>
-                  <TableCell className="text-right tabular-nums text-white font-mono text-xs py-3.5 px-4">
-                    {section._count.users}
-                  </TableCell>
-                  <TableCell className="text-right py-3.5 pr-4">
-                    <div className="flex items-center justify-end gap-1.5">
-                      <EditSectionDialog section={section} />
-                      <DeleteRowButton
-                        id={section.id}
-                        name={section.name}
-                        entityType="section"
-                        deleteAction={deleteSectionAction}
-                      />
-                    </div>
-                  </TableCell>
+        <div className="rounded-2xl border border-card-edge bg-card overflow-hidden shadow-v4">
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-canvas/80 border-b border-card-edge text-xs uppercase tracking-wider text-muted font-bold">
+                  <TableHead>Section Name</TableHead>
+                  <TableHead className="text-right">Resources</TableHead>
+                  <TableHead className="text-right">Users</TableHead>
+                  <TableHead className="w-28 text-right pr-4">Actions</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {sections.map((section) => (
+                  <TableRow
+                    key={section.id}
+                    className="group hover:bg-mint/40 transition-colors duration-150 border-b border-card-edge"
+                  >
+                    <TableCell className="font-semibold text-navy py-3.5 px-4 text-sm">
+                      <EditSectionDialog
+                        section={section}
+                        trigger={
+                          <button
+                            type="button"
+                            className="font-semibold text-navy hover:text-teal transition-colors text-left cursor-pointer"
+                          >
+                            {section.name}
+                          </button>
+                        }
+                      />
+                    </TableCell>
+                    <TableCell className="text-right tabular-nums text-navy font-semibold text-xs py-3.5 px-4">
+                      {section._count.resources}
+                    </TableCell>
+                    <TableCell className="text-right tabular-nums text-navy font-semibold text-xs py-3.5 px-4">
+                      {section._count.users}
+                    </TableCell>
+                    <TableCell className="text-right py-3.5 pr-4">
+                      <div className="flex items-center justify-end gap-1.5">
+                        <EditSectionDialog section={section} />
+                        <DeleteRowButton
+                          id={section.id}
+                          name={section.name}
+                          entityType="section"
+                          deleteAction={deleteSectionAction}
+                        />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
           <PaginationControls
             currentPage={page}
             totalPages={totalPages}

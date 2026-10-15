@@ -1,15 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { FilterBar } from "@/components/filter-bar";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { useRouter } from "next/navigation";
 
 interface OptionItem {
   id: string;
@@ -39,127 +31,147 @@ export function EquipmentReportsFilterBar({
   categories,
   currentFilters,
 }: EquipmentReportsFilterBarProps) {
+  const router = useRouter();
+
+  const handleFilterChange = (key: string, value: string) => {
+    const params = new URLSearchParams(window.location.search);
+    if (value && value !== "all") {
+      params.set(key, value);
+    } else {
+      params.delete(key);
+    }
+    params.set("tab", "reports");
+    params.delete("page");
+    router.replace(`/equipment?${params.toString()}`, { scroll: false });
+  };
+
   const hasActiveFilters = Boolean(
     currentFilters.from ||
     currentFilters.to ||
-    currentFilters.site ||
-    currentFilters.section ||
-    currentFilters.category ||
-    currentFilters.kind ||
-    currentFilters.outcome,
+    (currentFilters.site && currentFilters.site !== "all") ||
+    (currentFilters.section && currentFilters.section !== "all") ||
+    (currentFilters.category && currentFilters.category !== "all") ||
+    (currentFilters.kind && currentFilters.kind !== "all") ||
+    (currentFilters.outcome && currentFilters.outcome !== "all"),
   );
 
   return (
-    <FilterBar
-      action="/equipment"
-      hasActiveFilters={hasActiveFilters}
-      clearHref="/equipment?tab=reports"
-    >
-      <input type="hidden" name="tab" value="reports" />
+    <div className="flex flex-wrap items-center justify-between gap-3 bg-card p-3.5 rounded-2xl border border-card-edge shadow-v4">
+      <div className="flex flex-wrap items-center gap-2.5 flex-1 min-w-0">
+        {/* Date Range: From */}
+        <div className="flex items-center gap-1.5">
+          <label htmlFor="filter-from" className="text-xs font-semibold text-muted">
+            From:
+          </label>
+          <input
+            id="filter-from"
+            type="date"
+            defaultValue={currentFilters.from ?? ""}
+            onChange={(e) => handleFilterChange("from", e.target.value)}
+            className="h-9 px-2.5 rounded-xl border border-card-edge bg-canvas text-xs font-semibold text-navy focus:border-teal outline-none cursor-pointer"
+          />
+        </div>
 
-      {/* Date Range: From */}
-      <div className="flex items-center gap-1.5">
-        <label htmlFor="filter-from" className="text-xs font-mono text-[#94a3b8]">
-          From:
-        </label>
-        <Input
-          id="filter-from"
-          name="from"
-          type="date"
-          defaultValue={currentFilters.from ?? ""}
-          className="h-8 w-34 text-xs font-mono bg-[#0b132b] border-[#334155] text-white"
-        />
-      </div>
+        {/* Date Range: To */}
+        <div className="flex items-center gap-1.5">
+          <label htmlFor="filter-to" className="text-xs font-semibold text-muted">
+            To:
+          </label>
+          <input
+            id="filter-to"
+            type="date"
+            defaultValue={currentFilters.to ?? ""}
+            onChange={(e) => handleFilterChange("to", e.target.value)}
+            className="h-9 px-2.5 rounded-xl border border-card-edge bg-canvas text-xs font-semibold text-navy focus:border-teal outline-none cursor-pointer"
+          />
+        </div>
 
-      {/* Date Range: To */}
-      <div className="flex items-center gap-1.5">
-        <label htmlFor="filter-to" className="text-xs font-mono text-[#94a3b8]">
-          To:
-        </label>
-        <Input
-          id="filter-to"
-          name="to"
-          type="date"
-          defaultValue={currentFilters.to ?? ""}
-          className="h-8 w-34 text-xs font-mono bg-[#0b132b] border-[#334155] text-white"
-        />
-      </div>
-
-      {/* Site (Admin only) */}
-      {isAdmin && (
-        <Select name="site" defaultValue={currentFilters.site ?? "all"}>
-          <SelectTrigger className="h-8 w-36 text-xs font-mono bg-[#0b132b] border-[#334155] text-white">
-            <SelectValue placeholder="All sites" />
-          </SelectTrigger>
-          <SelectContent className="bg-[#141c2b] border-[#334155] text-white text-xs font-mono">
-            <SelectItem value="all">All sites</SelectItem>
+        {/* Site (Admin only) */}
+        {isAdmin && (
+          <select
+            id="filter-site"
+            value={currentFilters.site ?? "all"}
+            onChange={(e) => handleFilterChange("site", e.target.value)}
+            className="h-9 rounded-xl border border-card-edge bg-canvas px-3 text-xs font-semibold text-navy focus:border-teal outline-none cursor-pointer"
+          >
+            <option value="all">All sites</option>
             {sites.map((s) => (
-              <SelectItem key={s.id} value={s.id}>
+              <option key={s.id} value={s.id}>
                 {s.name}
-              </SelectItem>
+              </option>
             ))}
-          </SelectContent>
-        </Select>
-      )}
+          </select>
+        )}
 
-      {/* Section */}
-      <Select name="section" defaultValue={currentFilters.section ?? "all"}>
-        <SelectTrigger className="h-8 w-36 text-xs font-mono bg-[#0b132b] border-[#334155] text-white">
-          <SelectValue placeholder="All sections" />
-        </SelectTrigger>
-        <SelectContent className="bg-[#141c2b] border-[#334155] text-white text-xs font-mono">
-          <SelectItem value="all">All sections</SelectItem>
+        {/* Section */}
+        <select
+          id="filter-section"
+          value={currentFilters.section ?? "all"}
+          onChange={(e) => handleFilterChange("section", e.target.value)}
+          className="h-9 rounded-xl border border-card-edge bg-canvas px-3 text-xs font-semibold text-navy focus:border-teal outline-none cursor-pointer"
+        >
+          <option value="all">All sections</option>
           {sections.map((sec) => (
-            <SelectItem key={sec.id} value={sec.id}>
+            <option key={sec.id} value={sec.id}>
               {sec.name}
-            </SelectItem>
+            </option>
           ))}
-        </SelectContent>
-      </Select>
+        </select>
 
-      {/* Category */}
-      <Select name="category" defaultValue={currentFilters.category ?? "all"}>
-        <SelectTrigger className="h-8 w-36 text-xs font-mono bg-[#0b132b] border-[#334155] text-white">
-          <SelectValue placeholder="All categories" />
-        </SelectTrigger>
-        <SelectContent className="bg-[#141c2b] border-[#334155] text-white text-xs font-mono">
-          <SelectItem value="all">All categories</SelectItem>
+        {/* Category */}
+        <select
+          id="filter-category"
+          value={currentFilters.category ?? "all"}
+          onChange={(e) => handleFilterChange("category", e.target.value)}
+          className="h-9 rounded-xl border border-card-edge bg-canvas px-3 text-xs font-semibold text-navy focus:border-teal outline-none cursor-pointer"
+        >
+          <option value="all">All categories</option>
           {categories.map((c) => (
-            <SelectItem key={c.id} value={c.id}>
+            <option key={c.id} value={c.id}>
               {c.name}
-            </SelectItem>
+            </option>
           ))}
-        </SelectContent>
-      </Select>
+        </select>
 
-      {/* Kind */}
-      <Select name="kind" defaultValue={currentFilters.kind ?? "all"}>
-        <SelectTrigger className="h-8 w-40 text-xs font-mono bg-[#0b132b] border-[#334155] text-white">
-          <SelectValue placeholder="All record types" />
-        </SelectTrigger>
-        <SelectContent className="bg-[#141c2b] border-[#334155] text-white text-xs font-mono">
-          <SelectItem value="all">All record types</SelectItem>
-          <SelectItem value="CALIBRATION">Calibration</SelectItem>
-          <SelectItem value="PREVENTIVE_MAINTENANCE">Maintenance</SelectItem>
-          <SelectItem value="REPAIR">Repair</SelectItem>
-          <SelectItem value="PERFORMANCE_CHECK">Performance check</SelectItem>
-          <SelectItem value="LIFECYCLE_REVIEW">Lifecycle review</SelectItem>
-        </SelectContent>
-      </Select>
+        {/* Kind */}
+        <select
+          id="filter-kind"
+          value={currentFilters.kind ?? "all"}
+          onChange={(e) => handleFilterChange("kind", e.target.value)}
+          className="h-9 rounded-xl border border-card-edge bg-canvas px-3 text-xs font-semibold text-navy focus:border-teal outline-none cursor-pointer"
+        >
+          <option value="all">All record types</option>
+          <option value="CALIBRATION">Calibration</option>
+          <option value="PREVENTIVE_MAINTENANCE">Maintenance</option>
+          <option value="REPAIR">Repair</option>
+          <option value="PERFORMANCE_CHECK">Performance check</option>
+          <option value="LIFECYCLE_REVIEW">Lifecycle review</option>
+        </select>
 
-      {/* Outcome */}
-      <Select name="outcome" defaultValue={currentFilters.outcome ?? "all"}>
-        <SelectTrigger className="h-8 w-32 text-xs font-mono bg-[#0b132b] border-[#334155] text-white">
-          <SelectValue placeholder="All results" />
-        </SelectTrigger>
-        <SelectContent className="bg-[#141c2b] border-[#334155] text-white text-xs font-mono">
-          <SelectItem value="all">All results</SelectItem>
-          <SelectItem value="PASS">Pass</SelectItem>
-          <SelectItem value="FAIL">Fail</SelectItem>
-          <SelectItem value="NOT_DONE">Not done</SelectItem>
-          <SelectItem value="REPLACE">Replace</SelectItem>
-        </SelectContent>
-      </Select>
-    </FilterBar>
+        {/* Outcome */}
+        <select
+          id="filter-outcome"
+          value={currentFilters.outcome ?? "all"}
+          onChange={(e) => handleFilterChange("outcome", e.target.value)}
+          className="h-9 rounded-xl border border-card-edge bg-canvas px-3 text-xs font-semibold text-navy focus:border-teal outline-none cursor-pointer"
+        >
+          <option value="all">All results</option>
+          <option value="PASS">Pass</option>
+          <option value="FAIL">Fail</option>
+          <option value="NOT_DONE">Not done</option>
+          <option value="REPLACE">Replace</option>
+        </select>
+      </div>
+
+      {hasActiveFilters && (
+        <button
+          type="button"
+          onClick={() => router.replace("/equipment?tab=reports", { scroll: false })}
+          className="h-9 px-3 text-xs font-bold text-teal-deep hover:text-teal hover:bg-mint rounded-xl transition-colors cursor-pointer shrink-0"
+        >
+          Clear filters
+        </button>
+      )}
+    </div>
   );
 }

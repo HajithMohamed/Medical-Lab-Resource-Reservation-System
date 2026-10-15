@@ -2,23 +2,11 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarRail,
-} from "@/components/ui/sidebar";
+import { usePathname, useSearchParams } from "next/navigation";
 import { Logo } from "@/components/brand/logo";
 import { UserMenu } from "@/components/app-shell/user-menu";
-import { navItemsFor, type NavGroup, type NavItem } from "@/config/navigation";
+import { getNavigationForRole, type NavItemConfig } from "@/config/navigation";
+import { cn } from "@/lib/utils";
 
 export interface AppSidebarProps {
   user: {
@@ -26,152 +14,114 @@ export interface AppSidebarProps {
     role: string;
     siteName?: string;
   };
+  dueCount?: number;
   logoutAction?: () => void | Promise<void>;
+  onItemClick?: () => void;
+  className?: string;
 }
 
-export function AppSidebar({ user, logoutAction }: AppSidebarProps) {
+export function AppSidebar({
+  user,
+  dueCount = 0,
+  logoutAction,
+  onItemClick,
+  className,
+}: AppSidebarProps) {
   const pathname = usePathname();
-  const allowedItems = React.useMemo(() => navItemsFor(user.role), [user.role]);
+  const searchParams = useSearchParams();
 
-  const siteSubtitle = user.role === "ADMIN" ? "All sites" : (user.siteName ?? "Main Laboratory");
+  const groups = React.useMemo(
+    () => getNavigationForRole(user.role, user.siteName),
+    [user.role, user.siteName],
+  );
 
-  const grouped = React.useMemo(() => {
-    const map = new Map<NavGroup, NavItem[]>();
-    for (const item of allowedItems) {
-      const list = map.get(item.group) ?? [];
-      list.push(item);
-      map.set(item.group, list);
-    }
-    return map;
-  }, [allowedItems]);
-
-  const mainItems = grouped.get("main") ?? [];
-  const manageItems = grouped.get("manage") ?? [];
-  const adminItems = grouped.get("admin") ?? [];
+  const isItemActive = React.useCallback(
+    (href: string) => {
+      if (href.includes("?")) {
+        const [targetPath, queryString] = href.split("?");
+        if (pathname !== targetPath) return false;
+        const targetTab = new URLSearchParams(queryString).get("tab");
+        const currentTab = searchParams?.get("tab") || "today";
+        return targetTab === currentTab;
+      }
+      return pathname === href || (pathname.startsWith(href + "/") && href !== "/");
+    },
+    [pathname, searchParams],
+  );
 
   return (
-    <Sidebar collapsible="icon" className="border-r border-[#334155] bg-[#141c2b] text-[#dbe2f8]">
-      <SidebarHeader className="border-b border-[#334155] p-3 bg-[#141c2b]">
-        <Logo subtitle={siteSubtitle} />
-      </SidebarHeader>
+    <aside
+      className={cn(
+        "w-64 bg-card/95 backdrop-blur-md border-r border-card-edge p-4 flex flex-col justify-between shrink-0 h-full overflow-hidden",
+        className,
+      )}
+      aria-label="Main navigation"
+    >
+      {/* Top: Brand mark & nav */}
+      <div className="flex flex-col min-h-0 flex-1 overflow-hidden">
+        <div className="px-2 pt-1 pb-3 shrink-0">
+          <Logo
+            subtitle={
+              user.siteName ? `PRO · ${user.siteName.toUpperCase()}` : "PRO · LAB OPERATIONS"
+            }
+          />
+        </div>
 
-      <SidebarContent className="px-2 py-2 bg-[#141c2b]">
-        {mainItems.length > 0 && (
-          <SidebarGroup className="p-0">
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {mainItems.map((item) => {
-                  const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
+        {/* Grouped navigation */}
+        <div className="space-y-4 pt-1 overflow-y-auto flex-1 pr-1">
+          {groups.map((group) => (
+            <div key={group.eyebrow} className="space-y-1">
+              <div className="text-[10.5px] font-black tracking-[0.14em] text-navy/70 uppercase px-3 py-1">
+                {group.eyebrow}
+              </div>
+              <nav className="space-y-0.5" aria-label={group.eyebrow}>
+                {group.items.map((item: NavItemConfig) => {
+                  const active = isItemActive(item.href);
                   const Icon = item.icon;
+                  const showBadge = item.badge === "dueCount" && dueCount > 0;
+
                   return (
-                    <SidebarMenuItem key={item.href}>
-                      <SidebarMenuButton
-                        asChild
-                        isActive={isActive}
-                        tooltip={item.label}
-                        className="h-9.5 text-xs font-medium rounded-lg text-[#dbe2f8] hover:bg-[#222a3a] hover:text-white data-[active=true]:bg-[#222a3a] data-[active=true]:text-[#6cd8cb] data-[active=true]:font-semibold data-[active=true]:border-l-2 data-[active=true]:border-[#6cd8cb] transition-all"
-                      >
-                        <Link
-                          href={item.href}
-                          aria-current={isActive ? "page" : undefined}
-                          className="flex items-center gap-2.5 w-full"
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={onItemClick}
+                      aria-current={active ? "page" : undefined}
+                      className={cn(
+                        "relative flex items-center gap-3 px-3 h-10 rounded-xl text-[13px] font-semibold transition-all border outline-none focus-visible:ring-2 focus-visible:ring-focus",
+                        active
+                          ? "bg-teal-soft border-teal-line text-teal-deep font-bold before:absolute before:-left-1 before:top-2.5 before:bottom-2.5 before:w-[3px] before:rounded-full before:bg-teal"
+                          : "border-transparent text-navy hover:bg-mint hover:text-teal-deep",
+                      )}
+                    >
+                      <Icon
+                        className={cn(
+                          "size-5 shrink-0 transition-colors",
+                          active ? "text-teal" : "text-muted group-hover:text-teal-deep",
+                        )}
+                        aria-hidden="true"
+                      />
+                      <span className="truncate">{item.label}</span>
+                      {showBadge && (
+                        <span
+                          className="ml-auto text-[11px] font-extrabold text-amber bg-amber-soft border border-amber-line rounded-full px-2 py-0.2 tab shrink-0"
+                          aria-label={`${dueCount} tasks needing attention`}
                         >
-                          <Icon className="size-4 shrink-0" />
-                          <span className="truncate">{item.label}</span>
-                          {isActive && (
-                            <span className="ml-auto w-1.5 h-1.5 rounded-full bg-[#6cd8cb] animate-pulse shrink-0" />
-                          )}
-                        </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
+                          {dueCount < 10 ? `0${dueCount}` : dueCount}
+                        </span>
+                      )}
+                    </Link>
                   );
                 })}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        )}
+              </nav>
+            </div>
+          ))}
+        </div>
+      </div>
 
-        {manageItems.length > 0 && (
-          <SidebarGroup className="p-0 pt-3">
-            <SidebarGroupLabel className="text-[11px] font-mono uppercase tracking-wider text-[#94a3b8] px-2 py-1">
-              Manage
-            </SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {manageItems.map((item) => {
-                  const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
-                  const Icon = item.icon;
-                  return (
-                    <SidebarMenuItem key={item.href}>
-                      <SidebarMenuButton
-                        asChild
-                        isActive={isActive}
-                        tooltip={item.label}
-                        className="h-9.5 text-xs font-medium rounded-lg text-[#dbe2f8] hover:bg-[#222a3a] hover:text-white data-[active=true]:bg-[#222a3a] data-[active=true]:text-[#6cd8cb] data-[active=true]:font-semibold data-[active=true]:border-l-2 data-[active=true]:border-[#6cd8cb] transition-all"
-                      >
-                        <Link
-                          href={item.href}
-                          aria-current={isActive ? "page" : undefined}
-                          className="flex items-center gap-2.5 w-full"
-                        >
-                          <Icon className="size-4 shrink-0" />
-                          <span className="truncate">{item.label}</span>
-                          {isActive && (
-                            <span className="ml-auto w-1.5 h-1.5 rounded-full bg-[#6cd8cb] animate-pulse shrink-0" />
-                          )}
-                        </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  );
-                })}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        )}
-
-        {adminItems.length > 0 && (
-          <SidebarGroup className="p-0 pt-3">
-            <SidebarGroupLabel className="text-[11px] font-mono uppercase tracking-wider text-[#94a3b8] px-2 py-1">
-              Admin
-            </SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {adminItems.map((item) => {
-                  const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
-                  const Icon = item.icon;
-                  return (
-                    <SidebarMenuItem key={item.href}>
-                      <SidebarMenuButton
-                        asChild
-                        isActive={isActive}
-                        tooltip={item.label}
-                        className="h-9.5 text-xs font-medium rounded-lg text-[#dbe2f8] hover:bg-[#222a3a] hover:text-white data-[active=true]:bg-[#222a3a] data-[active=true]:text-[#6cd8cb] data-[active=true]:font-semibold data-[active=true]:border-l-2 data-[active=true]:border-[#6cd8cb] transition-all"
-                      >
-                        <Link
-                          href={item.href}
-                          aria-current={isActive ? "page" : undefined}
-                          className="flex items-center gap-2.5 w-full"
-                        >
-                          <Icon className="size-4 shrink-0" />
-                          <span className="truncate">{item.label}</span>
-                          {isActive && (
-                            <span className="ml-auto w-1.5 h-1.5 rounded-full bg-[#6cd8cb] animate-pulse shrink-0" />
-                          )}
-                        </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  );
-                })}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        )}
-      </SidebarContent>
-
-      <SidebarFooter className="border-t border-[#334155] p-2 bg-[#141c2b]">
+      {/* Bottom: User block */}
+      <div className="pt-3 mt-2 border-t border-line shrink-0">
         <UserMenu user={user} logoutAction={logoutAction} />
-      </SidebarFooter>
-      <SidebarRail />
-    </Sidebar>
+      </div>
+    </aside>
   );
 }

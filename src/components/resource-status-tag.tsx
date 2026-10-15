@@ -13,14 +13,11 @@ export function ResourceStatusTag({ status, className }: ResourceStatusTagProps)
     return (
       <span
         className={cn(
-          "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/30",
+          "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10.5px] font-extrabold uppercase tracking-wider bg-green-soft text-green",
           className,
         )}
       >
-        <span
-          className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0"
-          aria-hidden="true"
-        />
+        <span className="w-1.5 h-1.5 rounded-full bg-green shrink-0" aria-hidden="true" />
         <span>Active</span>
       </span>
     );
@@ -30,11 +27,11 @@ export function ResourceStatusTag({ status, className }: ResourceStatusTagProps)
     return (
       <span
         className={cn(
-          "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-rose-500/15 text-rose-300 border border-rose-500/40",
+          "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10.5px] font-extrabold uppercase tracking-wider bg-red-soft text-red",
           className,
         )}
       >
-        <span className="w-1.5 h-1.5 rounded-full bg-rose-400 shrink-0" aria-hidden="true" />
+        <span className="w-1.5 h-1.5 rounded-full bg-red shrink-0" aria-hidden="true" />
         <span>Out of service</span>
       </span>
     );
@@ -44,12 +41,12 @@ export function ResourceStatusTag({ status, className }: ResourceStatusTagProps)
     return (
       <span
         className={cn(
-          "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-amber-500/20 text-amber-300 border border-amber-500/40",
+          "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10.5px] font-extrabold uppercase tracking-wider bg-amber-soft text-amber",
           className,
         )}
       >
-        <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" aria-hidden="true" />
-        <span>Scheduled Service</span>
+        <span className="w-1.5 h-1.5 rounded-full bg-amber-strong shrink-0" aria-hidden="true" />
+        <span>Maintenance</span>
       </span>
     );
   }
@@ -58,11 +55,11 @@ export function ResourceStatusTag({ status, className }: ResourceStatusTagProps)
     return (
       <span
         className={cn(
-          "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-[#18202f] text-[#94a3b8] border border-[#334155]",
+          "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10.5px] font-extrabold uppercase tracking-wider bg-canvas text-muted border border-card-edge",
           className,
         )}
       >
-        <span className="w-1.5 h-1.5 rounded-full bg-[#94a3b8]/60 shrink-0" aria-hidden="true" />
+        <span className="w-1.5 h-1.5 rounded-full bg-faint shrink-0" aria-hidden="true" />
         <span>Retired</span>
       </span>
     );
@@ -71,11 +68,41 @@ export function ResourceStatusTag({ status, className }: ResourceStatusTagProps)
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-[#18202f] text-[#94a3b8] border border-[#334155]",
+        "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10.5px] font-extrabold uppercase tracking-wider bg-canvas text-muted border border-card-edge",
         className,
       )}
     >
       <span>{status}</span>
+    </span>
+  );
+}
+
+// Alias StatusPill to ResourceStatusTag per v4 design system
+export const StatusPill = ResourceStatusTag;
+
+export interface DuePillProps {
+  label: string;
+  variant?: "ok" | "warn" | "danger" | "neutral";
+  className?: string;
+}
+
+export function DuePill({ label, variant = "neutral", className }: DuePillProps) {
+  const styles = {
+    ok: "bg-green-soft text-green",
+    warn: "bg-amber-soft text-amber",
+    danger: "bg-red-soft text-red",
+    neutral: "bg-teal-soft text-teal-deep",
+  }[variant];
+
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10.5px] font-extrabold uppercase tracking-wider",
+        styles,
+        className,
+      )}
+    >
+      <span>{label}</span>
     </span>
   );
 }

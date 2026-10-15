@@ -83,16 +83,17 @@ export default async function EditResourcePage({ params }: EditResourcePageProps
   ]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 w-full">
       <div>
         <Link
           href={`/resources/${resource.id}`}
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground mb-3 transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs font-bold text-teal hover:underline mb-3 transition-colors"
         >
-          <ArrowLeft className="size-4" />
+          <ArrowLeft className="size-3.5" />
           <span>Back to {resource.name}</span>
         </Link>
         <PageHeader
+          eyebrow="Resources / Edit"
           title={`Edit ${resource.name}`}
           description="Update equipment specifications, location or assigned department."
         />

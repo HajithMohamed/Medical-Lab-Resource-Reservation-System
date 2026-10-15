@@ -33,12 +33,12 @@ export function EquipmentConditionSection({ rows, counts }: EquipmentConditionSe
     <section className="space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Activity className="size-4 text-[#6cd8cb]" />
-          <h2 className="text-sm font-bold text-white uppercase tracking-wider font-mono">
+          <Activity className="size-4 text-teal" />
+          <h2 className="text-sm font-bold text-navy uppercase tracking-wider">
             Section A: Current Equipment Condition
           </h2>
         </div>
-        <span className="text-xs font-mono text-[#94a3b8]">
+        <span className="text-xs font-bold text-muted">
           {counts.total} {counts.total === 1 ? "asset" : "assets"} in scope
         </span>
       </div>
@@ -80,26 +80,26 @@ export function EquipmentConditionSection({ rows, counts }: EquipmentConditionSe
           description="There are no resources matching the current filters."
         />
       ) : (
-        <div className="rounded-xl border border-[#334155]/60 bg-[#060e1d]/80 shadow-xs overflow-x-auto max-w-full">
+        <div className="rounded-2xl border border-card-edge bg-card shadow-v4 overflow-x-auto max-w-full">
           <Table className="min-w-[900px]">
-            <TableHeader className="bg-[#141c2b]/80 border-b border-[#334155]/80">
-              <TableRow className="border-b border-[#334155]/80 hover:bg-transparent">
-                <TableHead className="text-xs font-mono text-[#94a3b8] py-3 pl-4">
+            <TableHeader className="bg-canvas/80 border-b border-card-edge">
+              <TableRow className="border-b border-card-edge hover:bg-transparent">
+                <TableHead className="text-xs font-black uppercase tracking-wider text-navy/90 py-3.5 pl-4">
                   Equipment
                 </TableHead>
-                <TableHead className="text-xs font-mono text-[#94a3b8] py-3">
+                <TableHead className="text-xs font-black uppercase tracking-wider text-navy/90 py-3.5">
                   Site / Section
                 </TableHead>
-                <TableHead className="text-xs font-mono text-[#94a3b8] py-3">Status</TableHead>
-                <TableHead className="text-xs font-mono text-[#94a3b8] py-3">
+                <TableHead className="text-xs font-black uppercase tracking-wider text-navy/90 py-3.5">Status</TableHead>
+                <TableHead className="text-xs font-black uppercase tracking-wider text-navy/90 py-3.5">
                   Condition & Reasons
                 </TableHead>
-                <TableHead className="text-xs font-mono text-[#94a3b8] py-3">Calibration</TableHead>
-                <TableHead className="text-xs font-mono text-[#94a3b8] py-3">Service</TableHead>
-                <TableHead className="text-xs font-mono text-[#94a3b8] py-3 text-right">
+                <TableHead className="text-xs font-black uppercase tracking-wider text-navy/90 py-3.5">Calibration</TableHead>
+                <TableHead className="text-xs font-black uppercase tracking-wider text-navy/90 py-3.5">Service</TableHead>
+                <TableHead className="text-xs font-black uppercase tracking-wider text-navy/90 py-3.5 text-right">
                   12m History
                 </TableHead>
-                <TableHead className="text-xs font-mono text-[#94a3b8] py-3 pr-4 text-right">
+                <TableHead className="text-xs font-black uppercase tracking-wider text-navy/90 py-3.5 pr-4 text-right">
                   Actions
                 </TableHead>
               </TableRow>
@@ -112,31 +112,31 @@ export function EquipmentConditionSection({ rows, counts }: EquipmentConditionSe
                 return (
                   <TableRow
                     key={row.resourceId}
-                    className="border-b border-[#334155]/40 hover:bg-[#141c2b]/50 transition-colors"
+                    className="border-b border-card-edge hover:bg-mint/40 transition-colors"
                   >
-                    <TableCell className="py-3 pl-4 font-mono">
+                    <TableCell className="py-3 pl-4">
                       <Link
                         href={`/resources/${row.resourceId}`}
-                        className="group flex items-center gap-2.5 font-medium text-white hover:text-[#6cd8cb] transition-colors"
+                        className="group flex items-center gap-2.5 font-semibold text-navy hover:text-teal transition-colors"
                       >
                         <CategoryIcon
                           iconKey={row.categoryIcon}
-                          className="size-4 text-[#879390] group-hover:text-[#6cd8cb] shrink-0"
+                          className="size-5 rounded shrink-0"
                         />
                         <div>
-                          <span className="truncate max-w-[180px] block font-medium">
+                          <span className="truncate max-w-[180px] block font-bold text-navy group-hover:text-teal text-xs">
                             {row.name}
                           </span>
-                          <span className="text-[11px] text-[#64748b] block font-sans">
+                          <span className="text-[11.5px] text-slate-600 block font-medium">
                             {row.categoryName}
                           </span>
                         </div>
                       </Link>
                     </TableCell>
 
-                    <TableCell className="py-3 text-xs font-mono text-[#94a3b8]">
-                      <div className="text-white font-medium">{row.siteName}</div>
-                      <div className="text-[11px] text-[#64748b]">
+                    <TableCell className="py-3 text-xs">
+                      <div className="text-navy font-bold">{row.siteName}</div>
+                      <div className="text-[11.5px] text-slate-700 font-medium">
                         {row.sectionName ?? "General"}
                       </div>
                     </TableCell>
@@ -149,7 +149,7 @@ export function EquipmentConditionSection({ rows, counts }: EquipmentConditionSe
                       <div className="space-y-1">
                         <ConditionTag condition={row.condition} />
                         {row.reasons.length > 0 && (
-                          <div className="text-[11px] font-mono text-[#94a3b8] space-y-0.5">
+                          <div className="text-[11.5px] text-slate-700 font-medium space-y-0.5">
                             {row.reasons.map((r, i) => (
                               <div key={i} className="truncate" title={r}>
                                 • {r}
@@ -160,19 +160,19 @@ export function EquipmentConditionSection({ rows, counts }: EquipmentConditionSe
                       </div>
                     </TableCell>
 
-                    <TableCell className="py-3 text-xs font-mono">
+                    <TableCell className="py-3 text-xs">
                       {row.nextCalibrationDue ? (
                         <div className="space-y-0.5">
-                          <div className="text-white flex items-center gap-1.5 flex-wrap">
+                          <div className="text-navy font-bold flex items-center gap-1.5 flex-wrap">
                             <span>Due {formatEquipmentDay(row.nextCalibrationDue)}</span>
                             {calDays !== null && (
                               <span
                                 className={
                                   calDays < 0
-                                    ? "text-rose-400 font-semibold"
+                                    ? "text-red font-bold"
                                     : calDays <= 7
-                                      ? "text-amber-300 font-semibold"
-                                      : "text-[#94a3b8]"
+                                      ? "text-amber-strong font-bold"
+                                      : "text-navy/70 font-semibold"
                                 }
                               >
                                 (
@@ -181,30 +181,30 @@ export function EquipmentConditionSection({ rows, counts }: EquipmentConditionSe
                               </span>
                             )}
                           </div>
-                          <div className="text-[11px] text-[#64748b]">
+                          <div className="text-[11.5px] text-slate-600 font-medium">
                             {row.lastCalibrationDate
                               ? `Last: ${formatEquipmentDay(row.lastCalibrationDate)} (${row.lastCalibrationResult})`
                               : "No previous records"}
                           </div>
                         </div>
                       ) : (
-                        <span className="text-[#64748b] text-[11px] italic">Not configured</span>
+                        <span className="text-slate-500 text-[11.5px] italic font-medium">Not configured</span>
                       )}
                     </TableCell>
 
-                    <TableCell className="py-3 text-xs font-mono">
+                    <TableCell className="py-3 text-xs">
                       {row.nextServiceDue ? (
                         <div className="space-y-0.5">
-                          <div className="text-white flex items-center gap-1.5 flex-wrap">
+                          <div className="text-navy font-bold flex items-center gap-1.5 flex-wrap">
                             <span>Due {formatEquipmentDay(row.nextServiceDue)}</span>
                             {srvDays !== null && (
                               <span
                                 className={
                                   srvDays < 0
-                                    ? "text-rose-400 font-semibold"
+                                    ? "text-red font-bold"
                                     : srvDays <= 14
-                                      ? "text-amber-300 font-semibold"
-                                      : "text-[#94a3b8]"
+                                      ? "text-amber-strong font-bold"
+                                      : "text-navy/70 font-semibold"
                                 }
                               >
                                 (
@@ -213,45 +213,45 @@ export function EquipmentConditionSection({ rows, counts }: EquipmentConditionSe
                               </span>
                             )}
                           </div>
-                          <div className="text-[11px] text-[#64748b]">
+                          <div className="text-[11.5px] text-slate-600 font-medium">
                             {row.lastServiceDate
                               ? `Last: ${formatEquipmentDay(row.lastServiceDate)} (${row.lastServiceResult})`
                               : "No previous records"}
                           </div>
                         </div>
                       ) : (
-                        <span className="text-[#64748b] text-[11px] italic">Not configured</span>
+                        <span className="text-slate-500 text-[11.5px] italic font-medium">Not configured</span>
                       )}
                     </TableCell>
 
-                    <TableCell className="py-3 text-right text-xs font-mono">
-                      <span
-                        className={
-                          row.failuresIn12Months > 0 || row.repairsIn12Months > 0
-                            ? "text-amber-300 font-semibold"
-                            : "text-[#64748b]"
-                        }
-                      >
-                        {row.failuresIn12Months} fails, {row.repairsIn12Months} rep
-                      </span>
+                    <TableCell className="py-3 text-right text-xs">
+                      {row.failuresIn12Months > 0 || row.repairsIn12Months > 0 ? (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-bold bg-amber-soft text-amber-strong border border-amber-line">
+                          {row.failuresIn12Months} fails, {row.repairsIn12Months} rep
+                        </span>
+                      ) : (
+                        <span className="text-slate-600 text-xs font-medium">
+                          0 fails, 0 rep
+                        </span>
+                      )}
                     </TableCell>
 
                     <TableCell className="py-3 pr-4 text-right">
                       <div className="flex items-center justify-end gap-1.5">
                         <Link
                           href={`/resources/${row.resourceId}`}
-                          className="inline-flex items-center gap-1 text-xs text-[#94a3b8] hover:text-white px-2 py-1 rounded bg-[#1e293b]/50 hover:bg-[#1e293b] border border-[#334155]/50 transition-colors"
+                          className="inline-flex items-center gap-1 text-xs text-navy font-bold px-2.5 py-1.5 rounded-lg bg-card hover:bg-canvas border border-card-edge shadow-2xs transition-colors"
                           title="View resource details"
                         >
-                          <ExternalLink className="size-3" />
+                          <ExternalLink className="size-3 text-navy" />
                           <span>View</span>
                         </Link>
                         <Link
                           href={`/equipment?tab=all&resourceId=${row.resourceId}`}
-                          className="inline-flex items-center gap-1 text-xs text-[#6cd8cb] hover:text-white px-2 py-1 rounded bg-[#6cd8cb]/10 hover:bg-[#6cd8cb]/20 border border-[#6cd8cb]/30 transition-colors"
+                          className="inline-flex items-center gap-1 text-xs text-teal font-bold px-2.5 py-1.5 rounded-lg bg-teal-soft hover:bg-mint border border-teal-line shadow-2xs transition-colors"
                           title="Record care or view history"
                         >
-                          <Wrench className="size-3" />
+                          <Wrench className="size-3 text-teal" />
                           <span>Care</span>
                         </Link>
                       </div>

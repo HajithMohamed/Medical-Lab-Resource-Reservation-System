@@ -32,7 +32,7 @@ export function ChangePasswordForm({ mustChange }: { mustChange: boolean }) {
       </div>
 
       <div className="space-y-1.5">
-        <Label htmlFor="currentPassword" className="text-xs font-bold text-slate-200">
+        <Label htmlFor="currentPassword" className="text-xs font-bold text-navy">
           Current password
         </Label>
         <div className="relative">
@@ -48,7 +48,7 @@ export function ChangePasswordForm({ mustChange }: { mustChange: boolean }) {
           <button
             type="button"
             onClick={() => setShowCurrent((p) => !p)}
-            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#6cd8cb] rounded p-1"
+            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted hover:text-navy focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus rounded-lg p-1 transition-colors cursor-pointer"
             aria-label={showCurrent ? "Hide current password" : "Show current password"}
           >
             {showCurrent ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
@@ -58,17 +58,17 @@ export function ChangePasswordForm({ mustChange }: { mustChange: boolean }) {
 
       <div className="space-y-1.5">
         <div className="flex items-center justify-between">
-          <Label htmlFor="newPassword" className="text-xs font-bold text-slate-200">
+          <Label htmlFor="newPassword" className="text-xs font-bold text-navy">
             New password
           </Label>
           <span
             className={`text-xs tabular-nums font-semibold font-mono ${
               newPasswordValue.length >= PASSWORD_MIN_LENGTH &&
               newPasswordValue.length <= PASSWORD_MAX_LENGTH
-                ? "text-emerald-400"
+                ? "text-teal font-bold"
                 : newPasswordValue.length > PASSWORD_MAX_LENGTH
-                  ? "text-rose-400"
-                  : "text-slate-400"
+                  ? "text-red font-bold"
+                  : "text-muted"
             }`}
           >
             {newPasswordValue.length} / {PASSWORD_MAX_LENGTH} characters
@@ -89,7 +89,7 @@ export function ChangePasswordForm({ mustChange }: { mustChange: boolean }) {
           <button
             type="button"
             onClick={() => setShowNew((p) => !p)}
-            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#6cd8cb] rounded p-1"
+            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted hover:text-navy focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus rounded-lg p-1 transition-colors cursor-pointer"
             aria-label={showNew ? "Hide new password" : "Show new password"}
           >
             {showNew ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
@@ -97,9 +97,9 @@ export function ChangePasswordForm({ mustChange }: { mustChange: boolean }) {
         </div>
 
         {/* Short list of rules & tip */}
-        <div className="rounded-xl bg-[#18202f] border border-[#334155] p-3.5 text-xs text-slate-400 space-y-1.5">
-          <p className="font-semibold text-slate-200">Password rules:</p>
-          <ul className="list-disc list-inside space-y-0.5">
+        <div className="rounded-2xl bg-canvas border border-card-edge p-3.5 text-xs text-muted space-y-1.5">
+          <p className="font-bold text-navy">Password rules:</p>
+          <ul className="list-disc list-inside space-y-0.5 font-normal">
             <li>Use at least 15 characters (Tip: join three or four random words).</li>
             <li>At most 64 characters (and 72 bytes).</li>
             <li>Must not be a common or guessable password.</li>
@@ -110,7 +110,7 @@ export function ChangePasswordForm({ mustChange }: { mustChange: boolean }) {
       </div>
 
       <div className="space-y-1.5">
-        <Label htmlFor="confirmPassword" className="text-xs font-bold text-slate-200">
+        <Label htmlFor="confirmPassword" className="text-xs font-bold text-navy">
           Confirm new password
         </Label>
         <Input
@@ -126,7 +126,7 @@ export function ChangePasswordForm({ mustChange }: { mustChange: boolean }) {
       <Button
         type="submit"
         variant="default"
-        className="w-full h-11 font-bold text-sm bg-[#6cd8cb] text-[#003732] hover:bg-[#29a195] hover:text-[#002421] rounded-xl shadow-xs"
+        className="w-full h-11 font-bold text-sm bg-teal hover:bg-teal-deep text-white rounded-xl shadow-xs transition-all cursor-pointer"
         disabled={isPending}
       >
         {isPending ? (

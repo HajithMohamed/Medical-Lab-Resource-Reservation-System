@@ -80,7 +80,7 @@ export function NotificationsList({
   return (
     <div className="space-y-4">
       {/* Top action bar */}
-      <div className="flex items-center justify-between text-xs text-[#94a3b8] px-1">
+      <div className="flex items-center justify-between text-xs text-muted px-1">
         <span>
           Showing {items.length} of {total} notification{total === 1 ? "" : "s"}
           {unreadCount > 0 && ` (${unreadCount} unread)`}
@@ -91,32 +91,32 @@ export function NotificationsList({
             size="sm"
             onClick={handleMarkAllRead}
             disabled={isPending}
-            className="h-8 text-xs gap-1.5 border-[#334155] bg-[#141c2b] text-[#dbe2f8] hover:text-white hover:bg-[#222a3a]"
+            className="h-8 text-xs gap-1.5 rounded-xl border-card-edge bg-card text-navy font-bold hover:bg-canvas"
           >
-            <CheckCheck className="size-3.5 text-[#6cd8cb]" />
+            <CheckCheck className="size-3.5 text-teal" />
             <span>Mark all as read</span>
           </Button>
         )}
       </div>
 
       {/* List items */}
-      <div className="divide-y divide-[#334155]/60 border border-[#334155] rounded-xl overflow-hidden bg-[#141c2b]">
+      <div className="divide-y divide-line border border-card-edge rounded-[20px] overflow-hidden bg-card shadow-v4">
         {items.map((item) => {
           const isUnread = !item.readAt;
           return (
             <div
               key={item.id}
               onClick={() => router.push(item.link)}
-              className={`p-4 sm:p-5 flex items-start gap-4 hover:bg-[#1a2335] cursor-pointer transition-colors ${
-                isUnread ? "bg-[#182235] border-l-4 border-l-[#6cd8cb]" : ""
+              className={`p-4 sm:p-5 flex items-start gap-4 hover:bg-mint/30 cursor-pointer transition-colors ${
+                isUnread ? "bg-mint/15 border-l-4 border-l-teal" : ""
               }`}
             >
               <div className="mt-1 shrink-0">
                 <div
-                  className={`size-8 rounded-lg flex items-center justify-center border ${
+                  className={`size-9 rounded-xl flex items-center justify-center ${
                     isUnread
-                      ? "bg-[#6cd8cb]/10 border-[#6cd8cb]/40 text-[#6cd8cb]"
-                      : "bg-[#1e293b] border-[#334155] text-[#94a3b8]"
+                      ? "bg-teal-soft text-teal font-extrabold"
+                      : "bg-canvas text-muted border border-card-edge"
                   }`}
                 >
                   <Bell className="size-4" />
@@ -126,27 +126,27 @@ export function NotificationsList({
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2 flex-wrap">
                   <h4
-                    className={`text-sm tracking-tight ${
-                      isUnread ? "font-bold text-white" : "font-medium text-[#cbd5e1]"
+                    className={`text-sm ${
+                      isUnread ? "font-bold text-navy" : "font-semibold text-ink"
                     }`}
                   >
                     {item.title}
                   </h4>
                   {isUnread && (
-                    <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#6cd8cb]/20 text-[#6cd8cb] border border-[#6cd8cb]/30 uppercase tracking-wide">
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-teal-soft text-teal border border-teal-soft">
                       Unread
                     </span>
                   )}
                 </div>
 
-                <p className="text-xs text-[#94a3b8] mt-1 leading-relaxed">{item.body}</p>
+                <p className="text-xs text-muted mt-1 leading-relaxed">{item.body}</p>
 
-                <div className="flex items-center gap-3 mt-2 text-[11px] text-[#64748b] font-mono">
+                <div className="flex items-center gap-3 mt-2 text-[11px] text-faint">
                   <span>
                     {formatClientLabDate(item.createdAt)} at {formatClientLabTime(item.createdAt)}
                   </span>
                   <span>•</span>
-                  <span className="text-[#6cd8cb] hover:underline flex items-center gap-1">
+                  <span className="text-teal font-bold hover:underline flex items-center gap-1">
                     View details <ExternalLink className="size-3" />
                   </span>
                 </div>
@@ -159,7 +159,7 @@ export function NotificationsList({
                     size="sm"
                     onClick={(e) => handleMarkRead(item.id, e)}
                     disabled={isPending}
-                    className="h-8 px-2.5 text-xs text-[#94a3b8] hover:text-[#6cd8cb] hover:bg-[#222a3a]"
+                    className="h-8 px-2.5 text-xs text-muted hover:text-teal hover:bg-mint/50 rounded-xl"
                     title="Mark as read"
                   >
                     <CheckCheck className="size-4" />

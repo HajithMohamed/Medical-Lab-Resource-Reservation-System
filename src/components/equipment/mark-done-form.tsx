@@ -97,29 +97,29 @@ export function MarkDoneForm({
 
         {/* Outcome selector */}
         <div className="space-y-1.5">
-          <Label className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]">
+          <Label className="text-xs font-bold text-navy uppercase tracking-wider">
             Result *
           </Label>
           <div className="flex gap-4 pt-1">
-            <label className="flex items-center gap-2 cursor-pointer text-sm text-emerald-300">
+            <label className="flex items-center gap-2 cursor-pointer text-sm font-bold text-teal">
               <input
                 type="radio"
                 name="mark-outcome"
                 value="PASS"
                 checked={outcome === "PASS"}
                 onChange={() => setOutcome("PASS")}
-                className="accent-emerald-500"
+                className="accent-teal"
               />
               <span>Pass (meets specifications)</span>
             </label>
-            <label className="flex items-center gap-2 cursor-pointer text-sm text-rose-300">
+            <label className="flex items-center gap-2 cursor-pointer text-sm font-bold text-red">
               <input
                 type="radio"
                 name="mark-outcome"
                 value="FAIL"
                 checked={outcome === "FAIL"}
                 onChange={() => setOutcome("FAIL")}
-                className="accent-rose-500"
+                className="accent-red"
               />
               <span>Fail (out of tolerance)</span>
             </label>
@@ -130,7 +130,7 @@ export function MarkDoneForm({
           <div className="space-y-1.5">
             <Label
               htmlFor="mark-performed-by"
-              className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+              className="text-xs font-bold text-navy uppercase tracking-wider"
             >
               Performed by *
             </Label>
@@ -142,6 +142,7 @@ export function MarkDoneForm({
               required
               maxLength={120}
               disabled={isPending}
+              className="h-10 rounded-xl bg-canvas border-card-edge text-navy font-semibold text-xs"
             />
             {fieldErrors.performedBy && (
               <p className="text-xs font-medium text-destructive">{fieldErrors.performedBy[0]}</p>
@@ -151,7 +152,7 @@ export function MarkDoneForm({
           <div className="space-y-1.5">
             <Label
               htmlFor="mark-company"
-              className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+              className="text-xs font-bold text-navy uppercase tracking-wider"
             >
               Company (if external)
             </Label>
@@ -162,6 +163,7 @@ export function MarkDoneForm({
               placeholder="e.g. Roche, Beckman"
               maxLength={120}
               disabled={isPending}
+              className="h-10 rounded-xl bg-canvas border-card-edge text-navy font-semibold text-xs"
             />
             {fieldErrors.externalCompany && (
               <p className="text-xs font-medium text-destructive">
@@ -176,11 +178,11 @@ export function MarkDoneForm({
           <div className="flex items-center justify-between">
             <Label
               htmlFor="mark-work-done"
-              className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+              className="text-xs font-bold text-navy uppercase tracking-wider"
             >
               Work done / changes made {isWorkRequired ? "*" : "(optional)"}
             </Label>
-            <span className="text-[11px] font-mono text-[#879390]">
+            <span className="text-[11px] text-muted font-medium">
               {workPerformed.length}/1000
             </span>
           </div>
@@ -193,7 +195,7 @@ export function MarkDoneForm({
             required={isWorkRequired}
             maxLength={1000}
             disabled={isPending}
-            className="w-full rounded-md border border-[#334155] bg-[#060e1d] p-2.5 text-xs text-white placeholder:text-[#64748b] focus:border-[#6cd8cb] focus:outline-none resize-none"
+            className="w-full rounded-xl border border-card-edge bg-canvas p-3 text-xs text-navy font-semibold placeholder:text-muted focus:border-teal outline-none resize-none"
           />
           {fieldErrors.workPerformed && (
             <p className="text-xs font-medium text-destructive">{fieldErrors.workPerformed[0]}</p>
@@ -204,7 +206,7 @@ export function MarkDoneForm({
           <div className="space-y-1.5">
             <Label
               htmlFor="mark-ref"
-              className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+              className="text-xs font-bold text-navy uppercase tracking-wider"
             >
               Certificate / Reference
             </Label>
@@ -215,6 +217,7 @@ export function MarkDoneForm({
               placeholder="Optional certificate #"
               maxLength={120}
               disabled={isPending}
+              className="h-10 rounded-xl bg-canvas border-card-edge text-navy font-semibold text-xs"
             />
             {fieldErrors.reference && (
               <p className="text-xs font-medium text-destructive">{fieldErrors.reference[0]}</p>
@@ -225,7 +228,7 @@ export function MarkDoneForm({
             <div className="space-y-1.5">
               <Label
                 htmlFor="mark-next-due"
-                className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                className="text-xs font-bold text-navy uppercase tracking-wider"
               >
                 Next due date
               </Label>
@@ -235,6 +238,7 @@ export function MarkDoneForm({
                 value={nextDueOn}
                 onChange={(e) => setNextDueOn(e.target.value)}
                 disabled={isPending}
+                className="h-10 rounded-xl bg-canvas border-card-edge text-navy font-semibold text-xs"
               />
               {fieldErrors.nextDueOn && (
                 <p className="text-xs font-medium text-destructive">{fieldErrors.nextDueOn[0]}</p>
@@ -246,7 +250,7 @@ export function MarkDoneForm({
         <div className="space-y-1.5">
           <Label
             htmlFor="mark-notes"
-            className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+            className="text-xs font-bold text-navy uppercase tracking-wider"
           >
             Notes {outcome === "FAIL" ? "*" : "(optional)"}
           </Label>
@@ -263,7 +267,7 @@ export function MarkDoneForm({
             required={outcome === "FAIL"}
             maxLength={500}
             disabled={isPending}
-            className="w-full rounded-md border border-[#334155] bg-[#060e1d] p-2.5 text-xs text-white placeholder:text-[#64748b] focus:border-[#6cd8cb] focus:outline-none resize-none"
+            className="w-full rounded-xl border border-card-edge bg-canvas p-3 text-xs text-navy font-semibold placeholder:text-muted focus:border-teal outline-none resize-none"
           />
           {fieldErrors.notes && (
             <p className="text-xs font-medium text-destructive">{fieldErrors.notes[0]}</p>
@@ -271,8 +275,14 @@ export function MarkDoneForm({
         </div>
       </div>
 
-      <div className="p-4 border-t border-[#1e293b] bg-[#141c2b] flex items-center justify-end gap-3">
-        <Button type="button" variant="outline" onClick={onCancel} disabled={isPending}>
+      <div className="p-4 border-t border-line bg-canvas/40 flex items-center justify-end gap-3">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onCancel}
+          disabled={isPending}
+          className="rounded-xl border-card-edge bg-card text-navy font-bold text-xs"
+        >
           Cancel
         </Button>
         <Button
@@ -280,8 +290,8 @@ export function MarkDoneForm({
           disabled={isPending}
           className={
             outcome === "FAIL"
-              ? "bg-rose-600 hover:bg-rose-700 text-white font-semibold"
-              : "bg-[#6cd8cb] hover:bg-[#29a195] text-[#003732] font-semibold"
+              ? "bg-red hover:opacity-95 text-white font-bold text-xs rounded-xl shadow-xs"
+              : "bg-gradient-to-br from-teal to-teal-deep text-white font-bold text-xs rounded-xl shadow-teal hover:opacity-95"
           }
         >
           {isPending ? "Saving..." : outcome === "FAIL" ? "Record failure" : "Save result"}

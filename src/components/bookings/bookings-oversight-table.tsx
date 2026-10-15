@@ -14,18 +14,20 @@ import type { OversightBookingItem } from "@/services/bookings";
 interface BookingsOversightTableProps {
   items: OversightBookingItem[];
   emptyMessage?: string;
+  showSiteColumn?: boolean;
 }
 
 export function BookingsOversightTable({
   items,
   emptyMessage = "No bookings match these filters.",
+  showSiteColumn = false,
 }: BookingsOversightTableProps) {
   if (items.length === 0) {
     return (
-      <div className="rounded-xl border border-dashed border-[#334155] bg-[#141c2b] p-12 text-center">
-        <Inbox className="mx-auto size-10 text-slate-500 mb-3" />
-        <h3 className="text-sm font-semibold text-slate-200">{emptyMessage}</h3>
-        <p className="text-xs text-slate-400 mt-1 max-w-sm mx-auto">
+      <div className="rounded-2xl border border-dashed border-card-edge bg-card p-12 text-center shadow-v4">
+        <Inbox className="mx-auto size-10 text-muted mb-3" />
+        <h3 className="text-sm font-bold text-navy">{emptyMessage}</h3>
+        <p className="text-xs text-muted mt-1 max-w-sm mx-auto">
           Try expanding the date range, changing the status filter, or clearing the site and name
           search.
         </p>
@@ -34,7 +36,7 @@ export function BookingsOversightTable({
             asChild
             variant="outline"
             size="sm"
-            className="border-[#334155] text-xs font-mono"
+            className="border-card-edge bg-card hover:bg-mint text-navy text-xs font-semibold rounded-xl shadow-2xs"
           >
             <Link href="/bookings/manage">Clear filters</Link>
           </Button>
@@ -44,84 +46,100 @@ export function BookingsOversightTable({
   }
 
   return (
-    <div className="rounded-xl border border-[#334155] bg-[#141c2b] overflow-hidden shadow-xs">
+    <div className="rounded-2xl border border-card-edge bg-card overflow-hidden shadow-v4">
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse text-xs">
           <thead>
-            <tr className="border-b border-[#334155] bg-[#18202f]/80 text-[11px] font-mono uppercase tracking-wider text-slate-400">
-              <th className="py-2.5 px-3 font-semibold whitespace-nowrap">When</th>
-              <th className="py-2.5 px-3 font-semibold whitespace-nowrap">Resource</th>
-              <th className="py-2.5 px-3 font-semibold whitespace-nowrap">Site</th>
-              <th className="py-2.5 px-3 font-semibold whitespace-nowrap">Booked by</th>
-              <th className="py-2.5 px-3 font-semibold">Purpose</th>
-              <th className="py-2.5 px-3 font-semibold whitespace-nowrap">Status</th>
-              <th className="py-2.5 px-3 font-semibold text-right whitespace-nowrap">Actions</th>
+            <tr className="border-b border-card-edge bg-canvas/80 text-xs font-black uppercase tracking-wider text-navy/90">
+              <th className="py-3 px-3.5 whitespace-nowrap">When</th>
+              <th className="py-3 px-3.5 whitespace-nowrap">Resource</th>
+              {showSiteColumn && <th className="py-3 px-3.5 whitespace-nowrap">Site</th>}
+              <th className="py-3 px-3.5 whitespace-nowrap">Booked by</th>
+              <th className="py-3 px-3.5">Purpose</th>
+              <th className="py-3 px-3.5 whitespace-nowrap">Status</th>
+              <th className="py-3 px-3.5 text-right whitespace-nowrap pr-4">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#334155]/60 text-slate-300">
+          <tbody className="divide-y divide-card-edge text-navy">
             {items.map((b) => (
-              <tr key={b.id} className="hover:bg-[#18202f]/50 transition-colors">
+              <tr key={b.id} className="hover:bg-mint/40 transition-colors">
                 {/* When */}
-                <td className="py-2 px-3 font-mono font-medium whitespace-nowrap text-slate-200">
+                <td className="py-3 px-3.5 whitespace-nowrap text-navy">
                   <Link
                     href={`/reservations/${b.id}`}
-                    className="text-[#6cd8cb] hover:underline font-bold tabular-nums"
+                    className="group block"
                   >
-                    {b.formattedRange}
+                    <div className="font-bold text-navy group-hover:text-teal text-xs">
+                      {b.formattedDate ?? b.formattedRange}
+                    </div>
+                    {b.formattedTime && (
+                      <div className="text-[11.5px] font-semibold text-teal tabular-nums">
+                        {b.formattedTime}
+                      </div>
+                    )}
                   </Link>
                 </td>
 
                 {/* Resource */}
-                <td className="py-2 px-3 whitespace-nowrap">
+                <td className="py-3 px-3.5 whitespace-nowrap">
                   <Link
                     href={`/resources/${b.resource.id}`}
-                    className="inline-flex items-center gap-2 font-medium text-slate-100 hover:text-[#6cd8cb] transition-colors"
+                    className="inline-flex items-center gap-2.5 font-bold text-navy hover:text-teal transition-colors"
                   >
                     <CategoryIcon
                       iconKey={b.resource.category.iconKey}
-                      className="size-5 rounded shrink-0"
+                      className="size-6 rounded-lg shrink-0"
                     />
-                    <span className="truncate max-w-[200px]">{b.resource.name}</span>
+                    <div>
+                      <span className="truncate max-w-[180px] lg:max-w-[220px] block text-xs">{b.resource.name}</span>
+                      {!showSiteColumn && (
+                        <span className="text-[11px] text-slate-500 font-medium block">
+                          {b.resource.category.name}
+                        </span>
+                      )}
+                    </div>
                   </Link>
                 </td>
 
-                {/* Site */}
-                <td className="py-2 px-3 whitespace-nowrap font-mono text-[11px] text-slate-400">
-                  <span className="inline-flex items-center gap-1">
-                    <MapPin className="size-3 text-slate-500" />
-                    <span>{b.resource.site.name}</span>
-                  </span>
-                </td>
+                {/* Site (only shown if multi-site view) */}
+                {showSiteColumn && (
+                  <td className="py-3 px-3.5 whitespace-nowrap text-xs">
+                    <span className="inline-flex items-center gap-1 text-slate-700 font-medium">
+                      <MapPin className="size-3 text-slate-500 shrink-0" />
+                      <span className="truncate max-w-[150px]">{b.resource.site.name}</span>
+                    </span>
+                  </td>
+                )}
 
                 {/* Booked by */}
-                <td className="py-2 px-3 whitespace-nowrap">
-                  <div className="font-medium text-slate-200">{b.createdBy.name}</div>
-                  <div className="font-mono text-[11px] text-slate-400">{b.createdBy.email}</div>
+                <td className="py-3 px-3.5 whitespace-nowrap">
+                  <div className="font-bold text-navy text-xs">{b.createdBy.name}</div>
+                  <div className="text-[11.5px] text-slate-700 font-medium">{b.createdBy.email}</div>
                 </td>
 
                 {/* Purpose */}
-                <td className="py-2 px-3 max-w-[240px]">
-                  <p className="truncate text-slate-300" title={b.purpose}>
+                <td className="py-3 px-3.5 max-w-[200px] lg:max-w-[260px]">
+                  <p className="truncate text-slate-800 font-medium text-xs" title={b.purpose}>
                     {b.purpose}
                   </p>
                 </td>
 
                 {/* Status */}
-                <td className="py-2 px-3 whitespace-nowrap">
+                <td className="py-3 px-3.5 whitespace-nowrap">
                   {b.status === "CONFIRMED" ? (
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-mono font-semibold bg-emerald-950/60 text-emerald-400 border border-emerald-500/30">
-                      <span className="size-1.5 rounded-full bg-emerald-400" />
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-teal-soft text-teal-deep border border-teal-line">
+                      <span className="size-1.5 rounded-full bg-teal" />
                       Confirmed
                     </span>
                   ) : (
                     <div className="space-y-1">
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-mono font-semibold bg-rose-950/60 text-rose-400 border border-rose-500/30">
-                        <span className="size-1.5 rounded-full bg-rose-400" />
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-soft text-red border border-red/20">
+                        <span className="size-1.5 rounded-full bg-red" />
                         Cancelled
                       </span>
                       {b.cancelReason && (
                         <p
-                          className="text-[11px] text-rose-300/80 font-mono max-w-[200px] truncate"
+                          className="text-[11px] text-red font-semibold max-w-[200px] truncate"
                           title={`Cancelled by ${b.cancelledBy?.name ?? "staff"}. Reason: ${b.cancelReason}`}
                         >
                           Cancelled by {b.cancelledBy?.name ?? "staff"}. Reason: {b.cancelReason}
@@ -132,18 +150,18 @@ export function BookingsOversightTable({
                 </td>
 
                 {/* Action */}
-                <td className="py-2 px-3 text-right whitespace-nowrap">
+                <td className="py-3 px-3.5 text-right whitespace-nowrap pr-4">
                   <div className="inline-flex items-center gap-1 justify-end">
                     <Button
                       asChild
                       variant="ghost"
                       size="icon"
-                      className="size-9 rounded-md text-[#94a3b8] hover:text-white hover:bg-[#18202f] border border-transparent hover:border-[#334155] transition-all"
+                      className="size-8 rounded-xl text-navy hover:text-teal hover:bg-mint border border-card-edge transition-all shadow-2xs"
                       title="View booking details"
                       aria-label="View booking details"
                     >
                       <Link href={`/reservations/${b.id}`}>
-                        <Eye className="size-4" />
+                        <Eye className="size-4 text-teal" />
                       </Link>
                     </Button>
                     {b.canCancel && (
@@ -156,7 +174,7 @@ export function BookingsOversightTable({
                           <Button
                             variant="outline"
                             size="icon"
-                            className="size-9 rounded-md border-rose-500/40 text-rose-400 bg-rose-950/20 hover:bg-rose-950/40 hover:text-rose-300"
+                            className="size-8 rounded-xl border border-red/20 text-red bg-red-soft hover:bg-red-soft/80 shadow-2xs"
                             title="Cancel booking"
                             aria-label="Cancel booking"
                           >
@@ -175,9 +193,9 @@ export function BookingsOversightTable({
                         <div className="space-y-2 py-2">
                           <label
                             htmlFor={`reason-${b.id}`}
-                            className="text-xs font-semibold text-slate-200 block"
+                            className="text-xs font-semibold text-navy block"
                           >
-                            Cancellation reason <span className="text-rose-400">*</span>
+                            Cancellation reason <span className="text-red">*</span>
                           </label>
                           <Input
                             id={`reason-${b.id}`}
@@ -186,9 +204,9 @@ export function BookingsOversightTable({
                             minLength={3}
                             maxLength={200}
                             placeholder="e.g. Schedule adjustment, machine maintenance"
-                            className="bg-[#0b1322] border-[#334155] text-xs text-slate-100"
+                            className="h-10 bg-card border-card-edge text-navy text-xs rounded-xl focus:border-teal"
                           />
-                          <p className="text-[11px] text-slate-400">
+                          <p className="text-[11.5px] text-slate-600 font-medium">
                             This reason will be recorded and shown in the owner&apos;s bookings
                             view.
                           </p>

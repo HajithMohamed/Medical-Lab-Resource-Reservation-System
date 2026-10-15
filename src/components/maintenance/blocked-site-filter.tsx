@@ -26,12 +26,12 @@ export function BlockedSiteFilter({ sites, selectedSiteId = "", range }: Blocked
 
   return (
     <div className="flex items-center gap-2">
-      <Building2 className="size-3.5 text-[#879390]" />
+      <Building2 className="size-3.5 text-muted shrink-0" />
       <select
         name="siteId"
         value={selectedSiteId}
         onChange={handleChange}
-        className="h-8 rounded-md bg-[#060e1d] border border-[#334155] px-2.5 text-xs text-slate-200 font-mono focus:border-[#6cd8cb] focus:outline-hidden cursor-pointer"
+        className="h-9 rounded-xl bg-canvas border border-card-edge px-3 text-xs text-navy font-semibold focus:border-teal outline-none cursor-pointer"
         aria-label="Filter by site"
       >
         <option value="">All sites</option>

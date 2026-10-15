@@ -56,7 +56,7 @@ export function SectionDialog() {
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button className="gap-2 bg-[#6cd8cb] hover:bg-[#29a195] text-[#003732] font-semibold text-xs font-mono shadow-xs">
+        <Button className="gap-2 bg-teal hover:bg-teal-deep text-white font-bold text-xs rounded-xl shadow-2xs">
           <Plus className="size-4" />
           <span>Add section</span>
         </Button>
@@ -77,7 +77,7 @@ export function SectionDialog() {
           <div className="space-y-1.5">
             <Label
               htmlFor="section-name"
-              className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+              className="text-xs font-semibold text-navy"
             >
               Section Name
             </Label>
@@ -91,23 +91,24 @@ export function SectionDialog() {
               minLength={2}
               maxLength={80}
               autoFocus
+              className="h-10 bg-card border-card-edge text-navy text-xs rounded-xl focus-visible:border-teal"
             />
           </div>
 
-          <DialogFooter className="pt-3 border-t border-[#334155]/40">
+          <DialogFooter className="pt-3 border-t border-card-edge">
             <Button
               type="button"
               variant="outline"
               onClick={() => setOpen(false)}
               disabled={isPending}
-              className="text-[#dbe2f8] hover:bg-[#222a3a]"
+              className="text-navy hover:bg-mint rounded-xl border-card-edge"
             >
               Cancel
             </Button>
             <Button
               type="submit"
               disabled={isPending}
-              className="bg-[#6cd8cb] hover:bg-[#29a195] text-[#003732] font-semibold text-xs font-mono px-5 py-2 rounded-lg transition-all duration-150 active:scale-[0.98]"
+              className="bg-teal hover:bg-teal-deep text-white font-bold text-xs px-5 py-2 rounded-xl shadow-2xs transition-all active:scale-95"
             >
               {isPending ? "Adding..." : "Add section"}
             </Button>

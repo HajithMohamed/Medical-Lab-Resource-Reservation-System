@@ -107,7 +107,10 @@ export default async function ManageBookingsPage({ searchParams }: ManageBooking
       />
 
       {/* Bookings Table */}
-      <BookingsOversightTable items={oversightResult.items} />
+      <BookingsOversightTable
+        items={oversightResult.items}
+        showSiteColumn={actor.role === "ADMIN"}
+      />
 
       {/* Pagination */}
       <PaginationControls

@@ -2,24 +2,20 @@
 
 import * as React from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   ChevronLeft,
   ChevronRight,
-  Shield,
-  Clock,
-  Calendar as CalendarIcon,
+  CalendarDays,
+  CalendarPlus,
+  ArrowUpRight,
+  CalendarX,
   Layers,
 } from "lucide-react";
-import { ResourceStatusTag } from "@/components/resource-status-tag";
-import {
-  CALENDAR_ROW_MINUTES,
-  CALENDAR_SCROLL_TO_HOUR,
-  STANDARD_WEEKDAYS,
-  STANDARD_DAY_START_HOUR,
-  STANDARD_DAY_END_HOUR,
-} from "@/config/rules";
-import { placeOnDay, rowLabel } from "@/lib/calendar-layout";
 import { useAutoRefresh } from "@/hooks/use-auto-refresh";
+import { PeekSheet } from "@/components/ui/peek-sheet";
+import { StatusPill } from "@/components/resource-status-tag";
+import { cn } from "@/lib/utils";
 import type { CalendarResource, CalendarReservation } from "@/services/calendar";
 
 export interface PrecisionCalendarViewProps {
@@ -42,7 +38,7 @@ export interface PrecisionCalendarViewProps {
   categories: Array<{ id: string; name: string }>;
   siteResources: Array<{ id: string; name: string; status: string; categoryId: string }>;
   canBookHere: boolean;
-  canBlockHere: boolean;
+  canBlockHere?: boolean;
   updatedAt: string;
   zoneCity: string;
   nowMs: number;
@@ -65,13 +61,19 @@ export interface PrecisionCalendarViewProps {
       dateString: string;
       dayStart: string; // ISO
       dayEnd: string; // ISO
-      dayFormatted: string; // "Mon 12 Oct"
+      dayFormatted: string;
       weekday: number;
       isToday: boolean;
     }>;
     reservations: CalendarReservation[];
   } | null;
 }
+
+// 12-hour display window from 07:00 to 19:00
+const GRID_START_HOUR = 7;
+const GRID_END_HOUR = 19;
+const TOTAL_HOURS = GRID_END_HOUR - GRID_START_HOUR; // 12
+const HOURS_ARRAY = Array.from({ length: TOTAL_HOURS }, (_, i) => GRID_START_HOUR + i);
 
 export function PrecisionCalendarView({
   user,
@@ -89,176 +91,87 @@ export function PrecisionCalendarView({
   siteResources,
   canBookHere,
   updatedAt,
-  zoneCity,
   nowMs,
   dayData,
   weekData,
 }: PrecisionCalendarViewProps) {
-  // Live refresh route periodically
+  const router = useRouter();
+  // Auto refresh
   useAutoRefresh();
 
-  const containerRef = React.useRef<HTMLDivElement>(null);
-
-  // Scroll to CALENDAR_SCROLL_TO_HOUR on initial load
-  React.useEffect(() => {
-    if (containerRef.current) {
-      // 7 hours * 2 rows/hour * 26px = 364px
-      const targetScroll = ((CALENDAR_SCROLL_TO_HOUR * 60) / CALENDAR_ROW_MINUTES) * 26;
-      containerRef.current.scrollTop = targetScroll;
+  // Mobile view mode: "agenda" (default on small phones) vs "grid"
+  const [mobileMode, setMobileMode] = React.useState<"agenda" | "grid">(() => {
+    if (typeof window === "undefined") return "agenda";
+    try {
+      const stored = localStorage.getItem("benchbook_cal_mode");
+      if (stored === "agenda" || stored === "grid") return stored;
+      if (window.innerWidth >= 480) return "grid";
+    } catch {
+      // ignore
     }
-  }, []);
+    return "agenda";
+  });
 
-  const totalGridRows = 48; // 24 hours * 2 (30-min slots)
+  const handleModeChange = (mode: "agenda" | "grid") => {
+    setMobileMode(mode);
+    try {
+      localStorage.setItem("benchbook_cal_mode", mode);
+    } catch {
+      // ignore
+    }
+  };
+
+  // Peek sheet state for inspecting a booking or block
+  const [selectedRes, setSelectedRes] = React.useState<CalendarReservation | null>(null);
+
   const isDayView = view === "day";
 
-  // Calculate summary metrics
-  const activeResourcesCount = isDayView
-    ? (dayData?.resources.filter((r) => r.status === "ACTIVE").length ?? 0)
-    : weekData?.resource?.status === "ACTIVE"
-      ? 1
-      : 0;
+  // Calculate now position (in minutes since 07:00)
+  const nowDate = new Date(nowMs);
+  const nowHours = nowDate.getHours();
+  const nowMinutes = nowDate.getMinutes();
+  const nowTotalMinutes = nowHours * 60 + nowMinutes;
+  const gridStartMinutes = GRID_START_HOUR * 60;
+  const gridTotalMinutes = TOTAL_HOURS * 60;
+  const isNowInGrid = nowTotalMinutes >= gridStartMinutes && nowTotalMinutes <= GRID_END_HOUR * 60;
+  const nowPercentage = Math.max(
+    0,
+    Math.min(100, ((nowTotalMinutes - gridStartMinutes) / gridTotalMinutes) * 100),
+  );
+  const nowTimeString = `${String(nowHours).padStart(2, "0")}:${String(nowMinutes).padStart(2, "0")}`;
 
-  const totalResourcesCount = isDayView
-    ? (dayData?.resources.length ?? 0)
-    : weekData?.resource
-      ? 1
-      : 0;
+  // Helper to place reservations horizontally
+  const getHorizontalPlacement = (startAt: Date | string, endAt: Date | string) => {
+    const s = new Date(startAt);
+    const e = new Date(endAt);
+    const startM = s.getHours() * 60 + s.getMinutes();
+    const endM = e.getHours() * 60 + e.getMinutes();
 
-  const oosResourcesCount = isDayView
-    ? (dayData?.resources.filter((r) => r.status === "OUT_OF_SERVICE").length ?? 0)
-    : weekData?.resource?.status === "OUT_OF_SERVICE"
-      ? 1
-      : 0;
+    const clampedStart = Math.max(gridStartMinutes, startM);
+    const clampedEnd = Math.min(GRID_END_HOUR * 60, endM);
 
-  const totalReservationsCount = isDayView
-    ? (dayData?.reservations.length ?? 0)
-    : (weekData?.reservations.length ?? 0);
+    const left = Math.max(0, ((clampedStart - gridStartMinutes) / gridTotalMinutes) * 100);
+    const width = Math.max(1.5, ((clampedEnd - clampedStart) / gridTotalMinutes) * 100);
 
-  const myBookingsCount = isDayView
-    ? (dayData?.reservations.filter((r) => r.isMine).length ?? 0)
-    : (weekData?.reservations.filter((r) => r.isMine).length ?? 0);
-
-  // Time slot helper: converts row index (0-47) to "HH:mm"
-  const getTimeString = (rowIndex: number): string => {
-    const totalMinutes = rowIndex * CALENDAR_ROW_MINUTES;
-    const hours = Math.floor(totalMinutes / 60);
-    const minutes = totalMinutes % 60;
-    return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+    return { left: `${left}%`, width: `${width}%` };
   };
 
   return (
     <div className="space-y-4">
-      {/* 1. OPERATIONAL SUMMARY STRIP (Clinical Precision Redesign) */}
-      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-        {/* Metric 1: Operational Status */}
-        <div className="p-3.5 rounded-xl bg-[#141c2b] border border-[#334155] flex flex-col justify-between shadow-xs">
-          <div className="flex items-center justify-between">
-            <span className="font-mono text-[11px] text-[#879390] uppercase tracking-wider">
-              {isDayView ? "Site Allocation" : "Resource Status"}
-            </span>
-            <span className="w-2 h-2 rounded-full bg-[#6cd8cb] ring-4 ring-[#6cd8cb]/20" />
-          </div>
-          <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-xl font-bold text-white tabular-nums">
-              {isDayView
-                ? `${activeResourcesCount} / ${totalResourcesCount} Active`
-                : (weekData?.resource?.name ?? "Resource")}
-            </span>
-          </div>
-          <div className="mt-1 text-xs text-[#94a3b8] flex justify-between">
-            <span>
-              {isDayView
-                ? `${totalResourcesCount - activeResourcesCount} non-active`
-                : `${weekData?.resource?.category.name} • ${weekData?.resource?.section.name}`}
-            </span>
-            {oosResourcesCount > 0 && (
-              <span className="text-rose-400 font-mono text-[11px]">
-                {oosResourcesCount} Out of service
-              </span>
-            )}
-          </div>
-        </div>
-
-        {/* Metric 2: Bookings */}
-        <div className="p-3.5 rounded-xl bg-[#141c2b] border border-[#334155] flex flex-col justify-between shadow-xs">
-          <div className="flex items-center justify-between">
-            <span className="font-mono text-[11px] text-[#879390] uppercase tracking-wider">
-              {isDayView ? "Today's Schedule" : "Week's Schedule"}
-            </span>
-            <CalendarIcon className="size-3.5 text-[#6cd8cb]" />
-          </div>
-          <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-xl font-bold text-white tabular-nums">
-              {totalReservationsCount}{" "}
-              <span className="text-sm font-normal text-[#94a3b8]">
-                {totalReservationsCount === 1 ? "reservation" : "reservations"}
-              </span>
-            </span>
-          </div>
-          <div className="mt-1 text-xs text-[#94a3b8] flex justify-between">
-            <span>
-              {myBookingsCount > 0 ? `${myBookingsCount} booked by You` : "Network bookings"}
-            </span>
-            <span className="text-[#6cd8cb] font-mono text-[11px]">Confirmed</span>
-          </div>
-        </div>
-
-        {/* Metric 3: Time & Zone */}
-        <div className="p-3.5 rounded-xl bg-[#141c2b] border border-[#334155] flex flex-col justify-between shadow-xs">
-          <div className="flex items-center justify-between">
-            <span className="font-mono text-[11px] text-[#879390] uppercase tracking-wider">
-              Network Operating Zone
-            </span>
-            <Clock className="size-3.5 text-[#7bd0ff]" />
-          </div>
-          <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-xl font-bold text-white tabular-nums">{zoneCity}</span>
-            <span className="font-mono text-xs text-[#7bd0ff] font-semibold">Live</span>
-          </div>
-          <div className="mt-1 text-xs text-[#94a3b8]">Standard: 08:00–18:00 Mon–Fri</div>
-        </div>
-
-        {/* Metric 4: Role Access */}
-        <div className="p-3.5 rounded-xl bg-[#141c2b] border border-[#334155] flex flex-col justify-between shadow-xs">
-          <div className="flex items-center justify-between">
-            <span className="font-mono text-[11px] text-[#879390] uppercase tracking-wider">
-              Access Mode
-            </span>
-            <Shield className="size-3.5 text-[#ffb77d]" />
-          </div>
-          <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-xl font-bold text-white uppercase font-mono">{user.role}</span>
-          </div>
-          <div className="mt-1 text-xs text-[#94a3b8] flex justify-between">
-            <span>{canBookHere ? "Booking enabled" : "Read-only access"}</span>
-            <span className="font-mono text-[11px] text-slate-400">{user.name}</span>
-          </div>
-        </div>
-      </section>
-
-      {/* 2. TOOLBAR (Bookmarkable GET Form) */}
-      <form
-        method="GET"
-        action="/calendar"
-        className="flex flex-wrap items-center justify-between gap-3 p-3 rounded-xl border border-[#334155] bg-[#141c2b] shadow-xs"
-      >
-        <input type="hidden" name="view" value={view} />
-        <input type="hidden" name="date" value={date} />
-
-        {/* Left: View Switcher & Date Navigation */}
-        <div className="flex flex-wrap items-center gap-2.5">
-          {/* Segmented View Switcher */}
-          <div className="inline-flex rounded-lg border border-[#334155] bg-[#060e1d] p-0.5">
+      {/* 1. TOP TOOLBAR: View toggle, date nav, site, categories, updated */}
+      <div className="rounded-[20px] bg-card border border-card-edge p-3 sm:p-4 shadow-v4 flex flex-wrap items-center justify-between gap-3">
+        {/* Left: View toggle + Stepper */}
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Day / Week segmented toggle */}
+          <div className="inline-flex rounded-full bg-canvas p-1 border border-line">
             <Link
               href={`/calendar?view=day&date=${date}&site=${selectedSiteId}${
                 selectedCategoryId ? `&category=${selectedCategoryId}` : ""
               }`}
-              aria-current={view === "day" ? "page" : undefined}
-              className={`px-3 py-1 text-xs font-mono font-semibold rounded-md transition-colors ${
-                view === "day"
-                  ? "bg-[#6cd8cb] text-[#003732] shadow-2xs"
-                  : "text-[#94a3b8] hover:text-white"
-              }`}
+              className={cn(
+                "px-3.5 py-1 text-xs font-bold rounded-full transition-all",
+                view === "day" ? "bg-teal text-white shadow-xs" : "text-muted hover:text-navy",
+              )}
             >
               Day
             </Link>
@@ -266,18 +179,16 @@ export function PrecisionCalendarView({
               href={`/calendar?view=week&date=${date}&site=${selectedSiteId}${
                 selectedResourceId ? `&resource=${selectedResourceId}` : ""
               }`}
-              aria-current={view === "week" ? "page" : undefined}
-              className={`px-3 py-1 text-xs font-mono font-semibold rounded-md transition-colors ${
-                view === "week"
-                  ? "bg-[#6cd8cb] text-[#003732] shadow-2xs"
-                  : "text-[#94a3b8] hover:text-white"
-              }`}
+              className={cn(
+                "px-3.5 py-1 text-xs font-bold rounded-full transition-all",
+                view === "week" ? "bg-teal text-white shadow-xs" : "text-muted hover:text-navy",
+              )}
             >
               Week
             </Link>
           </div>
 
-          {/* Stepper Buttons: Prev, Today, Next */}
+          {/* Stepper buttons */}
           <div className="flex items-center gap-1">
             <Link
               href={`/calendar?view=${view}&date=${prevDate}&site=${selectedSiteId}${
@@ -289,8 +200,8 @@ export function PrecisionCalendarView({
                     ? `&resource=${selectedResourceId}`
                     : ""
               }`}
-              aria-label={isDayView ? "Previous day" : "Previous week"}
-              className="p-1.5 rounded-lg border border-[#334155] bg-[#18202f] text-[#94a3b8] hover:text-white hover:bg-[#222a3a] transition-colors"
+              aria-label="Previous"
+              className="flex size-8 items-center justify-center rounded-lg border border-card-edge bg-card hover:bg-canvas text-navy transition-colors"
             >
               <ChevronLeft className="size-4" />
             </Link>
@@ -304,10 +215,10 @@ export function PrecisionCalendarView({
                     ? `&resource=${selectedResourceId}`
                     : ""
               }`}
-              aria-label="Go to today"
-              className="px-2.5 py-1 text-xs font-mono font-medium rounded-lg border border-[#334155] bg-[#18202f] text-[#94a3b8] hover:text-white hover:bg-[#222a3a] transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg border border-card-edge bg-card hover:bg-canvas text-navy transition-colors"
             >
-              Today
+              <CalendarDays className="size-3.5 text-teal" />
+              <span>Today</span>
             </Link>
             <Link
               href={`/calendar?view=${view}&date=${nextDate}&site=${selectedSiteId}${
@@ -319,74 +230,66 @@ export function PrecisionCalendarView({
                     ? `&resource=${selectedResourceId}`
                     : ""
               }`}
-              aria-label={isDayView ? "Next day" : "Next week"}
-              className="p-1.5 rounded-lg border border-[#334155] bg-[#18202f] text-[#94a3b8] hover:text-white hover:bg-[#222a3a] transition-colors"
+              aria-label="Next"
+              className="flex size-8 items-center justify-center rounded-lg border border-card-edge bg-card hover:bg-canvas text-navy transition-colors"
             >
               <ChevronRight className="size-4" />
             </Link>
           </div>
 
-          {/* Date Written Out */}
-          <span className="font-semibold text-xs md:text-sm text-white pl-1">{formattedDate}</span>
+          <span className="text-xs sm:text-sm font-extrabold text-navy pl-1">{formattedDate}</span>
         </div>
 
-        {/* Right: Site, Category / Resource Selects & Updated At */}
+        {/* Right: Site select, mobile Agenda/Grid toggle, Updated indicator */}
         <div className="flex flex-wrap items-center gap-2.5">
-          {/* Site Select */}
-          <div className="flex items-center gap-1.5">
-            <label htmlFor="site-select" className="text-xs font-mono text-[#879390]">
-              Site:
-            </label>
-            <select
-              id="site-select"
-              name="site"
-              defaultValue={selectedSiteId}
-              onChange={(e) => e.target.form?.submit()}
-              className="bg-[#18202f] border border-[#334155] text-white text-xs rounded-lg px-2.5 py-1.5 font-mono outline-none focus:border-[#6cd8cb]"
-            >
-              {sites.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Day View: Category Filter */}
-          {isDayView && (
+          {/* Site select if multiple */}
+          {sites.length > 1 && (
             <div className="flex items-center gap-1.5">
-              <label htmlFor="category-select" className="text-xs font-mono text-[#879390]">
-                Category:
+              <label
+                htmlFor="cal-site-select"
+                className="text-xs font-bold text-muted uppercase tracking-wider"
+              >
+                Site:
               </label>
               <select
-                id="category-select"
-                name="category"
-                defaultValue={selectedCategoryId ?? ""}
-                onChange={(e) => e.target.form?.submit()}
-                className="bg-[#18202f] border border-[#334155] text-white text-xs rounded-lg px-2.5 py-1.5 font-mono outline-none focus:border-[#6cd8cb]"
+                id="cal-site-select"
+                defaultValue={selectedSiteId}
+                onChange={(e) => {
+                  router.push(
+                    `/calendar?view=${view}&date=${date}&site=${e.target.value}${
+                      selectedCategoryId ? `&category=${selectedCategoryId}` : ""
+                    }`,
+                  );
+                }}
+                className="h-8 rounded-lg border border-card-edge bg-card px-2.5 text-xs font-semibold text-navy outline-none focus:border-teal"
               >
-                <option value="">All categories</option>
-                {categories.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
+                {sites.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.name}
                   </option>
                 ))}
               </select>
             </div>
           )}
 
-          {/* Week View: Resource Select */}
+          {/* Week view resource select */}
           {!isDayView && (
             <div className="flex items-center gap-1.5">
-              <label htmlFor="resource-select" className="text-xs font-mono text-[#879390]">
+              <label
+                htmlFor="cal-res-select"
+                className="text-xs font-bold text-muted uppercase tracking-wider"
+              >
                 Resource:
               </label>
               <select
-                id="resource-select"
-                name="resource"
+                id="cal-res-select"
                 defaultValue={selectedResourceId ?? ""}
-                onChange={(e) => e.target.form?.submit()}
-                className="bg-[#18202f] border border-[#334155] text-white text-xs rounded-lg px-2.5 py-1.5 font-mono outline-none focus:border-[#6cd8cb] max-w-[200px] truncate"
+                onChange={(e) => {
+                  router.push(
+                    `/calendar?view=week&date=${date}&site=${selectedSiteId}&resource=${e.target.value}`,
+                  );
+                }}
+                className="h-8 rounded-lg border border-card-edge bg-card px-2.5 text-xs font-semibold text-navy outline-none focus:border-teal max-w-[180px] truncate"
               >
                 {siteResources.map((r) => (
                   <option key={r.id} value={r.id}>
@@ -397,517 +300,510 @@ export function PrecisionCalendarView({
             </div>
           )}
 
-          {/* Updated At indicator */}
-          <span className="font-mono text-xs text-[#879390] tabular-nums shrink-0 pl-1">
-            Updated at {updatedAt}
-          </span>
-        </div>
-      </form>
+          {/* Mobile Agenda / Grid segmented switch (< 768px) */}
+          {isDayView && (
+            <div className="flex md:hidden rounded-lg bg-canvas p-0.5 border border-line">
+              <button
+                type="button"
+                onClick={() => handleModeChange("agenda")}
+                className={cn(
+                  "px-2.5 py-1 text-xs font-bold rounded-md transition-all",
+                  mobileMode === "agenda"
+                    ? "bg-card text-navy shadow-xs"
+                    : "text-muted hover:text-navy",
+                )}
+              >
+                Agenda
+              </button>
+              <button
+                type="button"
+                onClick={() => handleModeChange("grid")}
+                className={cn(
+                  "px-2.5 py-1 text-xs font-bold rounded-md transition-all",
+                  mobileMode === "grid"
+                    ? "bg-card text-navy shadow-xs"
+                    : "text-muted hover:text-navy",
+                )}
+              >
+                Grid
+              </button>
+            </div>
+          )}
 
-      {/* Mobile Hint */}
-      <div className="md:hidden text-xs text-[#879390] font-mono px-1 flex items-center gap-1.5">
-        <span>Swipe sideways to see more resources / days.</span>
+          {/* Updated indicator */}
+          <div className="flex items-center gap-1.5 text-xs text-muted font-medium pl-1">
+            <span className="size-2 rounded-full bg-green" />
+            <span className="hidden sm:inline">Updated at</span>
+            <span className="font-semibold tabular-nums">{updatedAt}</span>
+          </div>
+        </div>
       </div>
 
-      {/* 3. CALENDAR BENCH SHEET (CSS Grid) */}
+      {/* 2. CATEGORY FILTER CHIPS (Day view) */}
+      {isDayView && (
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+          <Link
+            href={`/calendar?view=day&date=${date}&site=${selectedSiteId}`}
+            className={cn(
+              "shrink-0 rounded-full px-3.5 py-1.5 text-xs font-bold transition-all border",
+              !selectedCategoryId
+                ? "bg-teal-soft border-teal-line text-teal-deep shadow-xs"
+                : "bg-card border-card-edge text-muted hover:text-navy",
+            )}
+          >
+            All
+          </Link>
+          {categories.map((c) => {
+            const isActive = selectedCategoryId === c.id;
+            return (
+              <Link
+                key={c.id}
+                href={`/calendar?view=day&date=${date}&site=${selectedSiteId}&category=${c.id}`}
+                className={cn(
+                  "shrink-0 rounded-full px-3.5 py-1.5 text-xs font-bold transition-all border",
+                  isActive
+                    ? "bg-teal-soft border-teal-line text-teal-deep shadow-xs"
+                    : "bg-card border-card-edge text-muted hover:text-navy",
+                )}
+              >
+                {c.name}
+              </Link>
+            );
+          })}
+        </div>
+      )}
+
+      {/* 3. CALENDAR CONTENT: Desktop Lanes or Mobile Agenda/Grid */}
       {isDayView ? (
-        /* DAY VIEW GRID */
         dayData?.resources.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-[#334155] p-12 text-center bg-[#141c2b] text-[#94a3b8]">
-            <Layers className="size-8 mx-auto mb-2 text-slate-500" />
-            <p className="font-semibold text-white">No resources found</p>
-            <p className="text-xs text-slate-400 mt-1">
-              There are no active or out-of-service resources matching this filter.
+          <div className="rounded-[20px] bg-card border border-dashed border-card-edge p-12 text-center shadow-v4">
+            <Layers className="size-8 mx-auto mb-2 text-muted" />
+            <h3 className="font-bold text-navy">No resources found</h3>
+            <p className="text-xs text-muted mt-1">
+              There are no resources matching this category in {dayData?.site?.name ?? "this site"}.
             </p>
           </div>
         ) : (
-          <div
-            ref={containerRef}
-            className="relative max-h-[calc(100dvh-13rem)] overflow-auto rounded-xl border border-[#334155] bg-[#141c2b] shadow-xs"
-            tabIndex={0}
-            role="region"
-            aria-label="Day calendar schedule grid"
-          >
-            <div
-              className="grid min-w-[700px]"
-              style={{
-                gridTemplateColumns: `64px repeat(${dayData?.resources.length ?? 0}, minmax(160px, 1fr))`,
-                gridTemplateRows: `64px repeat(${totalGridRows}, 26px)`,
-              }}
-            >
-              {/* TOP-LEFT STICKY CORNER */}
-              <div
-                style={{ gridRow: 1, gridColumn: 1 }}
-                className="sticky top-0 left-0 z-40 bg-[#18202f] border-b border-r border-[#334155] flex items-center justify-center font-mono text-[11px] font-bold text-[#879390]"
-              >
-                TIME
-              </div>
-
-              {/* STICKY COLUMN HEADERS (One per resource) */}
-              {dayData?.resources.map((resource, colIdx) => {
+          <>
+            {/* 3A. MOBILE AGENDA VIEW (< 768px and mobileMode === "agenda") */}
+            <div className={cn("space-y-3", mobileMode === "grid" ? "hidden" : "md:hidden")}>
+              {dayData?.resources.map((resource) => {
                 const isOos = resource.status === "OUT_OF_SERVICE";
-                return (
-                  <div
-                    key={resource.id}
-                    style={{ gridRow: 1, gridColumn: colIdx + 2 }}
-                    className={`sticky top-0 z-30 bg-[#18202f] border-b border-r border-[#334155] p-2.5 flex flex-col justify-center min-w-[160px] ${
-                      isOos ? "bg-rose-950/20" : ""
-                    }`}
-                  >
-                    <div className="flex items-center justify-between gap-1">
-                      <Link
-                        href={`/resources/${resource.id}`}
-                        className="font-bold text-[14px] text-white hover:text-[#6cd8cb] truncate transition-colors"
-                        title={resource.name}
-                      >
-                        {resource.name}
-                      </Link>
-                      <span
-                        className={`size-2 rounded-full shrink-0 ${
-                          isOos
-                            ? "bg-rose-500 ring-2 ring-rose-500/30"
-                            : "bg-[#6cd8cb] ring-2 ring-[#6cd8cb]/20"
-                        }`}
-                      />
-                    </div>
-                    <div className="mt-0.5 flex items-center gap-1.5 min-w-0">
-                      {isOos ? (
-                        <ResourceStatusTag
-                          status="OUT_OF_SERVICE"
-                          className="text-[9px] px-1 py-0"
-                        />
-                      ) : (
-                        <span className="text-[11px] font-mono text-[#879390] truncate">
-                          {resource.category.name}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-
-              {/* STICKY TIME COLUMN (48 rows) */}
-              {Array.from({ length: totalGridRows }).map((_, rIdx) => {
-                const isFullHour = rIdx % 2 === 0;
-                const label = rowLabel(rIdx, CALENDAR_ROW_MINUTES);
-
-                return (
-                  <div
-                    key={`time-${rIdx}`}
-                    style={{ gridRow: rIdx + 2, gridColumn: 1 }}
-                    className={`sticky left-0 z-20 bg-[#141c2b] border-r border-[#334155] flex items-start justify-end pr-2 text-[11px] font-mono tabular-nums text-[#879390] select-none ${
-                      isFullHour ? "border-t border-[#334155]" : "border-t border-[#334155]/30"
-                    }`}
-                  >
-                    {label && <span className="-mt-2.5">{label}</span>}
-                  </div>
-                );
-              })}
-
-              {/* BACKGROUND CELLS & FREE SLOTS PER RESOURCE */}
-              {dayData?.resources.map((resource, colIdx) => {
-                const isOos = resource.status === "OUT_OF_SERVICE";
-
-                // If OUT_OF_SERVICE, whole column is hatched
-                if (isOos) {
-                  return (
-                    <div
-                      key={`oos-${resource.id}`}
-                      style={{
-                        gridRow: `2 / span ${totalGridRows}`,
-                        gridColumn: colIdx + 2,
-                      }}
-                      className="hatch-oos border-r border-[#334155] flex flex-col items-center justify-center p-4 text-center select-none"
-                    >
-                      <span className="font-mono text-xs font-bold text-rose-300 bg-[#060e1d]/90 px-3 py-1 rounded border border-rose-500/40">
-                        Out of service
-                      </span>
-                    </div>
-                  );
-                }
-
-                // Active resource: 48 30-minute slot cells
-                return (
-                  <React.Fragment key={`slots-${resource.id}`}>
-                    {Array.from({ length: totalGridRows }).map((_, rIdx) => {
-                      const isFullHour = rIdx % 2 === 0;
-                      const hour = Math.floor((rIdx * CALENDAR_ROW_MINUTES) / 60);
-                      const isStandardDay = STANDARD_WEEKDAYS.includes(dayData.weekday);
-                      const isOffHours =
-                        !isStandardDay ||
-                        hour < STANDARD_DAY_START_HOUR ||
-                        hour >= STANDARD_DAY_END_HOUR;
-
-                      const timeStr = getTimeString(rIdx);
-
-                      // Check if slot has passed
-                      const slotDate = new Date(dayData.dayStart);
-                      slotDate.setMinutes(rIdx * CALENDAR_ROW_MINUTES);
-                      const hasPassed = slotDate.getTime() < nowMs;
-
-                      return (
-                        <div
-                          key={`cell-${resource.id}-${rIdx}`}
-                          style={{ gridRow: rIdx + 2, gridColumn: colIdx + 2 }}
-                          className={`border-r border-[#334155] transition-colors relative ${
-                            isFullHour
-                              ? "border-t border-[#334155]"
-                              : "border-t border-[#334155]/30"
-                          } ${isOffHours ? "bg-[#060e1d]" : "bg-transparent"}`}
-                        >
-                          {canBookHere && !hasPassed ? (
-                            <Link
-                              href={`/bookings/new?resourceId=${resource.id}&date=${dayData.dateString}&start=${timeStr}`}
-                              aria-label={`Book ${resource.name} at ${timeStr}`}
-                              className="group/slot block w-full h-[26px] focus:outline-none focus-visible:ring-1 focus-visible:ring-[#6cd8cb] focus-visible:z-20 hover:bg-[#18202f]/80 transition-colors"
-                            >
-                              <span className="hidden group-hover/slot:inline-block group-focus-visible/slot:inline-block text-[10px] font-mono text-[#6cd8cb] font-bold pl-1.5 leading-[26px]">
-                                + {timeStr}
-                              </span>
-                            </Link>
-                          ) : (
-                            <div className="w-full h-[26px]" />
-                          )}
-                        </div>
-                      );
-                    })}
-                  </React.Fragment>
-                );
-              })}
-
-              {/* RESERVATION BLOCKS OVERLAY */}
-              {dayData?.resources.map((resource, colIdx) => {
-                if (resource.status === "OUT_OF_SERVICE") return null;
-
-                const colReservations = dayData.reservations.filter(
+                const resBookings = dayData.reservations.filter(
                   (r) => r.resourceId === resource.id,
                 );
 
                 return (
-                  <React.Fragment key={`blocks-${resource.id}`}>
-                    {colReservations.map((res) => {
-                      const placement = placeOnDay({
-                        startAt: new Date(res.startAt),
-                        endAt: new Date(res.endAt),
-                        dayStart: new Date(dayData.dayStart),
-                        dayEnd: new Date(dayData.dayEnd),
-                        rowMinutes: CALENDAR_ROW_MINUTES,
-                      });
+                  <div
+                    key={resource.id}
+                    className="rounded-[16px] bg-card border border-card-edge p-4 shadow-v4 space-y-3"
+                  >
+                    {/* Header */}
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <h3 className="font-extrabold text-sm text-navy">{resource.name}</h3>
+                        <p className="text-xs text-muted">
+                          {resource.section.name} · {resource.category.name}
+                        </p>
+                      </div>
+                      <StatusPill status={resource.status} />
+                    </div>
 
-                      if (!placement) return null;
-
-                      const isMaint = res.kind === "MAINTENANCE";
-                      const isLong = res.durationMinutes > 60;
-
-                      return (
-                        <Link
-                          key={res.id}
-                          href={`/reservations/${res.id}`}
-                          aria-label={`${
-                            isMaint ? "Maintenance" : res.isMine ? "Your booking" : "Booking"
-                          }: ${res.purpose}, ${res.timeRange} by ${res.createdBy.name}`}
-                          title={`${res.purpose} (${res.timeRange})`}
-                          style={{
-                            gridRow: `${placement.startRow + 2} / span ${placement.rowSpan}`,
-                            gridColumn: colIdx + 2,
-                          }}
-                          className={`m-0.5 rounded-[6px] p-2 flex flex-col justify-between overflow-hidden shadow-2xs z-10 transition-all hover:scale-[1.005] hover:z-20 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#6cd8cb] ${
-                            isMaint
-                              ? "hatch-maint text-[#ffb77d] border-l-[3px] border-l-[#d97707] border border-[#d97707]/40"
-                              : res.isMine
-                                ? "bg-[#222a3a] text-[#6cd8cb] border-l-[3px] border-l-[#6cd8cb] border border-[#6cd8cb]/40"
-                                : "bg-[#18202f] text-[#7bd0ff] border-l-[3px] border-l-[#6cd8cb] border border-[#334155]"
-                          }`}
-                        >
-                          <div className="space-y-0.5 min-w-0">
-                            <div className="flex items-center justify-between gap-1">
-                              <span
-                                className={`text-[13px] font-bold truncate ${
-                                  isLong ? "line-clamp-2" : ""
-                                } ${isMaint ? "text-[#ffb77d]" : "text-white"}`}
-                              >
-                                {res.purpose}
-                              </span>
-                              {res.isMine && (
-                                <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-white text-[#003732] uppercase font-mono shrink-0">
-                                  You
-                                </span>
-                              )}
-                              {isMaint && (
-                                <span className="px-1 py-0.2 rounded text-[9px] font-bold bg-[#d97707]/30 text-[#ffb77d] uppercase font-mono shrink-0">
-                                  Maint
-                                </span>
-                              )}
+                    {/* Bookings / Free / OOS list */}
+                    {isOos ? (
+                      <div className="rounded-xl bg-red-soft p-3 text-xs text-red font-medium">
+                        Laser fault, engineer scheduled · Out of service
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        {resBookings.length === 0 ? (
+                          <Link
+                            href={`/book?resourceId=${resource.id}&date=${date}`}
+                            className="flex items-center justify-between p-3 rounded-xl border border-dashed border-teal-line bg-mint text-teal hover:bg-teal-soft transition-colors"
+                          >
+                            <div>
+                              <div className="text-xs font-bold">Free all day</div>
+                              <div className="text-[11px] text-teal/80">Tap to book a slot</div>
                             </div>
-                            {!isMaint && (
-                              <p className="text-[11px] text-[#94a3b8] truncate font-medium">
-                                {res.createdBy.name}
-                              </p>
-                            )}
-                          </div>
-                          <p className="font-mono text-[11px] font-semibold tabular-nums text-white/90 mt-1">
-                            {res.timeRange}
-                          </p>
-                        </Link>
-                      );
-                    })}
-                  </React.Fragment>
+                            <CalendarPlus className="size-4" />
+                          </Link>
+                        ) : (
+                          resBookings.map((res) => {
+                            const isMine = res.isMine;
+                            const isMaint = res.kind === "MAINTENANCE";
+
+                            return (
+                              <button
+                                key={res.id}
+                                type="button"
+                                onClick={() => setSelectedRes(res)}
+                                className={cn(
+                                  "w-full text-left p-3 rounded-xl transition-transform active:scale-[0.99] flex items-center justify-between relative overflow-hidden",
+                                  isMine
+                                    ? "bg-gradient-to-br from-teal to-teal-deep text-white shadow-xs"
+                                    : isMaint
+                                      ? "bg-amber-soft border border-amber-line text-amber"
+                                      : "bg-teal-soft border border-teal-line text-teal-deep",
+                                )}
+                              >
+                                {!isMine && (
+                                  <div
+                                    className={cn(
+                                      "absolute left-0 top-0 bottom-0 w-1",
+                                      isMaint ? "bg-amber-strong" : "bg-teal",
+                                    )}
+                                  />
+                                )}
+                                <div className="space-y-0.5 min-w-0 pr-2">
+                                  <div className="flex items-center gap-2">
+                                    <span className="font-bold text-xs truncate">
+                                      {res.purpose}
+                                    </span>
+                                    {isMine && (
+                                      <span className="px-1.5 py-0.5 text-[9.5px] font-extrabold uppercase bg-white text-teal rounded">
+                                        You
+                                      </span>
+                                    )}
+                                  </div>
+                                  <div
+                                    className={cn(
+                                      "text-[11px] truncate",
+                                      isMine ? "text-white/80" : "text-muted",
+                                    )}
+                                  >
+                                    {isMine ? "Your booking" : res.createdBy.name}
+                                  </div>
+                                </div>
+                                <div
+                                  className={cn(
+                                    "font-bold text-xs tabular-nums shrink-0",
+                                    isMine
+                                      ? "text-white"
+                                      : isMaint
+                                        ? "text-amber"
+                                        : "text-teal-deep",
+                                  )}
+                                >
+                                  {res.timeRange}
+                                </div>
+                              </button>
+                            );
+                          })
+                        )}
+
+                        {/* Quick tap-to-book free gap banner if not full */}
+                        {canBookHere && (
+                          <Link
+                            href={`/book?resourceId=${resource.id}&date=${date}`}
+                            className="flex items-center justify-between p-2.5 rounded-xl border border-dashed border-teal-line/80 bg-canvas text-teal text-xs font-bold hover:bg-mint transition-colors"
+                          >
+                            <span>Book another slot</span>
+                            <CalendarPlus className="size-3.5" />
+                          </Link>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 );
               })}
             </div>
-          </div>
-        )
-      ) : /* WEEK VIEW GRID */
-      !weekData?.resource ? (
-        <div className="rounded-xl border border-dashed border-[#334155] p-12 text-center bg-[#141c2b] text-[#94a3b8]">
-          <Layers className="size-8 mx-auto mb-2 text-slate-500" />
-          <p className="font-semibold text-white">No active resource selected</p>
-          <p className="text-xs text-slate-400 mt-1">
-            Select an active instrument or room to view its 7-day schedule.
-          </p>
-        </div>
-      ) : (
-        <div
-          ref={containerRef}
-          className="relative max-h-[calc(100dvh-13rem)] overflow-auto rounded-xl border border-[#334155] bg-[#141c2b] shadow-xs"
-          tabIndex={0}
-          role="region"
-          aria-label="Week calendar schedule grid"
-        >
-          <div
-            className="grid min-w-[700px]"
-            style={{
-              gridTemplateColumns: `64px repeat(7, minmax(140px, 1fr))`,
-              gridTemplateRows: `64px repeat(${totalGridRows}, 26px)`,
-            }}
-          >
-            {/* TOP-LEFT STICKY CORNER */}
+
+            {/* 3B. HORIZONTAL LANES GRID (Desktop always, or Mobile when mobileMode === "grid") */}
             <div
-              style={{ gridRow: 1, gridColumn: 1 }}
-              className="sticky top-0 left-0 z-40 bg-[#18202f] border-b border-r border-[#334155] flex items-center justify-center font-mono text-[11px] font-bold text-[#879390]"
+              className={cn(
+                "rounded-[20px] bg-card border border-card-edge shadow-v4 overflow-hidden",
+                mobileMode === "agenda" ? "hidden md:block" : "block",
+              )}
             >
-              TIME
-            </div>
+              <div className="overflow-x-auto relative scrollbar-thin">
+                <div
+                  className="relative min-w-[960px] select-none"
+                  style={{ minWidth: "calc(200px + 12 * 76px)" }}
+                >
+                  {/* Grid Header: Resource corner + Hour columns */}
+                  <div className="grid grid-cols-[200px_1fr] bg-canvas border-b border-line">
+                    <div className="p-3 text-[11px] font-extrabold uppercase tracking-wider text-muted border-r border-line sticky left-0 bg-canvas z-20">
+                      Resource
+                    </div>
+                    <div className="grid grid-cols-12 text-[11px] font-extrabold text-muted">
+                      {HOURS_ARRAY.map((hr) => (
+                        <div key={hr} className="p-3 border-r border-line/60 tabular-nums">
+                          {String(hr).padStart(2, "0")}:00
+                        </div>
+                      ))}
+                    </div>
+                  </div>
 
-            {/* STICKY COLUMN HEADERS (Monday to Sunday) */}
-            {weekData.days.map((day, dayIdx) => (
-              <div
-                key={day.dateString}
-                style={{ gridRow: 1, gridColumn: dayIdx + 2 }}
-                className={`sticky top-0 z-30 bg-[#18202f] border-b border-r border-[#334155] p-2.5 flex flex-col justify-center min-w-[140px] ${
-                  day.isToday ? "bg-[#222a3a]" : ""
-                }`}
-              >
-                <div className="flex items-center justify-between gap-1">
-                  <span
-                    className={`text-[14px] font-bold truncate ${
-                      day.isToday ? "text-[#6cd8cb]" : "text-white"
-                    }`}
-                  >
-                    {day.dayFormatted}
-                  </span>
-                  {day.isToday && (
-                    <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-[#6cd8cb]/20 text-[#6cd8cb] border border-[#6cd8cb]/40">
-                      Today
-                    </span>
-                  )}
+                  {/* Resource rows */}
+                  <div className="relative">
+                    {/* Red Now line if today */}
+                    {dayData?.isToday && isNowInGrid && (
+                      <div
+                        className="absolute top-0 bottom-0 z-30 pointer-events-none"
+                        style={{
+                          left: `calc(200px + (100% - 200px) * ${nowPercentage / 100})`,
+                        }}
+                      >
+                        <div className="w-0.5 h-full bg-red relative">
+                          <span className="absolute -top-2 left-1/2 -translate-x-1/2 rounded bg-red px-1.5 py-0.5 text-[9.5px] font-bold text-white shadow-xs">
+                            {nowTimeString}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
+                    {dayData?.resources.map((resource) => {
+                      const isOos = resource.status === "OUT_OF_SERVICE";
+                      const resBookings = dayData.reservations.filter(
+                        (r) => r.resourceId === resource.id,
+                      );
+
+                      return (
+                        <div
+                          key={resource.id}
+                          className="grid grid-cols-[200px_1fr] border-b border-line min-h-[58px]"
+                        >
+                          {/* Sticky Resource cell */}
+                          <div className="p-3 bg-card border-r border-line sticky left-0 z-10 flex flex-col justify-center">
+                            <span className="font-extrabold text-xs text-navy truncate">
+                              {resource.name}
+                            </span>
+                            <span className="text-[11px] text-muted truncate">
+                              {resource.section.name}
+                            </span>
+                          </div>
+
+                          {/* Time track */}
+                          <div
+                            className={cn(
+                              "relative h-full grid grid-cols-12",
+                              isOos
+                                ? "bg-[repeating-linear-gradient(135deg,transparent,transparent_10px,rgba(180,35,24,0.06)_10px,rgba(180,35,24,0.06)_12px)]"
+                                : "bg-[linear-gradient(90deg,var(--line)_1px,transparent_1px)] bg-[size:calc((100%)/12)_100%]",
+                            )}
+                          >
+                            {/* Empty hour cells for clicking free slots */}
+                            {HOURS_ARRAY.map((hr, idx) => (
+                              <Link
+                                key={idx}
+                                href={`/book?resourceId=${resource.id}&date=${date}&start=${String(hr).padStart(2, "0")}:00`}
+                                aria-label={`Book ${resource.name} at ${hr}:00`}
+                                className={cn(
+                                  "h-full transition-colors border-r border-line/40 flex items-center justify-center opacity-0 hover:opacity-100",
+                                  isOos ? "pointer-events-none" : "hover:bg-mint/80",
+                                )}
+                              >
+                                <span className="text-[10px] font-bold text-teal">+ {hr}:00</span>
+                              </Link>
+                            ))}
+
+                            {/* Out of service label */}
+                            {isOos && (
+                              <div className="absolute inset-y-2 left-4 flex items-center pointer-events-none z-10">
+                                <span className="rounded-md bg-red-soft px-2.5 py-1 text-xs font-bold text-red border border-red/20">
+                                  Out of service
+                                </span>
+                              </div>
+                            )}
+
+                            {/* Render bookings positioned horizontally */}
+                            {!isOos &&
+                              resBookings.map((res) => {
+                                const pos = getHorizontalPlacement(res.startAt, res.endAt);
+                                const isMine = res.isMine;
+                                const isMaint = res.kind === "MAINTENANCE";
+
+                                return (
+                                  <button
+                                    key={res.id}
+                                    type="button"
+                                    onClick={() => setSelectedRes(res)}
+                                    style={{ left: pos.left, width: pos.width }}
+                                    className={cn(
+                                      "absolute top-1.5 bottom-1.5 rounded-lg px-2 text-left z-10 transition-transform active:scale-[0.98] overflow-hidden flex flex-col justify-center",
+                                      isMine
+                                        ? "bg-gradient-to-br from-teal to-teal-deep text-white shadow-xs"
+                                        : isMaint
+                                          ? "bg-amber-soft border border-amber-line text-amber shadow-xs"
+                                          : "bg-teal-soft border border-teal-line text-teal-deep shadow-xs",
+                                    )}
+                                  >
+                                    <div className="flex items-center gap-1.5 leading-tight truncate">
+                                      <b className="text-[11px] font-bold truncate">
+                                        {res.purpose}
+                                      </b>
+                                      {isMine && (
+                                        <span className="shrink-0 px-1 py-0.2 text-[9px] font-extrabold uppercase bg-white text-teal rounded">
+                                          You
+                                        </span>
+                                      )}
+                                    </div>
+                                    <span
+                                      className={cn(
+                                        "text-[10px] tabular-nums truncate",
+                                        isMine ? "text-white/80" : "text-muted",
+                                      )}
+                                    >
+                                      {res.timeRange}
+                                    </span>
+                                  </button>
+                                );
+                              })}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
-                <span className="text-[10px] font-mono text-[#879390]">
-                  {weekData.resource?.name}
-                </span>
               </div>
-            ))}
 
-            {/* STICKY TIME COLUMN (48 rows) */}
-            {Array.from({ length: totalGridRows }).map((_, rIdx) => {
-              const isFullHour = rIdx % 2 === 0;
-              const label = rowLabel(rIdx, CALENDAR_ROW_MINUTES);
+              {/* Bottom Legend */}
+              <div className="px-5 py-3 border-t border-line bg-canvas/40 flex flex-wrap items-center justify-between text-xs text-muted gap-3">
+                <div className="flex flex-wrap items-center gap-4">
+                  <div className="flex items-center gap-1.5">
+                    <span className="size-2 rounded-full bg-teal" />
+                    <span className="font-medium">Reserved</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="size-2 rounded-full bg-teal-deep" />
+                    <span className="font-medium">You</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="size-2 rounded-full bg-amber-strong" />
+                    <span className="font-medium">Maintenance</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="size-2 rounded-full bg-red" />
+                    <span className="font-medium">Out of service</span>
+                  </div>
+                </div>
+                <div className="text-[11px] text-faint">
+                  Click any slot to book. Resource names stay fixed while scrolling horizontally.
+                </div>
+              </div>
+            </div>
+          </>
+        )
+      ) : (
+        /* WEEK VIEW */
+        <div className="rounded-[20px] bg-card border border-card-edge shadow-v4 p-5 space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-extrabold text-navy text-base">
+                {weekData?.resource?.name ?? "Resource Schedule"}
+              </h3>
+              <p className="text-xs text-muted">
+                {weekData?.resource?.section.name} · {weekData?.resource?.category.name}
+              </p>
+            </div>
+            {weekData?.resource && <StatusPill status={weekData.resource.status} />}
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-7 gap-3">
+            {weekData?.days.map((day) => {
+              const dayBookings = weekData.reservations.filter((r) => {
+                const rDate = new Date(r.startAt).toISOString().split("T")[0];
+                return rDate === day.dateString;
+              });
 
               return (
                 <div
-                  key={`time-week-${rIdx}`}
-                  style={{ gridRow: rIdx + 2, gridColumn: 1 }}
-                  className={`sticky left-0 z-20 bg-[#141c2b] border-r border-[#334155] flex items-start justify-end pr-2 text-[11px] font-mono tabular-nums text-[#879390] select-none ${
-                    isFullHour ? "border-t border-[#334155]" : "border-t border-[#334155]/30"
-                  }`}
+                  key={day.dateString}
+                  className={cn(
+                    "rounded-xl border p-3 flex flex-col space-y-2",
+                    day.isToday ? "border-teal bg-mint/40" : "border-line bg-canvas/30",
+                  )}
                 >
-                  {label && <span className="-mt-2.5">{label}</span>}
+                  <div className="flex items-center justify-between pb-1 border-b border-line">
+                    <span className="text-xs font-bold text-navy">{day.dayFormatted}</span>
+                    {day.isToday && (
+                      <span className="text-[9.5px] font-extrabold uppercase text-teal">Today</span>
+                    )}
+                  </div>
+                  <div className="space-y-1.5 flex-1">
+                    {dayBookings.length === 0 ? (
+                      <div className="text-[11px] text-muted italic py-2">No bookings</div>
+                    ) : (
+                      dayBookings.map((res) => (
+                        <button
+                          key={res.id}
+                          type="button"
+                          onClick={() => setSelectedRes(res)}
+                          className={cn(
+                            "w-full text-left p-2 rounded-lg text-xs font-medium space-y-0.5",
+                            res.isMine
+                              ? "bg-gradient-to-br from-teal to-teal-deep text-white"
+                              : "bg-teal-soft text-teal-deep border border-teal-line",
+                          )}
+                        >
+                          <div className="font-bold truncate">{res.purpose}</div>
+                          <div className="text-[10px] tabular-nums truncate opacity-90">
+                            {res.timeRange}
+                          </div>
+                        </button>
+                      ))
+                    )}
+                  </div>
                 </div>
               );
             })}
-
-            {/* BACKGROUND CELLS & FREE SLOTS PER DAY */}
-            {weekData.days.map((day, dayIdx) => {
-              const res = weekData.resource;
-              const isOos = res?.status === "OUT_OF_SERVICE";
-
-              if (isOos) {
-                return (
-                  <div
-                    key={`week-oos-${day.dateString}`}
-                    style={{
-                      gridRow: `2 / span ${totalGridRows}`,
-                      gridColumn: dayIdx + 2,
-                    }}
-                    className="hatch-oos border-r border-[#334155] flex flex-col items-center justify-center p-4 text-center select-none"
-                  >
-                    <span className="font-mono text-xs font-bold text-rose-300 bg-[#060e1d]/90 px-3 py-1 rounded border border-rose-500/40">
-                      Out of service
-                    </span>
-                  </div>
-                );
-              }
-
-              return (
-                <React.Fragment key={`week-slots-${day.dateString}`}>
-                  {Array.from({ length: totalGridRows }).map((_, rIdx) => {
-                    const isFullHour = rIdx % 2 === 0;
-                    const hour = Math.floor((rIdx * CALENDAR_ROW_MINUTES) / 60);
-                    const isStandardDay = STANDARD_WEEKDAYS.includes(day.weekday);
-                    const isOffHours =
-                      !isStandardDay ||
-                      hour < STANDARD_DAY_START_HOUR ||
-                      hour >= STANDARD_DAY_END_HOUR;
-
-                    const timeStr = getTimeString(rIdx);
-
-                    const slotDate = new Date(day.dayStart);
-                    slotDate.setMinutes(rIdx * CALENDAR_ROW_MINUTES);
-                    const hasPassed = slotDate.getTime() < nowMs;
-
-                    return (
-                      <div
-                        key={`week-cell-${day.dateString}-${rIdx}`}
-                        style={{ gridRow: rIdx + 2, gridColumn: dayIdx + 2 }}
-                        className={`border-r border-[#334155] transition-colors relative ${
-                          isFullHour ? "border-t border-[#334155]" : "border-t border-[#334155]/30"
-                        } ${isOffHours ? "bg-[#060e1d]" : "bg-transparent"}`}
-                      >
-                        {canBookHere && !hasPassed && res ? (
-                          <Link
-                            href={`/bookings/new?resourceId=${res.id}&date=${day.dateString}&start=${timeStr}`}
-                            aria-label={`Book ${res.name} at ${timeStr}`}
-                            className="group/slot block w-full h-[26px] focus:outline-none focus-visible:ring-1 focus-visible:ring-[#6cd8cb] focus-visible:z-20 hover:bg-[#18202f]/80 transition-colors"
-                          >
-                            <span className="hidden group-hover/slot:inline-block group-focus-visible/slot:inline-block text-[10px] font-mono text-[#6cd8cb] font-bold pl-1.5 leading-[26px]">
-                              + {timeStr}
-                            </span>
-                          </Link>
-                        ) : (
-                          <div className="w-full h-[26px]" />
-                        )}
-                      </div>
-                    );
-                  })}
-                </React.Fragment>
-              );
-            })}
-
-            {/* RESERVATIONS OVERLAY FOR WEEK */}
-            {weekData.resource &&
-              weekData.resource.status !== "OUT_OF_SERVICE" &&
-              weekData.days.map((day, dayIdx) => (
-                <React.Fragment key={`week-blocks-${day.dateString}`}>
-                  {weekData.reservations.map((res) => {
-                    const placement = placeOnDay({
-                      startAt: new Date(res.startAt),
-                      endAt: new Date(res.endAt),
-                      dayStart: new Date(day.dayStart),
-                      dayEnd: new Date(day.dayEnd),
-                      rowMinutes: CALENDAR_ROW_MINUTES,
-                    });
-
-                    if (!placement) return null;
-
-                    const isMaint = res.kind === "MAINTENANCE";
-                    const isLong = res.durationMinutes > 60;
-
-                    return (
-                      <Link
-                        key={`res-${res.id}-${day.dateString}`}
-                        href={`/reservations/${res.id}`}
-                        aria-label={`${
-                          isMaint ? "Maintenance" : res.isMine ? "Your booking" : "Booking"
-                        }: ${res.purpose}, ${res.timeRange} by ${res.createdBy.name}`}
-                        title={`${res.purpose} (${res.timeRange})`}
-                        style={{
-                          gridRow: `${placement.startRow + 2} / span ${placement.rowSpan}`,
-                          gridColumn: dayIdx + 2,
-                        }}
-                        className={`m-0.5 rounded-[6px] p-2 flex flex-col justify-between overflow-hidden shadow-2xs z-10 transition-all hover:scale-[1.005] hover:z-20 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#6cd8cb] ${
-                          isMaint
-                            ? "hatch-maint text-[#ffb77d] border-l-[3px] border-l-[#d97707] border border-[#d97707]/40"
-                            : res.isMine
-                              ? "bg-[#222a3a] text-[#6cd8cb] border-l-[3px] border-l-[#6cd8cb] border border-[#6cd8cb]/40"
-                              : "bg-[#18202f] text-[#7bd0ff] border-l-[3px] border-l-[#6cd8cb] border border-[#334155]"
-                        }`}
-                      >
-                        <div className="space-y-0.5 min-w-0">
-                          <div className="flex items-center justify-between gap-1">
-                            <span
-                              className={`text-[13px] font-bold truncate ${
-                                isLong ? "line-clamp-2" : ""
-                              } ${isMaint ? "text-[#ffb77d]" : "text-white"}`}
-                            >
-                              {res.purpose}
-                            </span>
-                            {res.isMine && (
-                              <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-white text-[#003732] uppercase font-mono shrink-0">
-                                You
-                              </span>
-                            )}
-                            {isMaint && (
-                              <span className="px-1 py-0.2 rounded text-[9px] font-bold bg-[#d97707]/30 text-[#ffb77d] uppercase font-mono shrink-0">
-                                Maint
-                              </span>
-                            )}
-                          </div>
-                          {!isMaint && (
-                            <p className="text-[11px] text-[#94a3b8] truncate font-medium">
-                              {res.createdBy.name}
-                            </p>
-                          )}
-                        </div>
-                        <p className="font-mono text-[11px] font-semibold tabular-nums text-white/90 mt-1">
-                          {res.timeRange}
-                        </p>
-                      </Link>
-                    );
-                  })}
-                </React.Fragment>
-              ))}
           </div>
         </div>
       )}
 
-      {/* 4. LEGEND */}
-      <div className="flex flex-wrap items-center gap-4 text-xs font-mono text-[#879390] pt-1 px-1">
-        <span className="font-bold text-white">Legend:</span>
-        <div className="flex items-center gap-1.5">
-          <span className="w-3.5 h-3.5 rounded bg-[#18202f] border-l-[3px] border-l-[#6cd8cb] border border-[#334155]" />
-          <span>Booking</span>
-        </div>
-        {canBookHere && (
-          <div className="flex items-center gap-1.5">
-            <span className="w-3.5 h-3.5 rounded bg-[#222a3a] border-l-[3px] border-l-[#6cd8cb] border border-[#6cd8cb]/40 flex items-center justify-center">
-              <span className="text-[8px] font-bold text-[#6cd8cb]">Y</span>
-            </span>
-            <span>Your booking</span>
+      {/* 4. PEEK SHEET: Opens when tapping any booking / maintenance item */}
+      {selectedRes && (
+        <PeekSheet
+          open={Boolean(selectedRes)}
+          onOpenChange={(open) => !open && setSelectedRes(null)}
+          eyebrow={selectedRes.kind === "MAINTENANCE" ? "MAINTENANCE" : "BOOKING"}
+          title={selectedRes.purpose}
+          actions={
+            <div className="flex w-full items-center justify-between gap-3">
+              <Link
+                href={`/reservations/${selectedRes.id}`}
+                className="inline-flex items-center justify-center gap-1.5 flex-1 h-11 px-4 rounded-xl border border-card-edge bg-card hover:bg-canvas font-bold text-xs text-navy transition-colors"
+              >
+                <ArrowUpRight className="size-4" />
+                <span>Open full page</span>
+              </Link>
+              {(selectedRes.isMine || user.role === "ADMIN" || user.role === "MANAGER") && (
+                <Link
+                  href={`/reservations/${selectedRes.id}?action=cancel`}
+                  className="inline-flex items-center justify-center gap-1.5 h-11 px-4 rounded-xl border border-red/30 bg-red-soft hover:bg-red/10 font-bold text-xs text-red transition-colors"
+                >
+                  <CalendarX className="size-4" />
+                  <span>Cancel</span>
+                </Link>
+              )}
+            </div>
+          }
+        >
+          <div className="space-y-4">
+            <div className="rounded-xl bg-canvas p-3 border border-line space-y-2">
+              <div className="flex justify-between text-xs">
+                <span className="text-muted font-medium">Time</span>
+                <span className="font-bold text-navy tabular-nums">{selectedRes.timeRange}</span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-muted font-medium">Duration</span>
+                <span className="font-bold text-navy tabular-nums">
+                  {selectedRes.durationMinutes} minutes
+                </span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-muted font-medium">Booked by</span>
+                <span className="font-bold text-navy">{selectedRes.createdBy.name}</span>
+              </div>
+            </div>
+            {selectedRes.isMine && (
+              <div className="p-3 rounded-xl bg-teal-soft border border-teal-line text-xs text-teal-deep font-medium">
+                This is your reservation. You can modify or cancel it from the detail page.
+              </div>
+            )}
           </div>
-        )}
-        <div className="flex items-center gap-1.5">
-          <span className="w-3.5 h-3.5 rounded hatch-maint border-l-[3px] border-l-[#d97707] border border-[#d97707]/40" />
-          <span>Maintenance</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <span className="w-3.5 h-3.5 rounded hatch-oos border border-rose-500/40" />
-          <span>Out of service</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <span className="w-3.5 h-3.5 rounded bg-[#060e1d] border border-[#334155]" />
-          <span>Outside standard hours</span>
-        </div>
-      </div>
+        </PeekSheet>
+      )}
     </div>
   );
 }

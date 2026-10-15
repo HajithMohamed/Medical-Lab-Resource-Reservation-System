@@ -118,7 +118,7 @@ export function MarkNotDoneDialog({
       </DialogTrigger>
       <DialogContent className="sm:max-w-md max-h-[85vh] flex flex-col p-0 overflow-hidden">
         <form onSubmit={handleSubmit} className="flex flex-col h-full min-h-0 overflow-hidden">
-          <DialogHeader className="p-6 pb-4 border-b border-[#1e293b]">
+          <DialogHeader className="p-6 pb-4 border-b border-line">
             <DialogTitle>Mark {trackerLabel.toLowerCase()} not done</DialogTitle>
             <DialogDescription>
               {resourceName} &bull; Scheduled due: {formattedDueOn}
@@ -133,19 +133,19 @@ export function MarkNotDoneDialog({
             )}
 
             {/* Clear warning callout */}
-            <div className="p-3.5 rounded-lg bg-amber-500/10 border border-amber-500/30 text-xs text-amber-200 space-y-1.5">
-              <div className="flex items-center gap-1.5 font-semibold text-amber-300">
-                <AlertTriangle className="size-4 shrink-0" />
+            <div className="p-3.5 rounded-2xl bg-amber-soft border border-amber-line text-xs text-amber space-y-1.5">
+              <div className="flex items-center gap-1.5 font-bold text-amber-strong">
+                <AlertTriangle className="size-4 shrink-0 text-amber-strong" />
                 <span>Notice: Due date will not change</span>
               </div>
               <p className="leading-relaxed">
-                The due date stays <strong className="text-white">{formattedDueOn}</strong>. From{" "}
-                <strong className="text-white">{formattedTomorrow}</strong> nobody can book{" "}
-                <strong className="text-white">{resourceName}</strong> until the{" "}
+                The due date stays <strong className="text-navy font-bold">{formattedDueOn}</strong>. From{" "}
+                <strong className="text-navy font-bold">{formattedTomorrow}</strong> nobody can book{" "}
+                <strong className="text-navy font-bold">{resourceName}</strong> until the{" "}
                 {trackerLabel.toLowerCase()} is recorded.
               </p>
               {affectedBookingsCount > 0 && (
-                <p className="text-amber-300/90 font-medium">
+                <p className="text-amber font-semibold">
                   {affectedBookingsCount} confirmed booking{affectedBookingsCount === 1 ? "" : "s"}{" "}
                   end after that day.
                 </p>
@@ -156,7 +156,7 @@ export function MarkNotDoneDialog({
             <div className="space-y-1.5">
               <Label
                 htmlFor="not-done-reason"
-                className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                className="text-xs font-bold text-navy uppercase tracking-wider"
               >
                 Reason why it did not happen today *
               </Label>
@@ -169,7 +169,7 @@ export function MarkNotDoneDialog({
                 required
                 maxLength={500}
                 disabled={isPending}
-                className="w-full rounded-md border border-[#334155] bg-[#060e1d] p-2.5 text-xs text-white placeholder:text-[#64748b] focus:border-[#6cd8cb] focus:outline-none resize-none"
+                className="w-full rounded-xl border border-card-edge bg-canvas p-3 text-xs text-navy font-semibold placeholder:text-muted focus:border-teal outline-none resize-none"
               />
               {fieldErrors.notes && (
                 <p className="text-xs font-medium text-destructive">{fieldErrors.notes[0]}</p>
@@ -180,7 +180,7 @@ export function MarkNotDoneDialog({
             <div className="space-y-1.5">
               <Label
                 htmlFor="planned-date"
-                className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                className="text-xs font-bold text-navy uppercase tracking-wider"
               >
                 Planned new date (optional)
               </Label>
@@ -190,8 +190,9 @@ export function MarkNotDoneDialog({
                 value={plannedDate}
                 onChange={(e) => setPlannedDate(e.target.value)}
                 disabled={isPending}
+                className="h-10 rounded-xl bg-canvas border-card-edge text-navy font-semibold text-xs"
               />
-              <p className="text-[11px] text-[#94a3b8]">
+              <p className="text-[11px] text-muted font-medium">
                 Informational target date for the laboratory team
               </p>
               {fieldErrors.plannedDate && (
@@ -200,19 +201,20 @@ export function MarkNotDoneDialog({
             </div>
           </div>
 
-          <DialogFooter className="p-4 border-t border-[#1e293b] bg-[#141c2b] flex items-center justify-end gap-3">
+          <DialogFooter className="p-4 border-t border-line bg-canvas/40 flex items-center justify-end gap-3">
             <Button
               type="button"
               variant="outline"
               onClick={() => setOpen(false)}
               disabled={isPending}
+              className="rounded-xl border-card-edge bg-card text-navy font-bold text-xs"
             >
               Cancel
             </Button>
             <Button
               type="submit"
               disabled={isPending}
-              className="bg-amber-600 hover:bg-amber-700 text-white font-semibold"
+              className="bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs rounded-xl shadow-xs"
             >
               {isPending ? "Saving..." : "Save as not done"}
             </Button>

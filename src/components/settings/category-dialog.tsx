@@ -82,7 +82,7 @@ export function CategoryDialog() {
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button className="gap-2 bg-[#6cd8cb] hover:bg-[#29a195] text-[#003732] font-semibold text-xs font-mono shadow-xs">
+        <Button className="gap-2 bg-teal hover:bg-teal-deep text-white font-bold text-xs rounded-xl shadow-2xs">
           <Plus className="size-4" />
           <span>Add category</span>
         </Button>
@@ -106,7 +106,7 @@ export function CategoryDialog() {
             <div className="space-y-1.5">
               <Label
                 htmlFor="category-name"
-                className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                className="text-xs font-semibold text-navy"
               >
                 Category Name
               </Label>
@@ -120,6 +120,7 @@ export function CategoryDialog() {
                 minLength={2}
                 maxLength={80}
                 autoFocus
+                className="h-10 bg-card border-card-edge text-navy text-xs rounded-xl focus-visible:border-teal"
               />
             </div>
 
@@ -127,12 +128,12 @@ export function CategoryDialog() {
               <div className="flex items-center justify-between">
                 <Label
                   htmlFor="category-max-minutes"
-                  className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                  className="text-xs font-semibold text-navy"
                 >
                   Longest booking
                 </Label>
                 {liveHint && (
-                  <span className="text-xs font-mono font-semibold text-[#6cd8cb] tabular-nums">
+                  <span className="text-xs font-semibold text-teal tabular-nums">
                     {liveHint}
                   </span>
                 )}
@@ -147,8 +148,9 @@ export function CategoryDialog() {
                 value={maxMinutes}
                 onChange={(e) => setMaxMinutes(e.target.value)}
                 required
+                className="h-10 bg-card border-card-edge text-navy text-xs rounded-xl focus-visible:border-teal"
               />
-              <p className="text-xs font-mono text-[#94a3b8]">
+              <p className="text-xs text-muted">
                 Enter duration in minutes (multiples of 15, up to 7 days).
               </p>
             </div>
@@ -156,23 +158,23 @@ export function CategoryDialog() {
             <div className="space-y-1.5">
               <Label
                 htmlFor="category-icon"
-                className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                className="text-xs font-semibold text-navy"
               >
                 Icon glyph
               </Label>
               <Select value={iconKey} onValueChange={(val) => setIconKey(val as CategoryIconKey)}>
                 <SelectTrigger
                   id="category-icon"
-                  className="w-full bg-[#060e1d] border-[#334155] text-white"
+                  className="w-full bg-card border-card-edge text-navy text-xs rounded-xl"
                 >
                   <SelectValue placeholder="Select icon" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#18202f] border-[#334155] text-white">
+                <SelectContent className="bg-card border-card-edge text-navy shadow-v4 rounded-xl">
                   {CATEGORY_ICON_KEYS.map((key) => (
                     <SelectItem
                       key={key}
                       value={key}
-                      className="hover:bg-[#222a3a] focus:bg-[#222a3a]"
+                      className="hover:bg-mint focus:bg-mint text-navy cursor-pointer"
                     >
                       <div className="flex items-center gap-2">
                         <CategoryIcon
@@ -180,7 +182,7 @@ export function CategoryDialog() {
                           className="size-6 rounded"
                           iconClassName="size-3.5"
                         />
-                        <span className="font-mono text-xs">{CATEGORY_ICON_LABELS[key]}</span>
+                        <span className="text-xs font-medium">{CATEGORY_ICON_LABELS[key]}</span>
                       </div>
                     </SelectItem>
                   ))}
@@ -189,20 +191,20 @@ export function CategoryDialog() {
             </div>
           </div>
 
-          <DialogFooter className="pt-3 border-t border-[#334155]/40">
+          <DialogFooter className="pt-3 border-t border-card-edge">
             <Button
               type="button"
               variant="outline"
               onClick={() => setOpen(false)}
               disabled={isPending}
-              className="text-[#dbe2f8] hover:bg-[#222a3a]"
+              className="text-navy hover:bg-mint rounded-xl border-card-edge"
             >
               Cancel
             </Button>
             <Button
               type="submit"
               disabled={isPending}
-              className="bg-[#6cd8cb] hover:bg-[#29a195] text-[#003732] font-semibold text-xs font-mono px-5 py-2 rounded-lg transition-all duration-150 active:scale-[0.98]"
+              className="bg-teal hover:bg-teal-deep text-white font-bold text-xs px-5 py-2 rounded-xl shadow-2xs transition-all active:scale-95"
             >
               {isPending ? "Adding..." : "Add category"}
             </Button>

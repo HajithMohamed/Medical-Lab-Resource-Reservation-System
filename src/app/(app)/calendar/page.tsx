@@ -146,6 +146,7 @@ export default async function CalendarPage({ searchParams }: CalendarPageProps) 
     <div className="space-y-4">
       {/* PageHeader with Role-based Description and Buttons */}
       <PageHeader
+        eyebrow="Workspace / Calendar"
         title="Calendar"
         description={
           canBookHere
@@ -158,7 +159,7 @@ export default async function CalendarPage({ searchParams }: CalendarPageProps) 
               <Button
                 asChild
                 size="sm"
-                className="bg-[#6cd8cb] hover:bg-[#29a195] text-[#003732] font-semibold text-xs font-mono shadow-xs"
+                className="bg-gradient-to-br from-teal to-teal-deep text-white font-bold text-xs shadow-sm hover:opacity-95"
               >
                 <Link href="/book">
                   <CalendarSearch className="size-3.5 mr-1.5" />
@@ -171,7 +172,7 @@ export default async function CalendarPage({ searchParams }: CalendarPageProps) 
                 asChild
                 variant="outline"
                 size="sm"
-                className="border-[#334155] bg-[#18202f] hover:bg-[#222a3a] text-xs font-mono text-white"
+                className="border-card-edge bg-card hover:bg-canvas text-xs font-semibold text-navy"
               >
                 <Link
                   href={`/maintenance/new?siteId=${selectedSiteId}&returnTo=${encodeURIComponent(

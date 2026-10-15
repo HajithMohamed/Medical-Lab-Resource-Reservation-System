@@ -49,7 +49,7 @@ export default async function CategoriesPage({ searchParams }: CategoriesPagePro
       <div>
         <Link
           href="/settings"
-          className="inline-flex items-center gap-1 text-xs font-mono text-[#94a3b8] hover:text-[#6cd8cb] mb-3 transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-muted hover:text-teal mb-3 transition-colors"
         >
           <ArrowLeft className="size-3.5" />
           <span>Back to Settings</span>
@@ -69,62 +69,64 @@ export default async function CategoriesPage({ searchParams }: CategoriesPagePro
           action={<CategoryDialog />}
         />
       ) : (
-        <div className="rounded-lg border border-[#334155] bg-[#141c2b] overflow-hidden shadow-sm">
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-[#222a3a]/70 border-b border-[#334155] text-xs font-mono uppercase tracking-wider text-[#94a3b8]">
-                <TableHead className="w-14 text-center">Glyph</TableHead>
-                <TableHead>Category Name</TableHead>
-                <TableHead>Longest Booking</TableHead>
-                <TableHead className="text-right">Resources</TableHead>
-                <TableHead className="w-28 text-right pr-4">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {categories.map((category) => (
-                <TableRow
-                  key={category.id}
-                  className="group hover:bg-[#222a3a]/50 transition-colors duration-150"
-                >
-                  <TableCell className="w-14 pl-4 pr-0 py-3.5">
-                    <div className="w-9 h-9 rounded-lg bg-[#18202f] border border-[#334155] flex items-center justify-center text-[#6cd8cb] shrink-0">
-                      <CategoryIcon iconKey={category.iconKey} className="size-5 shrink-0" />
-                    </div>
-                  </TableCell>
-                  <TableCell className="font-semibold text-white py-3.5 px-4 text-sm">
-                    <EditCategoryDialog
-                      category={category}
-                      trigger={
-                        <button
-                          type="button"
-                          className="font-semibold text-white hover:text-[#6cd8cb] transition-colors text-left cursor-pointer"
-                        >
-                          {category.name}
-                        </button>
-                      }
-                    />
-                  </TableCell>
-                  <TableCell className="tabular-nums text-[#dbe2f8] font-mono text-xs py-3.5 px-4">
-                    {formatMinutes(category.maxBookingMinutes)}
-                  </TableCell>
-                  <TableCell className="text-right tabular-nums text-white font-mono text-xs py-3.5 px-4">
-                    {category._count.resources}
-                  </TableCell>
-                  <TableCell className="text-right py-3.5 pr-4">
-                    <div className="flex items-center justify-end gap-1.5">
-                      <EditCategoryDialog category={category} />
-                      <DeleteRowButton
-                        id={category.id}
-                        name={category.name}
-                        entityType="category"
-                        deleteAction={deleteCategoryAction}
-                      />
-                    </div>
-                  </TableCell>
+        <div className="rounded-2xl border border-card-edge bg-card overflow-hidden shadow-v4">
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-canvas/80 border-b border-card-edge text-xs uppercase tracking-wider text-muted font-bold">
+                  <TableHead className="w-14 text-center">Glyph</TableHead>
+                  <TableHead>Category Name</TableHead>
+                  <TableHead>Longest Booking</TableHead>
+                  <TableHead className="text-right">Resources</TableHead>
+                  <TableHead className="w-28 text-right pr-4">Actions</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {categories.map((category) => (
+                  <TableRow
+                    key={category.id}
+                    className="group hover:bg-mint/40 transition-colors duration-150 border-b border-card-edge"
+                  >
+                    <TableCell className="w-14 pl-4 pr-0 py-3.5">
+                      <div className="w-9 h-9 rounded-xl bg-teal-soft border border-teal/20 flex items-center justify-center text-teal-deep shrink-0">
+                        <CategoryIcon iconKey={category.iconKey} className="size-5 shrink-0" />
+                      </div>
+                    </TableCell>
+                    <TableCell className="font-semibold text-navy py-3.5 px-4 text-sm">
+                      <EditCategoryDialog
+                        category={category}
+                        trigger={
+                          <button
+                            type="button"
+                            className="font-semibold text-navy hover:text-teal transition-colors text-left cursor-pointer"
+                          >
+                            {category.name}
+                          </button>
+                        }
+                      />
+                    </TableCell>
+                    <TableCell className="tabular-nums text-muted text-xs py-3.5 px-4">
+                      {formatMinutes(category.maxBookingMinutes)}
+                    </TableCell>
+                    <TableCell className="text-right tabular-nums text-navy font-semibold text-xs py-3.5 px-4">
+                      {category._count.resources}
+                    </TableCell>
+                    <TableCell className="text-right py-3.5 pr-4">
+                      <div className="flex items-center justify-end gap-1.5">
+                        <EditCategoryDialog category={category} />
+                        <DeleteRowButton
+                          id={category.id}
+                          name={category.name}
+                          entityType="category"
+                          deleteAction={deleteCategoryAction}
+                        />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
           <PaginationControls
             currentPage={page}
             totalPages={totalPages}

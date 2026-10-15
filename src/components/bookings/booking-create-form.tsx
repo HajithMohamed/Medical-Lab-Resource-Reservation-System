@@ -182,37 +182,37 @@ export function BookingCreateForm({ resources, prefilled }: BookingCreateFormPro
   };
 
   return (
-    <Card className="w-full max-w-[640px] mx-auto bg-[#141c2b] border-[#334155] shadow-lg">
-      <CardHeader className="border-b border-[#334155] pb-4">
-        <div className="flex items-center gap-2 text-xs font-mono text-[#6cd8cb] uppercase tracking-wider">
+    <Card className="w-full max-w-[640px] mx-auto bg-card border border-card-edge shadow-v4 rounded-3xl">
+      <CardHeader className="border-b border-card-edge bg-canvas/60 px-6 py-5 rounded-t-3xl">
+        <div className="flex items-center gap-2 text-[11px] font-extrabold text-teal uppercase tracking-wider mb-0.5">
           <Calendar className="size-4" />
           <span>New Reservation</span>
         </div>
-        <CardTitle className="text-xl font-bold text-white tracking-tight">
+        <CardTitle className="text-xl font-bold text-navy tracking-tight">
           Book a resource
         </CardTitle>
-        <CardDescription className="text-xs text-[#94a3b8]">
+        <CardDescription className="text-xs text-muted font-normal">
           Reserve a shared instrument, biosafety cabinet, or room across the clinical network.
         </CardDescription>
       </CardHeader>
 
-      <CardContent className="pt-6">
+      <CardContent className="p-6">
         <form action={formAction} className="space-y-5">
           {/* Clash or Global Error Alert */}
           {state?.error && (
             <div
               role="alert"
-              className="p-3.5 rounded-lg border border-rose-500/50 bg-rose-950/30 text-rose-200 text-xs font-mono space-y-2.5 animate-in fade-in"
+              className="p-3.5 rounded-2xl border border-red/30 bg-red-soft text-red text-xs space-y-2.5 animate-in fade-in"
             >
               <div className="flex items-start gap-2.5">
-                <AlertCircle className="size-4 text-rose-400 shrink-0 mt-0.5" />
-                <div className="flex-1 leading-relaxed font-sans">{state.error}</div>
+                <AlertCircle className="size-4 text-red shrink-0 mt-0.5" />
+                <div className="flex-1 leading-relaxed font-semibold">{state.error}</div>
               </div>
 
               {/* Suggestions on lost race / clash */}
               {state.suggestions && state.suggestions.length > 0 && (
-                <div className="pt-2 border-t border-rose-500/20">
-                  <p className="text-[11px] text-slate-300 font-sans mb-1.5 font-medium">
+                <div className="pt-2 border-t border-red/20">
+                  <p className="text-[11px] text-muted font-bold mb-1.5">
                     Nearest free start times today:
                   </p>
                   <div className="flex flex-wrap items-center gap-1.5">
@@ -221,7 +221,7 @@ export function BookingCreateForm({ resources, prefilled }: BookingCreateFormPro
                         type="button"
                         key={timeStr}
                         onClick={() => handleSelectSuggestion(timeStr)}
-                        className="px-2.5 py-1 rounded bg-[#18202f] border border-[#334155] hover:border-[#6cd8cb] text-[#6cd8cb] hover:text-white text-xs font-mono font-bold transition-colors cursor-pointer"
+                        className="px-2.5 py-1 rounded-xl bg-mint border border-teal-line hover:bg-teal hover:text-white text-teal-deep text-xs font-bold transition-all cursor-pointer"
                       >
                         {timeStr}
                       </button>
@@ -230,10 +230,10 @@ export function BookingCreateForm({ resources, prefilled }: BookingCreateFormPro
                 </div>
               )}
 
-              <div className="pt-1 border-t border-rose-500/20 flex justify-end">
+              <div className="pt-1.5 border-t border-red/20 flex justify-end">
                 <Link
                   href={calendarLink}
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#6cd8cb] hover:text-white transition-colors"
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-teal hover:underline transition-colors"
                 >
                   <span>See this day in the calendar</span>
                   <ArrowRight className="size-3" />
@@ -247,36 +247,36 @@ export function BookingCreateForm({ resources, prefilled }: BookingCreateFormPro
 
           {/* Read-only summary when coming prefilled from Find a Slot */}
           {isPrefilledSlot && selectedResource ? (
-            <div className="p-3.5 rounded-lg border border-[#334155] bg-[#0d1522] space-y-2">
+            <div className="p-4 rounded-2xl border border-card-edge bg-canvas/70 space-y-2.5">
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2.5 min-w-0">
                   <CategoryIcon
                     iconKey={selectedResource.category.iconKey}
-                    className="size-5 shrink-0 text-[#6cd8cb]"
+                    className="size-6 shrink-0 text-teal"
                   />
                   <div className="min-w-0">
-                    <p className="font-bold text-white text-sm truncate">{selectedResource.name}</p>
-                    <p className="text-xs text-[#94a3b8] truncate">{selectedResource.site.name}</p>
+                    <p className="font-bold text-navy text-sm truncate">{selectedResource.name}</p>
+                    <p className="text-xs text-muted truncate">{selectedResource.site.name}</p>
                   </div>
                 </div>
                 <Link
                   href={changeHref}
-                  className="inline-flex items-center gap-1 text-xs font-mono font-semibold text-[#6cd8cb] hover:text-white hover:underline shrink-0"
+                  className="inline-flex items-center gap-1 text-xs font-bold text-teal hover:underline shrink-0"
                 >
                   <ArrowLeft className="size-3" />
                   <span>Change</span>
                 </Link>
               </div>
 
-              <div className="pt-2 border-t border-[#334155]/60 flex items-center justify-between text-xs font-mono">
-                <span className="text-[#94a3b8]">Reserved Slot:</span>
-                <span className="font-bold text-[#6cd8cb] tabular-nums">
+              <div className="pt-2 border-t border-card-edge flex items-center justify-between text-xs">
+                <span className="text-muted font-medium">Reserved Slot:</span>
+                <span className="font-bold text-teal-deep tabular-nums">
                   {formattedSummary.split(" · ")[2] || `${startDate}, ${startTime} to ${endTime}`}
                 </span>
               </div>
 
               {calibrationDueSoonText && (
-                <div className="pt-2 border-t border-[#334155]/60 flex items-center gap-1.5 text-xs font-mono text-amber-400 font-semibold">
+                <div className="pt-2 border-t border-card-edge flex items-center gap-1.5 text-xs text-amber font-bold">
                   <AlertCircle className="size-3.5 shrink-0" />
                   <span>{calibrationDueSoonText}</span>
                 </div>
@@ -292,8 +292,8 @@ export function BookingCreateForm({ resources, prefilled }: BookingCreateFormPro
             <>
               {/* Resource Select */}
               <div className="space-y-1.5">
-                <Label htmlFor="resourceSelect" className="text-xs font-mono text-[#dbe2f8]">
-                  Resource <span className="text-[#6cd8cb]">*</span>
+                <Label htmlFor="resourceSelect" className="text-xs font-bold text-navy">
+                  Resource <span className="text-teal">*</span>
                 </Label>
                 <Select
                   value={selectedResourceId}
@@ -301,29 +301,29 @@ export function BookingCreateForm({ resources, prefilled }: BookingCreateFormPro
                 >
                   <SelectTrigger
                     id="resourceSelect"
-                    className="w-full h-10 bg-[#060e1d] border-[#334155] text-slate-100 text-xs font-mono focus-visible:border-[#6cd8cb]"
+                    className="w-full h-10 bg-card border-card-edge text-navy text-xs font-semibold focus-visible:border-teal rounded-xl shadow-2xs"
                   >
                     <SelectValue placeholder="Select a resource..." />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#141c2b] border-[#334155] text-slate-100 max-h-80">
+                  <SelectContent className="bg-card border-card-edge text-ink max-h-80 rounded-2xl shadow-v4">
                     {groupedBySite.map(([siteId, group]) => (
                       <SelectGroup key={siteId}>
-                        <SelectLabel className="text-[11px] font-mono uppercase text-[#6cd8cb] tracking-wider px-2 py-1.5 bg-[#18202f]">
+                        <SelectLabel className="text-[10.5px] font-extrabold uppercase text-muted tracking-wider px-2.5 py-1.5 bg-canvas">
                           {group.siteName}
                         </SelectLabel>
                         {group.items.map((res) => (
                           <SelectItem
                             key={res.id}
                             value={res.id}
-                            className="text-xs font-mono py-2 hover:bg-[#222a3a] cursor-pointer"
+                            className="text-xs font-semibold py-2 hover:bg-mint cursor-pointer rounded-xl"
                           >
                             <div className="flex items-center gap-2">
                               <CategoryIcon
                                 iconKey={res.category.iconKey}
-                                className="size-4 shrink-0 text-[#6cd8cb]"
+                                className="size-4 shrink-0 text-teal"
                               />
-                              <span className="font-medium text-white">{res.name}</span>
-                              <span className="text-[#94a3b8] text-[11px]">
+                              <span className="font-bold text-navy">{res.name}</span>
+                              <span className="text-muted text-[11px] font-normal">
                                 ({formatMinutes(res.category.maxBookingMinutes)} max)
                               </span>
                             </div>
@@ -336,24 +336,24 @@ export function BookingCreateForm({ resources, prefilled }: BookingCreateFormPro
 
                 {/* Dynamic Resource Hint */}
                 {selectedResource && (
-                  <div className="text-[11px] font-mono text-[#94a3b8] pt-1 pl-0.5 space-y-0.5">
+                  <div className="text-xs text-muted pt-1 pl-0.5 space-y-0.5 font-normal">
                     <p>
-                      <span className="text-[#6cd8cb] font-semibold">
+                      <span className="text-teal-deep font-bold">
                         {selectedResource.category.name}
                       </span>{" "}
                       can be booked for up to{" "}
-                      <span className="text-white font-semibold">
+                      <span className="text-navy font-bold">
                         {formatMinutes(selectedResource.category.maxBookingMinutes)}
                       </span>
                       .
                     </p>
                     {selectedResource.capacity ? (
-                      <p className="text-emerald-400">
+                      <p className="text-teal font-semibold">
                         Holds up to {selectedResource.capacity} people.
                       </p>
                     ) : null}
                     {calibrationDueSoonText && (
-                      <p className="text-amber-400 font-semibold flex items-center gap-1.5 pt-0.5">
+                      <p className="text-amber font-bold flex items-center gap-1.5 pt-0.5">
                         <AlertCircle className="size-3.5 shrink-0" />
                         <span>{calibrationDueSoonText}</span>
                       </p>
@@ -361,7 +361,7 @@ export function BookingCreateForm({ resources, prefilled }: BookingCreateFormPro
                   </div>
                 )}
                 {state?.fieldErrors?.resourceId && (
-                  <p className="text-[11px] font-mono text-rose-400">
+                  <p className="text-[11px] font-semibold text-red">
                     {state.fieldErrors.resourceId[0]}
                   </p>
                 )}
@@ -370,8 +370,8 @@ export function BookingCreateForm({ resources, prefilled }: BookingCreateFormPro
               {/* Start Date and Time (Row 1) */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <Label htmlFor="startDate" className="text-xs font-mono text-[#dbe2f8]">
-                    Start Date <span className="text-[#6cd8cb]">*</span>
+                  <Label htmlFor="startDate" className="text-xs font-bold text-navy">
+                    Start Date <span className="text-teal">*</span>
                   </Label>
                   <Input
                     id="startDate"
@@ -380,18 +380,18 @@ export function BookingCreateForm({ resources, prefilled }: BookingCreateFormPro
                     required
                     value={startDate}
                     onChange={handleStartDateChange}
-                    className="h-10 bg-[#060e1d] border-[#334155] text-white text-xs font-mono tabular-nums focus-visible:border-[#6cd8cb]"
+                    className="h-10 bg-card border-card-edge text-navy text-xs font-semibold tabular-nums focus-visible:border-teal rounded-xl shadow-2xs"
                   />
                   {state?.fieldErrors?.startDate && (
-                    <p className="text-[11px] font-mono text-rose-400">
+                    <p className="text-[11px] font-semibold text-red">
                       {state.fieldErrors.startDate[0]}
                     </p>
                   )}
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label htmlFor="startTime" className="text-xs font-mono text-[#dbe2f8]">
-                    Start Time <span className="text-[#6cd8cb]">*</span>
+                  <Label htmlFor="startTime" className="text-xs font-bold text-navy">
+                    Start Time <span className="text-teal">*</span>
                   </Label>
                   <Input
                     id="startTime"
@@ -401,10 +401,10 @@ export function BookingCreateForm({ resources, prefilled }: BookingCreateFormPro
                     required
                     value={startTime}
                     onChange={(e) => setStartTime(e.target.value)}
-                    className="h-10 bg-[#060e1d] border-[#334155] text-white text-xs font-mono tabular-nums focus-visible:border-[#6cd8cb]"
+                    className="h-10 bg-card border-card-edge text-navy text-xs font-semibold tabular-nums focus-visible:border-teal rounded-xl shadow-2xs"
                   />
                   {state?.fieldErrors?.startTime && (
-                    <p className="text-[11px] font-mono text-rose-400">
+                    <p className="text-[11px] font-semibold text-red">
                       {state.fieldErrors.startTime[0]}
                     </p>
                   )}
@@ -414,8 +414,8 @@ export function BookingCreateForm({ resources, prefilled }: BookingCreateFormPro
               {/* End Date and Time (Row 2) */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <Label htmlFor="endDate" className="text-xs font-mono text-[#dbe2f8]">
-                    End Date <span className="text-[#6cd8cb]">*</span>
+                  <Label htmlFor="endDate" className="text-xs font-bold text-navy">
+                    End Date <span className="text-teal">*</span>
                   </Label>
                   <Input
                     id="endDate"
@@ -424,18 +424,18 @@ export function BookingCreateForm({ resources, prefilled }: BookingCreateFormPro
                     required
                     value={endDate}
                     onChange={(e) => setEndDate(e.target.value)}
-                    className="h-10 bg-[#060e1d] border-[#334155] text-white text-xs font-mono tabular-nums focus-visible:border-[#6cd8cb]"
+                    className="h-10 bg-card border-card-edge text-navy text-xs font-semibold tabular-nums focus-visible:border-teal rounded-xl shadow-2xs"
                   />
                   {state?.fieldErrors?.endDate && (
-                    <p className="text-[11px] font-mono text-rose-400">
+                    <p className="text-[11px] font-semibold text-red">
                       {state.fieldErrors.endDate[0]}
                     </p>
                   )}
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label htmlFor="endTime" className="text-xs font-mono text-[#dbe2f8]">
-                    End Time <span className="text-[#6cd8cb]">*</span>
+                  <Label htmlFor="endTime" className="text-xs font-bold text-navy">
+                    End Time <span className="text-teal">*</span>
                   </Label>
                   <Input
                     id="endTime"
@@ -445,10 +445,10 @@ export function BookingCreateForm({ resources, prefilled }: BookingCreateFormPro
                     required
                     value={endTime}
                     onChange={(e) => setEndTime(e.target.value)}
-                    className="h-10 bg-[#060e1d] border-[#334155] text-white text-xs font-mono tabular-nums focus-visible:border-[#6cd8cb]"
+                    className="h-10 bg-card border-card-edge text-navy text-xs font-semibold tabular-nums focus-visible:border-teal rounded-xl shadow-2xs"
                   />
                   {state?.fieldErrors?.endTime && (
-                    <p className="text-[11px] font-mono text-rose-400">
+                    <p className="text-[11px] font-semibold text-red">
                       {state.fieldErrors.endTime[0]}
                     </p>
                   )}
@@ -459,8 +459,8 @@ export function BookingCreateForm({ resources, prefilled }: BookingCreateFormPro
 
           {/* Purpose */}
           <div className="space-y-1.5">
-            <Label htmlFor="purpose" className="text-xs font-mono text-[#dbe2f8]">
-              Purpose <span className="text-[#6cd8cb]">*</span>
+            <Label htmlFor="purpose" className="text-xs font-bold text-navy">
+              Purpose <span className="text-teal">*</span>
             </Label>
             <Input
               id="purpose"
@@ -470,21 +470,21 @@ export function BookingCreateForm({ resources, prefilled }: BookingCreateFormPro
               minLength={3}
               maxLength={200}
               placeholder="e.g. HbA1c batch"
-              className="h-10 bg-[#060e1d] border-[#334155] text-white text-xs font-mono focus-visible:border-[#6cd8cb]"
+              className="h-10 bg-card border-card-edge text-navy text-xs font-semibold focus-visible:border-teal rounded-xl shadow-2xs"
             />
-            <p className="text-[10px] font-mono text-[#94a3b8]">
+            <p className="text-[11px] text-muted font-normal">
               3 to 200 characters describing the diagnostic or research work.
             </p>
             {state?.fieldErrors?.purpose && (
-              <p className="text-[11px] font-mono text-rose-400">{state.fieldErrors.purpose[0]}</p>
+              <p className="text-[11px] font-semibold text-red">{state.fieldErrors.purpose[0]}</p>
             )}
           </div>
 
           {/* Attendees (Only shown when chosen resource has capacity) */}
           {selectedResource?.capacity ? (
-            <div className="space-y-1.5 p-3 rounded-lg border border-[#334155] bg-[#060e1d]/60">
-              <Label htmlFor="attendeeCount" className="text-xs font-mono text-[#dbe2f8]">
-                Expected Attendees <span className="text-[#6cd8cb]">*</span>
+            <div className="space-y-1.5 p-3.5 rounded-2xl border border-card-edge bg-canvas/60">
+              <Label htmlFor="attendeeCount" className="text-xs font-bold text-navy">
+                Expected Attendees <span className="text-teal">*</span>
               </Label>
               <Input
                 id="attendeeCount"
@@ -494,13 +494,13 @@ export function BookingCreateForm({ resources, prefilled }: BookingCreateFormPro
                 max={selectedResource.capacity}
                 required
                 placeholder={`1 to ${selectedResource.capacity}`}
-                className="h-10 bg-[#060e1d] border-[#334155] text-white text-xs font-mono tabular-nums focus-visible:border-[#6cd8cb]"
+                className="h-10 bg-card border-card-edge text-navy text-xs font-semibold tabular-nums focus-visible:border-teal rounded-xl shadow-2xs"
               />
-              <p className="text-[10px] font-mono text-[#94a3b8]">
+              <p className="text-[11px] text-muted font-normal">
                 This room holds a maximum of {selectedResource.capacity} persons.
               </p>
               {state?.fieldErrors?.attendeeCount && (
-                <p className="text-[11px] font-mono text-rose-400">
+                <p className="text-[11px] font-semibold text-red">
                   {state.fieldErrors.attendeeCount[0]}
                 </p>
               )}
@@ -508,13 +508,13 @@ export function BookingCreateForm({ resources, prefilled }: BookingCreateFormPro
           ) : null}
 
           {/* Action Buttons */}
-          <div className="pt-3 flex items-center justify-end gap-3 border-t border-[#334155]">
+          <div className="pt-3 flex items-center justify-end gap-2.5 border-t border-card-edge">
             <Button
               asChild
               type="button"
               variant="outline"
               size="sm"
-              className="h-9 px-4 text-xs font-mono bg-[#18202f] hover:bg-[#222a3a] text-[#94a3b8] hover:text-white border-[#334155]"
+              className="h-9 px-4 text-xs font-semibold bg-card hover:bg-mint text-navy border border-card-edge rounded-xl shadow-2xs"
             >
               <Link href={isPrefilledSlot ? changeHref : "/bookings"}>Cancel</Link>
             </Button>
@@ -522,7 +522,7 @@ export function BookingCreateForm({ resources, prefilled }: BookingCreateFormPro
               type="submit"
               size="sm"
               disabled={isPending}
-              className="h-9 px-5 bg-[#6cd8cb] hover:bg-[#29a195] text-[#003732] font-semibold text-xs font-mono shadow-sm active:scale-95 transition-all cursor-pointer"
+              className="h-9 px-5 bg-teal hover:bg-teal-deep text-white font-bold text-xs rounded-xl shadow-2xs active:scale-95 transition-all cursor-pointer"
             >
               {isPending ? (
                 <>

@@ -93,18 +93,18 @@ export function EditCategoryDialog({ category, trigger }: EditCategoryDialogProp
           <Button
             variant="outline"
             size="sm"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-[#18202f] hover:bg-[#222a3a] text-xs font-mono font-medium text-[#dbe2f8] hover:text-white border border-[#334155] hover:border-[#6cd8cb]/50 transition-all duration-150 active:scale-[0.98]"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-card hover:bg-mint text-xs font-bold text-navy hover:text-teal border border-card-edge shadow-2xs transition-all cursor-pointer"
           >
-            <Pencil className="size-3.5 text-[#6cd8cb]" />
+            <Pencil className="size-3.5 text-teal" />
             <span>Edit</span>
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-lg bg-card border-card-edge shadow-v4 rounded-2xl">
         <form onSubmit={handleSubmit} className="space-y-4">
           <DialogHeader>
-            <DialogTitle>Edit category</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-lg font-bold text-navy">Edit category</DialogTitle>
+            <DialogDescription className="text-xs text-muted">
               Configure duration limits and icon for this resource category.
             </DialogDescription>
           </DialogHeader>
@@ -119,7 +119,7 @@ export function EditCategoryDialog({ category, trigger }: EditCategoryDialogProp
             <div className="space-y-1.5">
               <Label
                 htmlFor={`edit-category-name-${category.id}`}
-                className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                className="text-xs font-bold uppercase tracking-wider text-navy/80"
               >
                 Category Name
               </Label>
@@ -132,6 +132,7 @@ export function EditCategoryDialog({ category, trigger }: EditCategoryDialogProp
                 required
                 minLength={2}
                 maxLength={80}
+                className="bg-card border-card-edge text-navy font-semibold text-xs rounded-xl focus:border-teal"
               />
             </div>
 
@@ -139,12 +140,12 @@ export function EditCategoryDialog({ category, trigger }: EditCategoryDialogProp
               <div className="flex items-center justify-between">
                 <Label
                   htmlFor={`edit-category-max-${category.id}`}
-                  className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                  className="text-xs font-bold uppercase tracking-wider text-navy/80"
                 >
                   Longest booking
                 </Label>
                 {liveHint && (
-                  <span className="text-xs font-mono font-semibold text-[#6cd8cb] tabular-nums">
+                  <span className="text-xs font-bold text-teal tabular-nums">
                     {liveHint}
                   </span>
                 )}
@@ -159,8 +160,9 @@ export function EditCategoryDialog({ category, trigger }: EditCategoryDialogProp
                 value={maxMinutes}
                 onChange={(e) => setMaxMinutes(e.target.value)}
                 required
+                className="bg-card border-card-edge text-navy font-semibold text-xs rounded-xl focus:border-teal"
               />
-              <p className="text-xs font-mono text-[#94a3b8]">
+              <p className="text-[11.5px] text-slate-600 font-medium">
                 Enter duration in minutes (multiples of 15, up to 7 days).
               </p>
             </div>
@@ -168,23 +170,23 @@ export function EditCategoryDialog({ category, trigger }: EditCategoryDialogProp
             <div className="space-y-1.5">
               <Label
                 htmlFor={`edit-category-icon-${category.id}`}
-                className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                className="text-xs font-bold uppercase tracking-wider text-navy/80"
               >
                 Icon glyph
               </Label>
               <Select value={iconKey} onValueChange={(val) => setIconKey(val as CategoryIconKey)}>
                 <SelectTrigger
                   id={`edit-category-icon-${category.id}`}
-                  className="w-full bg-[#060e1d] border-[#334155] text-white"
+                  className="w-full bg-card border-card-edge text-navy font-semibold text-xs rounded-xl"
                 >
                   <SelectValue placeholder="Select icon" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#18202f] border-[#334155] text-white">
+                <SelectContent className="bg-card border-card-edge text-navy">
                   {CATEGORY_ICON_KEYS.map((key) => (
                     <SelectItem
                       key={key}
                       value={key}
-                      className="hover:bg-[#222a3a] focus:bg-[#222a3a]"
+                      className="hover:bg-mint focus:bg-mint font-semibold text-xs text-navy cursor-pointer"
                     >
                       <div className="flex items-center gap-2">
                         <CategoryIcon
@@ -192,7 +194,7 @@ export function EditCategoryDialog({ category, trigger }: EditCategoryDialogProp
                           className="size-6 rounded"
                           iconClassName="size-3.5"
                         />
-                        <span className="font-mono text-xs">{CATEGORY_ICON_LABELS[key]}</span>
+                        <span className="text-xs font-medium text-navy">{CATEGORY_ICON_LABELS[key]}</span>
                       </div>
                     </SelectItem>
                   ))}
@@ -201,37 +203,37 @@ export function EditCategoryDialog({ category, trigger }: EditCategoryDialogProp
             </div>
 
             {/* Telemetry Stats Callout */}
-            <div className="p-3 bg-[#18202f] border border-[#334155]/60 rounded-lg flex items-center justify-between">
+            <div className="p-3.5 bg-canvas border border-card-edge rounded-xl flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <span className="text-[#6cd8cb]">ℹ</span>
-                <span className="text-xs text-[#94a3b8] font-mono">
+                <span className="text-teal font-bold">ℹ</span>
+                <span className="text-xs text-slate-700 font-medium">
                   Associated with{" "}
-                  <strong className="text-white font-semibold">
+                  <strong className="text-navy font-bold">
                     {category._count.resources} resources
                   </strong>
                   .
                 </span>
               </div>
-              <span className="text-xs font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-teal-soft text-teal-deep border border-teal-line">
                 Active
               </span>
             </div>
           </div>
 
-          <DialogFooter className="pt-3 border-t border-[#334155]/40">
+          <DialogFooter className="pt-3 border-t border-card-edge">
             <Button
               type="button"
               variant="outline"
               onClick={() => setOpen(false)}
               disabled={isPending}
-              className="text-[#dbe2f8] hover:bg-[#222a3a]"
+              className="border-card-edge text-navy hover:bg-mint text-xs font-semibold rounded-xl"
             >
               Cancel
             </Button>
             <Button
               type="submit"
               disabled={isPending}
-              className="bg-[#6cd8cb] hover:bg-[#29a195] text-[#003732] font-semibold text-xs font-mono px-5 py-2 rounded-lg transition-all duration-150 active:scale-[0.98]"
+              className="bg-teal hover:bg-teal-deep text-white font-bold text-xs px-5 py-2 rounded-xl shadow-xs cursor-pointer transition-all"
             >
               {isPending ? "Saving..." : "Save changes"}
             </Button>

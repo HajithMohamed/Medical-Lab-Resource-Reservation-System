@@ -78,14 +78,14 @@ export function EquipmentCarePanel({
   const inServiceStr = resource.inServiceOn ? format(resource.inServiceOn, "d MMM yyyy") : null;
 
   return (
-    <div className="space-y-6 rounded-2xl bg-[#0f172a]/60 border border-[#1e293b] p-6 text-slate-200">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#1e293b] pb-4">
+    <div className="space-y-6 rounded-2xl bg-card border border-card-edge p-6 shadow-v4 text-navy">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-card-edge pb-4">
         <div>
           <div className="flex items-center gap-2">
-            <ShieldCheck className="size-5 text-[#6cd8cb]" />
-            <h2 className="text-base font-semibold text-white tracking-tight">Equipment care</h2>
+            <ShieldCheck className="size-5 text-teal" />
+            <h2 className="text-base font-bold text-navy tracking-tight">Equipment care</h2>
           </div>
-          <p className="text-xs text-[#94a3b8] mt-0.5">
+          <p className="text-xs text-muted mt-0.5">
             Verification schedules, preventive servicing, and compliance audit trail.
           </p>
         </div>
@@ -105,7 +105,7 @@ export function EquipmentCarePanel({
                 trigger={
                   <button
                     type="button"
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#141c2b] hover:bg-[#1a2436] text-xs font-mono font-medium text-[#dbe2f8] border border-[#334155] hover:border-[#6cd8cb]/50 transition-colors"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-card hover:bg-canvas text-xs font-bold text-navy border border-card-edge shadow-2xs transition-colors"
                   >
                     Record calibration
                   </button>
@@ -125,7 +125,7 @@ export function EquipmentCarePanel({
                 trigger={
                   <button
                     type="button"
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#141c2b] hover:bg-[#1a2436] text-xs font-mono font-medium text-[#dbe2f8] border border-[#334155] hover:border-[#6cd8cb]/50 transition-colors"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-card hover:bg-canvas text-xs font-bold text-navy border border-card-edge shadow-2xs transition-colors"
                   >
                     Record maintenance
                   </button>
@@ -143,7 +143,7 @@ export function EquipmentCarePanel({
               trigger={
                 <button
                   type="button"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#141c2b] hover:bg-[#1a2436] text-xs font-mono font-medium text-[#dbe2f8] border border-[#334155] hover:border-[#6cd8cb]/50 transition-colors"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-card hover:bg-canvas text-xs font-bold text-navy border border-card-edge shadow-2xs transition-colors"
                 >
                   Record check or repair
                 </button>
@@ -160,7 +160,7 @@ export function EquipmentCarePanel({
               trigger={
                 <button
                   type="button"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#141c2b] hover:bg-[#1a2436] text-xs font-mono font-medium text-[#dbe2f8] border border-[#334155] hover:border-[#6cd8cb]/50 transition-colors"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-card hover:bg-canvas text-xs font-bold text-navy border border-card-edge shadow-2xs transition-colors"
                 >
                   Record review
                 </button>
@@ -184,30 +184,30 @@ export function EquipmentCarePanel({
 
       {/* Identity line */}
       {hasDetails && (
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-4 rounded-xl bg-[#060e1d]/80 border border-[#1e293b] text-xs">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-4 rounded-xl bg-canvas border border-card-edge text-xs">
           <div>
-            <span className="text-[11px] font-mono uppercase tracking-wider text-[#94a3b8]">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-muted">
               Manufacturer
             </span>
-            <p className="font-medium text-white mt-0.5">{resource.manufacturer || "—"}</p>
+            <p className="font-bold text-navy mt-0.5">{resource.manufacturer || "—"}</p>
           </div>
           <div>
-            <span className="text-[11px] font-mono uppercase tracking-wider text-[#94a3b8]">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-muted">
               Model
             </span>
-            <p className="font-medium text-white mt-0.5">{resource.model || "—"}</p>
+            <p className="font-bold text-navy mt-0.5">{resource.model || "—"}</p>
           </div>
           <div>
-            <span className="text-[11px] font-mono uppercase tracking-wider text-[#94a3b8]">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-muted">
               {labels.serialNumber}
             </span>
-            <p className="font-mono text-white mt-0.5">{resource.serialNumber || "—"}</p>
+            <p className="font-mono font-bold text-navy mt-0.5">{resource.serialNumber || "—"}</p>
           </div>
           <div>
-            <span className="text-[11px] font-mono uppercase tracking-wider text-[#94a3b8]">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-muted">
               In service since
             </span>
-            <p className="font-medium text-white mt-0.5">
+            <p className="font-bold text-navy mt-0.5">
               {inServiceStr || "—"}
               {resource.expectedServiceLifeYears &&
                 ` (${resource.expectedServiceLifeYears} yr lifespan)`}
@@ -218,18 +218,18 @@ export function EquipmentCarePanel({
 
       {/* Schedule Tracker Rows */}
       <div className="space-y-3">
-        <h3 className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]">
+        <h3 className="text-xs font-bold uppercase tracking-wider text-muted">
           Schedule status
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {/* Calibration */}
           {hasCalibration && (
-            <div className="p-3.5 rounded-xl bg-[#141c2b]/80 border border-[#1e293b] flex flex-col justify-between gap-2">
+            <div className="p-3.5 rounded-xl bg-canvas border border-card-edge flex flex-col justify-between gap-2">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-white">Calibration</span>
+                <span className="text-xs font-bold text-navy">Calibration</span>
                 <EquipmentStatusTag status={resource.calibrationStatus ?? "NOT_TRACKED"} />
               </div>
-              <p className="text-xs text-[#94a3b8]">
+              <p className="text-xs text-muted">
                 {formatEquipmentStatusText({
                   type: "calibration",
                   status: resource.calibrationStatus ?? "NOT_TRACKED",
@@ -241,12 +241,12 @@ export function EquipmentCarePanel({
 
           {/* Maintenance */}
           {hasMaintenance && (
-            <div className="p-3.5 rounded-xl bg-[#141c2b]/80 border border-[#1e293b] flex flex-col justify-between gap-2">
+            <div className="p-3.5 rounded-xl bg-canvas border border-card-edge flex flex-col justify-between gap-2">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-white">{labels.maintenance}</span>
+                <span className="text-xs font-bold text-navy">{labels.maintenance}</span>
                 <EquipmentStatusTag status={resource.maintenanceStatus ?? "NOT_TRACKED"} />
               </div>
-              <p className="text-xs text-[#94a3b8]">
+              <p className="text-xs text-muted">
                 {formatEquipmentStatusText({
                   type: "maintenance",
                   status: resource.maintenanceStatus ?? "NOT_TRACKED",
@@ -258,12 +258,12 @@ export function EquipmentCarePanel({
 
           {/* Replacement Review */}
           {hasDetails && (
-            <div className="p-3.5 rounded-xl bg-[#141c2b]/80 border border-[#1e293b] flex flex-col justify-between gap-2">
+            <div className="p-3.5 rounded-xl bg-canvas border border-card-edge flex flex-col justify-between gap-2">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-white">Replacement review</span>
+                <span className="text-xs font-bold text-navy">Replacement review</span>
                 <EquipmentStatusTag status={resource.reviewStatus ?? "NOT_TRACKED"} />
               </div>
-              <p className="text-xs text-[#94a3b8]">
+              <p className="text-xs text-muted">
                 {formatEquipmentStatusText({
                   type: "review",
                   status: resource.reviewStatus ?? "NOT_TRACKED",
@@ -278,34 +278,34 @@ export function EquipmentCarePanel({
       {/* History table */}
       <div className="space-y-3 pt-2">
         <div className="flex items-center justify-between">
-          <h3 className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-muted">
             Verification & Maintenance History
           </h3>
-          <span className="text-[11px] text-[#94a3b8]">ISO 15189 append-only log</span>
+          <span className="text-[11px] text-muted">ISO 15189 append-only log</span>
         </div>
 
         {history.length === 0 ? (
-          <div className="py-8 text-center border border-dashed border-[#1e293b] rounded-xl text-xs text-[#94a3b8]">
+          <div className="py-8 text-center border border-dashed border-card-edge rounded-xl text-xs text-muted">
             No equipment records yet.
           </div>
         ) : (
-          <div className="overflow-x-auto rounded-xl border border-[#1e293b]">
+          <div className="overflow-x-auto rounded-xl border border-card-edge bg-card">
             <table className="w-full text-left text-xs">
-              <thead className="bg-[#141c2b] text-[#94a3b8] font-mono border-b border-[#1e293b]">
+              <thead className="bg-canvas text-muted font-bold text-[11px] uppercase tracking-wider border-b border-card-edge">
                 <tr>
-                  <th className="py-2.5 px-3 font-medium">Date</th>
-                  <th className="py-2.5 px-3 font-medium">Kind</th>
-                  <th className="py-2.5 px-3 font-medium">Performed by</th>
-                  <th className="py-2.5 px-3 font-medium">Work done</th>
-                  <th className="py-2.5 px-3 font-medium">Result</th>
-                  <th className="py-2.5 px-3 font-medium">Notes</th>
-                  <th className="py-2.5 px-3 font-medium">Next due</th>
-                  <th className="py-2.5 px-3 font-medium">Reference</th>
-                  <th className="py-2.5 px-3 font-medium">Recorded by</th>
-                  {canManage && <th className="py-2.5 px-3 font-medium text-right">PDF</th>}
+                  <th className="py-2.5 px-3">Date</th>
+                  <th className="py-2.5 px-3">Kind</th>
+                  <th className="py-2.5 px-3">Performed by</th>
+                  <th className="py-2.5 px-3">Work done</th>
+                  <th className="py-2.5 px-3">Result</th>
+                  <th className="py-2.5 px-3">Notes</th>
+                  <th className="py-2.5 px-3">Next due</th>
+                  <th className="py-2.5 px-3">Reference</th>
+                  <th className="py-2.5 px-3">Recorded by</th>
+                  {canManage && <th className="py-2.5 px-3 text-right">PDF</th>}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#1e293b] bg-[#060e1d]/60">
+              <tbody className="divide-y divide-card-edge">
                 {history.map((rec) => {
                   const dayStr = dbToDay(rec.performedOn);
                   const isFail = rec.outcome === "FAIL";
@@ -322,51 +322,69 @@ export function EquipmentCarePanel({
                     kindName = "Lifecycle review";
                   }
 
-                  let outcomeBadge = <span className="font-semibold text-emerald-400">Pass</span>;
+                  let outcomeBadge = (
+                    <span className="inline-flex px-2 py-0.5 rounded-md text-[10px] font-bold bg-green-soft text-green">
+                      Pass
+                    </span>
+                  );
                   if (isFail) {
-                    outcomeBadge = <span className="font-semibold text-rose-400">Fail</span>;
+                    outcomeBadge = (
+                      <span className="inline-flex px-2 py-0.5 rounded-md text-[10px] font-bold bg-red-soft text-red">
+                        Fail
+                      </span>
+                    );
                   } else if (isNotDone) {
-                    outcomeBadge = <span className="font-semibold text-amber-300">Not done</span>;
+                    outcomeBadge = (
+                      <span className="inline-flex px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-soft text-amber">
+                        Not done
+                      </span>
+                    );
                   } else if (rec.outcome === "KEEP_IN_SERVICE") {
                     outcomeBadge = (
-                      <span className="font-semibold text-emerald-400">Keep in service</span>
+                      <span className="inline-flex px-2 py-0.5 rounded-md text-[10px] font-bold bg-green-soft text-green">
+                        Keep in service
+                      </span>
                     );
                   } else if (rec.outcome === "REPLACE") {
-                    outcomeBadge = <span className="font-semibold text-rose-400">Replace</span>;
+                    outcomeBadge = (
+                      <span className="inline-flex px-2 py-0.5 rounded-md text-[10px] font-bold bg-red-soft text-red">
+                        Replace
+                      </span>
+                    );
                   }
 
                   return (
-                    <tr key={rec.id} className="hover:bg-[#141c2b]/40 transition-colors">
-                      <td className="py-2.5 px-3 font-mono text-white whitespace-nowrap">
+                    <tr key={rec.id} className="hover:bg-mint/40 transition-colors">
+                      <td className="py-2.5 px-3 text-navy font-bold whitespace-nowrap">
                         {formatEquipmentDay(dayStr)}
                       </td>
-                      <td className="py-2.5 px-3 text-slate-200 whitespace-nowrap">{kindName}</td>
-                      <td className="py-2.5 px-3 text-slate-300">
-                        <div>{rec.performedBy}</div>
+                      <td className="py-2.5 px-3 text-navy font-semibold whitespace-nowrap">{kindName}</td>
+                      <td className="py-2.5 px-3 text-navy">
+                        <div className="font-semibold">{rec.performedBy}</div>
                         {rec.externalCompany && (
-                          <div className="text-[11px] text-[#94a3b8]">{rec.externalCompany}</div>
+                          <div className="text-[11px] text-muted">{rec.externalCompany}</div>
                         )}
                       </td>
                       <td
-                        className="py-2.5 px-3 text-slate-300 max-w-[160px] truncate"
+                        className="py-2.5 px-3 text-muted max-w-[160px] truncate"
                         title={rec.workPerformed || rec.notes || undefined}
                       >
                         {rec.workPerformed || rec.notes || "—"}
                       </td>
                       <td className="py-2.5 px-3 whitespace-nowrap">{outcomeBadge}</td>
                       <td
-                        className="py-2.5 px-3 text-slate-300 max-w-[120px] truncate"
+                        className="py-2.5 px-3 text-muted max-w-[120px] truncate"
                         title={rec.notes ?? undefined}
                       >
                         {rec.notes || "—"}
                       </td>
-                      <td className="py-2.5 px-3 font-mono text-[#94a3b8] whitespace-nowrap">
+                      <td className="py-2.5 px-3 text-navy font-semibold whitespace-nowrap">
                         {rec.nextDueOn ? formatEquipmentDay(dbToDay(rec.nextDueOn)) : "—"}
                       </td>
-                      <td className="py-2.5 px-3 font-mono text-[#94a3b8]">
+                      <td className="py-2.5 px-3 text-muted">
                         {rec.reference || "—"}
                       </td>
-                      <td className="py-2.5 px-3 text-[#94a3b8] whitespace-nowrap">
+                      <td className="py-2.5 px-3 text-muted whitespace-nowrap">
                         {rec.recordedBy.name}
                       </td>
                       {canManage && (
@@ -375,7 +393,7 @@ export function EquipmentCarePanel({
                             href={`/equipment/records/${rec.id}/pdf`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center text-[#7bd0ff] hover:text-white"
+                            className="inline-flex items-center text-teal hover:text-teal-deep"
                             title="Service record PDF"
                           >
                             <FileText className="size-3.5" />

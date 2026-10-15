@@ -95,8 +95,9 @@ export default async function UsersPage({ searchParams }: UsersPageProps) {
   const hasActiveFilters = Boolean(params.siteId || params.role || params.status);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 w-full">
       <PageHeader
+        eyebrow="Access & Permissions"
         title="Users"
         description={
           isAdmin
@@ -135,7 +136,11 @@ export default async function UsersPage({ searchParams }: UsersPageProps) {
           }
           action={
             hasActiveFilters ? (
-              <Button asChild variant="outline">
+              <Button
+                asChild
+                variant="outline"
+                className="rounded-xl border-card-edge bg-card text-navy font-bold"
+              >
                 <Link href="/users">Clear filters</Link>
               </Button>
             ) : (
@@ -151,42 +156,43 @@ export default async function UsersPage({ searchParams }: UsersPageProps) {
           }
         />
       ) : (
-        <div className="space-y-3">
-          <div className="rounded-lg border border-[#334155] bg-[#141c2b] shadow-sm overflow-hidden">
+        <div className="space-y-4">
+          {/* Desktop & Tablet Table (md and above) */}
+          <div className="hidden md:block rounded-[20px] border border-card-edge bg-card shadow-v4 overflow-hidden">
             <Table>
               <TableHeader>
-                <TableRow className="bg-[#222a3a]/70 border-b border-[#334155] text-xs font-mono uppercase tracking-wider text-[#94a3b8]">
-                  <TableHead className="w-[30%] py-2.5 px-3">Person</TableHead>
-                  <TableHead className="py-2.5 px-3">Role</TableHead>
-                  <TableHead className="py-2.5 px-3">Site</TableHead>
-                  <TableHead className="py-2.5 px-3">Section</TableHead>
-                  <TableHead className="py-2.5 px-3">Status</TableHead>
-                  <TableHead className="py-2.5 px-3">Last sign-in</TableHead>
-                  <TableHead className="w-[100px] text-right py-2.5 px-3">Actions</TableHead>
+                <TableRow className="bg-canvas/80 border-b border-line text-xs font-black uppercase tracking-wider text-navy/90">
+                  <TableHead className="w-[30%] py-3.5 px-4">Person</TableHead>
+                  <TableHead className="py-3.5 px-4">Role</TableHead>
+                  <TableHead className="py-3.5 px-4">Site</TableHead>
+                  <TableHead className="py-3.5 px-4">Section</TableHead>
+                  <TableHead className="py-3.5 px-4">Status</TableHead>
+                  <TableHead className="py-3.5 px-4">Last sign-in</TableHead>
+                  <TableHead className="w-[90px] text-right py-3.5 px-4">Actions</TableHead>
                 </TableRow>
               </TableHeader>
-              <TableBody>
-                {users.map((user) => {
-                  const upcomingCount = upcomingCountsMap.get(user.id) ?? 0;
-                  const lastLoginTitle = user.lastLoginAt
-                    ? `${formatLabDate(user.lastLoginAt)} ${formatLabTime(user.lastLoginAt)}`
+              <TableBody className="divide-y divide-line">
+                {users.map((u) => {
+                  const upcomingCount = upcomingCountsMap.get(u.id) ?? 0;
+                  const lastLoginTitle = u.lastLoginAt
+                    ? `${formatLabDate(u.lastLoginAt)} ${formatLabTime(u.lastLoginAt)}`
                     : "Never signed in";
 
                   return (
                     <TableRow
-                      key={user.id}
-                      className="group hover:bg-[#222a3a]/50 transition-colors duration-150"
+                      key={u.id}
+                      className="group hover:bg-mint/40 transition-colors duration-150"
                     >
-                      <TableCell className="py-2 px-3">
+                      <TableCell className="py-3 px-4">
                         <div className="flex items-center gap-3">
-                          <Avatar className="size-8 rounded-lg bg-[#6cd8cb]/20 text-[#6cd8cb] border border-[#6cd8cb]/30 font-mono font-bold text-xs shrink-0">
-                            <AvatarFallback className="bg-[#6cd8cb]/20 text-[#6cd8cb]">
-                              {getInitials(user.name)}
+                          <Avatar className="size-9 rounded-xl bg-teal-soft text-teal font-extrabold text-xs shrink-0">
+                            <AvatarFallback className="bg-teal-soft text-teal">
+                              {getInitials(u.name)}
                             </AvatarFallback>
                           </Avatar>
                           <div className="min-w-0">
                             <UserEditDialog
-                              user={user}
+                              user={u}
                               actorId={actor.id}
                               actorRole={actor.role}
                               upcomingBookingsCount={upcomingCount}
@@ -195,61 +201,56 @@ export default async function UsersPage({ searchParams }: UsersPageProps) {
                               trigger={
                                 <button
                                   type="button"
-                                  className="font-semibold text-white text-left truncate hover:text-[#6cd8cb] transition-colors cursor-pointer block text-sm"
+                                  className="font-bold text-navy text-left truncate hover:text-teal transition-colors cursor-pointer block text-sm"
                                 >
-                                  {user.name}
+                                  {u.name}
                                 </button>
                               }
                             />
-                            <div className="text-xs font-mono text-[#94a3b8] truncate">
-                              {user.email}
-                            </div>
+                            <div className="text-xs text-muted truncate">{u.email}</div>
                           </div>
                         </div>
                       </TableCell>
 
-                      <TableCell className="py-2 px-3">
-                        <span className="text-sm font-medium text-white">
-                          {user.role === Role.STAFF
+                      <TableCell className="py-3 px-4">
+                        <span className="text-xs font-bold text-navy">
+                          {u.role === Role.STAFF
                             ? "Staff"
-                            : user.role === Role.MANAGER
+                            : u.role === Role.MANAGER
                               ? "Site Manager"
                               : "Administrator"}
                         </span>
                       </TableCell>
 
-                      <TableCell className="py-2 px-3">
-                        <span className="text-sm text-[#dbe2f8]">
-                          {user.site?.name ?? "Network wide"}
+                      <TableCell className="py-3 px-4">
+                        <span className="text-xs font-medium text-navy">
+                          {u.site?.name ?? "Network wide"}
                         </span>
                       </TableCell>
 
-                      <TableCell className="py-2 px-3">
-                        {user.section?.name ? (
-                          <span className="px-2 py-0.5 rounded text-xs font-mono bg-[#18202f] text-[#bcc9c6] border border-[#334155]/60">
-                            {user.section.name}
+                      <TableCell className="py-3 px-4">
+                        {u.section?.name ? (
+                          <span className="px-2 py-0.5 rounded-md text-[11px] font-semibold bg-canvas text-navy border border-card-edge">
+                            {u.section.name}
                           </span>
                         ) : (
-                          <span className="text-[#94a3b8] text-xs font-mono">—</span>
+                          <span className="text-muted text-xs">—</span>
                         )}
                       </TableCell>
 
-                      <TableCell className="py-2 px-3">
-                        <UserStatusPill user={user} />
+                      <TableCell className="py-3 px-4">
+                        <UserStatusPill user={u} />
                       </TableCell>
 
-                      <TableCell className="py-2 px-3">
-                        <span
-                          className="text-xs font-mono text-[#94a3b8] cursor-default"
-                          title={lastLoginTitle}
-                        >
-                          {formatRelative(user.lastLoginAt, now)}
+                      <TableCell className="py-3 px-4">
+                        <span className="text-xs text-muted cursor-default" title={lastLoginTitle}>
+                          {formatRelative(u.lastLoginAt, now)}
                         </span>
                       </TableCell>
 
-                      <TableCell className="py-2 px-3 text-right">
+                      <TableCell className="py-3 px-4 text-right">
                         <UserRowActions
-                          user={user}
+                          user={u}
                           actorId={actor.id}
                           actorRole={actor.role}
                           upcomingBookingsCount={upcomingCount}
@@ -262,6 +263,97 @@ export default async function UsersPage({ searchParams }: UsersPageProps) {
                 })}
               </TableBody>
             </Table>
+            <PaginationControls
+              currentPage={page}
+              totalPages={totalPages}
+              totalCount={totalCount}
+              pageSize={pageSize}
+              basePath="/users"
+              queryParams={{
+                siteId: params.siteId,
+                role: params.role,
+                status: params.status,
+              }}
+              itemLabel="users"
+            />
+          </div>
+
+          {/* Mobile Phone Cards (< md) */}
+          <div className="md:hidden space-y-3">
+            {users.map((u) => {
+              const upcomingCount = upcomingCountsMap.get(u.id) ?? 0;
+              return (
+                <div
+                  key={u.id}
+                  className="rounded-2xl border border-card-edge bg-card p-4 space-y-3 shadow-v4"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-start gap-3 min-w-0">
+                      <Avatar className="size-10 rounded-xl bg-teal-soft text-teal font-extrabold text-xs shrink-0">
+                        <AvatarFallback className="bg-teal-soft text-teal">
+                          {getInitials(u.name)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="min-w-0">
+                        <UserEditDialog
+                          user={u}
+                          actorId={actor.id}
+                          actorRole={actor.role}
+                          upcomingBookingsCount={upcomingCount}
+                          sites={sites}
+                          sections={sections}
+                          trigger={
+                            <button
+                              type="button"
+                              className="font-bold text-navy text-left truncate hover:text-teal transition-colors cursor-pointer block text-sm"
+                            >
+                              {u.name}
+                            </button>
+                          }
+                        />
+                        <div className="text-xs text-muted truncate mt-0.5">{u.email}</div>
+                      </div>
+                    </div>
+                    <UserStatusPill user={u} className="shrink-0" />
+                  </div>
+
+                  <div className="pt-2 border-t border-line grid grid-cols-2 gap-2 text-xs">
+                    <div>
+                      <span className="text-muted block text-[11px] font-semibold">Role</span>
+                      <span className="font-bold text-navy">
+                        {u.role === Role.STAFF
+                          ? "Staff"
+                          : u.role === Role.MANAGER
+                            ? "Site Manager"
+                            : "Administrator"}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-muted block text-[11px] font-semibold">Site</span>
+                      <span className="font-bold text-navy truncate block">
+                        {u.site?.name ?? "Network wide"}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="pt-2 border-t border-line flex items-center justify-between">
+                    <span className="text-[11px] text-muted">
+                      {u.lastLoginAt
+                        ? `Active ${formatRelative(u.lastLoginAt, now)}`
+                        : "Never signed in"}
+                    </span>
+                    <UserRowActions
+                      user={u}
+                      actorId={actor.id}
+                      actorRole={actor.role}
+                      upcomingBookingsCount={upcomingCount}
+                      sites={sites}
+                      sections={sections}
+                    />
+                  </div>
+                </div>
+              );
+            })}
             <PaginationControls
               currentPage={page}
               totalPages={totalPages}

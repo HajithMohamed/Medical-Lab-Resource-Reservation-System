@@ -49,7 +49,7 @@ export function WatchButton({
   if (watched) {
     return (
       <div
-        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-mono font-medium bg-[#6cd8cb]/10 text-[#6cd8cb] border border-[#6cd8cb]/30 ${className ?? ""}`}
+        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-bold bg-teal-soft text-teal-deep border border-teal-line ${className ?? ""}`}
         title="You have an active alert set for this resource"
       >
         <BellRing className="size-3.5" />
@@ -85,7 +85,7 @@ export function WatchButton({
         size={size}
         onClick={handleWatchBackInService}
         disabled={isPending}
-        className={`text-xs font-mono border-[#334155] bg-[#18202f] text-[#6cd8cb] hover:text-white hover:bg-[#222a3a] gap-1.5 ${className ?? ""}`}
+        className={`text-xs font-semibold border-card-edge bg-card text-teal hover:text-teal-deep hover:bg-mint rounded-xl gap-1.5 shadow-2xs cursor-pointer ${className ?? ""}`}
       >
         <Bell className="size-3.5" />
         <span>{isPending ? "Setting alert..." : "Notify me when back in service"}</span>
@@ -131,7 +131,7 @@ export function WatchButton({
         <Button
           variant="outline"
           size={size}
-          className={`text-xs font-mono border-[#334155] bg-[#18202f] text-[#6cd8cb] hover:text-white hover:bg-[#222a3a] gap-1.5 ${className ?? ""}`}
+          className={`text-xs font-semibold border-card-edge bg-card text-teal hover:text-teal-deep hover:bg-mint rounded-xl gap-1.5 shadow-2xs cursor-pointer ${className ?? ""}`}
         >
           <Bell className="size-3.5" />
           <span>Notify me when it&apos;s free</span>
@@ -140,22 +140,22 @@ export function WatchButton({
 
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-base font-semibold text-white flex items-center gap-2">
-            <Bell className="size-4 text-[#6cd8cb]" />
+          <DialogTitle className="text-base font-bold text-navy flex items-center gap-2">
+            <Bell className="size-4 text-teal" />
             Notify me when free
           </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4 py-2 text-xs">
-          <p className="text-[#94a3b8]">
+          <p className="text-muted leading-relaxed font-normal">
             We will alert you immediately in-app if a booking is cancelled and{" "}
-            <strong className="text-white font-medium">{resourceName}</strong> becomes available.
+            <strong className="text-navy font-bold">{resourceName}</strong> becomes available.
           </p>
 
-          <div className="p-3 rounded-lg border border-[#334155] bg-[#18202f]/80 space-y-1.5 font-mono text-xs">
-            <div className="text-[#94a3b8]">Requested Time:</div>
-            <div className="text-white font-semibold flex items-center gap-2">
-              <Clock className="size-3.5 text-[#6cd8cb]" />
+          <div className="p-3 rounded-2xl border border-card-edge bg-canvas/70 space-y-1.5 text-xs">
+            <div className="text-[11px] font-bold text-muted uppercase tracking-wider">Requested Time:</div>
+            <div className="text-navy font-bold flex items-center gap-2 tab">
+              <Clock className="size-3.5 text-teal" />
               <span>
                 {formattedDate} &bull; {formattedStartTime} - {formattedEndTime}
                 {durationMinutes ? ` (${durationMinutes}m)` : ""}
@@ -163,7 +163,7 @@ export function WatchButton({
             </div>
           </div>
 
-          <label className="flex items-start gap-2.5 p-3 rounded-lg border border-[#334155]/60 hover:bg-[#18202f]/50 cursor-pointer transition-colors">
+          <label className="flex items-start gap-2.5 p-3 rounded-2xl border border-card-edge hover:bg-mint/30 cursor-pointer transition-colors">
             <Checkbox
               id="flexible-day-checkbox"
               checked={flexibleDay}
@@ -171,8 +171,8 @@ export function WatchButton({
               className="mt-0.5"
             />
             <div className="space-y-0.5">
-              <span className="font-medium text-white block">Any free slot that day</span>
-              <span className="text-[#94a3b8] block text-[11px]">
+              <span className="font-bold text-navy block text-xs">Any free slot that day</span>
+              <span className="text-muted block text-[11.5px] font-normal leading-relaxed">
                 Also alert me if any other {durationMinutes ?? 60}-minute slot opens up anywhere on{" "}
                 {formattedDate}.
               </span>
@@ -186,7 +186,7 @@ export function WatchButton({
             size="sm"
             onClick={() => setOpen(false)}
             disabled={isPending}
-            className="text-xs text-[#94a3b8] hover:text-white"
+            className="text-xs font-semibold text-muted hover:text-navy hover:bg-mint rounded-xl"
           >
             Cancel
           </Button>
@@ -194,7 +194,7 @@ export function WatchButton({
             size="sm"
             onClick={handleWatchSlot}
             disabled={isPending}
-            className="bg-[#6cd8cb] text-[#003732] hover:bg-[#29a195] font-semibold text-xs"
+            className="bg-teal hover:bg-teal-deep text-white font-bold text-xs rounded-xl shadow-2xs"
           >
             {isPending ? "Setting alert..." : "Set Alert"}
           </Button>

@@ -189,7 +189,7 @@ export function ClearFiltersButton({
       onClick={handleClick}
       aria-label="Clear filters"
       className={cn(
-        "h-8 px-2 text-xs font-mono text-[#94a3b8] hover:text-white transition-colors cursor-pointer",
+        "h-8 px-2.5 text-xs font-semibold text-muted hover:text-navy hover:bg-mint rounded-xl transition-colors cursor-pointer",
         className,
       )}
     >

@@ -4,16 +4,16 @@ import { cn } from "@/lib/utils";
 import { Slot } from "radix-ui";
 
 const badgeVariants = cva(
-  "group/badge inline-flex h-5 w-fit shrink-0 items-center justify-center gap-1 overflow-hidden rounded-full border border-transparent px-2.5 py-0.5 text-xs font-semibold whitespace-nowrap transition-all focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#6cd8cb] [&>svg]:pointer-events-none [&>svg]:size-3",
+  "group/badge inline-flex h-5 w-fit shrink-0 items-center justify-center gap-1 overflow-hidden rounded-full border border-transparent px-2.5 py-0.5 text-xs font-semibold whitespace-nowrap transition-all focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-teal [&>svg]:pointer-events-none [&>svg]:size-3",
   {
     variants: {
       variant: {
-        default: "bg-[#6cd8cb]/15 text-[#6cd8cb] border-[#6cd8cb]/30",
-        secondary: "bg-[#18202f] text-slate-300 border-[#334155]",
-        destructive: "bg-rose-500/15 text-rose-400 border-rose-500/30",
-        outline: "border-[#334155] text-slate-300 bg-transparent",
-        ghost: "hover:bg-[#222a3a] hover:text-slate-100",
-        link: "text-[#6cd8cb] underline-offset-4 hover:underline",
+        default: "bg-teal-soft text-teal-deep border-teal/20",
+        secondary: "bg-canvas text-navy border-card-edge",
+        destructive: "bg-red-soft text-red border-red/20",
+        outline: "border-card-edge text-muted bg-card",
+        ghost: "hover:bg-mint hover:text-navy",
+        link: "text-teal underline-offset-4 hover:underline",
       },
     },
     defaultVariants: {

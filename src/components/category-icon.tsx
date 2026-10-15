@@ -34,16 +34,10 @@ export const CATEGORY_ICON_NAME_MAP: Record<string, string> = {
   other: "Box",
 };
 
-/**
- * Pure function returning the icon name for a given category key (fallback: "Box").
- */
 export function getCategoryIconName(key: string): string {
   return CATEGORY_ICON_NAME_MAP[key] ?? "Box";
 }
 
-/**
- * Returns the Lucide icon component for a given category key (fallback: Box).
- */
 export function getCategoryIcon(key: string): LucideIcon {
   return CATEGORY_ICON_MAP[key] ?? Box;
 }
@@ -79,12 +73,12 @@ export function CategoryIcon({ iconKey, className, iconClassName }: CategoryIcon
   return (
     <div
       className={cn(
-        "size-8 rounded-lg bg-surface-container-high border border-outline-variant text-primary flex items-center justify-center shrink-0 shadow-2xs",
+        "w-9 h-9 rounded-xl bg-teal-soft text-teal flex items-center justify-center shrink-0 shadow-2xs",
         className,
       )}
       aria-hidden="true"
     >
-      {renderCategoryIcon(iconKey, cn("size-4", iconClassName))}
+      {renderCategoryIcon(iconKey, cn("size-4.5", iconClassName))}
     </div>
   );
 }

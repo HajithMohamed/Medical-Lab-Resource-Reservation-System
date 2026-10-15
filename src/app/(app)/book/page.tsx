@@ -2,12 +2,12 @@ import * as React from "react";
 import Link from "next/link";
 import {
   CalendarSearch,
-  Filter,
   Clock,
   MapPin,
   Users as UsersIcon,
   RotateCcw,
   AlertTriangle,
+  CalendarPlus,
 } from "lucide-react";
 import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth";
@@ -20,11 +20,14 @@ import {
 } from "@/services/availability";
 import { FIND_SLOT_DURATIONS_MINUTES, SLOT_MINUTES } from "@/config/rules";
 import { formatMinutes } from "@/lib/format";
-import { formatLabRange, labTimeString, getLabTimeZone } from "@/lib/time";
+import { formatLabRange } from "@/lib/time";
 import { CategoryIcon } from "@/components/category-icon";
-import { ResourceStatusTag } from "@/components/resource-status-tag";
+import { StatusPill } from "@/components/resource-status-tag";
 import { WatchButton } from "@/components/notifications/watch-button";
 import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/page-header";
+import { AutoFilter } from "@/components/auto-filter";
+import { cn } from "@/lib/utils";
 
 export const metadata = {
   title: "Find a Slot | BenchBook",
@@ -63,7 +66,6 @@ export default async function FindSlotPage({ searchParams }: FindSlotPageProps) 
 
   // Run availability search
   const result = await findSlots(user, queryInput);
-  const zone = getLabTimeZone();
 
   // Load dropdown master data in parallel via service
   const { sites, categories, sections } = await listBookingFilterOptions();
@@ -101,74 +103,44 @@ export default async function FindSlotPage({ searchParams }: FindSlotPageProps) 
     return hrs === 1 ? "1 hour" : `${hrs} hours`;
   };
 
-  // Result line formatting
+  // Resolved Site Name for results header
   const currentSiteName =
     result.query.siteId === "any"
       ? "all sites"
       : (sites.find((s) => s.id === result.query.siteId)?.name ?? "selected site");
 
-  const formattedRange = formatLabRange(result.requestedStartAt, result.requestedEndAt, zone);
+  const formattedRange = formatLabRange(result.requestedStartAt, result.requestedEndAt);
 
   return (
-    <div className="space-y-6 max-w-6xl mx-auto pb-10">
-      {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-2 border-b border-[#334155]">
-        <div className="flex items-center gap-3">
-          <div className="size-10 rounded-xl bg-[#18202f] border border-[#334155] flex items-center justify-center text-[#6cd8cb] shrink-0">
-            <CalendarSearch className="size-5" />
-          </div>
-          <div>
-            <h1 className="text-xl sm:text-2xl font-extrabold text-slate-100 tracking-tight">
-              Find a slot
-            </h1>
-            <p className="text-xs text-slate-400">
-              Instant availability across all lab resources with guaranteed clash-free booking.
-            </p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Button
-            asChild
-            variant="outline"
-            size="sm"
-            className="text-xs h-8 border-[#334155] bg-[#18202f] hover:bg-[#222a3a] text-slate-300"
-          >
-            <Link href="/calendar">View calendar</Link>
-          </Button>
-          <Button
-            asChild
-            variant="outline"
-            size="sm"
-            className="text-xs h-8 border-[#334155] bg-[#18202f] hover:bg-[#222a3a] text-slate-300"
-          >
-            <Link href="/bookings">My bookings</Link>
-          </Button>
-        </div>
-      </div>
+    <div className="space-y-6">
+      <PageHeader
+        eyebrow="Workspace / Availability"
+        title="Find a slot"
+        description="Search live availability across laboratory resources and reserve without clashes."
+      />
 
       {/* Fallback Note if requested times were adjusted */}
       {result.note && (
         <div
           role="status"
-          className="p-3 rounded-lg border border-amber-500/40 bg-amber-950/20 text-amber-200 text-xs font-mono flex items-center gap-2.5 animate-in fade-in"
+          className="p-3.5 rounded-xl border border-amber-line bg-amber-soft text-amber text-xs font-semibold flex items-center gap-2.5 animate-in fade-in"
         >
-          <AlertTriangle className="size-4 text-amber-400 shrink-0" />
+          <AlertTriangle className="size-4 text-amber-strong shrink-0" />
           <span>{result.note}</span>
         </div>
       )}
 
-      {/* Search Filter Panel (Plain GET form; works without JS, shareable URLs) */}
-      <div className="p-4 sm:p-5 rounded-xl border border-[#334155] bg-[#141c2b] shadow-xs">
-        <form method="GET" action="/book" className="space-y-4">
+      {/* Search Filter Panel - Auto-filters immediately on dropdown selection without Apply button */}
+      <div className="p-4 sm:p-5 rounded-[20px] border border-card-edge bg-card shadow-v4">
+        <AutoFilter action="/book" className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
             {/* 1. Date */}
             <div className="space-y-1">
               <label
                 htmlFor="dateInput"
-                className="text-xs font-bold text-slate-300 uppercase tracking-wider block"
+                className="text-[11px] font-bold text-muted uppercase tracking-wider block"
               >
-                Date <span className="text-[#6cd8cb]">*</span>
+                Date <span className="text-teal">*</span>
               </label>
               <input
                 type="date"
@@ -176,7 +148,7 @@ export default async function FindSlotPage({ searchParams }: FindSlotPageProps) 
                 name="date"
                 required
                 defaultValue={result.query.date}
-                className="w-full h-9 px-3 rounded-lg bg-[#060e1d] border border-[#334155] text-slate-100 text-xs font-mono focus:border-[#6cd8cb] outline-none"
+                className="w-full h-10 px-3 rounded-xl bg-canvas border border-card-edge text-navy text-xs font-medium focus:border-teal outline-none"
               />
             </div>
 
@@ -184,16 +156,16 @@ export default async function FindSlotPage({ searchParams }: FindSlotPageProps) 
             <div className="space-y-1">
               <label
                 htmlFor="startInput"
-                className="text-xs font-bold text-slate-300 uppercase tracking-wider block"
+                className="text-[11px] font-bold text-muted uppercase tracking-wider block"
               >
-                Start time <span className="text-[#6cd8cb]">*</span>
+                Start time <span className="text-teal">*</span>
               </label>
               <select
                 id="startInput"
                 name="start"
                 required
                 defaultValue={result.query.start}
-                className="w-full h-9 px-3 rounded-lg bg-[#060e1d] border border-[#334155] text-slate-100 text-xs font-mono focus:border-[#6cd8cb] outline-none"
+                className="w-full h-10 px-3 rounded-xl bg-canvas border border-card-edge text-navy text-xs font-medium focus:border-teal outline-none"
               >
                 {slotOptions.map((opt) => (
                   <option key={opt} value={opt}>
@@ -207,16 +179,16 @@ export default async function FindSlotPage({ searchParams }: FindSlotPageProps) 
             <div className="space-y-1">
               <label
                 htmlFor="durationInput"
-                className="text-xs font-bold text-slate-300 uppercase tracking-wider block"
+                className="text-[11px] font-bold text-muted uppercase tracking-wider block"
               >
-                Duration <span className="text-[#6cd8cb]">*</span>
+                Duration <span className="text-teal">*</span>
               </label>
               <select
                 id="durationInput"
                 name="duration"
                 required
                 defaultValue={result.query.duration}
-                className="w-full h-9 px-3 rounded-lg bg-[#060e1d] border border-[#334155] text-slate-100 text-xs font-mono focus:border-[#6cd8cb] outline-none"
+                className="w-full h-10 px-3 rounded-xl bg-canvas border border-card-edge text-navy text-xs font-medium focus:border-teal outline-none"
               >
                 {FIND_SLOT_DURATIONS_MINUTES.map((dur) => {
                   const isOverLimit = selectedCategory && dur > selectedCategory.maxBookingMinutes;
@@ -224,7 +196,7 @@ export default async function FindSlotPage({ searchParams }: FindSlotPageProps) 
                     <option key={dur} value={dur} disabled={Boolean(isOverLimit)}>
                       {formatDurationOption(dur)}
                       {isOverLimit
-                        ? ` (over the ${formatMinutes(selectedCategory.maxBookingMinutes)} limit)`
+                        ? ` (over ${formatMinutes(selectedCategory.maxBookingMinutes)} limit)`
                         : ""}
                     </option>
                   );
@@ -236,7 +208,7 @@ export default async function FindSlotPage({ searchParams }: FindSlotPageProps) 
             <div className="space-y-1">
               <label
                 htmlFor="siteInput"
-                className="text-xs font-bold text-slate-300 uppercase tracking-wider block"
+                className="text-[11px] font-bold text-muted uppercase tracking-wider block"
               >
                 Laboratory site
               </label>
@@ -244,7 +216,7 @@ export default async function FindSlotPage({ searchParams }: FindSlotPageProps) 
                 id="siteInput"
                 name="siteId"
                 defaultValue={result.query.siteId}
-                className="w-full h-9 px-3 rounded-lg bg-[#060e1d] border border-[#334155] text-slate-100 text-xs font-mono focus:border-[#6cd8cb] outline-none"
+                className="w-full h-10 px-3 rounded-xl bg-canvas border border-card-edge text-navy text-xs font-medium focus:border-teal outline-none"
               >
                 <option value="any">Any site</option>
                 {sites.map((s) => (
@@ -259,7 +231,7 @@ export default async function FindSlotPage({ searchParams }: FindSlotPageProps) 
             <div className="space-y-1">
               <label
                 htmlFor="categoryInput"
-                className="text-xs font-bold text-slate-300 uppercase tracking-wider block"
+                className="text-[11px] font-bold text-muted uppercase tracking-wider block"
               >
                 Category
               </label>
@@ -267,7 +239,7 @@ export default async function FindSlotPage({ searchParams }: FindSlotPageProps) 
                 id="categoryInput"
                 name="categoryId"
                 defaultValue={result.query.categoryId ?? "all"}
-                className="w-full h-9 px-3 rounded-lg bg-[#060e1d] border border-[#334155] text-slate-100 text-xs font-mono focus:border-[#6cd8cb] outline-none"
+                className="w-full h-10 px-3 rounded-xl bg-canvas border border-card-edge text-navy text-xs font-medium focus:border-teal outline-none"
               >
                 <option value="all">All categories</option>
                 {categories.map((c) => (
@@ -282,7 +254,7 @@ export default async function FindSlotPage({ searchParams }: FindSlotPageProps) 
             <div className="space-y-1">
               <label
                 htmlFor="sectionInput"
-                className="text-xs font-bold text-slate-300 uppercase tracking-wider block"
+                className="text-[11px] font-bold text-muted uppercase tracking-wider block"
               >
                 Section
               </label>
@@ -290,7 +262,7 @@ export default async function FindSlotPage({ searchParams }: FindSlotPageProps) 
                 id="sectionInput"
                 name="sectionId"
                 defaultValue={result.query.sectionId ?? "all"}
-                className="w-full h-9 px-3 rounded-lg bg-[#060e1d] border border-[#334155] text-slate-100 text-xs font-mono focus:border-[#6cd8cb] outline-none"
+                className="w-full h-10 px-3 rounded-xl bg-canvas border border-card-edge text-navy text-xs font-medium focus:border-teal outline-none"
               >
                 <option value="all">All sections</option>
                 {sections.map((sec) => (
@@ -301,51 +273,52 @@ export default async function FindSlotPage({ searchParams }: FindSlotPageProps) 
               </select>
             </div>
 
-            {/* 7. People (only rooms or all) */}
-            <div className="space-y-1">
-              <label
-                htmlFor="peopleInput"
-                className="text-xs font-bold text-slate-300 uppercase tracking-wider block"
-              >
-                People <span className="text-slate-500 font-normal normal-case">(Rooms)</span>
-              </label>
-              <input
-                type="number"
-                id="peopleInput"
-                name="people"
-                min={1}
-                max={500}
-                placeholder={showPeopleInput ? "e.g. 15" : "N/A"}
-                disabled={!showPeopleInput}
-                defaultValue={result.query.people ?? ""}
-                className="w-full h-9 px-3 rounded-lg bg-[#060e1d] border border-[#334155] text-slate-100 text-xs font-mono focus:border-[#6cd8cb] outline-none disabled:opacity-40"
-              />
-            </div>
+            {/* 7. Attendees (if room) */}
+            {showPeopleInput && (
+              <div className="space-y-1">
+                <label
+                  htmlFor="peopleInput"
+                  className="text-[11px] font-bold text-muted uppercase tracking-wider block"
+                >
+                  Attendees (rooms)
+                </label>
+                <input
+                  type="number"
+                  id="peopleInput"
+                  name="people"
+                  min="1"
+                  max="100"
+                  defaultValue={result.query.people ?? ""}
+                  placeholder="e.g. 6"
+                  className="w-full h-10 px-3 rounded-xl bg-canvas border border-card-edge text-navy text-xs font-medium focus:border-teal outline-none"
+                />
+              </div>
+            )}
 
-            {/* 8. Search Name */}
+            {/* 8. Text Search */}
             <div className="space-y-1">
               <label
                 htmlFor="qInput"
-                className="text-xs font-bold text-slate-300 uppercase tracking-wider block"
+                className="text-[11px] font-bold text-muted uppercase tracking-wider block"
               >
-                Search by name
+                Resource name search
               </label>
               <input
                 type="text"
                 id="qInput"
                 name="q"
-                placeholder="e.g. PCR, Cabinet, Room"
                 defaultValue={result.query.q ?? ""}
-                className="w-full h-9 px-3 rounded-lg bg-[#060e1d] border border-[#334155] text-slate-100 text-xs font-mono focus:border-[#6cd8cb] outline-none"
+                placeholder="Search instrument..."
+                className="w-full h-10 px-3 rounded-xl bg-canvas border border-card-edge text-navy text-xs font-medium focus:border-teal outline-none"
               />
             </div>
           </div>
 
-          {/* Form Bottom Row: Free Only & Submit */}
-          <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-[#334155]/60">
+          {/* Form Actions */}
+          <div className="pt-2 flex flex-wrap items-center justify-between gap-3 border-t border-line">
             <label
               htmlFor="freeOnlyInput"
-              className="inline-flex items-center gap-2 cursor-pointer text-xs font-mono text-slate-200 select-none"
+              className="flex items-center gap-2 text-xs font-bold text-navy cursor-pointer"
             >
               <input
                 type="checkbox"
@@ -353,55 +326,47 @@ export default async function FindSlotPage({ searchParams }: FindSlotPageProps) 
                 name="freeOnly"
                 value="1"
                 defaultChecked={result.query.freeOnly}
-                className="size-4 rounded bg-[#060e1d] border-[#334155] text-[#6cd8cb] focus:ring-0 focus:ring-offset-0 cursor-pointer"
+                className="size-4 rounded border-card-edge text-teal focus:ring-teal cursor-pointer"
               />
               <span>Free resources only</span>
             </label>
 
-            <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-2">
               <Button
                 asChild
                 variant="ghost"
                 size="sm"
-                className="text-xs font-mono text-slate-400 hover:text-white h-9"
+                className="text-xs font-bold text-muted hover:text-navy h-9"
               >
                 <Link href="/book">
                   <RotateCcw className="size-3.5 mr-1.5" />
-                  <span>Reset</span>
+                  <span>Reset filters</span>
                 </Link>
-              </Button>
-              <Button
-                type="submit"
-                size="sm"
-                className="h-9 px-5 bg-[#6cd8cb] hover:bg-[#29a195] text-[#003732] font-bold text-xs font-mono shadow-xs active:scale-95 transition-all cursor-pointer"
-              >
-                <Filter className="size-3.5 mr-1.5" />
-                <span>Find slots</span>
               </Button>
             </div>
           </div>
-        </form>
+        </AutoFilter>
       </div>
 
-      {/* Result Line (aria-live="polite") */}
+      {/* Result Summary Bar */}
       <div
         aria-live="polite"
-        className="flex items-center justify-between px-1 text-xs font-mono text-slate-400"
+        className="flex items-center justify-between px-1 text-xs text-muted font-medium"
       >
         <div>
-          <span className="font-bold text-slate-100">
+          <span className="font-bold text-navy">
             {result.counts.available} of {result.counts.total} free
           </span>{" "}
-          at {currentSiteName} &bull; <span className="text-[#6cd8cb]">{formattedRange}</span>
+          at {currentSiteName} · <span className="text-teal font-bold">{formattedRange}</span>
         </div>
       </div>
 
       {/* Empty State: No resources matched filters at all */}
       {result.counts.total === 0 && (
-        <div className="py-12 px-4 rounded-xl border border-dashed border-[#334155] bg-[#141c2b]/50 text-center space-y-3">
-          <CalendarSearch className="size-10 text-slate-500 mx-auto" />
-          <p className="text-sm font-semibold text-slate-200">No resources match these filters.</p>
-          <p className="text-xs text-slate-400">
+        <div className="py-12 px-4 rounded-[20px] border border-dashed border-card-edge bg-card text-center space-y-3 shadow-v4">
+          <CalendarSearch className="size-10 text-muted mx-auto" />
+          <h3 className="text-base font-bold text-navy">No resources match these filters</h3>
+          <p className="text-xs text-muted max-w-sm mx-auto">
             Try adjusting your search criteria, clearing search text, or selecting another site.
           </p>
           <div className="pt-2">
@@ -409,7 +374,7 @@ export default async function FindSlotPage({ searchParams }: FindSlotPageProps) 
               asChild
               variant="outline"
               size="sm"
-              className="text-xs font-mono border-[#334155] bg-[#18202f] text-[#6cd8cb] hover:text-white"
+              className="text-xs font-bold border-card-edge bg-card text-teal hover:bg-canvas rounded-xl"
             >
               <Link href="/book">Clear filters</Link>
             </Button>
@@ -419,7 +384,7 @@ export default async function FindSlotPage({ searchParams }: FindSlotPageProps) 
 
       {/* Empty State: Nothing is free at this time slot */}
       {result.counts.total > 0 && result.counts.available === 0 && !result.query.freeOnly && (
-        <div className="p-3.5 rounded-lg border border-amber-500/30 bg-amber-950/20 text-amber-200 text-xs font-mono flex items-center justify-between gap-3">
+        <div className="p-4 rounded-2xl border border-amber-line bg-amber-soft text-amber text-xs font-medium flex items-center justify-between gap-3 shadow-v4">
           <span>
             Nothing is free at {result.query.start}. Try the suggested times below or choose another
             site.
@@ -429,12 +394,12 @@ export default async function FindSlotPage({ searchParams }: FindSlotPageProps) 
 
       {/* Empty State: Free-only toggle is active but nothing free */}
       {result.counts.total > 0 && result.counts.available === 0 && result.query.freeOnly && (
-        <div className="py-12 px-4 rounded-xl border border-dashed border-[#334155] bg-[#141c2b]/50 text-center space-y-3">
-          <Clock className="size-10 text-amber-400 mx-auto" />
-          <p className="text-sm font-semibold text-slate-200">
-            No free resources at {result.query.start}.
-          </p>
-          <p className="text-xs text-slate-400">
+        <div className="py-12 px-4 rounded-[20px] border border-dashed border-card-edge bg-card text-center space-y-3 shadow-v4">
+          <Clock className="size-10 text-amber-strong mx-auto" />
+          <h3 className="text-base font-bold text-navy">
+            No free resources at {result.query.start}
+          </h3>
+          <p className="text-xs text-muted max-w-sm mx-auto">
             Turn off &quot;Free resources only&quot; to inspect upcoming available times and
             suggestions.
           </p>
@@ -443,7 +408,7 @@ export default async function FindSlotPage({ searchParams }: FindSlotPageProps) 
               asChild
               variant="outline"
               size="sm"
-              className="text-xs font-mono border-[#334155] bg-[#18202f] text-[#6cd8cb] hover:text-white"
+              className="text-xs font-bold border-card-edge bg-card text-teal hover:bg-canvas rounded-xl"
             >
               <Link
                 href={`/book?date=${result.query.date}&start=${result.query.start}&duration=${result.query.duration}&siteId=${result.query.siteId}`}
@@ -455,7 +420,7 @@ export default async function FindSlotPage({ searchParams }: FindSlotPageProps) 
         </div>
       )}
 
-      {/* Resource Cards List */}
+      {/* Resource Cards Grid */}
       {result.items.length > 0 && (
         <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {result.items.map((item) => {
@@ -466,50 +431,46 @@ export default async function FindSlotPage({ searchParams }: FindSlotPageProps) 
             return (
               <li
                 key={item.id}
-                className={`p-4 rounded-xl border flex flex-col justify-between gap-4 transition-colors ${
-                  isOutOfService
-                    ? "border-rose-900/50 bg-[#141c2b]/40 opacity-70"
-                    : isAvailable
-                      ? "border-[#334155] bg-[#141c2b] hover:border-[#6cd8cb]/50 shadow-xs"
-                      : "border-[#334155] bg-[#141c2b] shadow-xs"
-                }`}
+                className={cn(
+                  "p-5 rounded-[20px] bg-card border border-card-edge shadow-v4 flex flex-col justify-between gap-4 transition-all hover:shadow-md",
+                  isOutOfService && "opacity-75 bg-canvas/40",
+                )}
               >
                 {/* Card Top: Header & Specs */}
                 <div className="space-y-3">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-3 min-w-0">
-                      <CategoryIcon
-                        iconKey={item.category.iconKey}
-                        className="size-10 rounded-lg shrink-0"
-                      />
+                      <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-teal-soft text-teal">
+                        <CategoryIcon iconKey={item.category.iconKey} className="size-5 shrink-0" />
+                      </div>
                       <div className="min-w-0">
-                        <h2 className="text-sm font-bold text-slate-100 truncate hover:text-[#6cd8cb] transition-colors">
+                        <h3 className="text-sm font-extrabold text-navy truncate hover:text-teal transition-colors">
                           <Link href={`/resources/${item.id}`}>{item.name}</Link>
-                        </h2>
-                        <p className="text-xs text-slate-400 truncate">
-                          {item.category.name} &bull; {item.section.name}
+                        </h3>
+                        <p className="text-xs text-muted truncate">
+                          {item.category.name} · {item.section.name}
                         </p>
                       </div>
                     </div>
 
-                    <ResourceStatusTag status={item.status} />
+                    <StatusPill status={item.status} />
                   </div>
 
                   {/* Metadata Chips: Site, Location, Limit, Capacity */}
-                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-400 font-mono">
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted font-medium">
                     <span className="inline-flex items-center gap-1 truncate">
-                      <MapPin className="size-3 text-slate-500 shrink-0" />
+                      <MapPin className="size-3 text-faint shrink-0" />
                       <span>{item.site.name}</span>
                       {item.location ? ` (${item.location})` : ""}
                     </span>
 
                     <span className="inline-flex items-center gap-1">
-                      <Clock className="size-3 text-slate-500 shrink-0" />
+                      <Clock className="size-3 text-faint shrink-0" />
                       <span>Up to {formatMinutes(item.category.maxBookingMinutes)}</span>
                     </span>
 
                     {item.capacity ? (
-                      <span className="inline-flex items-center gap-1 text-emerald-400">
+                      <span className="inline-flex items-center gap-1 text-teal font-semibold">
                         <UsersIcon className="size-3 shrink-0" />
                         <span>{item.capacity} seats</span>
                       </span>
@@ -518,21 +479,22 @@ export default async function FindSlotPage({ searchParams }: FindSlotPageProps) 
                 </div>
 
                 {/* Card Bottom: State Specific Actions */}
-                <div className="pt-3 border-t border-[#334155]/60 flex flex-col justify-end gap-2">
+                <div className="pt-3 border-t border-line flex flex-col justify-end gap-2.5">
                   {/* Case 1: AVAILABLE */}
                   {isAvailable && (
                     <div className="flex items-center justify-between gap-3">
-                      <div className="flex items-center gap-1.5 text-xs font-mono font-bold text-emerald-400">
-                        <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
+                      <div className="flex items-center gap-1.5 text-xs font-bold text-green">
+                        <span className="size-2 rounded-full bg-green" />
                         <span>Free</span>
                       </div>
                       <Button
                         asChild
                         size="sm"
-                        className="h-8 px-3.5 bg-[#6cd8cb] hover:bg-[#29a195] text-[#003732] font-bold text-xs font-mono shadow-xs active:scale-95 transition-all"
+                        className="h-9 px-4 bg-gradient-to-br from-teal to-teal-deep text-white font-bold text-xs rounded-xl shadow-xs active:scale-95 transition-all"
                       >
                         <Link href={item.bookHref}>
-                          Book {result.query.start} to {labTimeString(result.requestedEndAt, zone)}
+                          <CalendarPlus className="size-3.5 mr-1" />
+                          <span>Book slot</span>
                         </Link>
                       </Button>
                     </div>
@@ -541,42 +503,35 @@ export default async function FindSlotPage({ searchParams }: FindSlotPageProps) 
                   {/* Case 2: BUSY */}
                   {isBusy && (
                     <div className="space-y-2">
-                      <div className="flex items-center justify-between gap-2 text-xs font-mono">
-                        <span className="text-amber-400 font-bold">
+                      <div className="flex items-center justify-between gap-2 text-xs">
+                        <span className="text-amber-strong font-bold">
                           {item.stateReason ?? "Booked"}
                         </span>
-                        {item.suggestions.length > 0 ? (
-                          <span className="text-[11px] text-slate-400">Next free times:</span>
-                        ) : null}
+                        {item.suggestions.length > 0 && (
+                          <span className="text-[11px] text-muted font-medium">Next free:</span>
+                        )}
                       </div>
 
                       {item.suggestions.length > 0 ? (
                         <div className="flex flex-wrap items-center gap-1.5">
                           {item.suggestions.map((s) => (
-                            <Button
+                            <Link
                               key={s.href}
-                              asChild
-                              size="sm"
-                              variant="outline"
-                              className="h-7 px-2.5 text-xs font-mono bg-[#18202f] border-[#334155] hover:border-[#6cd8cb] text-[#6cd8cb] hover:text-white hover:bg-[#222a3a] transition-all"
+                              href={s.href}
+                              aria-label={s.ariaLabel}
+                              className="px-2.5 py-1 text-[11px] font-bold rounded-lg bg-teal-soft border border-teal-line text-teal-deep hover:bg-teal hover:text-white transition-colors"
                             >
-                              <Link href={s.href} aria-label={s.ariaLabel}>
-                                {s.label}
-                              </Link>
-                            </Button>
+                              {s.label}
+                            </Link>
                           ))}
                         </div>
                       ) : (
-                        <p className="text-xs text-slate-500 italic font-mono">
-                          No other free time this day
-                        </p>
+                        <p className="text-xs text-muted italic">No other free times today</p>
                       )}
 
                       {userCanWatch && (
-                        <div className="pt-2 flex items-center justify-between gap-2 border-t border-[#334155]/40 mt-1">
-                          <span className="text-[11px] text-slate-400 font-mono">
-                            Need this time?
-                          </span>
+                        <div className="pt-2 flex items-center justify-between gap-2 border-t border-line mt-1">
+                          <span className="text-[11px] text-muted">Need this time?</span>
                           <WatchButton
                             resourceId={item.id}
                             resourceName={item.name}
@@ -599,7 +554,7 @@ export default async function FindSlotPage({ searchParams }: FindSlotPageProps) 
                   {/* Case 3: OUT_OF_SERVICE */}
                   {isOutOfService && (
                     <div className="flex items-center justify-between gap-2 flex-wrap">
-                      <span className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-rose-400 bg-rose-950/40 border border-rose-500/30 px-2 py-0.5 rounded">
+                      <span className="inline-flex items-center gap-1.5 text-xs font-bold text-red bg-red-soft border border-red/20 px-2 py-0.5 rounded-lg">
                         Out of service
                       </span>
                       {userCanWatch ? (
@@ -612,38 +567,15 @@ export default async function FindSlotPage({ searchParams }: FindSlotPageProps) 
                           )}
                         />
                       ) : (
-                        <span className="text-[11px] text-slate-500 italic font-mono">
-                          Unavailable for booking
-                        </span>
+                        <span className="text-[11px] text-muted italic">Unavailable</span>
                       )}
                     </div>
                   )}
 
-                  {/* Case 4: TOO_LONG */}
-                  {item.state === "TOO_LONG" && (
-                    <div className="flex items-center justify-between gap-2 text-xs font-mono">
-                      <span className="text-slate-400">
-                        {item.stateReason ??
-                          `Can be booked for up to ${formatMinutes(item.category.maxBookingMinutes)}`}
-                      </span>
-                    </div>
-                  )}
-
-                  {/* Case 5: TOO_SMALL */}
-                  {item.state === "TOO_SMALL" && (
-                    <div className="flex items-center justify-between gap-2 text-xs font-mono">
-                      <span className="text-slate-400">
-                        {item.stateReason ?? `Seats ${item.capacity}`}
-                      </span>
-                    </div>
-                  )}
-
-                  {/* Case 6: CALIBRATION */}
-                  {item.state === "CALIBRATION" && (
-                    <div className="flex items-center justify-between gap-2 text-xs font-mono">
-                      <span className="text-amber-400 font-medium">
-                        {item.stateReason ?? "Calibration due"}
-                      </span>
+                  {/* Case 4: Other constraints */}
+                  {!isAvailable && !isBusy && !isOutOfService && (
+                    <div className="flex items-center justify-between gap-2 text-xs text-muted">
+                      <span>{item.stateReason ?? "Unavailable"}</span>
                     </div>
                   )}
                 </div>

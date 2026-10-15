@@ -1,13 +1,38 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
 @theme inline {
-  --font-sans: "Inter", "Atkinson Hyperlegible Next Variable", system-ui, sans-serif;
-  --font-heading: "Inter", system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", monospace;
+  --font-sans: "Plus Jakarta Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-heading: "Plus Jakarta Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-mono: "Segoe UI Mono", monospace;
+
+  --breakpoint-shell: 820px;
+
+  --color-canvas: var(--canvas);
+  --color-card-edge: var(--card-edge);
+  --color-line: var(--line);
+  --color-navy: var(--navy);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-teal: var(--teal);
+  --color-teal-deep: var(--teal-deep);
+  --color-teal-soft: var(--teal-soft);
+  --color-teal-line: var(--teal-line);
+  --color-mint: var(--mint);
+  --color-mint-deep: var(--mint-deep);
+  --color-amber: var(--amber);
+  --color-amber-strong: var(--amber-strong);
+  --color-amber-soft: var(--amber-soft);
+  --color-amber-line: var(--amber-line);
+  --color-blue: var(--blue);
+  --color-blue-soft: var(--blue-soft);
+  --color-green: var(--green);
+  --color-green-soft: var(--green-soft);
+  --color-red: var(--red);
+  --color-red-soft: var(--red-soft);
+  --color-focus: var(--focus);
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -20,7 +45,6 @@
   --color-primary-hover: var(--primary-hover);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
@@ -41,25 +65,6 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  --color-surface-container-lowest: #060e1d;
-  --color-surface-container-low: #141c2b;
-  --color-surface-container: #18202f;
-  --color-surface-container-high: #222a3a;
-  --color-surface-container-highest: #2d3545;
-  --color-surface: #0b1322;
-  --color-on-surface: #dbe2f8;
-  --color-on-surface-variant: #bcc9c6;
-  --color-outline: #879390;
-  --color-outline-variant: #334155;
-  --color-teal-primary: #6cd8cb;
-  --color-teal-dark: #003732;
-  --color-teal-hover: #29a195;
-  --color-primary-container: #29a195;
-  --color-tertiary: #ffb77d;
-  --color-tertiary-container: #d97707;
-  --color-error: #ffb4ab;
-  --color-error-container: #93000a;
-
   --color-booking: var(--booking);
   --color-booking-ink: var(--booking-ink);
   --color-booking-edge: var(--booking-edge);
@@ -77,69 +82,106 @@
   --color-pass-bg: var(--pass-bg);
   --color-off-hours: var(--off-hours);
 
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-chip: 8px;
+  --radius-ctl: 12px;
+  --radius-card: 20px;
+  --radius-shell: 24px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
 }
 
-:root,
-.dark {
-  --background: #0b1322;
-  --foreground: #f1f5f9;
-  --card: #18202f;
-  --card-foreground: #f1f5f9;
-  --popover: #18202f;
-  --popover-foreground: #f1f5f9;
-  --primary: #6cd8cb;
-  --primary-foreground: #003732;
-  --primary-hover: #29a195;
-  --secondary: #222a3a;
-  --secondary-foreground: #7bd0ff;
-  --muted: #141c2b;
-  --muted-foreground: #94a3b8;
-  --accent: #222a3a;
-  --accent-foreground: #6cd8cb;
-  --destructive: #f87171;
-  --destructive-foreground: #450a0a;
-  --destructive-ink: #fecaca;
-  --border: #334155;
-  --input: #334155;
-  --ring: #6cd8cb;
-  --radius: 0.5rem;
+:root {
+  --canvas: #f5f8fa;
+  --wash-a: rgba(15, 130, 118, 0.1);
+  --wash-b: rgba(120, 200, 190, 0.16);
+  --card: #ffffff;
+  --card-edge: #e7eef2;
+  --line: #edf2f5;
+  --navy: #16324f;
+  --ink: #1f3347;
+  --muted: #475569;
+  --faint: #64748b;
+  --teal: #0f8276;
+  --teal-deep: #0b5f56;
+  --teal-soft: #e3f4f0;
+  --teal-line: #bfe3da;
+  --mint: #eef8f5;
+  --mint-deep: #0b5f56;
+  --amber: #c2700a;
+  --amber-strong: #d97706;
+  --amber-soft: #fff6e8;
+  --amber-line: #f5ddb0;
+  --blue: #2f6fdb;
+  --blue-soft: #eaf1fd;
+  --green: #12805c;
+  --green-soft: #e6f6ef;
+  --red: #b42318;
+  --red-soft: #fdecea;
+  --on-teal: #ffffff;
+  --shadow: 0 1px 2px rgba(22, 50, 79, 0.04), 0 10px 30px rgba(22, 50, 79, 0.05);
+  --focus: #2ba596;
 
-  --sidebar: #141c2b;
-  --sidebar-foreground: #dbe2f8;
-  --sidebar-muted: #879390;
-  --sidebar-primary: #222a3a;
-  --sidebar-primary-foreground: #6cd8cb;
-  --sidebar-accent: #18202f;
-  --sidebar-accent-foreground: #dbe2f8;
-  --sidebar-border: #334155;
-  --sidebar-ring: #6cd8cb;
+  --r-chip: 8px;
+  --r-ctl: 12px;
+  --r-card: 20px;
+  --r-shell: 24px;
 
-  --chart-1: #6cd8cb;
-  --chart-2: #7bd0ff;
-  --chart-3: #ffb77d;
-  --chart-4: #29a195;
-  --chart-5: #00a6e0;
+  /* shadcn mappings */
+  --background: #f5f8fa;
+  --foreground: #1f3347;
+  --card-foreground: #1f3347;
+  --popover: #ffffff;
+  --popover-foreground: #1f3347;
+  --primary: #0f8276;
+  --primary-foreground: #ffffff;
+  --primary-hover: #0b5f56;
+  --secondary: #ffffff;
+  --secondary-foreground: #16324f;
+  --muted-foreground: #64748b;
+  --accent: #e3f4f0;
+  --accent-foreground: #0b5f56;
+  --destructive: #b42318;
+  --destructive-foreground: #ffffff;
+  --destructive-ink: #b42318;
+  --border: #e7eef2;
+  --input: #e7eef2;
+  --ring: #2ba596;
+  --radius: 12px;
 
-  --booking: #18202f;
-  --booking-ink: #7bd0ff;
-  --booking-edge: #6cd8cb;
-  --mine: #222a3a;
-  --mine-foreground: #6cd8cb;
-  --maint: rgba(217, 119, 6, 0.15);
-  --maint-2: rgba(217, 119, 6, 0.25);
-  --maint-ink: #ffb77d;
-  --maint-edge: #d97707;
-  --oos: rgba(239, 68, 68, 0.12);
-  --oos-2: rgba(239, 68, 68, 0.22);
-  --tag-red: #ffb4ab;
-  --tag-red-bg: rgba(147, 0, 10, 0.35);
-  --pass: #6cd8cb;
-  --pass-bg: rgba(41, 161, 149, 0.2);
-  --off-hours: #060e1d;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #16324f;
+  --sidebar-muted: #64748b;
+  --sidebar-primary: #0f8276;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #e3f4f0;
+  --sidebar-accent-foreground: #0b5f56;
+  --sidebar-border: #e7eef2;
+  --sidebar-ring: #2ba596;
+
+  --booking: #e3f4f0;
+  --booking-ink: #0b5f56;
+  --booking-edge: #bfe3da;
+  --mine: #0f8276;
+  --mine-foreground: #ffffff;
+  --maint: #fff6e8;
+  --maint-2: rgba(217, 119, 6, 0.15);
+  --maint-ink: #c2700a;
+  --maint-edge: #f5ddb0;
+  --oos: #fdecea;
+  --oos-2: rgba(180, 35, 24, 0.12);
+  --tag-red: #b42318;
+  --tag-red-bg: #fdecea;
+  --pass: #12805c;
+  --pass-bg: #e6f6ef;
+  --off-hours: #edf2f5;
+
+  color-scheme: light;
+}
+
+@utility tab {
+  font-variant-numeric: tabular-nums;
 }
 
 @utility hatch-maintenance {
@@ -165,63 +207,15 @@
 @utility hatch-oos {
   background-image: repeating-linear-gradient(
     -45deg,
-    rgba(239, 68, 68, 0.08),
-    rgba(239, 68, 68, 0.08) 12px,
-    rgba(239, 68, 68, 0.16) 12px,
-    rgba(239, 68, 68, 0.16) 24px
-  );
-}
-
-@utility hazard-hatch-pattern {
-  background-image: repeating-linear-gradient(
-    45deg,
-    rgba(217, 119, 6, 0.12),
-    rgba(217, 119, 6, 0.12) 8px,
-    rgba(217, 119, 6, 0.22) 8px,
-    rgba(217, 119, 6, 0.22) 16px
-  );
-}
-
-@utility out-of-service-stripes {
-  background-image: repeating-linear-gradient(
-    -45deg,
-    rgba(239, 68, 68, 0.08),
-    rgba(239, 68, 68, 0.08) 12px,
-    rgba(239, 68, 68, 0.16) 12px,
-    rgba(239, 68, 68, 0.16) 24px
+    rgba(180, 35, 24, 0.08),
+    rgba(180, 35, 24, 0.08) 12px,
+    rgba(180, 35, 24, 0.16) 12px,
+    rgba(180, 35, 24, 0.16) 24px
   );
 }
 
 @utility modal-backdrop {
-  backdrop-filter: blur(4px);
-}
-
-@layer components {
-  /* Equipment hang tag: rectangle with a punched hole (status labels) */
-  .status-tag {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    padding: 2px 9px 2px 21px;
-    border: 1px solid;
-    border-radius: 4px;
-    font-size: 13px;
-    font-weight: 700;
-    line-height: 18px;
-    white-space: nowrap;
-  }
-  .status-tag::before {
-    content: "";
-    position: absolute;
-    left: 7px;
-    top: 50%;
-    width: 7px;
-    height: 7px;
-    margin-top: -3.5px;
-    border-radius: 9999px;
-    background: var(--card);
-    box-shadow: inset 0 0 0 1.5px currentColor;
-  }
+  backdrop-filter: blur(8px);
 }
 
 @layer base {
@@ -229,70 +223,23 @@
     @apply border-border;
   }
   *:focus-visible {
-    outline: 2px solid var(--ring);
+    outline: 2px solid var(--focus);
     outline-offset: 2px;
   }
   html,
   body {
-    background-color: #0b1322;
-    color: #f1f5f9;
+    height: 100%;
+  }
+  body {
+    margin: 0;
     font-family: var(--font-sans);
+    font-size: 14.5px;
+    line-height: 1.45;
+    color: var(--ink);
+    background:
+      radial-gradient(800px 520px at 100% 0%, var(--wash-b), transparent 65%),
+      radial-gradient(900px 600px at 30% 110%, var(--wash-a), transparent 65%), var(--canvas);
+    background-attachment: fixed;
+    color-scheme: light;
   }
-}
-
-/* Orbit, counter-orbit, and laboratory animations */
-@keyframes orbit-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes orbit-counter-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(-360deg);
-  }
-}
-
-@keyframes float-subtle {
-  0%,
-  100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-7px);
-  }
-}
-
-@keyframes pulse-subtle {
-  0%,
-  100% {
-    opacity: 0.42;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.72;
-    transform: scale(1.05);
-  }
-}
-
-.animate-orbit-cw {
-  animation: orbit-spin 26s linear infinite;
-}
-
-.animate-orbit-ccw {
-  animation: orbit-counter-spin 26s linear infinite;
-}
-
-.animate-float-subtle {
-  animation: float-subtle 5s ease-in-out infinite;
-}
-
-.animate-pulse-subtle {
-  animation: pulse-subtle 4s ease-in-out infinite;
 }

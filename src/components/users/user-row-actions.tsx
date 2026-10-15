@@ -149,11 +149,11 @@ export function UserRowActions({
             <Button
               variant="outline"
               size="icon"
-              className="size-9 rounded-md bg-[#18202f] hover:bg-[#222a3a] text-[#dbe2f8] hover:text-[#6cd8cb] border border-[#334155] hover:border-[#6cd8cb]/50 transition-all duration-150 active:scale-[0.98]"
+              className="size-8 rounded-xl bg-card hover:bg-canvas text-navy border border-card-edge shadow-2xs"
               title={`Edit ${user.name}`}
               aria-label={`Edit ${user.name}`}
             >
-              <Pencil className="size-4 text-[#6cd8cb]" />
+              <Pencil className="size-3.5 text-teal" />
             </Button>
           }
         />
@@ -163,7 +163,7 @@ export function UserRowActions({
             <Button
               variant="ghost"
               size="icon"
-              className="size-9 rounded-md bg-[#18202f] hover:bg-[#222a3a] text-[#94a3b8] hover:text-white border border-[#334155]"
+              className="size-8 rounded-xl bg-card hover:bg-canvas text-muted hover:text-navy border border-card-edge shadow-2xs"
               title={`More actions for ${user.name}`}
               aria-label={`More actions for ${user.name}`}
             >
@@ -173,14 +173,14 @@ export function UserRowActions({
           </DropdownMenuTrigger>
           <DropdownMenuContent
             align="end"
-            className="w-48 bg-[#18202f] border-[#334155] text-[#dbe2f8] shadow-xl rounded-lg"
+            className="w-48 bg-card border border-card-edge text-navy shadow-v4 rounded-xl"
           >
             <DropdownMenuItem
               onSelect={() => setEditDialogOpen(true)}
-              className="cursor-pointer hover:bg-[#222a3a] focus:bg-[#222a3a]"
+              className="cursor-pointer hover:bg-canvas focus:bg-canvas rounded-lg"
             >
-              <Pencil className="size-3.5 mr-2 text-[#6cd8cb]" />
-              <span className="font-mono text-xs">Edit</span>
+              <Pencil className="size-3.5 mr-2 text-teal" />
+              <span className="font-semibold text-xs text-navy">Edit</span>
             </DropdownMenuItem>
 
             <DropdownMenuItem
@@ -188,13 +188,13 @@ export function UserRowActions({
                 setActionError(null);
                 setResetDialogOpen(true);
               }}
-              className="cursor-pointer hover:bg-[#222a3a] focus:bg-[#222a3a]"
+              className="cursor-pointer hover:bg-canvas focus:bg-canvas rounded-lg"
             >
-              <KeyRound className="size-3.5 mr-2 text-[#6cd8cb]" />
-              <span className="font-mono text-xs">Reset password</span>
+              <KeyRound className="size-3.5 mr-2 text-teal" />
+              <span className="font-semibold text-xs text-navy">Reset password</span>
             </DropdownMenuItem>
 
-            <DropdownMenuSeparator className="bg-[#334155]/60" />
+            <DropdownMenuSeparator className="bg-line" />
 
             {user.isActive ? (
               <DropdownMenuItem
@@ -205,10 +205,10 @@ export function UserRowActions({
                     setDeactivateDialogOpen(true);
                   }
                 }}
-                className="cursor-pointer text-rose-400 hover:text-rose-300 focus:text-rose-300 hover:bg-[#222a3a] focus:bg-[#222a3a]"
+                className="cursor-pointer text-red hover:bg-red-soft focus:bg-red-soft rounded-lg"
               >
-                <UserMinus className="size-3.5 mr-2" />
-                <span className="font-mono text-xs">Deactivate</span>
+                <UserMinus className="size-3.5 mr-2 text-red" />
+                <span className="font-semibold text-xs text-red">Deactivate</span>
               </DropdownMenuItem>
             ) : (
               <DropdownMenuItem
@@ -216,10 +216,10 @@ export function UserRowActions({
                   setActionError(null);
                   setReactivateDialogOpen(true);
                 }}
-                className="cursor-pointer text-emerald-400 hover:text-emerald-300 focus:text-emerald-300 hover:bg-[#222a3a] focus:bg-[#222a3a]"
+                className="cursor-pointer text-teal hover:bg-mint/40 focus:bg-mint/40 rounded-lg"
               >
-                <UserCheck className="size-3.5 mr-2" />
-                <span className="font-mono text-xs">Reactivate</span>
+                <UserCheck className="size-3.5 mr-2 text-teal" />
+                <span className="font-semibold text-xs text-teal">Reactivate</span>
               </DropdownMenuItem>
             )}
           </DropdownMenuContent>

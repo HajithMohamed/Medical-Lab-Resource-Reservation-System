@@ -48,13 +48,13 @@ export default async function UsagePage({ searchParams }: UsagePageProps) {
 
   if (!usageResult.ok) {
     return (
-      <div className="space-y-6 max-w-6xl">
-        <PageHeader title="Usage" description="Resource utilisation and statistics" />
+      <div className="space-y-6 w-full">
+        <PageHeader eyebrow="BenchBook / Usage" title="Usage" description="Resource utilisation and statistics" />
         <div
           role="alert"
-          className="p-6 rounded-2xl border border-rose-500/40 bg-rose-950/20 text-rose-200 text-sm font-mono flex items-center gap-3"
+          className="p-4 sm:p-5 rounded-2xl border border-red/30 bg-red-soft text-red text-sm font-semibold flex items-center gap-3 shadow-2xs"
         >
-          <AlertCircle className="size-5 shrink-0 text-rose-400" />
+          <AlertCircle className="size-5 shrink-0 text-red" />
           <span>{usageResult.error}</span>
         </div>
       </div>
@@ -68,7 +68,7 @@ export default async function UsagePage({ searchParams }: UsagePageProps) {
   const standardEndFormatted = `${String(STANDARD_DAY_END_HOUR).padStart(2, "0")}:00`;
 
   return (
-    <div className="space-y-6 max-w-6xl">
+    <div className="space-y-6 w-full">
       {/* Page Header */}
       <PageHeader
         eyebrow="BenchBook / Usage"
@@ -78,65 +78,65 @@ export default async function UsagePage({ searchParams }: UsagePageProps) {
           <Button
             asChild
             variant="outline"
-            className="border-[#334155] bg-[#141c2b] hover:bg-[#222a3a] text-slate-200 hover:text-white font-mono text-xs h-9 px-3.5 gap-2 shadow-xs"
+            className="border-card-edge bg-card hover:bg-mint text-navy font-semibold text-xs h-9 px-3.5 gap-2 rounded-xl shadow-2xs"
           >
             <Link
               href={`/usage/export?from=${data.fromDate}&to=${data.toDate}&site=${data.siteId}`}
             >
-              <Download className="size-3.5" />
+              <Download className="size-3.5 text-teal" />
               <span>Download CSV</span>
             </Link>
           </Button>
         }
       />
 
-      {/* Filter Bar (AutoFilter without Apply button) */}
+      {/* Filter Bar */}
       <AutoFilter
         action="/usage"
-        className="flex flex-wrap items-center justify-between gap-4 bg-[#141c2b] p-3.5 rounded-xl border border-[#334155] shadow-xs text-xs font-mono"
+        className="flex flex-wrap items-center justify-between gap-3 bg-card p-3 sm:p-3.5 rounded-2xl border border-card-edge shadow-v4 text-xs font-semibold"
       >
-        <div className="flex flex-wrap items-center gap-4">
+        <div className="flex flex-wrap items-center gap-3.5">
           <div className="flex items-center gap-2">
-            <Calendar className="size-3.5 text-[#879390]" />
-            <label htmlFor="filter-from" className="text-[#94a3b8] uppercase">
+            <Calendar className="size-3.5 text-muted" />
+            <label htmlFor="filter-from" className="text-muted uppercase text-[11px] font-extrabold tracking-wider">
               From:
             </label>
-            <Input
+            <input
               id="filter-from"
               name="from"
               type="date"
               defaultValue={data.fromDate}
               required
-              className="h-8 w-36 bg-[#060e1d] border-[#334155] text-xs font-mono text-slate-100 cursor-pointer"
+              className="h-8 w-36 rounded-xl border border-card-edge bg-card px-2.5 text-xs font-semibold text-navy outline-none focus:border-teal cursor-pointer shadow-2xs"
             />
           </div>
 
           <div className="flex items-center gap-2">
-            <label htmlFor="filter-to" className="text-[#94a3b8] uppercase">
+            <label htmlFor="filter-to" className="text-muted uppercase text-[11px] font-extrabold tracking-wider">
               To:
             </label>
-            <Input
+            <input
               id="filter-to"
               name="to"
               type="date"
               defaultValue={data.toDate}
               required
-              className="h-8 w-36 bg-[#060e1d] border-[#334155] text-xs font-mono text-slate-100 cursor-pointer"
+              className="h-8 w-36 rounded-xl border border-card-edge bg-card px-2.5 text-xs font-semibold text-navy outline-none focus:border-teal cursor-pointer shadow-2xs"
             />
           </div>
 
           {/* Admin Site Select vs Manager Site Text */}
           {isAdmin ? (
             <div className="flex items-center gap-2">
-              <Building2 className="size-3.5 text-[#879390]" />
-              <label htmlFor="filter-site" className="text-[#94a3b8] uppercase">
+              <Building2 className="size-3.5 text-muted" />
+              <label htmlFor="filter-site" className="text-muted uppercase text-[11px] font-extrabold tracking-wider">
                 Site:
               </label>
               <select
                 id="filter-site"
                 name="site"
                 defaultValue={data.siteId}
-                className="h-8 rounded-md bg-[#060e1d] border border-[#334155] px-2.5 text-xs text-slate-200 font-mono focus:border-[#6cd8cb] focus:outline-hidden cursor-pointer"
+                className="h-8 rounded-xl bg-card border border-card-edge px-2.5 text-xs text-navy font-semibold focus:border-teal outline-none cursor-pointer shadow-2xs"
               >
                 <option value="all">All sites</option>
                 {sites.map((s) => (
@@ -147,10 +147,10 @@ export default async function UsagePage({ searchParams }: UsagePageProps) {
               </select>
             </div>
           ) : (
-            <div className="flex items-center gap-1.5 text-[#94a3b8]">
-              <Building2 className="size-3.5 text-[#879390]" />
-              <span>Site:</span>
-              <span className="font-bold text-white">{data.scopeLabel}</span>
+            <div className="flex items-center gap-1.5 text-muted">
+              <Building2 className="size-3.5 text-muted" />
+              <span className="uppercase text-[11px] font-extrabold tracking-wider">Site:</span>
+              <span className="font-bold text-navy">{data.scopeLabel}</span>
             </div>
           )}
         </div>
@@ -186,7 +186,7 @@ export default async function UsagePage({ searchParams }: UsagePageProps) {
         ]}
       />
 
-      {/* Content: EmptyState or Charts + Resources Table */}
+      {/* Content: EmptyState or Charts + Resources */}
       {data.totals.totalBookedHours === 0 ? (
         <EmptyState
           icon={BarChart3}
@@ -195,7 +195,7 @@ export default async function UsagePage({ searchParams }: UsagePageProps) {
           action={
             <Button
               asChild
-              className="bg-[#6cd8cb] hover:bg-[#29a195] text-[#003732] font-semibold text-xs font-mono"
+              className="bg-teal hover:bg-teal-deep text-white font-semibold text-xs rounded-xl shadow-2xs"
             >
               <Link href="/usage">Show the last 4 weeks</Link>
             </Button>
@@ -209,39 +209,40 @@ export default async function UsagePage({ searchParams }: UsagePageProps) {
             <SectionUsageChart sections={data.sections} />
           </div>
 
-          {/* Resources Table */}
+          {/* Resources Table (Desktop) & Cards (Mobile) */}
           <div className="space-y-3">
-            <div className="rounded-2xl border border-[#1e293b] bg-[#0f172a]/70 overflow-hidden shadow-xs">
+            {/* Desktop Table View */}
+            <div className="hidden md:block rounded-2xl border border-card-edge bg-card overflow-hidden shadow-v4">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs border-collapse">
-                  <thead className="bg-[#141c2b] text-[#94a3b8] font-mono border-b border-[#1e293b]">
+                  <thead className="bg-canvas/60 text-muted font-extrabold text-[11px] tracking-[0.1em] uppercase border-b border-card-edge">
                     <tr>
-                      <th className="py-2.5 px-3 font-medium">Resource</th>
-                      {data.siteId === "all" && <th className="py-2.5 px-3 font-medium">Site</th>}
-                      <th className="py-2.5 px-3 font-medium text-right">Standard hours</th>
-                      <th className="py-2.5 px-3 font-medium text-right">Total booked</th>
-                      <th className="py-2.5 px-3 font-medium">Utilisation</th>
-                      <th className="py-2.5 px-3 font-medium text-center">Status</th>
+                      <th className="py-3 px-4 font-bold">Resource</th>
+                      {data.siteId === "all" && <th className="py-3 px-4 font-bold">Site</th>}
+                      <th className="py-3 px-4 font-bold text-right">Standard hours</th>
+                      <th className="py-3 px-4 font-bold text-right">Total booked</th>
+                      <th className="py-3 px-4 font-bold">Utilisation</th>
+                      <th className="py-3 px-4 font-bold text-center">Status</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#1e293b] bg-[#060e1d]/60 font-mono">
+                  <tbody className="divide-y divide-line bg-card">
                     {data.resources.map((res) => (
-                      <tr key={res.id} className="hover:bg-[#141c2b]/50 transition-colors">
+                      <tr key={res.id} className="hover:bg-mint/30 transition-colors">
                         {/* Resource Name and Category */}
-                        <td className="py-2 px-3 font-medium">
-                          <div className="flex items-center gap-2.5">
+                        <td className="py-3 px-4">
+                          <div className="flex items-center gap-3">
                             <CategoryIcon
                               iconKey={res.iconKey}
-                              className="size-6 rounded shrink-0"
+                              className="size-7 rounded-xl shrink-0"
                             />
                             <div className="min-w-0">
                               <Link
                                 href={`/resources/${res.id}`}
-                                className="font-bold text-white hover:text-[#6cd8cb] transition-colors truncate block"
+                                className="font-bold text-navy hover:text-teal transition-colors truncate block text-sm"
                               >
                                 {res.name}
                               </Link>
-                              <span className="text-[11px] text-[#94a3b8] block truncate">
+                              <span className="text-[11.5px] text-muted block truncate font-medium">
                                 {res.categoryName}
                               </span>
                             </div>
@@ -250,38 +251,38 @@ export default async function UsagePage({ searchParams }: UsagePageProps) {
 
                         {/* Site (only shown if All sites) */}
                         {data.siteId === "all" && (
-                          <td className="py-2 px-3 text-[#94a3b8] whitespace-nowrap">
+                          <td className="py-3 px-4 text-muted whitespace-nowrap font-medium">
                             {res.siteName}
                           </td>
                         )}
 
                         {/* Standard Hours */}
-                        <td className="py-2 px-3 text-right tabular-nums text-slate-200 whitespace-nowrap">
+                        <td className="py-3 px-4 text-right tabular-nums text-muted font-medium whitespace-nowrap">
                           {res.bookedHoursStandard.toFixed(1)} h
                         </td>
 
                         {/* Total Booked Hours */}
-                        <td className="py-2 px-3 text-right tabular-nums text-white font-semibold whitespace-nowrap">
+                        <td className="py-3 px-4 text-right tabular-nums text-navy font-bold whitespace-nowrap">
                           {res.bookedHoursTotal.toFixed(1)} h
                         </td>
 
                         {/* Utilisation Bar + % */}
-                        <td className="py-2 px-3 whitespace-nowrap">
+                        <td className="py-3 px-4 whitespace-nowrap">
                           <UtilisationBar percent={res.utilisation} />
                         </td>
 
                         {/* Classification Pill */}
-                        <td className="py-2 px-3 text-center whitespace-nowrap">
+                        <td className="py-3 px-4 text-center whitespace-nowrap">
                           {res.classification === "busy" ? (
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#0E6A85] text-white shadow-xs">
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-teal-soft text-teal-deep border border-teal-line">
                               Busy (≥70%)
                             </span>
                           ) : res.classification === "idle" ? (
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium border border-slate-500/70 text-slate-300">
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-soft text-amber border border-amber-line">
                               Idle (&lt;10%)
                             </span>
                           ) : (
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium border border-[#334155] text-slate-400">
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-canvas text-muted border border-card-edge">
                               Normal
                             </span>
                           )}
@@ -293,9 +294,67 @@ export default async function UsagePage({ searchParams }: UsagePageProps) {
               </div>
             </div>
 
+            {/* Mobile Card List View (< md) */}
+            <div className="md:hidden space-y-3">
+              {data.resources.map((res) => (
+                <div
+                  key={res.id}
+                  className="rounded-2xl border border-card-edge bg-card p-4 shadow-v4 space-y-3"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <CategoryIcon iconKey={res.iconKey} className="size-8 rounded-xl shrink-0" />
+                      <div className="min-w-0">
+                        <Link
+                          href={`/resources/${res.id}`}
+                          className="font-bold text-navy hover:text-teal transition-colors truncate block text-sm"
+                        >
+                          {res.name}
+                        </Link>
+                        <span className="text-[11.5px] text-muted block truncate font-medium">
+                          {res.categoryName} {data.siteId === "all" ? `• ${res.siteName}` : ""}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="shrink-0">
+                      {res.classification === "busy" ? (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10.5px] font-extrabold bg-teal-soft text-teal-deep border border-teal-line">
+                          Busy
+                        </span>
+                      ) : res.classification === "idle" ? (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10.5px] font-bold bg-amber-soft text-amber border border-amber-line">
+                          Idle
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10.5px] font-semibold bg-canvas text-muted border border-card-edge">
+                          Normal
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="space-y-1 pt-1 border-t border-line">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-muted font-semibold">Utilisation:</span>
+                      <UtilisationBar percent={res.utilisation} />
+                    </div>
+                    <div className="flex items-center justify-between text-xs pt-1">
+                      <span className="text-muted font-medium">Total booked:</span>
+                      <span className="font-bold text-navy tab">{res.bookedHoursTotal.toFixed(1)} h</span>
+                    </div>
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-muted font-medium">Standard hours:</span>
+                      <span className="text-muted font-medium tab">{res.bookedHoursStandard.toFixed(1)} h</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
             {/* Footnote under table */}
-            <div className="flex items-center gap-1.5 text-[11px] text-[#94a3b8] font-mono px-1">
-              <HelpCircle className="size-3.5 shrink-0 text-[#64748b]" />
+            <div className="flex items-center gap-1.5 text-xs text-muted px-1 pt-1">
+              <HelpCircle className="size-3.5 shrink-0 text-muted" />
               <span>
                 Utilisation = booked time within standard hours (Monday to Friday,{" "}
                 {standardStartFormatted} to {standardEndFormatted}) / standard hours in the period.
