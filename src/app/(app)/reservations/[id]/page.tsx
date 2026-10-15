@@ -6,7 +6,6 @@ import {
   User,
   AlertTriangle,
   Wrench,
-  CheckCircle2,
   XCircle,
   Building,
   Users,

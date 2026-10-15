@@ -104,10 +104,7 @@ export function CategoryDialog() {
 
           <div className="space-y-4">
             <div className="space-y-1.5">
-              <Label
-                htmlFor="category-name"
-                className="text-xs font-semibold text-navy"
-              >
+              <Label htmlFor="category-name" className="text-xs font-semibold text-navy">
                 Category Name
               </Label>
               <Input
@@ -126,16 +123,11 @@ export function CategoryDialog() {
 
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <Label
-                  htmlFor="category-max-minutes"
-                  className="text-xs font-semibold text-navy"
-                >
+                <Label htmlFor="category-max-minutes" className="text-xs font-semibold text-navy">
                   Longest booking
                 </Label>
                 {liveHint && (
-                  <span className="text-xs font-semibold text-teal tabular-nums">
-                    {liveHint}
-                  </span>
+                  <span className="text-xs font-semibold text-teal tabular-nums">{liveHint}</span>
                 )}
               </div>
               <Input
@@ -156,10 +148,7 @@ export function CategoryDialog() {
             </div>
 
             <div className="space-y-1.5">
-              <Label
-                htmlFor="category-icon"
-                className="text-xs font-semibold text-navy"
-              >
+              <Label htmlFor="category-icon" className="text-xs font-semibold text-navy">
                 Icon glyph
               </Label>
               <Select value={iconKey} onValueChange={(val) => setIconKey(val as CategoryIconKey)}>

@@ -155,7 +155,9 @@ export function WatchButton({
           </p>
 
           <div className="p-3 rounded-2xl border border-card-edge bg-canvas/70 space-y-1.5 text-xs">
-            <div className="text-[11px] font-bold text-muted uppercase tracking-wider">Requested Time:</div>
+            <div className="text-[11px] font-bold text-muted uppercase tracking-wider">
+              Requested Time:
+            </div>
             <div className="text-navy font-bold flex items-center gap-2 tab">
               <Clock className="size-3.5 text-teal" />
               <span>

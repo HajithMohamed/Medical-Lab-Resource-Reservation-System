@@ -12,7 +12,6 @@ import {
   CheckCircle,
   Pencil,
   ArrowRight,
-  ExternalLink,
 } from "lucide-react";
 import { requireUser } from "@/lib/auth";
 import { getResource } from "@/services/resources";
@@ -209,8 +208,7 @@ export default async function ResourceDetailPage({
         ? "Out of service"
         : "Maintenance";
 
-  const statusSubtext =
-    resource.status === "ACTIVE" ? "Ready to book" : "Unavailable for bookings";
+  const statusSubtext = resource.status === "ACTIVE" ? "Ready to book" : "Unavailable for bookings";
 
   return (
     <div className="space-y-6 pb-20 md:pb-6">

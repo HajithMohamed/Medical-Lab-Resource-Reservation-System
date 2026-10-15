@@ -339,7 +339,10 @@ export function EquipmentFields({
               </p>
             </div>
             <div className="flex items-center gap-2">
-              <Label htmlFor="switch-calibration" className="text-xs font-bold text-navy cursor-pointer">
+              <Label
+                htmlFor="switch-calibration"
+                className="text-xs font-bold text-navy cursor-pointer"
+              >
                 Needs calibration
               </Label>
               <Switch
@@ -460,7 +463,9 @@ export function EquipmentFields({
                     maxLength={120}
                     className="bg-card border-card-edge text-navy font-semibold text-xs"
                   />
-                  <p className="text-[11px] text-muted font-medium">Required if last calibrated is set</p>
+                  <p className="text-[11px] text-muted font-medium">
+                    Required if last calibrated is set
+                  </p>
                   {fieldErrors.calibratedBy && (
                     <p className="text-xs font-medium text-destructive">
                       {fieldErrors.calibratedBy[0]}
@@ -504,15 +509,16 @@ export function EquipmentFields({
         <div className="space-y-3.5 pt-3 border-t border-card-edge">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-bold text-navy tracking-tight">
-                {labels.maintenance}
-              </h3>
+              <h3 className="text-sm font-bold text-navy tracking-tight">{labels.maintenance}</h3>
               <p className="text-xs text-muted">
                 Scheduled servicing to maintain equipment safety and reliability.
               </p>
             </div>
             <div className="flex items-center gap-2">
-              <Label htmlFor="switch-maintenance" className="text-xs font-bold text-navy cursor-pointer">
+              <Label
+                htmlFor="switch-maintenance"
+                className="text-xs font-bold text-navy cursor-pointer"
+              >
                 Needs servicing
               </Label>
               <Switch
@@ -628,7 +634,9 @@ export function EquipmentFields({
                     maxLength={120}
                     className="bg-card border-card-edge text-navy font-semibold text-xs"
                   />
-                  <p className="text-[11px] text-muted font-medium">Required if last serviced is set</p>
+                  <p className="text-[11px] text-muted font-medium">
+                    Required if last serviced is set
+                  </p>
                   {fieldErrors.servicedBy && (
                     <p className="text-xs font-medium text-destructive">
                       {fieldErrors.servicedBy[0]}

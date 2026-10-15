@@ -119,7 +119,9 @@ export function MarkNotDoneDialog({
       <DialogContent className="sm:max-w-md max-h-[85vh] flex flex-col p-0 overflow-hidden bg-card border border-card-edge shadow-v4 rounded-2xl">
         <form onSubmit={handleSubmit} className="flex flex-col h-full min-h-0 overflow-hidden">
           <DialogHeader className="p-6 pb-4 border-b border-card-edge bg-canvas/60">
-            <DialogTitle className="text-navy font-bold text-base">Mark {trackerLabel.toLowerCase()} not done</DialogTitle>
+            <DialogTitle className="text-navy font-bold text-base">
+              Mark {trackerLabel.toLowerCase()} not done
+            </DialogTitle>
             <DialogDescription className="text-muted text-xs">
               {resourceName} &bull; Scheduled due: {formattedDueOn}
             </DialogDescription>
@@ -139,9 +141,9 @@ export function MarkNotDoneDialog({
                 <span>Notice: Due date will not change</span>
               </div>
               <p className="leading-relaxed">
-                The due date stays <strong className="text-navy font-bold">{formattedDueOn}</strong>. From{" "}
-                <strong className="text-navy font-bold">{formattedTomorrow}</strong> nobody can book{" "}
-                <strong className="text-navy font-bold">{resourceName}</strong> until the{" "}
+                The due date stays <strong className="text-navy font-bold">{formattedDueOn}</strong>
+                . From <strong className="text-navy font-bold">{formattedTomorrow}</strong> nobody
+                can book <strong className="text-navy font-bold">{resourceName}</strong> until the{" "}
                 {trackerLabel.toLowerCase()} is recorded.
               </p>
               {affectedBookingsCount > 0 && (

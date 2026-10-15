@@ -34,7 +34,9 @@ export function EquipmentReportsTab({
   categories,
   currentParams,
 }: EquipmentReportsTabProps) {
-  const [activeSection, setActiveSection] = React.useState<"all" | "condition" | "log">("condition");
+  const [activeSection, setActiveSection] = React.useState<"all" | "condition" | "log">(
+    "condition",
+  );
 
   // Construct search params string for pagination base URL and downloads
   const baseParams = new URLSearchParams();

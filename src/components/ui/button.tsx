@@ -11,11 +11,9 @@ const buttonVariants = cva(
         default: "bg-teal hover:bg-teal-deep text-white font-semibold shadow-xs",
         outline:
           "border border-card-edge bg-card hover:bg-mint text-navy hover:text-teal hover:border-teal/40 shadow-xs",
-        secondary:
-          "bg-canvas text-navy hover:bg-mint border border-card-edge",
+        secondary: "bg-canvas text-navy hover:bg-mint border border-card-edge",
         ghost: "text-muted hover:bg-mint hover:text-navy border border-transparent",
-        destructive:
-          "bg-red-soft text-red hover:bg-red/10 border border-red/20",
+        destructive: "bg-red-soft text-red hover:bg-red/10 border border-red/20",
         link: "text-teal underline-offset-4 hover:underline",
       },
       size: {

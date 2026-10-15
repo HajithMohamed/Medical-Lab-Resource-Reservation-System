@@ -91,7 +91,9 @@ export function DueDayBanner({
               ) : (
                 <Clock className="size-4 text-amber-strong shrink-0" />
               )}
-              <span className={`text-sm ${calibrationStatus === "OVERDUE" ? "text-red" : "text-amber-strong"}`}>
+              <span
+                className={`text-sm ${calibrationStatus === "OVERDUE" ? "text-red" : "text-amber-strong"}`}
+              >
                 {calibrationStatus === "OVERDUE"
                   ? `Calibration overdue since ${formatEquipmentDay(calibDueStr)}`
                   : "Calibration due today"}
@@ -149,7 +151,9 @@ export function DueDayBanner({
               ) : (
                 <Clock className="size-4 text-amber-strong shrink-0" />
               )}
-              <span className={`text-sm ${maintenanceStatus === "OVERDUE" ? "text-red" : "text-amber-strong"}`}>
+              <span
+                className={`text-sm ${maintenanceStatus === "OVERDUE" ? "text-red" : "text-amber-strong"}`}
+              >
                 {maintenanceStatus === "OVERDUE"
                   ? `Service overdue since ${formatEquipmentDay(maintDueStr)}`
                   : "Service due today"}

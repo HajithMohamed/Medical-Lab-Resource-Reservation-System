@@ -22,9 +22,7 @@ export function UtilisationBar({ percent, className, showText = true }: Utilisat
           style={{ width: `${clamped}%` }}
         />
       </div>
-      {showText && (
-        <span className="text-xs font-bold text-navy tab">{clamped}%</span>
-      )}
+      {showText && <span className="text-xs font-bold text-navy tab">{clamped}%</span>}
     </div>
   );
 }

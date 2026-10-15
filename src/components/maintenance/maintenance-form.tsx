@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { Wrench, AlertTriangle, AlertCircle, ShieldAlert, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -39,7 +38,6 @@ export function MaintenanceForm({
   isAdmin,
   returnTo,
 }: MaintenanceFormProps) {
-  const router = useRouter();
   const effectiveReturnTo = returnTo || "/equipment?tab=blocked";
 
   const [resourceId, setResourceId] = React.useState<string>(defaultResourceId);

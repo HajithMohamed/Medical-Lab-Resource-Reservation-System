@@ -65,10 +65,7 @@ export function BookingsOversightTable({
               <tr key={b.id} className="hover:bg-mint/40 transition-colors">
                 {/* When */}
                 <td className="py-3 px-3.5 whitespace-nowrap text-navy">
-                  <Link
-                    href={`/reservations/${b.id}`}
-                    className="group block"
-                  >
+                  <Link href={`/reservations/${b.id}`} className="group block">
                     <div className="font-bold text-navy group-hover:text-teal text-xs">
                       {b.formattedDate ?? b.formattedRange}
                     </div>
@@ -91,7 +88,9 @@ export function BookingsOversightTable({
                       className="size-6 rounded-lg shrink-0"
                     />
                     <div>
-                      <span className="truncate max-w-[180px] lg:max-w-[220px] block text-xs">{b.resource.name}</span>
+                      <span className="truncate max-w-[180px] lg:max-w-[220px] block text-xs">
+                        {b.resource.name}
+                      </span>
                       {!showSiteColumn && (
                         <span className="text-[11px] text-slate-500 font-medium block">
                           {b.resource.category.name}
@@ -114,7 +113,9 @@ export function BookingsOversightTable({
                 {/* Booked by */}
                 <td className="py-3 px-3.5 whitespace-nowrap">
                   <div className="font-bold text-navy text-xs">{b.createdBy.name}</div>
-                  <div className="text-[11.5px] text-slate-700 font-medium">{b.createdBy.email}</div>
+                  <div className="text-[11.5px] text-slate-700 font-medium">
+                    {b.createdBy.email}
+                  </div>
                 </td>
 
                 {/* Purpose */}

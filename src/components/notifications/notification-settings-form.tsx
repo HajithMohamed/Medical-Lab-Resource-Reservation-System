@@ -81,7 +81,9 @@ export function NotificationSettingsForm({ initialPreferences }: NotificationSet
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-muted leading-relaxed font-normal">{item.description}</p>
+                  <p className="text-xs text-muted leading-relaxed font-normal">
+                    {item.description}
+                  </p>
                   {isMandatory && (
                     <p className="text-[11px] text-faint italic font-normal">
                       This alert cannot be disabled to prevent missed lab schedule disruptions.

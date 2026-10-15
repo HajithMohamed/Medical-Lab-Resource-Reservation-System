@@ -15,9 +15,7 @@ export function SectionUsageChart({ sections }: SectionUsageChartProps) {
       <div className="flex items-center justify-between border-b border-line pb-3">
         <div className="flex items-center gap-2">
           <Building className="size-4 text-teal" />
-          <h2 className="text-sm font-bold text-navy uppercase tracking-wider">
-            Use by section
-          </h2>
+          <h2 className="text-sm font-bold text-navy uppercase tracking-wider">Use by section</h2>
         </div>
         <span className="text-xs text-muted">
           {sections.length} active section{sections.length === 1 ? "" : "s"}
@@ -41,7 +39,8 @@ export function SectionUsageChart({ sections }: SectionUsageChartProps) {
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-navy truncate">{s.section}</span>
                   <span className="text-muted tab shrink-0 ml-2 font-semibold">
-                    {hours} h <span className="text-[11px] text-faint font-normal">({sharePercent}%)</span>
+                    {hours} h{" "}
+                    <span className="text-[11px] text-faint font-normal">({sharePercent}%)</span>
                   </span>
                 </div>
 

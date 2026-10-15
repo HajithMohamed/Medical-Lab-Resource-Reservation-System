@@ -75,10 +75,7 @@ export function SectionDialog() {
           )}
 
           <div className="space-y-1.5">
-            <Label
-              htmlFor="section-name"
-              className="text-xs font-semibold text-navy"
-            >
+            <Label htmlFor="section-name" className="text-xs font-semibold text-navy">
               Section Name
             </Label>
             <Input

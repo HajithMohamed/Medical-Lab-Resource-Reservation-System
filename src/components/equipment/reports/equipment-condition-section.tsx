@@ -90,12 +90,18 @@ export function EquipmentConditionSection({ rows, counts }: EquipmentConditionSe
                 <TableHead className="text-xs font-black uppercase tracking-wider text-navy/90 py-3.5">
                   Site / Section
                 </TableHead>
-                <TableHead className="text-xs font-black uppercase tracking-wider text-navy/90 py-3.5">Status</TableHead>
+                <TableHead className="text-xs font-black uppercase tracking-wider text-navy/90 py-3.5">
+                  Status
+                </TableHead>
                 <TableHead className="text-xs font-black uppercase tracking-wider text-navy/90 py-3.5">
                   Condition & Reasons
                 </TableHead>
-                <TableHead className="text-xs font-black uppercase tracking-wider text-navy/90 py-3.5">Calibration</TableHead>
-                <TableHead className="text-xs font-black uppercase tracking-wider text-navy/90 py-3.5">Service</TableHead>
+                <TableHead className="text-xs font-black uppercase tracking-wider text-navy/90 py-3.5">
+                  Calibration
+                </TableHead>
+                <TableHead className="text-xs font-black uppercase tracking-wider text-navy/90 py-3.5">
+                  Service
+                </TableHead>
                 <TableHead className="text-xs font-black uppercase tracking-wider text-navy/90 py-3.5 text-right">
                   12m History
                 </TableHead>
@@ -188,7 +194,9 @@ export function EquipmentConditionSection({ rows, counts }: EquipmentConditionSe
                           </div>
                         </div>
                       ) : (
-                        <span className="text-slate-500 text-[11.5px] italic font-medium">Not configured</span>
+                        <span className="text-slate-500 text-[11.5px] italic font-medium">
+                          Not configured
+                        </span>
                       )}
                     </TableCell>
 
@@ -220,7 +228,9 @@ export function EquipmentConditionSection({ rows, counts }: EquipmentConditionSe
                           </div>
                         </div>
                       ) : (
-                        <span className="text-slate-500 text-[11.5px] italic font-medium">Not configured</span>
+                        <span className="text-slate-500 text-[11.5px] italic font-medium">
+                          Not configured
+                        </span>
                       )}
                     </TableCell>
 
@@ -230,9 +240,7 @@ export function EquipmentConditionSection({ rows, counts }: EquipmentConditionSe
                           {row.failuresIn12Months} fails, {row.repairsIn12Months} rep
                         </span>
                       ) : (
-                        <span className="text-slate-600 text-xs font-medium">
-                          0 fails, 0 rep
-                        </span>
+                        <span className="text-slate-600 text-xs font-medium">0 fails, 0 rep</span>
                       )}
                     </TableCell>
 

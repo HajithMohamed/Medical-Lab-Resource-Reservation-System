@@ -130,17 +130,27 @@ export function EquipmentLogSection({
             <Table className="min-w-[900px]">
               <TableHeader className="bg-canvas/80 border-b border-card-edge">
                 <TableRow className="border-b border-card-edge hover:bg-transparent">
-                  <TableHead className="text-xs font-black uppercase tracking-wider text-navy/90 py-3.5 pl-4">Date</TableHead>
+                  <TableHead className="text-xs font-black uppercase tracking-wider text-navy/90 py-3.5 pl-4">
+                    Date
+                  </TableHead>
                   <TableHead className="text-xs font-black uppercase tracking-wider text-navy/90 py-3.5">
                     Equipment / Site
                   </TableHead>
-                  <TableHead className="text-xs font-black uppercase tracking-wider text-navy/90 py-3.5">Type</TableHead>
+                  <TableHead className="text-xs font-black uppercase tracking-wider text-navy/90 py-3.5">
+                    Type
+                  </TableHead>
                   <TableHead className="text-xs font-black uppercase tracking-wider text-navy/90 py-3.5">
                     Performed by
                   </TableHead>
-                  <TableHead className="text-xs font-black uppercase tracking-wider text-navy/90 py-3.5">Work done</TableHead>
-                  <TableHead className="text-xs font-black uppercase tracking-wider text-navy/90 py-3.5">Result</TableHead>
-                  <TableHead className="text-xs font-black uppercase tracking-wider text-navy/90 py-3.5">Next due</TableHead>
+                  <TableHead className="text-xs font-black uppercase tracking-wider text-navy/90 py-3.5">
+                    Work done
+                  </TableHead>
+                  <TableHead className="text-xs font-black uppercase tracking-wider text-navy/90 py-3.5">
+                    Result
+                  </TableHead>
+                  <TableHead className="text-xs font-black uppercase tracking-wider text-navy/90 py-3.5">
+                    Next due
+                  </TableHead>
                   <TableHead className="text-xs font-black uppercase tracking-wider text-navy/90 py-3.5">
                     Recorded by
                   </TableHead>
@@ -178,7 +188,9 @@ export function EquipmentLogSection({
                     <TableCell className="py-3 text-xs">
                       <div className="text-navy font-bold">{row.performedBy}</div>
                       {row.externalCompany && (
-                        <div className="text-[11.5px] text-slate-700 font-medium">{row.externalCompany}</div>
+                        <div className="text-[11.5px] text-slate-700 font-medium">
+                          {row.externalCompany}
+                        </div>
                       )}
                     </TableCell>
 

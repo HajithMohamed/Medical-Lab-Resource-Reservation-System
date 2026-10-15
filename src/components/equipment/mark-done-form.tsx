@@ -97,9 +97,7 @@ export function MarkDoneForm({
 
         {/* Outcome selector */}
         <div className="space-y-1.5">
-          <Label className="text-xs font-bold text-navy uppercase tracking-wider">
-            Result *
-          </Label>
+          <Label className="text-xs font-bold text-navy uppercase tracking-wider">Result *</Label>
           <div className="flex gap-4 pt-1">
             <label className="flex items-center gap-2 cursor-pointer text-sm font-bold text-teal">
               <input
@@ -182,9 +180,7 @@ export function MarkDoneForm({
             >
               Work done / changes made {isWorkRequired ? "*" : "(optional)"}
             </Label>
-            <span className="text-[11px] text-muted font-medium">
-              {workPerformed.length}/1000
-            </span>
+            <span className="text-[11px] text-muted font-medium">{workPerformed.length}/1000</span>
           </div>
           <textarea
             id="mark-work-done"

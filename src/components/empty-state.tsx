@@ -22,9 +22,7 @@ export function EmptyState({ icon: Icon, title, description, action, className }
         <Icon className="size-6" aria-hidden="true" />
       </div>
       <h3 className="text-base font-bold text-navy mb-1.5 tracking-tight">{title}</h3>
-      <p className="text-xs text-muted max-w-sm mb-4 leading-relaxed font-normal">
-        {description}
-      </p>
+      <p className="text-xs text-muted max-w-sm mb-4 leading-relaxed font-normal">{description}</p>
       {action && <div className="mt-1">{action}</div>}
     </div>
   );

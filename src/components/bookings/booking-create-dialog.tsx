@@ -104,7 +104,6 @@ export function BookingCreateDialog({
   // Handle successful booking redirection and dialog close
   React.useEffect(() => {
     if (state?.ok && state?.reservationId) {
-      setOpen(false);
       window.location.assign(`/bookings?notice=booked&highlight=${state.reservationId}`);
     }
   }, [state]);
@@ -181,10 +180,7 @@ export function BookingCreateDialog({
 
           {/* Resource Select */}
           <div className="space-y-1.5">
-            <Label
-              htmlFor="modalResourceSelect"
-              className="text-xs font-bold text-navy"
-            >
+            <Label htmlFor="modalResourceSelect" className="text-xs font-bold text-navy">
               Resource <span className="text-teal">*</span>
             </Label>
             <Select
@@ -230,9 +226,7 @@ export function BookingCreateDialog({
             {selectedResource && (
               <div className="text-xs text-muted pt-1 pl-0.5 space-y-0.5 font-normal">
                 <p>
-                  <span className="text-teal-deep font-bold">
-                    {selectedResource.category.name}
-                  </span>{" "}
+                  <span className="text-teal-deep font-bold">{selectedResource.category.name}</span>{" "}
                   can be booked for up to{" "}
                   <span className="text-navy font-bold">
                     {formatMinutes(selectedResource.category.maxBookingMinutes)}
@@ -262,10 +256,7 @@ export function BookingCreateDialog({
           {/* Start Date and Time */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label
-                htmlFor="modalStartDate"
-                className="text-xs font-bold text-navy"
-              >
+              <Label htmlFor="modalStartDate" className="text-xs font-bold text-navy">
                 Start Date <span className="text-teal">*</span>
               </Label>
               <Input
@@ -285,10 +276,7 @@ export function BookingCreateDialog({
             </div>
 
             <div className="space-y-1.5">
-              <Label
-                htmlFor="modalStartTime"
-                className="text-xs font-bold text-navy"
-              >
+              <Label htmlFor="modalStartTime" className="text-xs font-bold text-navy">
                 Start Time <span className="text-teal">*</span>
               </Label>
               <Input
@@ -312,10 +300,7 @@ export function BookingCreateDialog({
           {/* End Date and Time */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label
-                htmlFor="modalEndDate"
-                className="text-xs font-bold text-navy"
-              >
+              <Label htmlFor="modalEndDate" className="text-xs font-bold text-navy">
                 End Date <span className="text-teal">*</span>
               </Label>
               <Input
@@ -328,17 +313,12 @@ export function BookingCreateDialog({
                 className="h-10 bg-card border-card-edge text-navy text-xs font-semibold tabular-nums focus-visible:border-teal rounded-xl shadow-2xs"
               />
               {state?.fieldErrors?.endDate && (
-                <p className="text-[11px] font-semibold text-red">
-                  {state.fieldErrors.endDate[0]}
-                </p>
+                <p className="text-[11px] font-semibold text-red">{state.fieldErrors.endDate[0]}</p>
               )}
             </div>
 
             <div className="space-y-1.5">
-              <Label
-                htmlFor="modalEndTime"
-                className="text-xs font-bold text-navy"
-              >
+              <Label htmlFor="modalEndTime" className="text-xs font-bold text-navy">
                 End Time <span className="text-teal">*</span>
               </Label>
               <Input
@@ -352,19 +332,14 @@ export function BookingCreateDialog({
                 className="h-10 bg-card border-card-edge text-navy text-xs font-semibold tabular-nums focus-visible:border-teal rounded-xl shadow-2xs"
               />
               {state?.fieldErrors?.endTime && (
-                <p className="text-[11px] font-semibold text-red">
-                  {state.fieldErrors.endTime[0]}
-                </p>
+                <p className="text-[11px] font-semibold text-red">{state.fieldErrors.endTime[0]}</p>
               )}
             </div>
           </div>
 
           {/* Purpose */}
           <div className="space-y-1.5">
-            <Label
-              htmlFor="modalPurpose"
-              className="text-xs font-bold text-navy"
-            >
+            <Label htmlFor="modalPurpose" className="text-xs font-bold text-navy">
               Purpose <span className="text-teal">*</span>
             </Label>
             <Input
@@ -388,10 +363,7 @@ export function BookingCreateDialog({
           {/* Attendees */}
           {selectedResource?.capacity ? (
             <div className="space-y-1.5 p-3.5 rounded-2xl border border-card-edge bg-canvas/60">
-              <Label
-                htmlFor="modalAttendeeCount"
-                className="text-xs font-bold text-navy"
-              >
+              <Label htmlFor="modalAttendeeCount" className="text-xs font-bold text-navy">
                 Expected Attendees <span className="text-teal">*</span>
               </Label>
               <Input

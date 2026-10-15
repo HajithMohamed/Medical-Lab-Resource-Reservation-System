@@ -143,8 +143,8 @@ export function EditSiteDialog({ site, trigger }: EditSiteDialogProps) {
                   <strong className="text-navy font-semibold">
                     {site._count.resources} resources
                   </strong>{" "}
-                  and{" "}
-                  <strong className="text-navy font-semibold">{site._count.users} users</strong>.
+                  and <strong className="text-navy font-semibold">{site._count.users} users</strong>
+                  .
                 </span>
               </div>
               <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-teal-soft text-teal-deep border border-teal/20">

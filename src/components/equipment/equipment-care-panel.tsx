@@ -192,9 +192,7 @@ export function EquipmentCarePanel({
             <p className="font-bold text-navy mt-0.5">{resource.manufacturer || "—"}</p>
           </div>
           <div>
-            <span className="text-[11px] font-bold uppercase tracking-wider text-muted">
-              Model
-            </span>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-muted">Model</span>
             <p className="font-bold text-navy mt-0.5">{resource.model || "—"}</p>
           </div>
           <div>
@@ -218,9 +216,7 @@ export function EquipmentCarePanel({
 
       {/* Schedule Tracker Rows */}
       <div className="space-y-3">
-        <h3 className="text-xs font-bold uppercase tracking-wider text-muted">
-          Schedule status
-        </h3>
+        <h3 className="text-xs font-bold uppercase tracking-wider text-muted">Schedule status</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {/* Calibration */}
           {hasCalibration && (
@@ -358,7 +354,9 @@ export function EquipmentCarePanel({
                       <td className="py-2.5 px-3 text-navy font-bold whitespace-nowrap">
                         {formatEquipmentDay(dayStr)}
                       </td>
-                      <td className="py-2.5 px-3 text-navy font-semibold whitespace-nowrap">{kindName}</td>
+                      <td className="py-2.5 px-3 text-navy font-semibold whitespace-nowrap">
+                        {kindName}
+                      </td>
                       <td className="py-2.5 px-3 text-navy">
                         <div className="font-semibold">{rec.performedBy}</div>
                         {rec.externalCompany && (
@@ -381,9 +379,7 @@ export function EquipmentCarePanel({
                       <td className="py-2.5 px-3 text-navy font-semibold whitespace-nowrap">
                         {rec.nextDueOn ? formatEquipmentDay(dbToDay(rec.nextDueOn)) : "—"}
                       </td>
-                      <td className="py-2.5 px-3 text-muted">
-                        {rec.reference || "—"}
-                      </td>
+                      <td className="py-2.5 px-3 text-muted">{rec.reference || "—"}</td>
                       <td className="py-2.5 px-3 text-muted whitespace-nowrap">
                         {rec.recordedBy.name}
                       </td>

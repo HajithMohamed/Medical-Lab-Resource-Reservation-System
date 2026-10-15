@@ -91,9 +91,7 @@ export function ModalDialog({
             {title && (
               <h2 className="text-base font-bold text-navy tracking-tight truncate">{title}</h2>
             )}
-            {description && (
-              <p className="text-xs text-muted mt-0.5 truncate">{description}</p>
-            )}
+            {description && <p className="text-xs text-muted mt-0.5 truncate">{description}</p>}
           </div>
           <button
             type="button"
@@ -106,9 +104,7 @@ export function ModalDialog({
         </div>
 
         {/* Scrollable Content Inside (85vh bounded) */}
-        <div className="flex-1 overflow-y-auto p-5 sm:p-6">
-          {children}
-        </div>
+        <div className="flex-1 overflow-y-auto p-5 sm:p-6">{children}</div>
       </div>
     </div>
   );

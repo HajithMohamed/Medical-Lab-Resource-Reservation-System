@@ -13,7 +13,6 @@ import { PeakHoursChart } from "@/components/usage/peak-hours-chart";
 import { SectionUsageChart } from "@/components/usage/section-usage-chart";
 import { AutoFilter } from "@/components/auto-filter";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { STANDARD_DAY_START_HOUR, STANDARD_DAY_END_HOUR } from "@/config/rules";
 
 export const metadata = {
@@ -49,7 +48,11 @@ export default async function UsagePage({ searchParams }: UsagePageProps) {
   if (!usageResult.ok) {
     return (
       <div className="space-y-6 w-full">
-        <PageHeader eyebrow="BenchBook / Usage" title="Usage" description="Resource utilisation and statistics" />
+        <PageHeader
+          eyebrow="BenchBook / Usage"
+          title="Usage"
+          description="Resource utilisation and statistics"
+        />
         <div
           role="alert"
           className="p-4 sm:p-5 rounded-2xl border border-red/30 bg-red-soft text-red text-sm font-semibold flex items-center gap-3 shadow-2xs"
@@ -98,7 +101,10 @@ export default async function UsagePage({ searchParams }: UsagePageProps) {
         <div className="flex flex-wrap items-center gap-3.5">
           <div className="flex items-center gap-2">
             <Calendar className="size-3.5 text-muted" />
-            <label htmlFor="filter-from" className="text-muted uppercase text-[11px] font-extrabold tracking-wider">
+            <label
+              htmlFor="filter-from"
+              className="text-muted uppercase text-[11px] font-extrabold tracking-wider"
+            >
               From:
             </label>
             <input
@@ -112,7 +118,10 @@ export default async function UsagePage({ searchParams }: UsagePageProps) {
           </div>
 
           <div className="flex items-center gap-2">
-            <label htmlFor="filter-to" className="text-muted uppercase text-[11px] font-extrabold tracking-wider">
+            <label
+              htmlFor="filter-to"
+              className="text-muted uppercase text-[11px] font-extrabold tracking-wider"
+            >
               To:
             </label>
             <input
@@ -129,7 +138,10 @@ export default async function UsagePage({ searchParams }: UsagePageProps) {
           {isAdmin ? (
             <div className="flex items-center gap-2">
               <Building2 className="size-3.5 text-muted" />
-              <label htmlFor="filter-site" className="text-muted uppercase text-[11px] font-extrabold tracking-wider">
+              <label
+                htmlFor="filter-site"
+                className="text-muted uppercase text-[11px] font-extrabold tracking-wider"
+              >
                 Site:
               </label>
               <select
@@ -341,11 +353,15 @@ export default async function UsagePage({ searchParams }: UsagePageProps) {
                     </div>
                     <div className="flex items-center justify-between text-xs pt-1">
                       <span className="text-muted font-medium">Total booked:</span>
-                      <span className="font-bold text-navy tab">{res.bookedHoursTotal.toFixed(1)} h</span>
+                      <span className="font-bold text-navy tab">
+                        {res.bookedHoursTotal.toFixed(1)} h
+                      </span>
                     </div>
                     <div className="flex items-center justify-between text-xs">
                       <span className="text-muted font-medium">Standard hours:</span>
-                      <span className="text-muted font-medium tab">{res.bookedHoursStandard.toFixed(1)} h</span>
+                      <span className="text-muted font-medium tab">
+                        {res.bookedHoursStandard.toFixed(1)} h
+                      </span>
                     </div>
                   </div>
                 </div>

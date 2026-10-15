@@ -322,7 +322,10 @@ export function UserCreateDialog({
                     <SelectValue placeholder="No assigned section" />
                   </SelectTrigger>
                   <SelectContent className="bg-card border-card-edge text-navy shadow-v4 rounded-2xl">
-                    <SelectItem value="none" className="hover:bg-mint focus:bg-mint text-navy font-semibold text-xs cursor-pointer">
+                    <SelectItem
+                      value="none"
+                      className="hover:bg-mint focus:bg-mint text-navy font-semibold text-xs cursor-pointer"
+                    >
                       None / Unassigned
                     </SelectItem>
                     {sections.map((sec) => (

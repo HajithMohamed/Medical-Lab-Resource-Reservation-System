@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
 import { Check } from "lucide-react";
@@ -69,7 +68,6 @@ export function ResourceForm({
   sections,
   isEdit = false,
 }: ResourceFormProps) {
-  const router = useRouter();
   const isManager = actorRole === "MANAGER";
   const defaultSiteId =
     initialData?.siteId ?? (isManager ? (actorSiteId ?? "") : (sites[0]?.id ?? ""));

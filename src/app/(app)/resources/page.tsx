@@ -139,12 +139,14 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
             <Table className="w-full table-fixed">
               <TableHeader>
                 <TableRow className="bg-canvas border-b border-line text-[11px] font-extrabold uppercase tracking-wider text-muted">
-                  <TableHead className="w-[30%] py-3 px-4">Resource</TableHead>
-                  <TableHead className="w-[16%] py-3 px-4">Category</TableHead>
-                  <TableHead className="w-[20%] py-3 px-4">Site</TableHead>
+                  <TableHead className="w-[24%] py-3 px-4">Resource</TableHead>
+                  <TableHead className="w-[15%] py-3 px-4">Category</TableHead>
+                  <TableHead className="w-[17%] py-3 px-4">Site</TableHead>
                   <TableHead className="w-[12%] py-3 px-4">Status</TableHead>
-                  <TableHead className="w-[12%] py-3 px-4">Calibration</TableHead>
-                  <TableHead className="w-[10%] py-3 px-4 text-right">Actions</TableHead>
+                  <TableHead className="w-[13%] py-3 px-4">Calibration</TableHead>
+                  <TableHead className="w-[19%] min-w-[180px] py-3 px-4 text-right">
+                    Actions
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody className="divide-y divide-line">
@@ -233,7 +235,7 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
                       </TableCell>
 
                       {/* Actions */}
-                      <TableCell className="py-3 px-4 text-right overflow-hidden">
+                      <TableCell className="py-3 px-4 text-right whitespace-nowrap">
                         <div className="inline-flex items-center gap-1.5 justify-end">
                           {canBook(user) && resource.status === "ACTIVE" && (
                             <Button
@@ -326,7 +328,10 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
 
           {/* Callout matching docs/design/03-resources-list.svg */}
           <div className="hidden md:flex items-center gap-2.5 p-3.5 rounded-2xl bg-mint/50 border border-teal-line text-xs font-semibold text-teal-deep">
-            <span>Edit, change status and block time sit in the More menu. Tablet (768–1023 px): Site hides first, then Category. No sideways page scroll.</span>
+            <span>
+              Edit, change status and block time sit in the More menu. Tablet (768–1023 px): Site
+              hides first, then Category. No sideways page scroll.
+            </span>
           </div>
 
           {/* Mobile Stacked Cards (below md) */}

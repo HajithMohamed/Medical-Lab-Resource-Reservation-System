@@ -259,7 +259,10 @@ export function UserEditDialog({
                         <SelectValue placeholder="Select role" />
                       </SelectTrigger>
                       <SelectContent className="bg-card border-card-edge text-navy shadow-v4 rounded-2xl">
-                        <SelectItem value="STAFF" className="hover:bg-mint focus:bg-mint text-navy font-semibold text-xs cursor-pointer">
+                        <SelectItem
+                          value="STAFF"
+                          className="hover:bg-mint focus:bg-mint text-navy font-semibold text-xs cursor-pointer"
+                        >
                           Staff
                         </SelectItem>
                         <SelectItem
@@ -268,7 +271,10 @@ export function UserEditDialog({
                         >
                           Site Manager
                         </SelectItem>
-                        <SelectItem value="ADMIN" className="hover:bg-mint focus:bg-mint text-navy font-semibold text-xs cursor-pointer">
+                        <SelectItem
+                          value="ADMIN"
+                          className="hover:bg-mint focus:bg-mint text-navy font-semibold text-xs cursor-pointer"
+                        >
                           Administrator
                         </SelectItem>
                       </SelectContent>
@@ -308,7 +314,9 @@ export function UserEditDialog({
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs bg-canvas/80 p-3.5 rounded-2xl border border-card-edge">
                   <div>
-                    <span className="text-muted block uppercase text-[10.5px] font-black tracking-wider">Role</span>
+                    <span className="text-muted block uppercase text-[10.5px] font-black tracking-wider">
+                      Role
+                    </span>
                     <span className="font-bold text-navy text-xs mt-0.5 block">
                       {user.role === "STAFF"
                         ? "Staff"
@@ -318,7 +326,9 @@ export function UserEditDialog({
                     </span>
                   </div>
                   <div>
-                    <span className="text-muted block uppercase text-[10.5px] font-black tracking-wider">Site</span>
+                    <span className="text-muted block uppercase text-[10.5px] font-black tracking-wider">
+                      Site
+                    </span>
                     <span className="font-bold text-navy text-xs mt-0.5 block">
                       {user.site?.name ?? "Network wide"}
                     </span>
@@ -344,7 +354,10 @@ export function UserEditDialog({
                     <SelectValue placeholder="No assigned section" />
                   </SelectTrigger>
                   <SelectContent className="bg-card border-card-edge text-navy shadow-v4 rounded-2xl">
-                    <SelectItem value="none" className="hover:bg-mint focus:bg-mint text-navy font-semibold text-xs cursor-pointer">
+                    <SelectItem
+                      value="none"
+                      className="hover:bg-mint focus:bg-mint text-navy font-semibold text-xs cursor-pointer"
+                    >
                       None / Unassigned
                     </SelectItem>
                     {sections.map((sec) => (

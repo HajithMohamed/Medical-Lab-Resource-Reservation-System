@@ -291,9 +291,7 @@ export function RecordEquipmentForm({
             >
               Work done / changes made {isWorkRequired ? "*" : "(optional)"}
             </Label>
-            <span className="text-[11px] text-muted font-medium">
-              {workPerformed.length}/1000
-            </span>
+            <span className="text-[11px] text-muted font-medium">{workPerformed.length}/1000</span>
           </div>
           <textarea
             id="rec-work-done"

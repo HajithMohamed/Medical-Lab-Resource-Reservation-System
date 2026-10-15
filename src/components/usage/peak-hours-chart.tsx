@@ -15,15 +15,13 @@ export function PeakHoursChart({ data }: PeakHoursChartProps) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-line pb-3">
         <div className="flex items-center gap-2">
           <Clock className="size-4 text-teal" />
-          <h2 className="text-sm font-bold text-navy uppercase tracking-wider">
-            Peak hours
-          </h2>
+          <h2 className="text-sm font-bold text-navy uppercase tracking-wider">Peak hours</h2>
         </div>
         <div className="text-xs text-muted">
           {busiestHourMinutes > 0 ? (
             <span>
-              Busiest hour: <strong className="text-teal-deep font-bold">{busiestHourLabel}</strong> (
-              {Math.round((busiestHourMinutes / 60) * 10) / 10} h booked)
+              Busiest hour: <strong className="text-teal-deep font-bold">{busiestHourLabel}</strong>{" "}
+              ({Math.round((busiestHourMinutes / 60) * 10) / 10} h booked)
             </span>
           ) : (
             <span>No bookings recorded in this period.</span>

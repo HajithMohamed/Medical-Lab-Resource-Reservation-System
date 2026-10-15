@@ -100,25 +100,10 @@ export function PrecisionCalendarView({
   useAutoRefresh();
 
   // Mobile view mode: "agenda" (default on small phones) vs "grid"
-  const [mobileMode, setMobileMode] = React.useState<"agenda" | "grid">(() => {
-    if (typeof window === "undefined") return "agenda";
-    try {
-      const stored = localStorage.getItem("benchbook_cal_mode");
-      if (stored === "agenda" || stored === "grid") return stored;
-      if (window.innerWidth >= 480) return "grid";
-    } catch {
-      // ignore
-    }
-    return "agenda";
-  });
+  const [mobileMode, setMobileMode] = React.useState<"agenda" | "grid">("agenda");
 
   const handleModeChange = (mode: "agenda" | "grid") => {
     setMobileMode(mode);
-    try {
-      localStorage.setItem("benchbook_cal_mode", mode);
-    } catch {
-      // ignore
-    }
   };
 
   // Peek sheet state for inspecting a booking or block

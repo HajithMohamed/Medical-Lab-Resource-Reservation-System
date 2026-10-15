@@ -145,9 +145,7 @@ export function EditCategoryDialog({ category, trigger }: EditCategoryDialogProp
                   Longest booking
                 </Label>
                 {liveHint && (
-                  <span className="text-xs font-bold text-teal tabular-nums">
-                    {liveHint}
-                  </span>
+                  <span className="text-xs font-bold text-teal tabular-nums">{liveHint}</span>
                 )}
               </div>
               <Input
@@ -194,7 +192,9 @@ export function EditCategoryDialog({ category, trigger }: EditCategoryDialogProp
                           className="size-6 rounded"
                           iconClassName="size-3.5"
                         />
-                        <span className="text-xs font-medium text-navy">{CATEGORY_ICON_LABELS[key]}</span>
+                        <span className="text-xs font-medium text-navy">
+                          {CATEGORY_ICON_LABELS[key]}
+                        </span>
                       </div>
                     </SelectItem>
                   ))}

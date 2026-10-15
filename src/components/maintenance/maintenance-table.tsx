@@ -115,9 +115,7 @@ export function MaintenanceTable({ blocks, isAdmin = false }: MaintenanceTablePr
                 </td>
 
                 {/* Created By */}
-                <td className="py-2.5 px-3 text-muted whitespace-nowrap">
-                  {block.createdByName}
-                </td>
+                <td className="py-2.5 px-3 text-muted whitespace-nowrap">{block.createdByName}</td>
 
                 {/* Actions */}
                 <td className="py-2.5 px-3 text-right whitespace-nowrap">
@@ -186,10 +184,7 @@ export function MaintenanceTable({ blocks, isAdmin = false }: MaintenanceTablePr
                         <input type="hidden" name="blockId" value={block.id} />
                         <input type="hidden" name="resourceId" value={block.resourceId} />
                         <div className="space-y-1.5 pt-1 text-left">
-                          <Label
-                            htmlFor="cancelReason"
-                            className="text-xs font-semibold text-navy"
-                          >
+                          <Label htmlFor="cancelReason" className="text-xs font-semibold text-navy">
                             Reason for cancellation <span className="text-red">*</span>
                           </Label>
                           <Input
