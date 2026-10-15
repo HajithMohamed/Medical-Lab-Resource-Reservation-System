@@ -9,15 +9,26 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, Eye, EyeOff, Loader2, LogIn, Info } from "lucide-react";
 
-interface LoginFormProps {
-  defaultEmail?: string;
+export interface DemoAccount {
+  role: string;
+  name: string;
+  email: string;
+  password: string;
+  site?: string;
 }
 
-export function LoginForm({ defaultEmail }: LoginFormProps) {
+interface LoginFormProps {
+  defaultEmail?: string;
+  demoAccounts?: DemoAccount[];
+}
+
+export function LoginForm({ defaultEmail = "", demoAccounts }: LoginFormProps) {
   const [state, formAction, isPending] = useActionState<AuthActionState | undefined, FormData>(
     login,
     undefined,
   );
+  const [email, setEmail] = React.useState(defaultEmail);
+  const [password, setPassword] = React.useState("");
   const [showPassword, setShowPassword] = React.useState(false);
   const [rememberMe, setRememberMe] = React.useState(false);
   const [showForgotNotice, setShowForgotNotice] = React.useState(false);
@@ -47,7 +58,8 @@ export function LoginForm({ defaultEmail }: LoginFormProps) {
           type="email"
           autoComplete="email"
           required
-          defaultValue={defaultEmail}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           placeholder="kasun.silva@lab.example"
           disabled={isPending}
           className="h-11 px-3.5 text-sm bg-canvas border border-card-edge rounded-xl text-navy placeholder:text-faint focus:border-teal outline-none"
@@ -68,6 +80,8 @@ export function LoginForm({ defaultEmail }: LoginFormProps) {
             type={showPassword ? "text" : "password"}
             autoComplete="current-password"
             required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             placeholder="••••••••••••"
             disabled={isPending}
             className="h-11 pl-3.5 pr-10 text-sm bg-canvas border border-card-edge rounded-xl text-navy placeholder:text-faint focus:border-teal outline-none"
@@ -136,6 +150,34 @@ export function LoginForm({ defaultEmail }: LoginFormProps) {
           </span>
         )}
       </Button>
+
+      {/* Demo Accounts Panel (development only) */}
+      {demoAccounts && demoAccounts.length > 0 && (
+        <div className="pt-3 border-t border-card-edge space-y-2">
+          <div className="flex items-center justify-between text-[10.5px] font-extrabold uppercase tracking-wider text-muted">
+            <span>Demo accounts (dev only)</span>
+            <span className="text-[9.5px] text-faint normal-case">tap to fill</span>
+          </div>
+          <div className="grid grid-cols-3 gap-2">
+            {demoAccounts.map((acc) => (
+              <button
+                key={acc.role}
+                type="button"
+                onClick={() => {
+                  setEmail(acc.email);
+                  setPassword(acc.password);
+                }}
+                className="p-2 rounded-xl border border-card-edge bg-canvas/60 hover:bg-mint/50 hover:border-teal-line text-left transition-all active:scale-95 cursor-pointer group"
+              >
+                <div className="text-[11px] font-bold text-navy group-hover:text-teal truncate">
+                  {acc.role}
+                </div>
+                <div className="text-[10px] text-muted truncate">{acc.name.split(" ")[0]}</div>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Helper note */}
       <p className="text-xs text-muted text-center pt-1 font-medium">
