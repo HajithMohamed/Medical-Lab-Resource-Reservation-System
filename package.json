@@ -7,6 +7,7 @@
     "node": ">=22.12"
   },
   "scripts": {
+    "setup": "tsx scripts/setup.ts",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
@@ -31,7 +32,6 @@
   },
   "dependencies": {
     "@date-fns/tz": "^1.5.0",
-    "@fontsource-variable/atkinson-hyperlegible-next": "^5.3.0",
     "@fontsource-variable/plus-jakarta-sans": "^5.3.0",
     "@prisma/adapter-pg": "7.10.0",
     "@prisma/client": "7.10.0",
@@ -43,7 +43,6 @@
     "jose": "^6.2.12",
     "lucide-react": "^1.55.0",
     "next": "16.4.0",
-    "next-themes": "^0.4.6",
     "radix-ui": "^1.8.1",
     "react": "19.3.0",
     "react-dom": "19.3.0",
@@ -57,7 +56,6 @@
   "devDependencies": {
     "@next/env": "16.4.0",
     "@tailwindcss/turbopack": "^4",
-    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^24.19.2",
     "@types/react": "^19",
     "@types/react-dom": "^19",

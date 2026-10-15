@@ -1,7 +1,7 @@
 import * as React from "react";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
-import { LoginForm } from "@/app/(auth)/login/login-form";
+import { LoginForm, type DemoAccount } from "@/app/(auth)/login/login-form";
 import { getLabTimeZone } from "@/lib/time";
 
 export const metadata = {
@@ -23,6 +23,37 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
 
   const zone = getLabTimeZone();
   const zoneCity = zone.split("/").pop()?.replace(/_/g, " ") ?? zone;
+
+  const showDemoAccounts =
+    process.env.NODE_ENV !== "production" &&
+    Boolean(process.env.SEED_MANAGER_EMAIL) &&
+    Boolean(process.env.SEED_STAFF_EMAIL);
+
+  const demoAccounts: DemoAccount[] | undefined = showDemoAccounts
+    ? [
+        {
+          role: "Admin",
+          name: process.env.SEED_ADMIN_NAME || "Lab Administrator",
+          email: process.env.SEED_ADMIN_EMAIL || "admin@lab.example",
+          password: process.env.SEED_ADMIN_PASSWORD || "blue-river-lamp-2026",
+          site: "—",
+        },
+        {
+          role: "Manager",
+          name: "Nadeesha Perera",
+          email: process.env.SEED_MANAGER_EMAIL || "manager@lab.example",
+          password: process.env.SEED_MANAGER_PASSWORD || "green-hill-cloud-2026",
+          site: "Main Laboratory, Colombo",
+        },
+        {
+          role: "Staff",
+          name: "Kasun Silva",
+          email: process.env.SEED_STAFF_EMAIL || "staff@lab.example",
+          password: process.env.SEED_STAFF_PASSWORD || "amber-leaf-stone-2026",
+          site: "Main Laboratory, Colombo",
+        },
+      ]
+    : undefined;
 
   return (
     <main className="min-h-screen flex flex-col justify-between items-center p-4 sm:p-6 lg:p-8">
@@ -64,7 +95,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
             <p className="text-xs text-muted">Use the email your manager set up.</p>
           </div>
 
-          <LoginForm defaultEmail={resolvedSearchParams?.email} />
+          <LoginForm defaultEmail={resolvedSearchParams?.email} demoAccounts={demoAccounts} />
         </div>
       </div>
 

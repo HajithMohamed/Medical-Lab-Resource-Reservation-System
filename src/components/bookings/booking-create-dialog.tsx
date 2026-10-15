@@ -101,10 +101,35 @@ export function BookingCreateDialog({
     setStartDate(newStart);
   };
 
-  // Handle successful booking redirection and dialog close
+  const handleStartTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newStart = e.target.value;
+    setStartTime(newStart);
+    if (newStart) {
+      const [sh, sm] = newStart.split(":").map(Number);
+      const startMin = sh * 60 + sm;
+      const defaultDuration = Math.min(60, selectedResource?.category?.maxBookingMinutes ?? 60);
+      const totalEndMin = (startMin + defaultDuration) % (24 * 60);
+      const eh = Math.floor(totalEndMin / 60);
+      const em = totalEndMin % 60;
+      const computedEndTime = `${String(eh).padStart(2, "0")}:${String(em).padStart(2, "0")}`;
+
+      if (!endTime || (!endDate || endDate === startDate ? endTime <= newStart : false)) {
+        setEndTime(computedEndTime);
+      }
+    }
+  };
+
+  const isEndTimeInvalid = Boolean(
+    startDate && endDate && startDate === endDate && startTime && endTime && endTime <= startTime,
+  );
+
+  // Handle successful booking redirection
   React.useEffect(() => {
-    if (state?.ok && state?.reservationId) {
-      window.location.assign(`/bookings?notice=booked&highlight=${state.reservationId}`);
+    if (state?.ok) {
+      const target = state.reservationId
+        ? `/bookings?notice=booked&highlight=${state.reservationId}`
+        : "/bookings?notice=booked";
+      window.location.assign(target);
     }
   }, [state]);
 
@@ -286,7 +311,7 @@ export function BookingCreateDialog({
                 step={stepSeconds}
                 required
                 value={startTime}
-                onChange={(e) => setStartTime(e.target.value)}
+                onChange={handleStartTimeChange}
                 className="h-10 bg-card border-card-edge text-navy text-xs font-semibold tabular-nums focus-visible:border-teal rounded-xl shadow-2xs"
               />
               {state?.fieldErrors?.startTime && (
@@ -326,11 +351,19 @@ export function BookingCreateDialog({
                 name="endTime"
                 type="time"
                 step={stepSeconds}
+                min={
+                  startDate && endDate && startDate === endDate && startTime ? startTime : undefined
+                }
                 required
                 value={endTime}
                 onChange={(e) => setEndTime(e.target.value)}
                 className="h-10 bg-card border-card-edge text-navy text-xs font-semibold tabular-nums focus-visible:border-teal rounded-xl shadow-2xs"
               />
+              {isEndTimeInvalid && (
+                <p className="text-[11px] font-semibold text-red">
+                  The end time must be after the start time.
+                </p>
+              )}
               {state?.fieldErrors?.endTime && (
                 <p className="text-[11px] font-semibold text-red">{state.fieldErrors.endTime[0]}</p>
               )}
@@ -412,7 +445,7 @@ export function BookingCreateDialog({
             <Button
               type="submit"
               size="sm"
-              disabled={isPending || Boolean(state?.ok)}
+              disabled={isPending || Boolean(state?.ok) || isEndTimeInvalid}
               className="bg-teal hover:bg-teal-deep text-white font-bold text-xs px-5 py-2 rounded-xl transition-all shadow-2xs cursor-pointer"
             >
               {isPending || state?.ok ? (

@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { revalidateResourceViews } from "@/lib/revalidate";
 import { requireRole } from "@/lib/auth";
 import * as resourcesService from "@/services/resources";
 import { ResourceStatus } from "@/generated/prisma/client";
@@ -71,10 +72,7 @@ export async function createResourceAction(
     };
   }
 
-  revalidatePath("/resources");
-  revalidatePath("/equipment");
-  revalidatePath("/calendar");
-  revalidatePath("/bookings");
+  revalidateResourceViews(result.data.id);
 
   return {
     ok: true,
@@ -131,11 +129,7 @@ export async function updateResourceAction(
     };
   }
 
-  revalidatePath("/resources");
-  revalidatePath(`/resources/${id}`);
-  revalidatePath("/equipment");
-  revalidatePath("/calendar");
-  revalidatePath("/bookings");
+  revalidateResourceViews(id);
 
   return {
     ok: true,
@@ -167,12 +161,8 @@ export async function changeResourceStatusAction(
     };
   }
 
-  revalidatePath("/resources");
-  revalidatePath(`/resources/${id}`);
+  revalidateResourceViews(id);
   revalidatePath(`/resources/${id}/status`);
-  revalidatePath("/equipment");
-  revalidatePath("/calendar");
-  revalidatePath("/bookings");
 
   return {
     ok: true,

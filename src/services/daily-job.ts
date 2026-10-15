@@ -225,10 +225,56 @@ export async function runDailyJob(
     },
   });
 
+  // Record state key in system_state so ensureDailyJobRan knows it ran
+  try {
+    await db.systemState.upsert({
+      where: { key: DAILY_JOB_STATE_KEY },
+      create: { key: DAILY_JOB_STATE_KEY, value: today },
+      update: { value: today },
+    });
+  } catch (err) {
+    console.warn("[daily-job] Could not update system_state record:", err);
+  }
+
   return {
     ok: true,
     remindersCreated,
     expiredWatches: expiredWatchesResult.count,
     deletedNotifications: deletedResult.count,
   };
+}
+
+export const DAILY_JOB_STATE_KEY = "daily_job_last_run";
+
+/**
+ * Ensures the daily job ran for today.
+ * Atomically claims today's run via PostgreSQL INSERT ... ON CONFLICT DO UPDATE WHERE value < today
+ * so that concurrent requests (e.g. parallel poll requests) only execute the job once per day.
+ */
+export async function ensureDailyJobRan(
+  todayOrNow: string | Date = labToday(),
+  now: Date = new Date(),
+): Promise<DailyJobResult | { ok: true; alreadyRan: true }> {
+  const today = typeof todayOrNow === "string" ? todayOrNow : labToday(undefined, todayOrNow);
+
+  try {
+    // Atomically claim today's run
+    const rows = await db.$queryRaw<Array<{ key: string }>>`
+      INSERT INTO "system_state" ("key", "value", "updated_at")
+      VALUES (${DAILY_JOB_STATE_KEY}, ${today}, NOW())
+      ON CONFLICT ("key")
+      DO UPDATE SET "value" = ${today}, "updated_at" = NOW()
+      WHERE "system_state"."value" < ${today}
+      RETURNING "key"
+    `;
+
+    if (!rows || rows.length === 0) {
+      return { ok: true, alreadyRan: true };
+    }
+  } catch (err) {
+    console.warn("[daily-job] Failed to claim daily job run atomically:", err);
+    return { ok: true, alreadyRan: true };
+  }
+
+  return await runDailyJob(today, now);
 }

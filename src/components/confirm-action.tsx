@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useRouter } from "next/navigation";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -35,6 +36,7 @@ export function ConfirmAction({
   action,
   children,
 }: ConfirmActionProps) {
+  const router = useRouter();
   const [open, setOpen] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [isPending, setIsPending] = React.useState(false);
@@ -71,6 +73,7 @@ export function ConfirmAction({
               setIsPending(false);
             }
             setOpen(false);
+            router.refresh();
           }}
           className="space-y-4"
         >

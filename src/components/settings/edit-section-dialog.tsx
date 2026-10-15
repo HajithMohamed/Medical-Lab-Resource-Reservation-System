@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -25,6 +26,7 @@ interface EditSectionDialogProps {
 }
 
 export function EditSectionDialog({ section, trigger }: EditSectionDialogProps) {
+  const router = useRouter();
   const [open, setOpen] = React.useState(false);
   const [isPending, setIsPending] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
@@ -56,6 +58,7 @@ export function EditSectionDialog({ section, trigger }: EditSectionDialogProps) 
 
     toast.success(result.message ?? "Changes saved");
     setOpen(false);
+    router.refresh();
   };
 
   return (

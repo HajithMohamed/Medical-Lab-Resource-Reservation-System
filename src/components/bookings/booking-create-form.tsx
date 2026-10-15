@@ -24,6 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 export interface ResourceOption {
   id: string;
@@ -94,6 +95,27 @@ export function BookingCreateForm({ resources, prefilled }: BookingCreateFormPro
     }
     setStartDate(newStart);
   };
+
+  const handleStartTimeChange = (newStart: string) => {
+    setStartTime(newStart);
+    if (newStart) {
+      const [sh, sm] = newStart.split(":").map(Number);
+      const startMin = sh * 60 + sm;
+      const defaultDuration = Math.min(60, selectedResource?.category?.maxBookingMinutes ?? 60);
+      const totalEndMin = (startMin + defaultDuration) % (24 * 60);
+      const eh = Math.floor(totalEndMin / 60);
+      const em = totalEndMin % 60;
+      const computedEndTime = `${String(eh).padStart(2, "0")}:${String(em).padStart(2, "0")}`;
+
+      if (!endTime || (!endDate || endDate === startDate ? endTime <= newStart : false)) {
+        setEndTime(computedEndTime);
+      }
+    }
+  };
+
+  const isEndTimeInvalid = Boolean(
+    startDate && endDate && startDate === endDate && startTime && endTime && endTime <= startTime,
+  );
 
   // Redirect and dismiss modal cleanly on successful booking
   React.useEffect(() => {
@@ -407,7 +429,7 @@ export function BookingCreateForm({ resources, prefilled }: BookingCreateFormPro
                     step={stepSeconds}
                     required
                     value={startTime}
-                    onChange={(e) => setStartTime(e.target.value)}
+                    onChange={(e) => handleStartTimeChange(e.target.value)}
                     className="h-10 bg-card border-card-edge text-navy text-xs font-semibold tabular-nums focus-visible:border-teal rounded-xl shadow-2xs"
                   />
                   {state?.fieldErrors?.startTime && (
@@ -450,10 +472,19 @@ export function BookingCreateForm({ resources, prefilled }: BookingCreateFormPro
                     type="time"
                     step={stepSeconds}
                     required
+                    min={startDate === endDate ? startTime : undefined}
                     value={endTime}
                     onChange={(e) => setEndTime(e.target.value)}
-                    className="h-10 bg-card border-card-edge text-navy text-xs font-semibold tabular-nums focus-visible:border-teal rounded-xl shadow-2xs"
+                    className={cn(
+                      "h-10 bg-card border-card-edge text-navy text-xs font-semibold tabular-nums focus-visible:border-teal rounded-xl shadow-2xs",
+                      isEndTimeInvalid && "border-red focus-visible:ring-red",
+                    )}
                   />
+                  {isEndTimeInvalid && (
+                    <p className="text-[11px] font-semibold text-red">
+                      The end time must be after the start time.
+                    </p>
+                  )}
                   {state?.fieldErrors?.endTime && (
                     <p className="text-[11px] font-semibold text-red">
                       {state.fieldErrors.endTime[0]}
@@ -528,7 +559,7 @@ export function BookingCreateForm({ resources, prefilled }: BookingCreateFormPro
             <Button
               type="submit"
               size="sm"
-              disabled={isPending || Boolean(state?.ok)}
+              disabled={isPending || Boolean(state?.ok) || isEndTimeInvalid}
               className="h-9 px-5 bg-teal hover:bg-teal-deep text-white font-bold text-xs rounded-xl shadow-2xs active:scale-95 transition-all cursor-pointer"
             >
               {isPending || state?.ok ? (
