@@ -57,7 +57,7 @@ export function MaintenanceForm({
       const res = await createMaintenanceBlockAction(prevState, formData);
       if (res.ok) {
         toast.success("Time blocked successfully");
-        router.push(effectiveReturnTo);
+        window.location.assign(effectiveReturnTo);
       }
       return res;
     },

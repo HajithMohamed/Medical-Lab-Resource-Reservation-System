@@ -101,6 +101,14 @@ export function BookingCreateDialog({
     setStartDate(newStart);
   };
 
+  // Handle successful booking redirection and dialog close
+  React.useEffect(() => {
+    if (state?.ok && state?.reservationId) {
+      setOpen(false);
+      window.location.assign(`/bookings?notice=booked&highlight=${state.reservationId}`);
+    }
+  }, [state]);
+
   const stepSeconds = SLOT_MINUTES * 60; // 900 seconds = 15 minutes
 
   const calendarLink = selectedResource
@@ -432,13 +440,13 @@ export function BookingCreateDialog({
             <Button
               type="submit"
               size="sm"
-              disabled={isPending}
+              disabled={isPending || Boolean(state?.ok)}
               className="bg-teal hover:bg-teal-deep text-white font-bold text-xs px-5 py-2 rounded-xl transition-all shadow-2xs cursor-pointer"
             >
-              {isPending ? (
+              {isPending || state?.ok ? (
                 <>
                   <Loader2 className="size-3.5 animate-spin mr-1.5" />
-                  <span>Booking...</span>
+                  <span>{state?.ok ? "Redirecting..." : "Booking..."}</span>
                 </>
               ) : (
                 <span>Book</span>

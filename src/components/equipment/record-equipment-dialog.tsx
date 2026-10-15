@@ -82,17 +82,17 @@ export function RecordEquipmentDialog({
             <Button
               size="sm"
               variant="outline"
-              className="gap-1.5 border-[#334155] text-slate-200 hover:text-white hover:bg-[#18202f] text-xs font-mono"
+              className="gap-1.5 border-card-edge bg-card text-navy hover:text-teal hover:bg-mint text-xs font-bold rounded-xl shadow-2xs"
             >
-              <PlusCircle className="size-3.5 text-[#6cd8cb]" />
+              <PlusCircle className="size-3.5 text-teal" />
               <span>{getDialogTitle()}</span>
             </Button>
           )}
         </DialogTrigger>
-        <DialogContent className="sm:max-w-lg max-h-[85vh] flex flex-col p-0 overflow-hidden">
-          <DialogHeader className="p-6 pb-4 border-b border-[#1e293b]">
-            <DialogTitle>{getDialogTitle()}</DialogTitle>
-            <DialogDescription>{resourceName}</DialogDescription>
+        <DialogContent className="sm:max-w-lg max-h-[85vh] flex flex-col p-0 overflow-hidden bg-card border border-card-edge shadow-v4 rounded-2xl">
+          <DialogHeader className="p-6 pb-4 border-b border-card-edge bg-canvas/60">
+            <DialogTitle className="text-navy font-bold text-base">{getDialogTitle()}</DialogTitle>
+            <DialogDescription className="text-muted text-xs">{resourceName}</DialogDescription>
           </DialogHeader>
 
           {open && (

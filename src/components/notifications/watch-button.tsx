@@ -26,6 +26,7 @@ export interface WatchButtonProps {
   initialWatched?: boolean;
   size?: "sm" | "default" | "lg";
   className?: string;
+  label?: string;
 }
 
 export function WatchButton({
@@ -38,6 +39,7 @@ export function WatchButton({
   initialWatched = false,
   size = "sm",
   className,
+  label,
 }: WatchButtonProps) {
   const [localWatchedOverride, setLocalWatchedOverride] = React.useState<boolean | null>(null);
   const [open, setOpen] = React.useState(false);
@@ -88,7 +90,7 @@ export function WatchButton({
         className={`text-xs font-semibold border-card-edge bg-card text-teal hover:text-teal-deep hover:bg-mint rounded-xl gap-1.5 shadow-2xs cursor-pointer ${className ?? ""}`}
       >
         <Bell className="size-3.5" />
-        <span>{isPending ? "Setting alert..." : "Notify me when back in service"}</span>
+        <span>{isPending ? "Setting..." : (label ?? "Notify me when back in service")}</span>
       </Button>
     );
   }

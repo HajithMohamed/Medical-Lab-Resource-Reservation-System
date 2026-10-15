@@ -82,7 +82,7 @@ export function ConfirmAction({
           {error && (
             <div
               role="alert"
-              className="rounded-lg border border-rose-500/40 bg-rose-500/10 p-3 text-xs text-rose-300"
+              className="rounded-xl border border-red/30 bg-red-soft p-3 text-xs font-semibold text-red"
             >
               {error}
             </div>

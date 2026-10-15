@@ -196,7 +196,7 @@ export function UserCreateDialog({
               <div className="space-y-1.5">
                 <Label
                   htmlFor="create-user-name"
-                  className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                  className="text-xs font-bold text-navy uppercase tracking-wider"
                 >
                   Full name
                 </Label>
@@ -212,14 +212,14 @@ export function UserCreateDialog({
                   autoFocus
                 />
                 {fieldErrors.name && (
-                  <p className="text-xs font-mono text-rose-400">{fieldErrors.name[0]}</p>
+                  <p className="text-xs font-bold text-red">{fieldErrors.name[0]}</p>
                 )}
               </div>
 
               <div className="space-y-1.5">
                 <Label
                   htmlFor="create-user-email"
-                  className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                  className="text-xs font-bold text-navy uppercase tracking-wider"
                 >
                   Email address
                 </Label>
@@ -233,7 +233,7 @@ export function UserCreateDialog({
                   required
                 />
                 {fieldErrors.email && (
-                  <p className="text-xs font-mono text-rose-400">{fieldErrors.email[0]}</p>
+                  <p className="text-xs font-bold text-red">{fieldErrors.email[0]}</p>
                 )}
               </div>
 
@@ -241,23 +241,23 @@ export function UserCreateDialog({
                 <div className="space-y-1.5">
                   <Label
                     htmlFor="create-user-role"
-                    className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                    className="text-xs font-bold text-navy uppercase tracking-wider"
                   >
                     Role
                   </Label>
                   <Select value={role} onValueChange={(val) => setRole(val as Role)}>
                     <SelectTrigger
                       id="create-user-role"
-                      className="w-full bg-[#060e1d] border-[#334155] text-white"
+                      className="w-full bg-card border-card-edge text-navy font-semibold text-xs rounded-xl focus:border-teal"
                     >
                       <SelectValue placeholder="Select role" />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#18202f] border-[#334155] text-white">
+                    <SelectContent className="bg-card border-card-edge text-navy shadow-v4 rounded-2xl">
                       {allowedRoles.map((r) => (
                         <SelectItem
                           key={r}
                           value={r}
-                          className="hover:bg-[#222a3a] focus:bg-[#222a3a]"
+                          className="hover:bg-mint focus:bg-mint text-navy font-semibold text-xs cursor-pointer"
                         >
                           {r === "STAFF"
                             ? "Staff"
@@ -274,23 +274,23 @@ export function UserCreateDialog({
                   <div className="space-y-1.5">
                     <Label
                       htmlFor="create-user-site"
-                      className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                      className="text-xs font-bold text-navy uppercase tracking-wider"
                     >
                       Site
                     </Label>
                     <Select value={siteId} onValueChange={(val) => setSiteId(val)}>
                       <SelectTrigger
                         id="create-user-site"
-                        className="w-full bg-[#060e1d] border-[#334155] text-white"
+                        className="w-full bg-card border-card-edge text-navy font-semibold text-xs rounded-xl focus:border-teal"
                       >
                         <SelectValue placeholder="Select site" />
                       </SelectTrigger>
-                      <SelectContent className="bg-[#18202f] border-[#334155] text-white">
+                      <SelectContent className="bg-card border-card-edge text-navy shadow-v4 rounded-2xl">
                         {sites.map((s) => (
                           <SelectItem
                             key={s.id}
                             value={s.id}
-                            className="hover:bg-[#222a3a] focus:bg-[#222a3a]"
+                            className="hover:bg-mint focus:bg-mint text-navy font-semibold text-xs cursor-pointer"
                           >
                             {s.name}
                           </SelectItem>
@@ -298,7 +298,7 @@ export function UserCreateDialog({
                       </SelectContent>
                     </Select>
                     {fieldErrors.siteId && (
-                      <p className="text-xs font-mono text-rose-400">{fieldErrors.siteId[0]}</p>
+                      <p className="text-xs font-bold text-red">{fieldErrors.siteId[0]}</p>
                     )}
                   </div>
                 )}
@@ -308,28 +308,28 @@ export function UserCreateDialog({
                 <div className="flex items-center justify-between">
                   <Label
                     htmlFor="create-user-section"
-                    className="text-xs font-mono uppercase tracking-wider text-[#bcc9c6]"
+                    className="text-xs font-bold text-navy uppercase tracking-wider"
                   >
                     Section
                   </Label>
-                  <span className="text-xs font-mono text-[#879390]">(optional)</span>
+                  <span className="text-xs font-medium text-muted">(optional)</span>
                 </div>
                 <Select value={sectionId} onValueChange={(val) => setSectionId(val)}>
                   <SelectTrigger
                     id="create-user-section"
-                    className="w-full bg-[#060e1d] border-[#334155] text-white"
+                    className="w-full bg-card border-card-edge text-navy font-semibold text-xs rounded-xl focus:border-teal"
                   >
                     <SelectValue placeholder="No assigned section" />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#18202f] border-[#334155] text-white">
-                    <SelectItem value="none" className="hover:bg-[#222a3a] focus:bg-[#222a3a]">
+                  <SelectContent className="bg-card border-card-edge text-navy shadow-v4 rounded-2xl">
+                    <SelectItem value="none" className="hover:bg-mint focus:bg-mint text-navy font-semibold text-xs cursor-pointer">
                       None / Unassigned
                     </SelectItem>
                     {sections.map((sec) => (
                       <SelectItem
                         key={sec.id}
                         value={sec.id}
-                        className="hover:bg-[#222a3a] focus:bg-[#222a3a]"
+                        className="hover:bg-mint focus:bg-mint text-navy font-semibold text-xs cursor-pointer"
                       >
                         {sec.name}
                       </SelectItem>

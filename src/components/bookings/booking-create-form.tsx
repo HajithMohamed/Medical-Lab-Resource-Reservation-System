@@ -95,6 +95,13 @@ export function BookingCreateForm({ resources, prefilled }: BookingCreateFormPro
     setStartDate(newStart);
   };
 
+  // Redirect and dismiss modal cleanly on successful booking
+  React.useEffect(() => {
+    if (state?.ok && state?.reservationId) {
+      window.location.assign(`/bookings?notice=booked&highlight=${state.reservationId}`);
+    }
+  }, [state]);
+
   // Focus first error field if state returns fieldErrors
   React.useEffect(() => {
     if (state?.fieldErrors) {
@@ -521,13 +528,13 @@ export function BookingCreateForm({ resources, prefilled }: BookingCreateFormPro
             <Button
               type="submit"
               size="sm"
-              disabled={isPending}
+              disabled={isPending || Boolean(state?.ok)}
               className="h-9 px-5 bg-teal hover:bg-teal-deep text-white font-bold text-xs rounded-xl shadow-2xs active:scale-95 transition-all cursor-pointer"
             >
-              {isPending ? (
+              {isPending || state?.ok ? (
                 <>
                   <Loader2 className="size-3.5 animate-spin mr-1.5" />
-                  <span>Booking...</span>
+                  <span>{state?.ok ? "Redirecting..." : "Booking..."}</span>
                 </>
               ) : (
                 <span>Book</span>

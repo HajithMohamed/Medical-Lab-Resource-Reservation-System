@@ -8,11 +8,11 @@ const alertVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-[#18202f] text-slate-200 border-[#334155]",
+        default: "bg-card text-navy border-card-edge shadow-xs",
         warning:
-          "bg-amber-950/40 text-amber-200 border-amber-600/40 *:data-[slot=alert-description]:text-amber-300/80 *:[svg]:text-amber-400",
+          "bg-amber-soft text-amber-strong border-amber-line font-medium *:data-[slot=alert-description]:text-amber-800 *:[svg]:text-amber",
         destructive:
-          "bg-rose-950/40 text-rose-200 border-rose-600/40 *:data-[slot=alert-description]:text-rose-300/80 *:[svg]:text-rose-400",
+          "bg-red-soft text-red border-red/30 font-medium *:data-[slot=alert-description]:text-red *:[svg]:text-red",
       },
     },
     defaultVariants: {

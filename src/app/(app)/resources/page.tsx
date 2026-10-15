@@ -14,6 +14,7 @@ import { ResourceFilters } from "@/components/resources/resource-filters";
 import { ResourceCard } from "@/components/resources/resource-card";
 import { ResourceCreateDialog } from "@/components/resources/resource-create-dialog";
 import { ResourceEditDialog } from "@/components/resources/resource-edit-dialog";
+import { WatchButton } from "@/components/notifications/watch-button";
 import { PaginationControls } from "@/components/pagination-controls";
 import {
   Table,
@@ -238,7 +239,7 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
                             <Button
                               asChild
                               size="sm"
-                              className="h-8 px-2.5 rounded-xl bg-gradient-to-br from-teal to-teal-deep text-white font-bold text-xs shadow-teal hover:opacity-95"
+                              className="h-8 px-3 rounded-xl bg-teal hover:bg-teal-deep text-white font-bold text-xs shadow-teal hover:opacity-95"
                               title="Book slot"
                               aria-label={`Book slot for ${resource.name}`}
                             >
@@ -251,11 +252,21 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
                               </Link>
                             </Button>
                           )}
+                          {isOos && (
+                            <WatchButton
+                              resourceId={resource.id}
+                              resourceName={resource.name}
+                              kind="BACK_IN_SERVICE"
+                              size="sm"
+                              label="Notify"
+                              className="h-8 px-2.5 rounded-xl bg-mint/50 border border-teal-line text-teal-deep hover:bg-teal hover:text-white font-bold text-xs shadow-2xs"
+                            />
+                          )}
                           <Button
                             asChild
-                            variant="ghost"
+                            variant="outline"
                             size="sm"
-                            className="h-8 px-2.5 rounded-xl border border-card-edge bg-card hover:bg-canvas text-navy font-bold text-xs"
+                            className="h-8 px-3 rounded-xl border border-card-edge bg-card hover:bg-mint text-navy font-bold text-xs shadow-2xs"
                             title="View details"
                             aria-label={`View details for ${resource.name}`}
                           >
@@ -311,6 +322,11 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
               }}
               itemLabel="resources"
             />
+          </div>
+
+          {/* Callout matching docs/design/03-resources-list.svg */}
+          <div className="hidden md:flex items-center gap-2.5 p-3.5 rounded-2xl bg-mint/50 border border-teal-line text-xs font-semibold text-teal-deep">
+            <span>Edit, change status and block time sit in the More menu. Tablet (768–1023 px): Site hides first, then Category. No sideways page scroll.</span>
           </div>
 
           {/* Mobile Stacked Cards (below md) */}

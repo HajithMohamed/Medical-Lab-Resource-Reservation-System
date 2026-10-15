@@ -248,13 +248,12 @@ export function ResourceForm({
     toast.success(result.message ?? (isEdit ? "Changes saved" : "Resource added"));
 
     if (isEdit && initialData?.id) {
-      router.push(`/resources/${initialData.id}`);
+      window.location.assign(`/resources/${initialData.id}`);
     } else if (result.resourceId) {
-      router.push(`/resources/${result.resourceId}`);
+      window.location.assign(`/resources/${result.resourceId}`);
     } else {
-      router.push("/resources");
+      window.location.assign("/resources");
     }
-    router.refresh();
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {

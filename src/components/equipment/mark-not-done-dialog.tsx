@@ -109,18 +109,18 @@ export function MarkNotDoneDialog({
           <Button
             size="sm"
             variant="outline"
-            className="gap-1.5 border-[#334155] text-slate-300 hover:text-white hover:bg-[#18202f] text-xs"
+            className="gap-1.5 border-card-edge bg-card text-navy hover:text-amber-strong hover:bg-amber-soft text-xs font-bold rounded-xl shadow-2xs"
           >
-            <XCircle className="size-3.5 text-amber-400" />
+            <XCircle className="size-3.5 text-amber-strong" />
             <span>Not done</span>
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md max-h-[85vh] flex flex-col p-0 overflow-hidden">
+      <DialogContent className="sm:max-w-md max-h-[85vh] flex flex-col p-0 overflow-hidden bg-card border border-card-edge shadow-v4 rounded-2xl">
         <form onSubmit={handleSubmit} className="flex flex-col h-full min-h-0 overflow-hidden">
-          <DialogHeader className="p-6 pb-4 border-b border-line">
-            <DialogTitle>Mark {trackerLabel.toLowerCase()} not done</DialogTitle>
-            <DialogDescription>
+          <DialogHeader className="p-6 pb-4 border-b border-card-edge bg-canvas/60">
+            <DialogTitle className="text-navy font-bold text-base">Mark {trackerLabel.toLowerCase()} not done</DialogTitle>
+            <DialogDescription className="text-muted text-xs">
               {resourceName} &bull; Scheduled due: {formattedDueOn}
             </DialogDescription>
           </DialogHeader>

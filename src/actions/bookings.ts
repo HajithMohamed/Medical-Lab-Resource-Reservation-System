@@ -7,6 +7,8 @@ import { parseLabDateTime } from "@/lib/time";
 import { createBooking, cancelBooking } from "@/services/bookings";
 
 export interface BookingActionState {
+  ok?: boolean;
+  reservationId?: string;
   error?: string;
   fieldErrors?: Record<string, string[]>;
   suggestions?: string[];
@@ -75,7 +77,10 @@ export async function createBookingAction(
   revalidatePath("/calendar");
   revalidatePath(`/resources/${resourceId}`);
 
-  redirect(`/bookings?notice=booked&highlight=${result.data.id}`);
+  return {
+    ok: true,
+    reservationId: result.data.id,
+  };
 }
 
 /**
