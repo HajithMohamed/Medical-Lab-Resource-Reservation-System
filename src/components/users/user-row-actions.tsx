@@ -148,11 +148,12 @@ export function UserRowActions({
           trigger={
             <Button
               variant="outline"
-              size="sm"
-              className="inline-flex items-center gap-1 px-2 py-1 rounded bg-[#18202f] hover:bg-[#222a3a] text-xs font-mono font-medium text-[#dbe2f8] hover:text-white border border-[#334155] hover:border-[#6cd8cb]/50 transition-all duration-150 active:scale-[0.98]"
+              size="icon"
+              className="size-9 rounded-md bg-[#18202f] hover:bg-[#222a3a] text-[#dbe2f8] hover:text-[#6cd8cb] border border-[#334155] hover:border-[#6cd8cb]/50 transition-all duration-150 active:scale-[0.98]"
+              title={`Edit ${user.name}`}
+              aria-label={`Edit ${user.name}`}
             >
-              <Pencil className="size-3 text-[#6cd8cb]" />
-              <span>Edit</span>
+              <Pencil className="size-4 text-[#6cd8cb]" />
             </Button>
           }
         />
@@ -162,9 +163,11 @@ export function UserRowActions({
             <Button
               variant="ghost"
               size="icon"
-              className="size-7 p-0 rounded bg-[#18202f] hover:bg-[#222a3a] text-[#94a3b8] hover:text-white border border-[#334155]"
+              className="size-9 rounded-md bg-[#18202f] hover:bg-[#222a3a] text-[#94a3b8] hover:text-white border border-[#334155]"
+              title={`More actions for ${user.name}`}
+              aria-label={`More actions for ${user.name}`}
             >
-              <MoreHorizontal className="size-3.5" />
+              <MoreHorizontal className="size-4" />
               <span className="sr-only">Actions for {user.name}</span>
             </Button>
           </DropdownMenuTrigger>

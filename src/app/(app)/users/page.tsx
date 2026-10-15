@@ -156,13 +156,13 @@ export default async function UsersPage({ searchParams }: UsersPageProps) {
             <Table>
               <TableHeader>
                 <TableRow className="bg-[#222a3a]/70 border-b border-[#334155] text-xs font-mono uppercase tracking-wider text-[#94a3b8]">
-                  <TableHead className="w-[30%]">Person</TableHead>
-                  <TableHead>Role</TableHead>
-                  <TableHead>Site</TableHead>
-                  <TableHead>Section</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Last sign-in</TableHead>
-                  <TableHead className="w-[100px] text-right">Actions</TableHead>
+                  <TableHead className="w-[30%] py-2.5 px-3">Person</TableHead>
+                  <TableHead className="py-2.5 px-3">Role</TableHead>
+                  <TableHead className="py-2.5 px-3">Site</TableHead>
+                  <TableHead className="py-2.5 px-3">Section</TableHead>
+                  <TableHead className="py-2.5 px-3">Status</TableHead>
+                  <TableHead className="py-2.5 px-3">Last sign-in</TableHead>
+                  <TableHead className="w-[100px] text-right py-2.5 px-3">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -177,9 +177,9 @@ export default async function UsersPage({ searchParams }: UsersPageProps) {
                       key={user.id}
                       className="group hover:bg-[#222a3a]/50 transition-colors duration-150"
                     >
-                      <TableCell className="py-3 px-4">
+                      <TableCell className="py-2 px-3">
                         <div className="flex items-center gap-3">
-                          <Avatar className="size-9 rounded-lg bg-[#6cd8cb]/20 text-[#6cd8cb] border border-[#6cd8cb]/30 font-mono font-bold text-xs shrink-0">
+                          <Avatar className="size-8 rounded-lg bg-[#6cd8cb]/20 text-[#6cd8cb] border border-[#6cd8cb]/30 font-mono font-bold text-xs shrink-0">
                             <AvatarFallback className="bg-[#6cd8cb]/20 text-[#6cd8cb]">
                               {getInitials(user.name)}
                             </AvatarFallback>
@@ -208,7 +208,7 @@ export default async function UsersPage({ searchParams }: UsersPageProps) {
                         </div>
                       </TableCell>
 
-                      <TableCell className="py-3 px-4">
+                      <TableCell className="py-2 px-3">
                         <span className="text-sm font-medium text-white">
                           {user.role === Role.STAFF
                             ? "Staff"
@@ -218,13 +218,13 @@ export default async function UsersPage({ searchParams }: UsersPageProps) {
                         </span>
                       </TableCell>
 
-                      <TableCell className="py-3 px-4">
+                      <TableCell className="py-2 px-3">
                         <span className="text-sm text-[#dbe2f8]">
                           {user.site?.name ?? "Network wide"}
                         </span>
                       </TableCell>
 
-                      <TableCell className="py-3 px-4">
+                      <TableCell className="py-2 px-3">
                         {user.section?.name ? (
                           <span className="px-2 py-0.5 rounded text-xs font-mono bg-[#18202f] text-[#bcc9c6] border border-[#334155]/60">
                             {user.section.name}
@@ -234,11 +234,11 @@ export default async function UsersPage({ searchParams }: UsersPageProps) {
                         )}
                       </TableCell>
 
-                      <TableCell className="py-3 px-4">
+                      <TableCell className="py-2 px-3">
                         <UserStatusPill user={user} />
                       </TableCell>
 
-                      <TableCell className="py-3 px-4">
+                      <TableCell className="py-2 px-3">
                         <span
                           className="text-xs font-mono text-[#94a3b8] cursor-default"
                           title={lastLoginTitle}
@@ -247,7 +247,7 @@ export default async function UsersPage({ searchParams }: UsersPageProps) {
                         </span>
                       </TableCell>
 
-                      <TableCell className="py-3 px-4 text-right">
+                      <TableCell className="py-2 px-3 text-right">
                         <UserRowActions
                           user={user}
                           actorId={actor.id}

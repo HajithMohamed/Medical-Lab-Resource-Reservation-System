@@ -224,29 +224,28 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
                       </TableCell>
                       <TableCell className="py-2 px-3 text-right overflow-hidden">
                         <div className="inline-flex items-center gap-1 justify-end">
-                          {canBook(user) && resource.status === "ACTIVE" ? (
+                          <Button
+                            asChild
+                            variant="ghost"
+                            size="icon"
+                            className="size-9 rounded-md text-[#94a3b8] hover:text-white hover:bg-[#18202f] border border-transparent hover:border-[#334155] transition-all"
+                            title="View details"
+                            aria-label={`View details for ${resource.name}`}
+                          >
+                            <Link href={`/resources/${resource.id}`}>
+                              <Eye className="size-4" />
+                            </Link>
+                          </Button>
+                          {canBook(user) && resource.status === "ACTIVE" && (
                             <Button
                               asChild
                               size="icon"
-                              className="size-7 rounded bg-[#6cd8cb]/15 hover:bg-[#6cd8cb] text-[#6cd8cb] hover:text-[#003732] border border-[#6cd8cb]/40 transition-all active:scale-95 shadow-2xs"
+                              className="size-9 rounded-md bg-[#6cd8cb]/15 hover:bg-[#6cd8cb] text-[#6cd8cb] hover:text-[#003732] border border-[#6cd8cb]/40 transition-all active:scale-95 shadow-2xs"
                               title="Book slot"
                               aria-label={`Book slot for ${resource.name}`}
                             >
                               <Link href={`/bookings/new?resourceId=${resource.id}`}>
-                                <CalendarPlus className="size-3.5" />
-                              </Link>
-                            </Button>
-                          ) : (
-                            <Button
-                              asChild
-                              variant="ghost"
-                              size="icon"
-                              className="size-7 rounded text-[#94a3b8] hover:text-white hover:bg-[#222a3a] transition-all"
-                              title="View details"
-                              aria-label={`View details for ${resource.name}`}
-                            >
-                              <Link href={`/resources/${resource.id}`}>
-                                <Eye className="size-3.5" />
+                                <CalendarPlus className="size-4" />
                               </Link>
                             </Button>
                           )}
@@ -263,11 +262,11 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
                                   type="button"
                                   variant="outline"
                                   size="icon"
-                                  className="size-7 rounded bg-[#18202f] hover:bg-[#222a3a] text-[#94a3b8] hover:text-[#6cd8cb] border border-[#334155] hover:border-[#6cd8cb]/40 transition-all active:scale-95 shadow-2xs"
+                                  className="size-9 rounded-md bg-[#18202f] hover:bg-[#222a3a] text-[#94a3b8] hover:text-[#6cd8cb] border border-[#334155] hover:border-[#6cd8cb]/40 transition-all active:scale-95 shadow-2xs"
                                   title="Edit resource"
                                   aria-label={`Edit ${resource.name}`}
                                 >
-                                  <Pencil className="size-3.5" />
+                                  <Pencil className="size-4" />
                                 </Button>
                               }
                             />

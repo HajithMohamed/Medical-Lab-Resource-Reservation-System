@@ -10,7 +10,7 @@ export const RECENT_DAYS = 30; // "past" and "cancelled" lists show the last 30 
 export const FIND_SLOT_DEFAULT_DURATION_MINUTES = 60; // first value in the form
 export const FIND_SLOT_DURATIONS_MINUTES = [15, 30, 45, 60, 90, 120, 180, 240, 360, 480, 600, 720]; // choices in the form; the category limit still rules
 export const FIND_SLOT_SUGGESTIONS = 3; // nearest free start times shown for a busy resource
-export const BOOKINGS_PAGE_SIZE = 25; // rows per page on bookings oversight
+export const BOOKINGS_PAGE_SIZE = 10; // rows per page on bookings oversight (compact laptop layout)
 
 // Sign-in and sessions
 export const SESSION_COOKIE_NAME = "lab_session";
