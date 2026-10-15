@@ -117,7 +117,12 @@ export function ReportSummaryPdf({
               style={[pdfStyles.tableRow, idx % 2 === 1 ? pdfStyles.tableRowAlt : {}]}
               wrap={false}
             >
-              <Text style={[pdfStyles.tableCellBold, { width: 150 }]}>{r.name}</Text>
+              <View style={{ width: 150 }}>
+                <Text style={pdfStyles.tableCellBold}>{r.name}</Text>
+                <Text style={[pdfStyles.tableCell, { fontSize: 6.5, color: "#64748b" }]}>
+                  {r.categoryName} • {r.status}
+                </Text>
+              </View>
               <Text style={[pdfStyles.tableCell, { width: 120 }]}>
                 {r.siteName} {r.sectionName ? `(${r.sectionName})` : ""}
               </Text>
@@ -141,12 +146,26 @@ export function ReportSummaryPdf({
                   </Text>
                 )}
               </View>
-              <Text style={[pdfStyles.tableCell, { width: 125 }]}>
-                {r.nextCalibrationDue ? `Due: ${formatEquipmentDay(r.nextCalibrationDue)}` : "-"}
-              </Text>
-              <Text style={[pdfStyles.tableCell, { width: 125 }]}>
-                {r.nextServiceDue ? `Due: ${formatEquipmentDay(r.nextServiceDue)}` : "-"}
-              </Text>
+              <View style={{ width: 125 }}>
+                <Text style={pdfStyles.tableCell}>
+                  {r.nextCalibrationDue ? `Due: ${formatEquipmentDay(r.nextCalibrationDue)}` : "-"}
+                </Text>
+                {r.lastCalibrationDate && (
+                  <Text style={[pdfStyles.tableCell, { fontSize: 6.5, color: "#64748b" }]}>
+                    Last: {formatEquipmentDay(r.lastCalibrationDate)} ({r.lastCalibrationResult})
+                  </Text>
+                )}
+              </View>
+              <View style={{ width: 125 }}>
+                <Text style={pdfStyles.tableCell}>
+                  {r.nextServiceDue ? `Due: ${formatEquipmentDay(r.nextServiceDue)}` : "-"}
+                </Text>
+                {r.lastServiceDate && (
+                  <Text style={[pdfStyles.tableCell, { fontSize: 6.5, color: "#64748b" }]}>
+                    Last: {formatEquipmentDay(r.lastServiceDate)} ({r.lastServiceResult})
+                  </Text>
+                )}
+              </View>
               <Text style={[pdfStyles.tableCell, { width: 80, textAlign: "right" }]}>
                 {r.failuresIn12Months} fails, {r.repairsIn12Months} rep
               </Text>

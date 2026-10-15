@@ -48,11 +48,13 @@ export interface EquipmentReportFiltersInput {
   kind?: string;
   outcome?: string;
   page?: number;
+  pageSize?: number;
 }
 
 export interface ConditionRow {
   resourceId: string;
   name: string;
+  status: ResourceStatus;
   siteId: string;
   siteName: string;
   sectionId: string | null;
@@ -65,9 +67,11 @@ export interface ConditionRow {
   lastCalibrationDate: string | null;
   lastCalibrationResult: string | null;
   nextCalibrationDue: string | null;
+  calibrationDaysRemaining: number | null;
   lastServiceDate: string | null;
   lastServiceResult: string | null;
   nextServiceDue: string | null;
+  serviceDaysRemaining: number | null;
   failuresIn12Months: number;
   repairsIn12Months: number;
 }
@@ -186,32 +190,24 @@ export async function getEquipmentReport(
     scopeLabel = siteObj ? siteObj.name : "Selected site";
   }
 
-  // Common filters for resources
+  // Common filters for resources: all non-retired resources in site scope
   const resourceFilter: Prisma.ResourceWhereInput = {
     status: { not: ResourceStatus.RETIRED },
     ...(siteWhere ? { siteId: siteWhere } : {}),
     ...(options.section ? { sectionId: options.section } : {}),
     ...(options.category ? { categoryId: options.category } : {}),
-    OR: [
-      { calibrationIntervalDays: { not: null } },
-      { maintenanceIntervalDays: { not: null } },
-      { nextCalibrationDueOn: { not: null } },
-      { nextMaintenanceDueOn: { not: null } },
-      { equipmentRecords: { some: {} } },
-    ],
   };
 
-  // Section A: Tracked resources with their records
+  // Section A: All resources with their records
   const lookbackCutoff = dayToDb(addDaysToDay(today, -CONDITION_LOOKBACK_DAYS));
 
-  const trackedResources = await db.resource.findMany({
+  const allResources = await db.resource.findMany({
     where: resourceFilter,
     include: {
       site: { select: { id: true, name: true } },
       section: { select: { id: true, name: true } },
       category: { select: { id: true, name: true, iconKey: true } },
       equipmentRecords: {
-        where: { performedOn: { gte: lookbackCutoff } },
         orderBy: [{ performedOn: "desc" }, { createdAt: "desc" }],
         select: {
           kind: true,
@@ -226,7 +222,7 @@ export async function getEquipmentReport(
   const conditionCounts = { poor: 0, watch: 0, good: 0, notTracked: 0, total: 0 };
   const conditionRows: ConditionRow[] = [];
 
-  for (const r of trackedResources) {
+  for (const r of allResources) {
     const nextCalDay = r.nextCalibrationDueOn ? dbToDay(r.nextCalibrationDueOn) : null;
     const nextMaintDay = r.nextMaintenanceDueOn ? dbToDay(r.nextMaintenanceDueOn) : null;
     const inServiceDay = r.inServiceOn ? dbToDay(r.inServiceOn) : null;
@@ -243,13 +239,14 @@ export async function getEquipmentReport(
     });
 
     // Recent records in lookback
-    const checkRecords = r.equipmentRecords.filter((rec) =>
+    const recentRecords = r.equipmentRecords.filter((rec) => rec.performedOn >= lookbackCutoff);
+    const checkRecords = recentRecords.filter((rec) =>
       ["CALIBRATION", "PERFORMANCE_CHECK", "REPAIR"].includes(rec.kind),
     );
     const latestCheck = checkRecords[0];
 
-    const failuresIn12Months = r.equipmentRecords.filter((rec) => rec.outcome === "FAIL").length;
-    const repairsIn12Months = r.equipmentRecords.filter((rec) => rec.kind === "REPAIR").length;
+    const failuresIn12Months = recentRecords.filter((rec) => rec.outcome === "FAIL").length;
+    const repairsIn12Months = recentRecords.filter((rec) => rec.kind === "REPAIR").length;
 
     const hasSchedules =
       r.calibrationIntervalDays != null ||
@@ -283,9 +280,13 @@ export async function getEquipmentReport(
     const latestCal = r.equipmentRecords.find((rec) => rec.kind === "CALIBRATION");
     const latestMaint = r.equipmentRecords.find((rec) => rec.kind === "PREVENTIVE_MAINTENANCE");
 
+    const calDaysRemaining = nextCalDay ? daysBetween(today, nextCalDay) : null;
+    const serviceDaysRemaining = nextMaintDay ? daysBetween(today, nextMaintDay) : null;
+
     conditionRows.push({
       resourceId: r.id,
       name: r.name,
+      status: r.status,
       siteId: r.site.id,
       siteName: r.site.name,
       sectionId: r.section?.id ?? null,
@@ -298,9 +299,11 @@ export async function getEquipmentReport(
       lastCalibrationDate: latestCal ? dbToDay(latestCal.performedOn) : null,
       lastCalibrationResult: latestCal ? latestCal.outcome : null,
       nextCalibrationDue: nextCalDay,
+      calibrationDaysRemaining: calDaysRemaining,
       lastServiceDate: latestMaint ? dbToDay(latestMaint.performedOn) : null,
       lastServiceResult: latestMaint ? latestMaint.outcome : null,
       nextServiceDue: nextMaintDay,
+      serviceDaysRemaining,
       failuresIn12Months,
       repairsIn12Months,
     });
@@ -342,7 +345,7 @@ export async function getEquipmentReport(
   ]);
 
   const currentPage = Math.max(1, options.page ?? 1);
-  const pageSize = REPORT_LOG_PAGE_SIZE;
+  const pageSize = options.pageSize ?? REPORT_LOG_PAGE_SIZE;
   const totalPages = Math.max(1, Math.ceil(totalLogRecords / pageSize));
   const skip = (currentPage - 1) * pageSize;
 
