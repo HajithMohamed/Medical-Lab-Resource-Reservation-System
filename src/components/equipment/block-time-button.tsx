@@ -16,6 +16,7 @@ export interface BlockTimeButtonProps {
   reason?: "Calibration" | "Service" | string;
   className?: string;
   size?: "default" | "sm" | "xs";
+  returnTo?: string;
   /** Test hook to verify rendering when route is enabled */
   enabled?: boolean;
 }
@@ -26,6 +27,7 @@ export function BlockTimeButton({
   reason = "Calibration",
   className,
   size = "sm",
+  returnTo,
   enabled = HAS_MAINTENANCE_NEW_ROUTE,
 }: BlockTimeButtonProps) {
   // If the /maintenance/new route does not exist yet, do not render the button
@@ -38,13 +40,21 @@ export function BlockTimeButton({
     return null;
   }
 
+  if (!resource.id) {
+    return null;
+  }
+
+  const query = new URLSearchParams({
+    resourceId: resource.id,
+    reason,
+  });
+  if (returnTo) {
+    query.set("returnTo", returnTo);
+  }
+
   return (
     <Button asChild variant="secondary" size={size === "xs" ? "sm" : size} className={className}>
-      <Link
-        href={`/maintenance/new?resourceId=${resource.id}&reason=${encodeURIComponent(reason)}`}
-      >
-        Block time
-      </Link>
+      <Link href={`/maintenance/new?${query.toString()}`}>Block time</Link>
     </Button>
   );
 }

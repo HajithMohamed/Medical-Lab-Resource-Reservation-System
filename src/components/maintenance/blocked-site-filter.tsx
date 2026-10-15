@@ -21,7 +21,7 @@ export function BlockedSiteFilter({ sites, selectedSiteId = "", range }: Blocked
     if (siteId) {
       params.set("siteId", siteId);
     }
-    router.push(`/equipment?${params.toString()}`);
+    router.replace(`/equipment?${params.toString()}`, { scroll: false });
   };
 
   return (

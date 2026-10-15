@@ -24,6 +24,7 @@ interface NewMaintenancePageProps {
     siteId?: string;
     breakdown?: string;
     reason?: string;
+    returnTo?: string;
   }>;
 }
 
@@ -78,6 +79,12 @@ export default async function NewMaintenancePage({ searchParams }: NewMaintenanc
     defaultEndTime = labTimeString(twoHoursLater, zone);
   }
 
+  const rawReturnTo = resolvedParams.returnTo;
+  const safeReturnTo =
+    rawReturnTo && rawReturnTo.startsWith("/") && !rawReturnTo.startsWith("//")
+      ? rawReturnTo
+      : "/equipment?tab=blocked";
+
   return (
     <div className="py-4">
       <MaintenanceForm
@@ -90,6 +97,7 @@ export default async function NewMaintenancePage({ searchParams }: NewMaintenanc
         defaultReason={defaultReason}
         isBreakdown={isBreakdown}
         isAdmin={actor.role === "ADMIN"}
+        returnTo={safeReturnTo}
       />
     </div>
   );

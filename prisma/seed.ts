@@ -63,6 +63,102 @@ function isWorkingDay(d: Date): boolean {
   return dayOfWeek >= 1 && dayOfWeek <= 5;
 }
 
+// Demo accounts the README and tests rely on. Used to repair a database whose
+// sites already exist (for example sites created by hand before seeding).
+const DEMO_ACCOUNTS: Array<{
+  name: string;
+  email: string;
+  role: Role;
+  site: string;
+  section?: string;
+}> = [
+  {
+    name: "Nadeesha Perera",
+    email: "nadeesha.perera@lab.example",
+    role: Role.MANAGER,
+    site: "Main Laboratory, Colombo",
+  },
+  {
+    name: "Ruwan Jayasinghe",
+    email: "ruwan.jayasinghe@lab.example",
+    role: Role.MANAGER,
+    site: "Kandy Branch Laboratory",
+  },
+  {
+    name: "Fathima Rizvi",
+    email: "fathima.rizvi@lab.example",
+    role: Role.MANAGER,
+    site: "Galle Branch Laboratory",
+  },
+  {
+    name: "Kasun Silva",
+    email: "kasun.silva@lab.example",
+    role: Role.STAFF,
+    site: "Main Laboratory, Colombo",
+    section: "Molecular Diagnostics",
+  },
+  {
+    name: "Dilani Fernando",
+    email: "dilani.fernando@lab.example",
+    role: Role.STAFF,
+    site: "Main Laboratory, Colombo",
+    section: "Clinical Biochemistry",
+  },
+  {
+    name: "Chamari Herath",
+    email: "chamari.herath@lab.example",
+    role: Role.STAFF,
+    site: "Kandy Branch Laboratory",
+    section: "Molecular Diagnostics",
+  },
+  {
+    name: "Priyanka Ekanayake",
+    email: "priyanka.ekanayake@lab.example",
+    role: Role.STAFF,
+    site: "Galle Branch Laboratory",
+    section: "Histopathology",
+  },
+];
+
+async function ensureDemoUsers(demoPassword: string): Promise<void> {
+  const passwordHash = await bcrypt.hash(demoPassword, BCRYPT_COST);
+  let created = 0;
+
+  for (const account of DEMO_ACCOUNTS) {
+    const existing = await prisma.user.findUnique({ where: { email: account.email } });
+    if (existing) continue;
+
+    const site = await prisma.site.findFirst({ where: { name: account.site } });
+    if (!site) {
+      console.log(`  Skipped ${account.email}: site "${account.site}" does not exist.`);
+      continue;
+    }
+    const section = account.section
+      ? await prisma.section.findFirst({ where: { name: account.section } })
+      : null;
+
+    await prisma.user.create({
+      data: {
+        name: account.name,
+        email: account.email,
+        passwordHash,
+        role: account.role,
+        siteId: site.id,
+        sectionId: section?.id ?? null,
+        mustChangePassword: false,
+      },
+    });
+    created += 1;
+    console.log(`  Created missing demo account ${account.email}.`);
+  }
+
+  console.log(
+    created === 0
+      ? "  All demo accounts already exist (passwords left unchanged)."
+      : `  Created ${created} missing demo account(s) with the demo password.`,
+  );
+}
+
 async function main() {
   console.log("Seeding database...");
 
@@ -98,7 +194,9 @@ async function main() {
 
   const existingSiteCount = await prisma.site.count();
   if (existingSiteCount > 0) {
-    console.log("Demo data already present. Run npm run db:reset to start again.");
+    console.log("Demo sites already present. Checking that every demo account exists...");
+    await ensureDemoUsers(seedEnv.SEED_DEMO_PASSWORD!);
+    console.log("Run npm run db:reset to rebuild all demo data from scratch.");
     return;
   }
 

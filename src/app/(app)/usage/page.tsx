@@ -11,6 +11,7 @@ import { UtilisationBar } from "@/components/utilisation-bar";
 import { EmptyState } from "@/components/empty-state";
 import { PeakHoursChart } from "@/components/usage/peak-hours-chart";
 import { SectionUsageChart } from "@/components/usage/section-usage-chart";
+import { AutoFilter } from "@/components/auto-filter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { STANDARD_DAY_START_HOUR, STANDARD_DAY_END_HOUR } from "@/config/rules";
@@ -89,9 +90,8 @@ export default async function UsagePage({ searchParams }: UsagePageProps) {
         }
       />
 
-      {/* Filter Bar (GET form) */}
-      <form
-        method="GET"
+      {/* Filter Bar (AutoFilter without Apply button) */}
+      <AutoFilter
         action="/usage"
         className="flex flex-wrap items-center justify-between gap-4 bg-[#141c2b] p-3.5 rounded-xl border border-[#334155] shadow-xs text-xs font-mono"
       >
@@ -107,7 +107,7 @@ export default async function UsagePage({ searchParams }: UsagePageProps) {
               type="date"
               defaultValue={data.fromDate}
               required
-              className="h-8 w-36 bg-[#060e1d] border-[#334155] text-xs font-mono text-slate-100"
+              className="h-8 w-36 bg-[#060e1d] border-[#334155] text-xs font-mono text-slate-100 cursor-pointer"
             />
           </div>
 
@@ -121,7 +121,7 @@ export default async function UsagePage({ searchParams }: UsagePageProps) {
               type="date"
               defaultValue={data.toDate}
               required
-              className="h-8 w-36 bg-[#060e1d] border-[#334155] text-xs font-mono text-slate-100"
+              className="h-8 w-36 bg-[#060e1d] border-[#334155] text-xs font-mono text-slate-100 cursor-pointer"
             />
           </div>
 
@@ -154,16 +154,7 @@ export default async function UsagePage({ searchParams }: UsagePageProps) {
             </div>
           )}
         </div>
-
-        <div className="flex items-center gap-2">
-          <Button
-            type="submit"
-            className="bg-[#6cd8cb] text-[#003732] hover:bg-[#29a195] font-bold text-xs h-8 px-4"
-          >
-            Apply
-          </Button>
-        </div>
-      </form>
+      </AutoFilter>
 
       {/* Summary Statistics Strip */}
       <SummaryStrip
@@ -225,19 +216,19 @@ export default async function UsagePage({ searchParams }: UsagePageProps) {
                 <table className="w-full text-left text-xs border-collapse">
                   <thead className="bg-[#141c2b] text-[#94a3b8] font-mono border-b border-[#1e293b]">
                     <tr>
-                      <th className="py-3.5 px-4 font-medium">Resource</th>
-                      {data.siteId === "all" && <th className="py-3.5 px-4 font-medium">Site</th>}
-                      <th className="py-3.5 px-4 font-medium text-right">Standard hours</th>
-                      <th className="py-3.5 px-4 font-medium text-right">Total booked</th>
-                      <th className="py-3.5 px-4 font-medium">Utilisation</th>
-                      <th className="py-3.5 px-4 font-medium text-center">Status</th>
+                      <th className="py-2.5 px-3 font-medium">Resource</th>
+                      {data.siteId === "all" && <th className="py-2.5 px-3 font-medium">Site</th>}
+                      <th className="py-2.5 px-3 font-medium text-right">Standard hours</th>
+                      <th className="py-2.5 px-3 font-medium text-right">Total booked</th>
+                      <th className="py-2.5 px-3 font-medium">Utilisation</th>
+                      <th className="py-2.5 px-3 font-medium text-center">Status</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[#1e293b] bg-[#060e1d]/60 font-mono">
                     {data.resources.map((res) => (
                       <tr key={res.id} className="hover:bg-[#141c2b]/50 transition-colors">
                         {/* Resource Name and Category */}
-                        <td className="py-3 px-4 font-medium">
+                        <td className="py-2 px-3 font-medium">
                           <div className="flex items-center gap-2.5">
                             <CategoryIcon
                               iconKey={res.iconKey}
@@ -259,28 +250,28 @@ export default async function UsagePage({ searchParams }: UsagePageProps) {
 
                         {/* Site (only shown if All sites) */}
                         {data.siteId === "all" && (
-                          <td className="py-3 px-4 text-[#94a3b8] whitespace-nowrap">
+                          <td className="py-2 px-3 text-[#94a3b8] whitespace-nowrap">
                             {res.siteName}
                           </td>
                         )}
 
                         {/* Standard Hours */}
-                        <td className="py-3 px-4 text-right tabular-nums text-slate-200 whitespace-nowrap">
+                        <td className="py-2 px-3 text-right tabular-nums text-slate-200 whitespace-nowrap">
                           {res.bookedHoursStandard.toFixed(1)} h
                         </td>
 
                         {/* Total Booked Hours */}
-                        <td className="py-3 px-4 text-right tabular-nums text-white font-semibold whitespace-nowrap">
+                        <td className="py-2 px-3 text-right tabular-nums text-white font-semibold whitespace-nowrap">
                           {res.bookedHoursTotal.toFixed(1)} h
                         </td>
 
                         {/* Utilisation Bar + % */}
-                        <td className="py-3 px-4 whitespace-nowrap">
+                        <td className="py-2 px-3 whitespace-nowrap">
                           <UtilisationBar percent={res.utilisation} />
                         </td>
 
                         {/* Classification Pill */}
-                        <td className="py-3 px-4 text-center whitespace-nowrap">
+                        <td className="py-2 px-3 text-center whitespace-nowrap">
                           {res.classification === "busy" ? (
                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#0E6A85] text-white shadow-xs">
                               Busy (≥70%)

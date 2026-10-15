@@ -173,7 +173,13 @@ export default async function CalendarPage({ searchParams }: CalendarPageProps) 
                 size="sm"
                 className="border-[#334155] bg-[#18202f] hover:bg-[#222a3a] text-xs font-mono text-white"
               >
-                <Link href={`/maintenance/new?siteId=${selectedSiteId}`}>
+                <Link
+                  href={`/maintenance/new?siteId=${selectedSiteId}&returnTo=${encodeURIComponent(
+                    `/calendar?view=${view}&date=${selectedDate}&site=${selectedSiteId}${
+                      view === "day" && selectedCategoryId ? `&category=${selectedCategoryId}` : ""
+                    }${view === "week" && selectedResourceId ? `&resource=${selectedResourceId}` : ""}`,
+                  )}`}
+                >
                   <Wrench className="size-3.5 mr-1.5" />
                   <span>Block time</span>
                 </Link>

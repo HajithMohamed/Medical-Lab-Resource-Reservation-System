@@ -5,11 +5,11 @@ import {
   Clock,
   ClipboardCheck,
   AlertCircle,
-  ExternalLink,
   ChevronLeft,
   ChevronRight,
   Calendar,
   History,
+  Eye,
 } from "lucide-react";
 import { requireRole } from "@/lib/auth";
 import { db } from "@/lib/db";
@@ -80,7 +80,7 @@ export default async function EquipmentPage({ searchParams }: EquipmentPageProps
           siteId: scheduleSiteId,
           status: scheduleStatus,
           page: schedulePage,
-          pageSize: 15,
+          pageSize: 10,
         })
       : null;
 
@@ -93,7 +93,7 @@ export default async function EquipmentPage({ searchParams }: EquipmentPageProps
           totalCount: 0,
           totalPages: 1,
           page: 1,
-          pageSize: 15,
+          pageSize: 10,
         };
 
   // Tab: Blocked time (only queried when active)
@@ -132,7 +132,9 @@ export default async function EquipmentPage({ searchParams }: EquipmentPageProps
             asChild
             className="bg-[#6cd8cb] hover:bg-[#29a195] text-[#003732] font-semibold text-xs font-mono h-9 px-4 rounded-lg shadow-xs"
           >
-            <Link href="/maintenance/new">
+            <Link
+              href={`/maintenance/new?returnTo=${encodeURIComponent(`/equipment?tab=${activeTab}`)}`}
+            >
               <Wrench className="size-3.5 mr-2" />
               <span>Block time</span>
             </Link>
@@ -303,6 +305,7 @@ export default async function EquipmentPage({ searchParams }: EquipmentPageProps
                           actor={user}
                           resource={{ id: task.resourceId, siteId: task.siteId }}
                           reason={task.tracker === "calibration" ? "Calibration" : "Service"}
+                          returnTo="/equipment?tab=today"
                         />
                       </div>
                     </div>
@@ -412,12 +415,12 @@ export default async function EquipmentPage({ searchParams }: EquipmentPageProps
                   <table className="w-full text-left text-xs">
                     <thead className="bg-[#141c2b] text-[#94a3b8] font-mono border-b border-[#1e293b]">
                       <tr>
-                        <th className="py-3 px-4 font-medium">Resource</th>
-                        {isAdmin && <th className="py-3 px-4 font-medium">Site</th>}
-                        <th className="py-3 px-4 font-medium">Calibration</th>
-                        <th className="py-3 px-4 font-medium">Maintenance</th>
-                        <th className="py-3 px-4 font-medium">Lifecycle review</th>
-                        <th className="py-3 px-4 font-medium text-right">Actions</th>
+                        <th className="py-2.5 px-3 font-medium">Resource</th>
+                        {isAdmin && <th className="py-2.5 px-3 font-medium">Site</th>}
+                        <th className="py-2.5 px-3 font-medium">Calibration</th>
+                        <th className="py-2.5 px-3 font-medium">Maintenance</th>
+                        <th className="py-2.5 px-3 font-medium">Lifecycle review</th>
+                        <th className="py-2.5 px-3 font-medium text-right">Actions</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-[#1e293b] bg-[#060e1d]/60">
@@ -442,7 +445,7 @@ export default async function EquipmentPage({ searchParams }: EquipmentPageProps
 
                         return (
                           <tr key={res.id} className="hover:bg-[#141c2b]/50 transition-colors">
-                            <td className="py-3 px-4 font-medium">
+                            <td className="py-2 px-3 font-medium">
                               <div className="flex items-center gap-2.5">
                                 <CategoryIcon
                                   iconKey={res.category.iconKey}
@@ -463,12 +466,12 @@ export default async function EquipmentPage({ searchParams }: EquipmentPageProps
                             </td>
 
                             {isAdmin && (
-                              <td className="py-3 px-4 text-[#94a3b8] font-mono whitespace-nowrap">
+                              <td className="py-2 px-3 text-[#94a3b8] font-mono whitespace-nowrap">
                                 {res.site.name}
                               </td>
                             )}
 
-                            <td className="py-3 px-4">
+                            <td className="py-2 px-3">
                               <div className="space-y-1">
                                 <EquipmentStatusTag status={res.calibrationStatus} />
                                 <div className="text-[11px] text-[#94a3b8]">
@@ -481,7 +484,7 @@ export default async function EquipmentPage({ searchParams }: EquipmentPageProps
                               </div>
                             </td>
 
-                            <td className="py-3 px-4">
+                            <td className="py-2 px-3">
                               <div className="space-y-1">
                                 <EquipmentStatusTag status={res.maintenanceStatus} />
                                 <div className="text-[11px] text-[#94a3b8]">
@@ -494,7 +497,7 @@ export default async function EquipmentPage({ searchParams }: EquipmentPageProps
                               </div>
                             </td>
 
-                            <td className="py-3 px-4">
+                            <td className="py-2 px-3">
                               <div className="space-y-1">
                                 <EquipmentStatusTag status={res.reviewStatus} />
                                 <div className="text-[11px] text-[#94a3b8]">
@@ -507,7 +510,7 @@ export default async function EquipmentPage({ searchParams }: EquipmentPageProps
                               </div>
                             </td>
 
-                            <td className="py-3 px-4 text-right">
+                            <td className="py-2 px-3 text-right">
                               <div className="flex items-center justify-end gap-2">
                                 {isDueSoon && (
                                   <BlockTimeButton
@@ -526,12 +529,13 @@ export default async function EquipmentPage({ searchParams }: EquipmentPageProps
                                 <Button
                                   asChild
                                   variant="outline"
-                                  size="sm"
-                                  className="h-7 text-xs border-[#334155]"
+                                  size="icon"
+                                  className="size-9 rounded-md border-[#334155] bg-[#18202f] hover:bg-[#222a3a] text-[#94a3b8] hover:text-white shadow-2xs"
+                                  title="View details"
+                                  aria-label={`View details for ${res.name}`}
                                 >
-                                  <Link href={`/resources/${res.id}`} className="gap-1">
-                                    <span>Details</span>
-                                    <ExternalLink className="size-3 text-[#94a3b8]" />
+                                  <Link href={`/resources/${res.id}`}>
+                                    <Eye className="size-4" />
                                   </Link>
                                 </Button>
                               </div>

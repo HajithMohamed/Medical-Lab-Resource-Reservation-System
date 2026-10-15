@@ -41,6 +41,16 @@ export default async function EditResourcePage({ params }: EditResourcePageProps
       location: true,
       capacity: true,
       status: true,
+      manufacturer: true,
+      model: true,
+      serialNumber: true,
+      inServiceOn: true,
+      expectedServiceLifeYears: true,
+      replacementReviewDueOn: true,
+      calibrationIntervalDays: true,
+      nextCalibrationDueOn: true,
+      maintenanceIntervalDays: true,
+      nextMaintenanceDueOn: true,
     },
   });
 

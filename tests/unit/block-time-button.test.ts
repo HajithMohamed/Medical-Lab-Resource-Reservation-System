@@ -109,5 +109,21 @@ describe("BlockTimeButton component", () => {
       expect(link.props.href).toBe("/maintenance/new?resourceId=res-bio-1&reason=Service");
       expect(link.props.children).toBe("Block time");
     });
+
+    it("appends returnTo parameter when provided", () => {
+      const el = BlockTimeButton({
+        actor: admin,
+        resource: resourceColombo,
+        reason: "Calibration",
+        returnTo: "/equipment?tab=today",
+        enabled: true,
+      });
+
+      expect(el).not.toBeNull();
+      const link = el?.props.children;
+      expect(link.props.href).toBe(
+        "/maintenance/new?resourceId=res-bio-1&reason=Calibration&returnTo=%2Fequipment%3Ftab%3Dtoday",
+      );
+    });
   });
 });

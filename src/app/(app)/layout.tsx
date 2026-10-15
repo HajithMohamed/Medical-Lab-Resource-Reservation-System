@@ -4,7 +4,13 @@ import { getCurrentUser } from "@/lib/auth";
 import { AppShell } from "@/components/app-shell/app-shell";
 import { logout } from "@/actions/auth";
 
-export default async function AppShellLayout({ children }: { children: React.ReactNode }) {
+export default async function AppShellLayout({
+  children,
+  modal,
+}: {
+  children: React.ReactNode;
+  modal?: React.ReactNode;
+}) {
   const user = await getCurrentUser();
   if (!user) {
     redirect("/login");
@@ -20,6 +26,7 @@ export default async function AppShellLayout({ children }: { children: React.Rea
       logoutAction={logout}
     >
       {children}
+      {modal}
     </AppShell>
   );
 }

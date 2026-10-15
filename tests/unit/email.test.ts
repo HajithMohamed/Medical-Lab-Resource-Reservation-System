@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import {
   buildChangePasswordUrl,
   renderWelcomeEmailHtml,
@@ -94,6 +94,9 @@ describe("Email Service & Templates", () => {
 
   describe("sendUserWelcomeEmail without API key", () => {
     it("returns ok: false with informative message instead of throwing an error", async () => {
+      const emailModule = await import("@/lib/email");
+      const spy = vi.spyOn(emailModule, "resolveApiKey").mockReturnValue(undefined);
+
       const res = await sendUserWelcomeEmail({
         to: "recipient@lab.example",
         name: "Tester",
@@ -102,6 +105,8 @@ describe("Email Service & Templates", () => {
 
       expect(res.ok).toBe(false);
       expect(res.error).toBeDefined();
+
+      spy.mockRestore();
     });
   });
 });
