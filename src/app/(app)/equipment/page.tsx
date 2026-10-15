@@ -132,7 +132,9 @@ export default async function EquipmentPage({ searchParams }: EquipmentPageProps
             asChild
             className="bg-[#6cd8cb] hover:bg-[#29a195] text-[#003732] font-semibold text-xs font-mono h-9 px-4 rounded-lg shadow-xs"
           >
-            <Link href="/maintenance/new">
+            <Link
+              href={`/maintenance/new?returnTo=${encodeURIComponent(`/equipment?tab=${activeTab}`)}`}
+            >
               <Wrench className="size-3.5 mr-2" />
               <span>Block time</span>
             </Link>
@@ -303,6 +305,7 @@ export default async function EquipmentPage({ searchParams }: EquipmentPageProps
                           actor={user}
                           resource={{ id: task.resourceId, siteId: task.siteId }}
                           reason={task.tracker === "calibration" ? "Calibration" : "Service"}
+                          returnTo="/equipment?tab=today"
                         />
                       </div>
                     </div>

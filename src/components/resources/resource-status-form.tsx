@@ -195,7 +195,7 @@ export function ResourceStatusForm({ resource, upcomingBookingsCount }: Resource
                   will be cancelled and each person will see your reason in My bookings. If you know
                   when it will be working again, use{" "}
                   <Link
-                    href={`/maintenance/new?resourceId=${resource.id}`}
+                    href={`/maintenance/new?resourceId=${resource.id}&returnTo=${encodeURIComponent(`/resources/${resource.id}`)}`}
                     className="font-bold underline hover:text-amber-900"
                   >
                     Block time

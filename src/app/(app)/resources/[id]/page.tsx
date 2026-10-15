@@ -194,7 +194,9 @@ export default async function ResourceDetailPage({ params }: ResourceDetailPageP
             size="sm"
             className="gap-1.5 h-8 border-[#334155] bg-[#18202f] hover:bg-[#222a3a] text-xs"
           >
-            <Link href={`/maintenance/new?resourceId=${resource.id}`}>
+            <Link
+              href={`/maintenance/new?resourceId=${resource.id}&returnTo=${encodeURIComponent(`/resources/${resource.id}`)}`}
+            >
               <Wrench className="size-3.5" />
               <span>Block time</span>
             </Link>
@@ -205,7 +207,9 @@ export default async function ResourceDetailPage({ params }: ResourceDetailPageP
             size="sm"
             className="gap-1.5 h-8 border-rose-500/40 text-rose-400 bg-rose-950/20 hover:bg-rose-950/40 text-xs"
           >
-            <Link href={`/maintenance/new?resourceId=${resource.id}&breakdown=1`}>
+            <Link
+              href={`/maintenance/new?resourceId=${resource.id}&breakdown=1&returnTo=${encodeURIComponent(`/resources/${resource.id}`)}`}
+            >
               <ShieldAlert className="size-3.5" />
               <span>Report breakdown</span>
             </Link>

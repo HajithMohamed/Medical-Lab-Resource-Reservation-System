@@ -24,6 +24,7 @@ export interface MaintenanceFormProps {
   defaultReason?: string;
   isBreakdown: boolean;
   isAdmin: boolean;
+  returnTo?: string;
 }
 
 export function MaintenanceForm({
@@ -36,8 +37,10 @@ export function MaintenanceForm({
   defaultReason = "",
   isBreakdown,
   isAdmin,
+  returnTo,
 }: MaintenanceFormProps) {
   const router = useRouter();
+  const effectiveReturnTo = returnTo || "/equipment?tab=blocked";
 
   const [resourceId, setResourceId] = React.useState<string>(defaultResourceId);
   const [startDate, setStartDate] = React.useState<string>(defaultStartDate);
@@ -54,7 +57,7 @@ export function MaintenanceForm({
       const res = await createMaintenanceBlockAction(prevState, formData);
       if (res.ok) {
         toast.success("Time blocked");
-        router.push("/equipment?tab=blocked");
+        router.push(effectiveReturnTo);
       }
       return res;
     },
@@ -85,9 +88,9 @@ export function MaintenanceForm({
           size="sm"
           className="h-8 gap-1.5 text-xs font-mono text-[#879390] hover:text-white"
         >
-          <Link href="/equipment?tab=blocked">
+          <Link href={effectiveReturnTo}>
             <ArrowLeft className="size-3.5" />
-            <span>Back to Maintenance & care</span>
+            <span>Back</span>
           </Link>
         </Button>
       </div>
