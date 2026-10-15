@@ -398,6 +398,7 @@ describe("Equipment Care Service (Integration)", () => {
         outcome: EquipmentOutcome.PASS,
         performedOn: today,
         performedBy: "Senior Engineer",
+        workPerformed: "Recalibrated speed sensor and rotor imbalance sensor",
         reference: "CERT-CAL-9000",
         nextDueOn: newDue,
       });
@@ -477,6 +478,7 @@ describe("Equipment Care Service (Integration)", () => {
         outcome: EquipmentOutcome.FAIL,
         performedOn: today,
         performedBy: "Nadeesha Perera",
+        workPerformed: "Column pressure check and detector baseline test",
         notes: "Column pressure abnormal, detector baseline drifting.",
       });
 
@@ -530,6 +532,7 @@ describe("Equipment Care Service (Integration)", () => {
         outcome: EquipmentOutcome.FAIL,
         performedOn: today,
         performedBy: "Lab Tech",
+        workPerformed: "Tested optical accuracy with wavelength calibration standard",
         notes: "Lamp failed wavelength accuracy test.",
       });
 
@@ -546,6 +549,7 @@ describe("Equipment Care Service (Integration)", () => {
         outcome: EquipmentOutcome.PASS,
         performedOn: today,
         performedBy: "Senior Service Specialist",
+        workPerformed: "Replaced lamp and aligned optical path",
         notes: "Replaced lamp and verified accuracy.",
       });
       expect(passRecord.ok).toBe(true);
@@ -635,6 +639,7 @@ describe("Equipment Care Service (Integration)", () => {
         outcome: EquipmentOutcome.PASS,
         performedOn: addDaysToDay(today, -100),
         performedBy: "Tech A",
+        workPerformed: "Removed worn drive belt and installed new belt",
         notes: "Motor belt replaced",
       });
 
@@ -644,6 +649,7 @@ describe("Equipment Care Service (Integration)", () => {
         outcome: EquipmentOutcome.PASS,
         performedOn: addDaysToDay(today, -50),
         performedBy: "Tech B",
+        workPerformed: "Replaced potentiometer and calibrated speed dial",
         notes: "Speed dial replaced",
       });
 
@@ -657,6 +663,7 @@ describe("Equipment Care Service (Integration)", () => {
         outcome: EquipmentOutcome.PASS,
         performedOn: today,
         performedBy: "Tech C",
+        workPerformed: "Replaced main spindle bearing and tested vibration",
         notes: "Bearing replaced",
       });
 
@@ -692,6 +699,7 @@ describe("Equipment Care Service (Integration)", () => {
         outcome: EquipmentOutcome.PASS,
         performedOn: today,
         performedBy: "Technician",
+        workPerformed: "Full calibration check",
         nextDueOn: addDaysToDay(today, 365),
       });
 
@@ -782,6 +790,7 @@ describe("Equipment Care Service (Integration)", () => {
       const doneRes = await markDone(colomboManager, res.data.id, "calibration", {
         outcome: EquipmentOutcome.PASS,
         performedBy: "Service Engineer",
+        workPerformed: "Annual optical alignment and speed sensor calibration",
         reference: "CERT-DONE-180",
       });
       expect(doneRes.ok).toBe(true);
@@ -865,6 +874,157 @@ describe("Equipment Care Service (Integration)", () => {
         expect(history.data[0].outcome).toBe(EquipmentOutcome.NOT_DONE);
         expect(history.data[0].notes).toBe("Technician sick, postponed to next week");
       }
+    });
+  });
+
+  describe("Phase 1: Richer record form rules & fields", () => {
+    it("requires workPerformed for PASS and FAIL on CALIBRATION, PREVENTIVE_MAINTENANCE, REPAIR, PERFORMANCE_CHECK", async () => {
+      const today = labToday();
+      const res = await createResource(colomboManager, {
+        name: "Spectrometer Phase 1",
+        siteId: fixture.site.id,
+        categoryId: instrumentCategory.id,
+        sectionId: fixture.section.id,
+        needsCalibration: true,
+        calibrationIntervalDays: 365,
+        nextCalibrationDueOn: addDaysToDay(today, 10),
+      });
+      if (!res.ok) throw new Error("Creation failed");
+
+      // 1. Missing workPerformed on PASS CALIBRATION -> refused
+      const noWorkPass = await addEquipmentRecord(colomboManager, res.data.id, {
+        kind: EquipmentRecordKind.CALIBRATION,
+        outcome: EquipmentOutcome.PASS,
+        performedOn: today,
+        performedBy: "Engineer",
+        nextDueOn: addDaysToDay(today, 365),
+      });
+      expect(noWorkPass.ok).toBe(false);
+      if (!noWorkPass.ok) {
+        expect(noWorkPass.error).toBe("Describe the work done or changes made.");
+      }
+
+      // 2. Missing workPerformed on FAIL PERFORMANCE_CHECK -> refused
+      const noWorkFail = await addEquipmentRecord(colomboManager, res.data.id, {
+        kind: EquipmentRecordKind.PERFORMANCE_CHECK,
+        outcome: EquipmentOutcome.FAIL,
+        performedOn: today,
+        performedBy: "Engineer",
+        notes: "Failed temperature test",
+      });
+      expect(noWorkFail.ok).toBe(false);
+      if (!noWorkFail.ok) {
+        expect(noWorkFail.error).toBe("Describe the work done or changes made.");
+      }
+
+      // 3. Valid workPerformed on PASS -> succeeds and saves workPerformed & externalCompany
+      const validPass = await addEquipmentRecord(colomboManager, res.data.id, {
+        kind: EquipmentRecordKind.CALIBRATION,
+        outcome: EquipmentOutcome.PASS,
+        performedOn: today,
+        performedBy: "External Specialist",
+        workPerformed: "Replaced optical filter and calibrated baseline absorbance",
+        externalCompany: "Agilent Technologies",
+        nextDueOn: addDaysToDay(today, 365),
+      });
+      expect(validPass.ok).toBe(true);
+
+      const history = await getEquipmentHistory(res.data.id);
+      expect(history.ok).toBe(true);
+      if (history.ok) {
+        expect(history.data[0].workPerformed).toBe(
+          "Replaced optical filter and calibrated baseline absorbance",
+        );
+        expect(history.data[0].externalCompany).toBe("Agilent Technologies");
+      }
+    });
+
+    it("does NOT require workPerformed on NOT_DONE", async () => {
+      const today = labToday();
+      const res = await createResource(colomboManager, {
+        name: "Centrifuge Not Done Test",
+        siteId: fixture.site.id,
+        categoryId: instrumentCategory.id,
+        sectionId: fixture.section.id,
+        needsCalibration: true,
+        calibrationIntervalDays: 180,
+        nextCalibrationDueOn: today, // due today so markNotDone is permitted
+      });
+      if (!res.ok) throw new Error("Creation failed");
+
+      const notDoneRes = await markNotDone(colomboManager, res.data.id, "calibration", {
+        notes: "Part on back-order",
+      });
+      expect(notDoneRes.ok).toBe(true);
+      if (notDoneRes.ok) {
+        expect(notDoneRes.data.record.outcome).toBe(EquipmentOutcome.NOT_DONE);
+        expect(notDoneRes.data.record.workPerformed).toBeNull();
+      }
+    });
+
+    it("enforces lengths on workPerformed (max 1000) and externalCompany (max 120)", async () => {
+      const today = labToday();
+      const res = await createResource(colomboManager, {
+        name: "Length Check Resource",
+        siteId: fixture.site.id,
+        categoryId: instrumentCategory.id,
+        sectionId: fixture.section.id,
+        needsCalibration: true,
+        calibrationIntervalDays: 180,
+        nextCalibrationDueOn: addDaysToDay(today, 50),
+      });
+      if (!res.ok) throw new Error("Creation failed");
+
+      // Too long workPerformed
+      const tooLongWork = await addEquipmentRecord(colomboManager, res.data.id, {
+        kind: EquipmentRecordKind.CALIBRATION,
+        outcome: EquipmentOutcome.PASS,
+        performedOn: today,
+        performedBy: "Tech",
+        workPerformed: "A".repeat(1001),
+        nextDueOn: addDaysToDay(today, 180),
+      });
+      expect(tooLongWork.ok).toBe(false);
+
+      // Too long company
+      const tooLongCompany = await addEquipmentRecord(colomboManager, res.data.id, {
+        kind: EquipmentRecordKind.CALIBRATION,
+        outcome: EquipmentOutcome.PASS,
+        performedOn: today,
+        performedBy: "Tech",
+        workPerformed: "Valid work performed",
+        externalCompany: "B".repeat(121),
+        nextDueOn: addDaysToDay(today, 180),
+      });
+      expect(tooLongCompany.ok).toBe(false);
+    });
+
+    it("initial registration record still saves with workPerformed set", async () => {
+      const today = labToday();
+      const lastCalibratedOn = addDaysToDay(today, -60);
+      const res = await createResource(colomboManager, {
+        name: "New Instrument Registered",
+        siteId: fixture.site.id,
+        categoryId: instrumentCategory.id,
+        sectionId: fixture.section.id,
+        manufacturer: "Eppendorf",
+        model: "5424R",
+        serialNumber: "EP-9988",
+        needsCalibration: true,
+        calibrationIntervalDays: 365,
+        lastCalibratedOn,
+        nextCalibrationDueOn: addDaysToDay(today, 305),
+        calibratedBy: "Eppendorf Service",
+      });
+      expect(res.ok).toBe(true);
+      if (!res.ok) return;
+
+      const records = await db.equipmentRecord.findMany({
+        where: { resourceId: res.data.id },
+      });
+      expect(records.length).toBe(1);
+      expect(records[0].outcome).toBe(EquipmentOutcome.PASS);
+      expect(records[0].workPerformed).toContain("Initial record: last calibrated on");
     });
   });
 });

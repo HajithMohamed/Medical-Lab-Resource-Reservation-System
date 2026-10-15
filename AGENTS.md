@@ -189,7 +189,10 @@ EquipmentOutcome (PASS, FAIL, NOT_DONE, KEEP_IN_SERVICE, REPLACE).
       equipment_records_performed_by_not_blank,
       equipment_records_notes_for_fail_replace_not_done,
       equipment_records_next_due_for_replacement_review,
-      equipment_records_next_due_after_performed
+      equipment_records_next_due_after_performed,
+      equipment_records_work_performed_when_done,
+      equipment_records_work_performed_length,
+      equipment_records_external_company_length
 - New migrations: `npx prisma migrate dev --name <name> --create-only`, then
   READ the SQL. If it drops any rule above or the btree_gist extension,
   delete those lines. Then run `npx prisma migrate dev` and

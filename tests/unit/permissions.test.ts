@@ -21,6 +21,7 @@ import {
   usageSitesFor,
   canManageEquipment,
   canViewEquipmentOverview,
+  canViewEquipmentReports,
   equipmentOverviewSitesFor,
   calendarOptionsFor,
 } from "@/lib/permissions";
@@ -422,6 +423,12 @@ describe("Permissions matrix and helpers", () => {
       expect(canViewEquipmentOverview(admin)).toBe(true);
       expect(canViewEquipmentOverview(managerA)).toBe(true);
       expect(canViewEquipmentOverview(staffA)).toBe(false);
+    });
+
+    it("canViewEquipmentReports allows manager and admin only", () => {
+      expect(canViewEquipmentReports(admin)).toBe(true);
+      expect(canViewEquipmentReports(managerA)).toBe(true);
+      expect(canViewEquipmentReports(staffA)).toBe(false);
     });
 
     it("equipmentOverviewSitesFor scopes sites correctly", () => {

@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { format } from "date-fns";
-import { ShieldCheck } from "lucide-react";
+import { ShieldCheck, FileText } from "lucide-react";
 import { EquipmentStatusTag } from "./equipment-status-tag";
 import { RecordEquipmentDialog } from "./record-equipment-dialog";
 import { BlockTimeButton } from "./block-time-button";
@@ -295,11 +295,14 @@ export function EquipmentCarePanel({
                 <tr>
                   <th className="py-2.5 px-3 font-medium">Date</th>
                   <th className="py-2.5 px-3 font-medium">Kind</th>
-                  <th className="py-2.5 px-3 font-medium">Outcome</th>
                   <th className="py-2.5 px-3 font-medium">Performed by</th>
-                  <th className="py-2.5 px-3 font-medium">Certificate / Ref</th>
+                  <th className="py-2.5 px-3 font-medium">Work done</th>
+                  <th className="py-2.5 px-3 font-medium">Result</th>
                   <th className="py-2.5 px-3 font-medium">Notes</th>
+                  <th className="py-2.5 px-3 font-medium">Next due</th>
+                  <th className="py-2.5 px-3 font-medium">Reference</th>
                   <th className="py-2.5 px-3 font-medium">Recorded by</th>
+                  {canManage && <th className="py-2.5 px-3 font-medium text-right">PDF</th>}
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#1e293b] bg-[#060e1d]/60">
@@ -338,20 +341,47 @@ export function EquipmentCarePanel({
                         {formatEquipmentDay(dayStr)}
                       </td>
                       <td className="py-2.5 px-3 text-slate-200 whitespace-nowrap">{kindName}</td>
-                      <td className="py-2.5 px-3 whitespace-nowrap">{outcomeBadge}</td>
-                      <td className="py-2.5 px-3 text-slate-300">{rec.performedBy}</td>
-                      <td className="py-2.5 px-3 font-mono text-[#94a3b8]">
-                        {rec.reference || "—"}
+                      <td className="py-2.5 px-3 text-slate-300">
+                        <div>{rec.performedBy}</div>
+                        {rec.externalCompany && (
+                          <div className="text-[11px] text-[#94a3b8]">{rec.externalCompany}</div>
+                        )}
                       </td>
                       <td
-                        className="py-2.5 px-3 text-slate-300 max-w-xs truncate"
-                        title={rec.notes ?? ""}
+                        className="py-2.5 px-3 text-slate-300 max-w-[160px] truncate"
+                        title={rec.workPerformed || rec.notes || undefined}
+                      >
+                        {rec.workPerformed || rec.notes || "—"}
+                      </td>
+                      <td className="py-2.5 px-3 whitespace-nowrap">{outcomeBadge}</td>
+                      <td
+                        className="py-2.5 px-3 text-slate-300 max-w-[120px] truncate"
+                        title={rec.notes ?? undefined}
                       >
                         {rec.notes || "—"}
+                      </td>
+                      <td className="py-2.5 px-3 font-mono text-[#94a3b8] whitespace-nowrap">
+                        {rec.nextDueOn ? formatEquipmentDay(dbToDay(rec.nextDueOn)) : "—"}
+                      </td>
+                      <td className="py-2.5 px-3 font-mono text-[#94a3b8]">
+                        {rec.reference || "—"}
                       </td>
                       <td className="py-2.5 px-3 text-[#94a3b8] whitespace-nowrap">
                         {rec.recordedBy.name}
                       </td>
+                      {canManage && (
+                        <td className="py-2.5 px-3 text-right">
+                          <a
+                            href={`/equipment/records/${rec.id}/pdf`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center text-[#7bd0ff] hover:text-white"
+                            title="Service record PDF"
+                          >
+                            <FileText className="size-3.5" />
+                          </a>
+                        </td>
+                      )}
                     </tr>
                   );
                 })}

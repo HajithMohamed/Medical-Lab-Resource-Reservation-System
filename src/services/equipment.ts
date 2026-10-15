@@ -41,6 +41,8 @@ export interface EquipmentRecordItem {
   performedBy: string;
   reference: string | null;
   notes: string | null;
+  workPerformed: string | null;
+  externalCompany: string | null;
   nextDueOn: Date | null;
   recordedById: string;
   createdAt: Date;
@@ -71,6 +73,20 @@ export const equipmentRecordInputSchema = z
       .string()
       .trim()
       .max(500, "Notes cannot exceed 500 characters.")
+      .optional()
+      .nullable()
+      .transform((v) => (v && v.length > 0 ? v : null)),
+    workPerformed: z
+      .string()
+      .trim()
+      .max(1000, "Work performed cannot exceed 1000 characters.")
+      .optional()
+      .nullable()
+      .transform((v) => (v && v.length > 0 ? v : null)),
+    externalCompany: z
+      .string()
+      .trim()
+      .max(120, "Company cannot exceed 120 characters.")
       .optional()
       .nullable()
       .transform((v) => (v && v.length > 0 ? v : null)),
@@ -164,6 +180,26 @@ export const equipmentRecordInputSchema = z
           code: z.ZodIssueCode.custom,
           message: "Notes are required explaining the result or reason.",
           path: ["notes"],
+        });
+      }
+    }
+
+    // Work performed required for PASS and FAIL outcomes on service/calibration/repair/check
+    const doneKinds: EquipmentRecordKind[] = [
+      EquipmentRecordKind.CALIBRATION,
+      EquipmentRecordKind.PREVENTIVE_MAINTENANCE,
+      EquipmentRecordKind.REPAIR,
+      EquipmentRecordKind.PERFORMANCE_CHECK,
+    ];
+    if (
+      (data.outcome === EquipmentOutcome.PASS || data.outcome === EquipmentOutcome.FAIL) &&
+      doneKinds.includes(data.kind)
+    ) {
+      if (!data.workPerformed || data.workPerformed.trim().length === 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Describe the work done or changes made.",
+          path: ["workPerformed"],
         });
       }
     }
@@ -333,6 +369,8 @@ export async function addEquipmentRecord(
         performedBy: input.performedBy,
         reference: input.reference,
         notes: input.notes,
+        workPerformed: input.workPerformed,
+        externalCompany: input.externalCompany,
         nextDueOn: input.nextDueOn ? dayToDb(input.nextDueOn) : null,
         recordedById: actor.id,
       },
@@ -457,6 +495,8 @@ export async function markDone(
     performedBy: string;
     reference?: string | null;
     notes?: string | null;
+    workPerformed?: string | null;
+    externalCompany?: string | null;
     nextDueOn?: string | null;
   },
 ): Promise<ServiceResult<{ record: EquipmentRecordItem; cancelledBookingsCount?: number }>> {
@@ -491,6 +531,8 @@ export async function markDone(
     performedBy: rawInput.performedBy,
     reference: rawInput.reference,
     notes: rawInput.notes,
+    workPerformed: rawInput.workPerformed,
+    externalCompany: rawInput.externalCompany,
     nextDueOn,
   });
 }

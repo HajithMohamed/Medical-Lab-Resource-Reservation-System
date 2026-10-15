@@ -265,6 +265,13 @@ export function canViewEquipmentOverview(actor: UserLike): boolean {
 }
 
 /**
+ * Rule: MANAGER (own site) and ADMIN (all sites) can view equipment reports and exports.
+ */
+export function canViewEquipmentReports(actor: UserLike): boolean {
+  return isManagerOrAdmin(actor);
+}
+
+/**
  * Returns allowed site IDs for equipment care overview:
  * - ADMIN -> "all"
  * - MANAGER -> [own site]

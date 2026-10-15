@@ -10,11 +10,13 @@ import {
   Calendar,
   History,
   Eye,
+  BarChart3,
 } from "lucide-react";
 import { requireRole } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { listEquipmentOverview, listTodayTasks } from "@/services/equipment";
 import { listBlocks } from "@/services/maintenance";
+import { getEquipmentReport } from "@/services/equipment-report";
 import { PageHeader } from "@/components/page-header";
 import { SummaryStrip } from "@/components/summary-strip";
 import { FilterBar } from "@/components/filter-bar";
@@ -25,6 +27,7 @@ import { MarkNotDoneDialog } from "@/components/equipment/mark-not-done-dialog";
 import { BlockTimeButton } from "@/components/equipment/block-time-button";
 import { BlockedSiteFilter } from "@/components/maintenance/blocked-site-filter";
 import { MaintenanceTable } from "@/components/maintenance/maintenance-table";
+import { EquipmentReportsTab } from "@/components/equipment/reports/equipment-reports-tab";
 import { PaginationControls } from "@/components/pagination-controls";
 import { Button } from "@/components/ui/button";
 import { dbToDay } from "@/lib/equipment-dates";
@@ -45,6 +48,12 @@ interface EquipmentPageProps {
     status?: string;
     page?: string;
     range?: string;
+    from?: string;
+    to?: string;
+    section?: string;
+    category?: string;
+    kind?: string;
+    outcome?: string;
   }>;
 }
 
@@ -52,8 +61,14 @@ export default async function EquipmentPage({ searchParams }: EquipmentPageProps
   const user = await requireRole("MANAGER", "ADMIN");
   const params = await searchParams;
 
-  const activeTab: "today" | "schedule" | "blocked" =
-    params.tab === "schedule" ? "schedule" : params.tab === "blocked" ? "blocked" : "today";
+  const activeTab: "today" | "schedule" | "blocked" | "reports" =
+    params.tab === "reports"
+      ? "reports"
+      : params.tab === "schedule"
+        ? "schedule"
+        : params.tab === "blocked"
+          ? "blocked"
+          : "today";
 
   const isAdmin = user.role === "ADMIN";
 
@@ -115,6 +130,37 @@ export default async function EquipmentPage({ searchParams }: EquipmentPageProps
   const blocksTotalCount = blocksResult ? blocksResult.totalCount : 0;
   const blocksPageSize = blocksResult ? blocksResult.pageSize : 20;
   const currentBlockedSiteName = sites.find((s) => s.id === blockedSiteId)?.name;
+
+  // Tab: Reports (only queried when active)
+  const reportResult =
+    activeTab === "reports"
+      ? await getEquipmentReport(user, {
+          from: params.from,
+          to: params.to,
+          site: params.site,
+          section: params.section,
+          category: params.category,
+          kind: params.kind,
+          outcome: params.outcome,
+          page: params.page ? parseInt(params.page, 10) : 1,
+        })
+      : null;
+
+  const reportSections =
+    activeTab === "reports"
+      ? await db.section.findMany({
+          select: { id: true, name: true },
+          orderBy: { name: "asc" },
+        })
+      : [];
+
+  const reportCategories =
+    activeTab === "reports"
+      ? await db.category.findMany({
+          select: { id: true, name: true },
+          orderBy: { name: "asc" },
+        })
+      : [];
 
   return (
     <div className="space-y-6 max-w-6xl">
@@ -191,6 +237,19 @@ export default async function EquipmentPage({ searchParams }: EquipmentPageProps
           >
             <Wrench className="size-3.5 text-amber-400" />
             <span>Blocked time</span>
+          </Link>
+          <Link
+            href="/equipment?tab=reports"
+            aria-current={activeTab === "reports" ? "page" : undefined}
+            className={cn(
+              "px-3.5 py-1.5 rounded-lg text-xs font-mono font-medium transition-all flex items-center gap-2",
+              activeTab === "reports"
+                ? "bg-[#141c2b] text-white font-semibold shadow-xs border border-[#334155]"
+                : "text-[#879390] hover:text-white",
+            )}
+          >
+            <BarChart3 className="size-3.5 text-[#7bd0ff]" />
+            <span>Reports</span>
           </Link>
         </nav>
       </div>
@@ -683,6 +742,18 @@ export default async function EquipmentPage({ searchParams }: EquipmentPageProps
             />
           )}
         </div>
+      )}
+
+      {/* Tab 4: Reports */}
+      {activeTab === "reports" && reportResult && reportResult.ok && (
+        <EquipmentReportsTab
+          report={reportResult.data}
+          isAdmin={isAdmin}
+          sites={sites}
+          sections={reportSections}
+          categories={reportCategories}
+          currentParams={params}
+        />
       )}
     </div>
   );

@@ -159,8 +159,594 @@ async function ensureDemoUsers(demoPassword: string): Promise<void> {
   );
 }
 
+function buildDemoEquipmentRecords({
+  pcr1,
+  pcr2,
+  hplc,
+  flowCytometer,
+  bscA,
+  bscB,
+  autoclave1,
+  van1,
+  pcrKandy,
+  bscKandy,
+  autoclaveKandy,
+  van2,
+  micrGalle,
+  mgrColomboId,
+  mgrKandyId,
+  mgrGalleId,
+  todayLab,
+}: {
+  pcr1?: { id: string } | null;
+  pcr2?: { id: string } | null;
+  hplc?: { id: string } | null;
+  flowCytometer?: { id: string } | null;
+  bscA?: { id: string } | null;
+  bscB?: { id: string } | null;
+  autoclave1?: { id: string } | null;
+  van1?: { id: string } | null;
+  pcrKandy?: { id: string } | null;
+  bscKandy?: { id: string } | null;
+  autoclaveKandy?: { id: string } | null;
+  van2?: { id: string } | null;
+  micrGalle?: { id: string } | null;
+  mgrColomboId: string;
+  mgrKandyId: string;
+  mgrGalleId: string;
+  todayLab: Date;
+}): Prisma.EquipmentRecordCreateManyInput[] {
+  const records: Prisma.EquipmentRecordCreateManyInput[] = [];
+
+  // 1. PCR 2 (Colombo - GOOD): Calibration passed 90 days ago, due in 275 days
+  if (pcr2) {
+    records.push({
+      resourceId: pcr2.id,
+      kind: EquipmentRecordKind.CALIBRATION,
+      outcome: EquipmentOutcome.PASS,
+      performedOn: subDays(todayLab, 90),
+      performedBy: "Kasun Jayawardena",
+      externalCompany: "Bio-Rad Laboratories Lanka",
+      workPerformed:
+        "96-well optical block calibration, multi-dye fluorescence filter alignment, temperature uniformity verification (95C, 60C, 50C).",
+      reference: "CAL-BR-2026-092",
+      notes: "All 5 optical channels within +/- 0.15 C tolerance. ISO 15189 compliance verified.",
+      nextDueOn: addDays(todayLab, 275),
+      recordedById: mgrColomboId,
+    });
+  }
+
+  // 2. HPLC System (Colombo - GOOD): Calibration & Maintenance passed 45 days ago
+  if (hplc) {
+    records.push(
+      {
+        resourceId: hplc.id,
+        kind: EquipmentRecordKind.CALIBRATION,
+        outcome: EquipmentOutcome.PASS,
+        performedOn: subDays(todayLab, 45),
+        performedBy: "Thilak Senanayake",
+        externalCompany: "Agilent Technologies Sri Lanka",
+        workPerformed:
+          "UV-Vis detector wavelength accuracy verification at 254 nm and 480 nm, flow rate precision check (1.000 mL/min +/- 0.005).",
+        reference: "CAL-AG-2026-14",
+        notes: "Baseline noise 12 uAU, within factory specifications.",
+        nextDueOn: addDays(todayLab, 135),
+        recordedById: mgrColomboId,
+      },
+      {
+        resourceId: hplc.id,
+        kind: EquipmentRecordKind.PREVENTIVE_MAINTENANCE,
+        outcome: EquipmentOutcome.PASS,
+        performedOn: subDays(todayLab, 45),
+        performedBy: "Thilak Senanayake",
+        externalCompany: "Agilent Technologies Sri Lanka",
+        workPerformed:
+          "Replaced quaternary pump seals, inline filter purge frit, autosampler needle wash assembly.",
+        reference: "PM-AG-2026-088",
+        notes: "Pressure test passed at 400 bar for 15 minutes with zero leak.",
+        nextDueOn: addDays(todayLab, 135),
+        recordedById: mgrColomboId,
+      },
+    );
+  }
+
+  // 3. Biosafety Cabinet A (Colombo - WATCH: Calibration due in 4 days)
+  if (bscA) {
+    records.push({
+      resourceId: bscA.id,
+      kind: EquipmentRecordKind.CALIBRATION,
+      outcome: EquipmentOutcome.PASS,
+      performedOn: subDays(todayLab, 361),
+      performedBy: "Sanjaya Bandara",
+      externalCompany: "Clean Air Certification Services",
+      workPerformed:
+        "HEPA filter integrity testing (DOP/PAO aerosol challenge), inflow velocity profile (105 fpm), downflow velocity mapping.",
+      reference: "CACS-BSC-2025-A1",
+      notes: "Filter leak rate 0.002%, acceptable. Annual recertification due in 4 days.",
+      nextDueOn: addDays(todayLab, 4),
+      recordedById: mgrColomboId,
+    });
+  }
+
+  // 4. PCR 1 (Colombo - WATCH: 1 failure in last 90 days, resolved with repair)
+  if (pcr1) {
+    records.push(
+      {
+        resourceId: pcr1.id,
+        kind: EquipmentRecordKind.PERFORMANCE_CHECK,
+        outcome: EquipmentOutcome.FAIL,
+        performedOn: subDays(todayLab, 40),
+        performedBy: "Nadeesha Perera",
+        externalCompany: null,
+        workPerformed:
+          "Routine weekly run with positive control template and dye calibration verification.",
+        notes: "Channel 3 (FAM) high background noise in well C04-C08.",
+        recordedById: mgrColomboId,
+      },
+      {
+        resourceId: pcr1.id,
+        kind: EquipmentRecordKind.REPAIR,
+        outcome: EquipmentOutcome.PASS,
+        performedOn: subDays(todayLab, 35),
+        performedBy: "Roshan Mendis",
+        externalCompany: "Bio-Rad Laboratories Lanka",
+        workPerformed: "Cleaned optical lens array, replaced sample block heating peltier pad 2.",
+        reference: "REP-BR-2026-019",
+        notes: "Background noise resolved. Control plates re-run with 100% concordance.",
+        recordedById: mgrColomboId,
+      },
+      {
+        resourceId: pcr1.id,
+        kind: EquipmentRecordKind.CALIBRATION,
+        outcome: EquipmentOutcome.PASS,
+        performedOn: subDays(todayLab, 185),
+        performedBy: "Bio-Rad Field Service",
+        externalCompany: "Bio-Rad Laboratories Lanka",
+        workPerformed: "Semi-annual temperature cycling verification and optical check.",
+        reference: "CAL-BR-2026-044",
+        nextDueOn: addDays(todayLab, 180),
+        recordedById: mgrColomboId,
+      },
+    );
+  }
+
+  // 5. Flow Cytometer (Colombo - POOR: OUT_OF_SERVICE with 2 repairs & 1 failure)
+  if (flowCytometer) {
+    records.push(
+      {
+        resourceId: flowCytometer.id,
+        kind: EquipmentRecordKind.PERFORMANCE_CHECK,
+        outcome: EquipmentOutcome.FAIL,
+        performedOn: subDays(todayLab, 14),
+        performedBy: "Dilani Fernando",
+        externalCompany: null,
+        workPerformed: "Daily 8-peak CS&T calibration bead run.",
+        notes: "Blue 488nm laser power degraded below 15mW threshold. Flow cell pressure unstable.",
+        recordedById: mgrColomboId,
+      },
+      {
+        resourceId: flowCytometer.id,
+        kind: EquipmentRecordKind.REPAIR,
+        outcome: EquipmentOutcome.FAIL,
+        performedOn: subDays(todayLab, 10),
+        performedBy: "Becton Dickinson Tech",
+        externalCompany: "BD Biosciences Lanka",
+        workPerformed: "Replaced flow cell sheath filter and pressure regulator.",
+        notes: "Laser module needs factory replacement. Resource taken out of service.",
+        recordedById: mgrColomboId,
+      },
+      {
+        resourceId: flowCytometer.id,
+        kind: EquipmentRecordKind.REPAIR,
+        outcome: EquipmentOutcome.FAIL,
+        performedOn: subDays(todayLab, 3),
+        performedBy: "Becton Dickinson Tech",
+        externalCompany: "BD Biosciences Lanka",
+        workPerformed: "Laser alignment and optics bench teardown.",
+        notes: "Solid-state laser failed optical alignment. Awaiting imported replacement module.",
+        recordedById: mgrColomboId,
+      },
+    );
+  }
+
+  // 6. Biosafety Cabinet B (Colombo - POOR: Overdue calibration by 8 days)
+  if (bscB) {
+    records.push({
+      resourceId: bscB.id,
+      kind: EquipmentRecordKind.CALIBRATION,
+      outcome: EquipmentOutcome.PASS,
+      performedOn: subDays(todayLab, 373),
+      performedBy: "Clean Air Certification Services",
+      externalCompany: "Clean Air Certification Services",
+      workPerformed:
+        "Annual safety certification, velocity profile check, and HEPA integrity scan.",
+      reference: "CACS-BSC-2025-B4",
+      notes: "Certification expired 8 days ago. Booking restricted until recertification.",
+      nextDueOn: subDays(todayLab, 8),
+      recordedById: mgrColomboId,
+    });
+  }
+
+  // 7. Autoclave 1 (Colombo - GOOD: Maintenance passed 15 days ago)
+  if (autoclave1) {
+    records.push({
+      resourceId: autoclave1.id,
+      kind: EquipmentRecordKind.PREVENTIVE_MAINTENANCE,
+      outcome: EquipmentOutcome.PASS,
+      performedOn: subDays(todayLab, 15),
+      performedBy: "Sunil Gamage",
+      externalCompany: "Tuttnauer Service Lanka",
+      workPerformed:
+        "Replaced chamber door silicone gasket, safety relief valve functional test, steam trap overhaul.",
+      reference: "PM-AUT-2026-10",
+      notes:
+        "Biological indicator spore test (Geobacillus stearothermophilus) showed complete kill at 121C 15 min.",
+      nextDueOn: addDays(todayLab, 15),
+      recordedById: mgrColomboId,
+    });
+  }
+
+  // 8. Van 1 (Colombo - GOOD: Vehicle service passed 25 days ago)
+  if (van1) {
+    records.push({
+      resourceId: van1.id,
+      kind: EquipmentRecordKind.PREVENTIVE_MAINTENANCE,
+      outcome: EquipmentOutcome.PASS,
+      performedOn: subDays(todayLab, 25),
+      performedBy: "Toyota Lanka Service",
+      externalCompany: "Toyota Lanka",
+      workPerformed:
+        "Periodic 40,000 km service: synthetic oil change, brake fluid flush, coolant temperature sensor calibration for sample refrigeration unit.",
+      reference: "TOY-COL-4091",
+      nextDueOn: addDays(todayLab, 65),
+      recordedById: mgrColomboId,
+    });
+  }
+
+  // 9. Kandy PCR (Kandy - POOR: Failed performance check 2 days ago)
+  if (pcrKandy) {
+    records.push({
+      resourceId: pcrKandy.id,
+      kind: EquipmentRecordKind.PERFORMANCE_CHECK,
+      outcome: EquipmentOutcome.FAIL,
+      performedOn: subDays(todayLab, 2),
+      performedBy: "Ruwan Jayasinghe",
+      externalCompany: null,
+      workPerformed: "Channel cross-talk verification and negative template control run.",
+      notes: "Thermal cycle overshoot on denaturation step (>98C detected). Error code E-04.",
+      recordedById: mgrKandyId,
+    });
+  }
+
+  // 10. Kandy BSC (Kandy - WATCH: Calibration due in 5 days)
+  if (bscKandy) {
+    records.push({
+      resourceId: bscKandy.id,
+      kind: EquipmentRecordKind.CALIBRATION,
+      outcome: EquipmentOutcome.PASS,
+      performedOn: subDays(todayLab, 360),
+      performedBy: "Clean Air Certification Services",
+      externalCompany: "Clean Air Certification Services",
+      workPerformed: "Annual field recertification, face velocity anemometer scan.",
+      reference: "CACS-KND-002",
+      notes: "Inflow face velocity nominal (100 fpm). Due in 5 days.",
+      nextDueOn: addDays(todayLab, 5),
+      recordedById: mgrKandyId,
+    });
+  }
+
+  // 11. Kandy Autoclave (Kandy - POOR: Overdue maintenance by 3 days)
+  if (autoclaveKandy) {
+    records.push({
+      resourceId: autoclaveKandy.id,
+      kind: EquipmentRecordKind.PREVENTIVE_MAINTENANCE,
+      outcome: EquipmentOutcome.PASS,
+      performedOn: subDays(todayLab, 33),
+      performedBy: "Meditech Service Engineers",
+      externalCompany: "Meditech Lanka",
+      workPerformed: "Monthly chamber clean, pressure sensor zero calibration.",
+      reference: "MAINT-AUT-2026-09",
+      notes: "Overdue for monthly valve and sensor servicing.",
+      nextDueOn: subDays(todayLab, 3),
+      recordedById: mgrKandyId,
+    });
+  }
+
+  // 12. Kandy Van 2 (Kandy - GOOD: Service passed 45 days ago)
+  if (van2) {
+    records.push({
+      resourceId: van2.id,
+      kind: EquipmentRecordKind.PREVENTIVE_MAINTENANCE,
+      outcome: EquipmentOutcome.PASS,
+      performedOn: subDays(todayLab, 45),
+      performedBy: "Associated Motorways",
+      externalCompany: "Associated Motorways Ltd",
+      workPerformed: "Routine 30,000 km maintenance and refrigeration system pressure check.",
+      reference: "AMW-SRV-2026-08",
+      nextDueOn: addDays(todayLab, 45),
+      recordedById: mgrKandyId,
+    });
+  }
+
+  // 13. Galle Microscope (Galle - GOOD: Passed check 20 days ago)
+  if (micrGalle) {
+    records.push({
+      resourceId: micrGalle.id,
+      kind: EquipmentRecordKind.PERFORMANCE_CHECK,
+      outcome: EquipmentOutcome.PASS,
+      performedOn: subDays(todayLab, 20),
+      performedBy: "Fathima Rizvi",
+      externalCompany: null,
+      workPerformed:
+        "Kohler illumination alignment, stage micrometer calibration (10x, 40x, 100x oil objective).",
+      notes: "Image resolution and parfocality verified across all objectives.",
+      recordedById: mgrGalleId,
+    });
+  }
+
+  return records;
+}
+
+async function ensureDemoEquipmentRecords(dbClient: PrismaClient, todayLab: Date): Promise<void> {
+  const count = await dbClient.equipmentRecord.count();
+  if (count > 0) {
+    console.log(`  Equipment records already present (${count} records). Leaving unchanged.`);
+    return;
+  }
+
+  console.log("  Seeding sample calibration and service records for equipment...");
+
+  const mgrColombo = await dbClient.user.findFirst({
+    where: { email: "nadeesha.perera@lab.example" },
+  });
+  const mgrKandy = await dbClient.user.findFirst({
+    where: { email: "ruwan.jayasinghe@lab.example" },
+  });
+  const mgrGalle = await dbClient.user.findFirst({
+    where: { email: "fathima.rizvi@lab.example" },
+  });
+
+  if (!mgrColombo || !mgrKandy || !mgrGalle) {
+    console.log("  Could not locate demo managers to record equipment records. Skipping.");
+    return;
+  }
+
+  const pcr1 = await dbClient.resource.findFirst({
+    where: { name: "Real-time PCR machine 1", site: { name: "Main Laboratory, Colombo" } },
+  });
+  const pcr2 = await dbClient.resource.findFirst({
+    where: { name: "Real-time PCR machine 2", site: { name: "Main Laboratory, Colombo" } },
+  });
+  const hplc = await dbClient.resource.findFirst({
+    where: { name: "HPLC system", site: { name: "Main Laboratory, Colombo" } },
+  });
+  const flowCytometer = await dbClient.resource.findFirst({
+    where: { name: "Flow cytometer", site: { name: "Main Laboratory, Colombo" } },
+  });
+  const bscA = await dbClient.resource.findFirst({
+    where: { name: "Biosafety cabinet A (Class II)", site: { name: "Main Laboratory, Colombo" } },
+  });
+  const bscB = await dbClient.resource.findFirst({
+    where: { name: "Biosafety cabinet B (Class II)", site: { name: "Main Laboratory, Colombo" } },
+  });
+  const autoclave1 = await dbClient.resource.findFirst({
+    where: { name: "Autoclave 1", site: { name: "Main Laboratory, Colombo" } },
+  });
+  const van1 = await dbClient.resource.findFirst({
+    where: { name: "Sample transport van 1", site: { name: "Main Laboratory, Colombo" } },
+  });
+  const pcrKandy = await dbClient.resource.findFirst({
+    where: { name: "Real-time PCR machine", site: { name: "Kandy Branch Laboratory" } },
+  });
+  const bscKandy = await dbClient.resource.findFirst({
+    where: { name: "Biosafety cabinet", site: { name: "Kandy Branch Laboratory" } },
+  });
+  const autoclaveKandy = await dbClient.resource.findFirst({
+    where: { name: "Autoclave", site: { name: "Kandy Branch Laboratory" } },
+  });
+  const van2 = await dbClient.resource.findFirst({
+    where: { name: "Sample transport van 2", site: { name: "Kandy Branch Laboratory" } },
+  });
+  const micrGalle = await dbClient.resource.findFirst({
+    where: { name: "Microscope", site: { name: "Galle Branch Laboratory" } },
+  });
+
+  // Update details and schedule dates to ensure distinct GOOD / WATCH / POOR condition states
+  if (pcr1) {
+    await dbClient.resource.update({
+      where: { id: pcr1.id },
+      data: {
+        manufacturer: "Bio-Rad",
+        model: "CFX96 Touch",
+        serialNumber: "DEMO-PCR-0001",
+        calibrationIntervalDays: 365,
+        nextCalibrationDueOn: addDays(todayLab, 180),
+      },
+    });
+  }
+  if (pcr2) {
+    await dbClient.resource.update({
+      where: { id: pcr2.id },
+      data: {
+        manufacturer: "Applied Biosystems",
+        model: "QuantStudio 5",
+        serialNumber: "DEMO-PCR-0002",
+        calibrationIntervalDays: 365,
+        nextCalibrationDueOn: addDays(todayLab, 275),
+      },
+    });
+  }
+  if (hplc) {
+    await dbClient.resource.update({
+      where: { id: hplc.id },
+      data: {
+        manufacturer: "Agilent Technologies",
+        model: "1260 Infinity II",
+        serialNumber: "DEMO-HPLC-0001",
+        calibrationIntervalDays: 180,
+        nextCalibrationDueOn: addDays(todayLab, 135),
+        maintenanceIntervalDays: 180,
+        nextMaintenanceDueOn: addDays(todayLab, 135),
+      },
+    });
+  }
+  if (flowCytometer) {
+    await dbClient.resource.update({
+      where: { id: flowCytometer.id },
+      data: {
+        status: ResourceStatus.OUT_OF_SERVICE,
+        manufacturer: "BD Biosciences",
+        model: "FACSCanto II",
+        serialNumber: "DEMO-CYTO-0001",
+        calibrationIntervalDays: 180,
+        nextCalibrationDueOn: addDays(todayLab, 90),
+      },
+    });
+  }
+  if (bscA) {
+    await dbClient.resource.update({
+      where: { id: bscA.id },
+      data: {
+        manufacturer: "Thermo Fisher Scientific",
+        model: "1300 Series A2",
+        serialNumber: "DEMO-BSC-0001",
+        calibrationIntervalDays: 365,
+        nextCalibrationDueOn: addDays(todayLab, 4),
+      },
+    });
+  }
+  if (bscB) {
+    await dbClient.resource.update({
+      where: { id: bscB.id },
+      data: {
+        manufacturer: "Esco",
+        model: "Airstream Class II",
+        serialNumber: "DEMO-BSC-0002",
+        calibrationIntervalDays: 365,
+        nextCalibrationDueOn: subDays(todayLab, 8),
+      },
+    });
+  }
+  if (autoclave1) {
+    await dbClient.resource.update({
+      where: { id: autoclave1.id },
+      data: {
+        manufacturer: "Tuttnauer",
+        model: "3870EL",
+        serialNumber: "DEMO-AUT-0001",
+        maintenanceIntervalDays: 30,
+        nextMaintenanceDueOn: addDays(todayLab, 15),
+      },
+    });
+  }
+  if (van1) {
+    await dbClient.resource.update({
+      where: { id: van1.id },
+      data: {
+        manufacturer: "Toyota",
+        model: "HiAce",
+        serialNumber: "CP-PA-4091",
+        maintenanceIntervalDays: 90,
+        nextMaintenanceDueOn: addDays(todayLab, 65),
+      },
+    });
+  }
+  if (pcrKandy) {
+    await dbClient.resource.update({
+      where: { id: pcrKandy.id },
+      data: {
+        manufacturer: "Bio-Rad",
+        model: "CFX96",
+        serialNumber: "DEMO-PCR-0003",
+        calibrationIntervalDays: 365,
+        nextCalibrationDueOn: addDays(todayLab, 180),
+      },
+    });
+  }
+  if (bscKandy) {
+    await dbClient.resource.update({
+      where: { id: bscKandy.id },
+      data: {
+        manufacturer: "Esco",
+        model: "Class II",
+        serialNumber: "DEMO-BSC-0003",
+        calibrationIntervalDays: 365,
+        nextCalibrationDueOn: addDays(todayLab, 5),
+      },
+    });
+  }
+  if (autoclaveKandy) {
+    await dbClient.resource.update({
+      where: { id: autoclaveKandy.id },
+      data: {
+        manufacturer: "Tuttnauer",
+        model: "3870EL",
+        serialNumber: "DEMO-AUT-0002",
+        maintenanceIntervalDays: 30,
+        nextMaintenanceDueOn: subDays(todayLab, 3),
+      },
+    });
+  }
+  if (van2) {
+    await dbClient.resource.update({
+      where: { id: van2.id },
+      data: {
+        manufacturer: "Nissan",
+        model: "NV350 Caravan",
+        serialNumber: "CP-PA-5091",
+        maintenanceIntervalDays: 90,
+        nextMaintenanceDueOn: addDays(todayLab, 45),
+      },
+    });
+  }
+  if (micrGalle) {
+    await dbClient.resource.update({
+      where: { id: micrGalle.id },
+      data: {
+        manufacturer: "Olympus",
+        model: "BX53",
+        serialNumber: "DEMO-MIC-0001",
+      },
+    });
+  }
+
+  const records = buildDemoEquipmentRecords({
+    pcr1,
+    pcr2,
+    hplc,
+    flowCytometer,
+    bscA,
+    bscB,
+    autoclave1,
+    van1,
+    pcrKandy,
+    bscKandy,
+    autoclaveKandy,
+    van2,
+    micrGalle,
+    mgrColomboId: mgrColombo.id,
+    mgrKandyId: mgrKandy.id,
+    mgrGalleId: mgrGalle.id,
+    todayLab,
+  });
+
+  if (records.length > 0) {
+    await dbClient.equipmentRecord.createMany({ data: records });
+    console.log(`  Seeded ${records.length} sample equipment calibration & service records.`);
+  }
+}
+
 async function main() {
   console.log("Seeding database...");
+
+  const timeZone = seedEnv.APP_TIME_ZONE;
+  const nowInLab = new TZDate(new Date(), timeZone);
+  const todayLab = new TZDate(
+    nowInLab.getFullYear(),
+    nowInLab.getMonth(),
+    nowInLab.getDate(),
+    timeZone,
+  );
 
   // 1. Admin User
   const adminEmail = seedEnv.SEED_ADMIN_EMAIL.toLowerCase();
@@ -196,6 +782,7 @@ async function main() {
   if (existingSiteCount > 0) {
     console.log("Demo sites already present. Checking that every demo account exists...");
     await ensureDemoUsers(seedEnv.SEED_DEMO_PASSWORD!);
+    await ensureDemoEquipmentRecords(prisma, todayLab);
     console.log("Run npm run db:reset to rebuild all demo data from scratch.");
     return;
   }
@@ -207,14 +794,6 @@ async function main() {
 
   // Calculate working days in APP_TIME_ZONE
   // 20 working days before today, today if working day, 5 working days after today
-  const timeZone = seedEnv.APP_TIME_ZONE;
-  const nowInLab = new TZDate(new Date(), timeZone);
-  const todayLab = new TZDate(
-    nowInLab.getFullYear(),
-    nowInLab.getMonth(),
-    nowInLab.getDate(),
-    timeZone,
-  );
 
   // Past 20 working days
   const pastWorkingDays: Date[] = [];
@@ -601,7 +1180,7 @@ async function main() {
           mustChangePassword: false,
         },
       });
-      await tx.user.create({
+      const mgrGalle = await tx.user.create({
         data: {
           name: "Fathima Rizvi",
           email: "fathima.rizvi@lab.example",
@@ -1163,128 +1742,25 @@ async function main() {
       });
 
       // Equipment care history records (demo values matching ISO 15189 schedules)
-      const equipmentRecords: Prisma.EquipmentRecordCreateManyInput[] = [
-        // 1. PCR machine 1: PASS calibration 368 days ago -> due 3 days ago (overdue)
-        {
-          resourceId: pcr1.id,
-          kind: EquipmentRecordKind.CALIBRATION,
-          outcome: EquipmentOutcome.PASS,
-          performedOn: subDays(todayLab, 368),
-          performedBy: "Bio-Rad Field Service",
-          reference: "CERT-PCR-2025-01",
-          nextDueOn: subDays(todayLab, 3),
-          recordedById: mgrColombo.id,
-        },
-        // 2. PCR machine 2: PASS calibration 100 days ago
-        {
-          resourceId: pcr2.id,
-          kind: EquipmentRecordKind.CALIBRATION,
-          outcome: EquipmentOutcome.PASS,
-          performedOn: subDays(todayLab, 100),
-          performedBy: "Applied Biosystems Specialist",
-          reference: "CERT-PCR-2026-02",
-          nextDueOn: addDays(todayLab, 265),
-          recordedById: mgrColombo.id,
-        },
-        // 3. Biosafety cabinet A (Colombo): PASS calibration 355 days ago -> due in ~10 days (Due soon)
-        {
-          resourceId: bscA.id,
-          kind: EquipmentRecordKind.CALIBRATION,
-          outcome: EquipmentOutcome.PASS,
-          performedOn: subDays(todayLab, 355),
-          performedBy: "Clean Air Certification Services",
-          reference: "BSC-CERT-2025-A",
-          nextDueOn: addDays(todayLab, 10),
-          recordedById: mgrColombo.id,
-        },
-        // 4. Biosafety cabinet B (Colombo): PASS calibration 365 days ago -> due TODAY!
-        {
-          resourceId: bscB.id,
-          kind: EquipmentRecordKind.CALIBRATION,
-          outcome: EquipmentOutcome.PASS,
-          performedOn: subDays(todayLab, 365),
-          performedBy: "Clean Air Certification Services",
-          reference: "BSC-CERT-2025-B",
-          nextDueOn: todayLab,
-          recordedById: mgrColombo.id,
-        },
-        // 5. Biosafety cabinet (Kandy): PASS calibration 355 days ago -> due in ~10 days (Due soon)
-        {
-          resourceId: bscKandy.id,
-          kind: EquipmentRecordKind.CALIBRATION,
-          outcome: EquipmentOutcome.PASS,
-          performedOn: subDays(todayLab, 355),
-          performedBy: "Clean Air Certification Services",
-          reference: "BSC-CERT-2025-K",
-          nextDueOn: addDays(todayLab, 10),
-          recordedById: mgrKandy.id,
-        },
-        // 6. Autoclave (Kandy): PASS preventive maintenance 30 days ago -> due TODAY!
-        {
-          resourceId: autoclaveKandy.id,
-          kind: EquipmentRecordKind.PREVENTIVE_MAINTENANCE,
-          outcome: EquipmentOutcome.PASS,
-          performedOn: subDays(todayLab, 30),
-          performedBy: "Meditech Service Engineers",
-          reference: "MAINT-AUT-2026-09",
-          nextDueOn: todayLab,
-          recordedById: mgrKandy.id,
-        },
-        // 7. HPLC system: PASS calibration 60 days ago
-        {
-          resourceId: hplc.id,
-          kind: EquipmentRecordKind.CALIBRATION,
-          outcome: EquipmentOutcome.PASS,
-          performedOn: subDays(todayLab, 60),
-          performedBy: "Agilent Technologies",
-          reference: "HPLC-CAL-2026-08",
-          nextDueOn: addDays(todayLab, 120),
-          recordedById: mgrColombo.id,
-        },
-        // 8. HPLC system: PASS preventive maintenance 60 days ago
-        {
-          resourceId: hplc.id,
-          kind: EquipmentRecordKind.PREVENTIVE_MAINTENANCE,
-          outcome: EquipmentOutcome.PASS,
-          performedOn: subDays(todayLab, 60),
-          performedBy: "Agilent Technologies",
-          reference: "HPLC-PM-2026-08",
-          nextDueOn: addDays(todayLab, 120),
-          recordedById: mgrColombo.id,
-        },
-        // 9. Real-time PCR machine (Kandy): FAIL performance check 2 days ago -> OUT_OF_SERVICE (Failed)
-        {
-          resourceId: pcrKandy.id,
-          kind: EquipmentRecordKind.PERFORMANCE_CHECK,
-          outcome: EquipmentOutcome.FAIL,
-          performedOn: subDays(todayLab, 2),
-          performedBy: "Ruwan Jayasinghe",
-          notes: "Optical sensor failure on channel 2. Awaiting vendor replacement part.",
-          recordedById: mgrKandy.id,
-        },
-        // 10. Sample transport van 1: PASS vehicle service 30 days ago
-        {
-          resourceId: van1.id,
-          kind: EquipmentRecordKind.PREVENTIVE_MAINTENANCE,
-          outcome: EquipmentOutcome.PASS,
-          performedOn: subDays(todayLab, 30),
-          performedBy: "Toyota Lanka",
-          reference: "TOY-SRV-2026-09",
-          nextDueOn: addDays(todayLab, 60),
-          recordedById: mgrColombo.id,
-        },
-        // 11. Sample transport van 2: PASS vehicle service 45 days ago
-        {
-          resourceId: van2.id,
-          kind: EquipmentRecordKind.PREVENTIVE_MAINTENANCE,
-          outcome: EquipmentOutcome.PASS,
-          performedOn: subDays(todayLab, 45),
-          performedBy: "Associated Motorways",
-          reference: "AMW-SRV-2026-08",
-          nextDueOn: addDays(todayLab, 45),
-          recordedById: mgrKandy.id,
-        },
-      ];
+      const equipmentRecords = buildDemoEquipmentRecords({
+        pcr1,
+        pcr2,
+        hplc,
+        flowCytometer,
+        bscA,
+        bscB,
+        autoclave1,
+        van1,
+        pcrKandy,
+        bscKandy,
+        autoclaveKandy,
+        van2,
+        micrGalle,
+        mgrColomboId: mgrColombo.id,
+        mgrKandyId: mgrKandy.id,
+        mgrGalleId: mgrGalle.id,
+        todayLab,
+      });
 
       await tx.equipmentRecord.createMany({
         data: equipmentRecords,
