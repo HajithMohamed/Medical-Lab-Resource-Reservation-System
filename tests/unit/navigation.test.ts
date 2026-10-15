@@ -9,35 +9,39 @@ describe("Navigation configuration", () => {
     expect(items.every((i) => i.group === "main")).toBe(true);
   });
 
-  it("navItemsFor returns exactly 9 items for MANAGER", () => {
+  it("navItemsFor returns exactly 8 items for MANAGER (no separate maintenance item)", () => {
     const items = navItemsFor("MANAGER");
-    expect(items).toHaveLength(9);
+    expect(items).toHaveLength(8);
     expect(items.map((i) => i.href)).toEqual([
       "/calendar",
       "/book",
       "/resources",
       "/bookings",
       "/bookings/manage",
-      "/maintenance",
       "/equipment",
       "/usage",
       "/users",
     ]);
+    const equipmentItem = items.find((i) => i.href === "/equipment");
+    expect(equipmentItem?.label).toBe("Maintenance & care");
+    expect(items.some((i) => i.href === "/maintenance")).toBe(false);
   });
 
-  it("navItemsFor returns exactly 8 items for ADMIN (no booking routes)", () => {
+  it("navItemsFor returns exactly 7 items for ADMIN (no booking routes, merged maintenance & care)", () => {
     const items = navItemsFor("ADMIN");
-    expect(items).toHaveLength(8);
+    expect(items).toHaveLength(7);
     expect(items.map((i) => i.href)).toEqual([
       "/calendar",
       "/resources",
       "/bookings/manage",
-      "/maintenance",
       "/equipment",
       "/usage",
       "/users",
       "/settings",
     ]);
+    const equipmentItem = items.find((i) => i.href === "/equipment");
+    expect(equipmentItem?.label).toBe("Maintenance & care");
+    expect(items.some((i) => i.href === "/maintenance")).toBe(false);
   });
 
   it("NAV_ITEMS has valid labels and hrefs", () => {

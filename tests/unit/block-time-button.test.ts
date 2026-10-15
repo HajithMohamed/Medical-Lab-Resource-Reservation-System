@@ -34,14 +34,17 @@ describe("BlockTimeButton component", () => {
     siteId: "site-colombo",
   };
 
-  it("does not render when /maintenance/new route does not exist", () => {
-    expect(HAS_MAINTENANCE_NEW_ROUTE).toBe(false);
+  it("verifies HAS_MAINTENANCE_NEW_ROUTE is true now that /maintenance/new exists", () => {
+    expect(HAS_MAINTENANCE_NEW_ROUTE).toBe(true);
+  });
 
-    // Even for admin and manager, returns null when route does not exist
+  it("does not render when explicitly disabled", () => {
+    // Even for admin and manager, returns null when enabled is false
     const adminElement = BlockTimeButton({
       actor: admin,
       resource: resourceColombo,
       reason: "Calibration",
+      enabled: false,
     });
     expect(adminElement).toBeNull();
 
@@ -49,6 +52,7 @@ describe("BlockTimeButton component", () => {
       actor: managerColombo,
       resource: resourceColombo,
       reason: "Service",
+      enabled: false,
     });
     expect(managerElement).toBeNull();
   });
