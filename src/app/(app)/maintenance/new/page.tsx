@@ -24,6 +24,7 @@ interface NewMaintenancePageProps {
     siteId?: string;
     breakdown?: string;
     reason?: string;
+    returnTo?: string;
   }>;
 }
 

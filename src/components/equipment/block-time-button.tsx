@@ -40,6 +40,10 @@ export function BlockTimeButton({
     return null;
   }
 
+  if (!resource.id) {
+    return null;
+  }
+
   const query = new URLSearchParams({
     resourceId: resource.id,
     reason,
