@@ -11,11 +11,13 @@ import {
   XCircle,
   Building,
   Users,
+  StopCircle,
 } from "lucide-react";
 import { requireUser } from "@/lib/auth";
 import { getReservation } from "@/services/bookings";
-import { canCancelReservation } from "@/lib/permissions";
+import { canCancelReservation, canManageMaintenance } from "@/lib/permissions";
 import { cancelBookingAction } from "@/actions/bookings";
+import { endBlockNowAction, cancelMaintenanceBlockAction } from "@/actions/maintenance";
 import { formatLabRange, formatLabDate, formatTimeRange } from "@/lib/time";
 import { CategoryIcon } from "@/components/category-icon";
 import { ConfirmAction } from "@/components/confirm-action";
@@ -45,6 +47,10 @@ export default async function ReservationPage({ params }: ReservationPageProps) 
   const isCancellable = canCancelReservation(user, reservation, now);
   const isCancelled = reservation.status === "CANCELLED";
   const isMaintenance = reservation.kind === "MAINTENANCE";
+  const canManageMaint = canManageMaintenance(user, reservation.resource);
+  const isRunningMaintenance =
+    isMaintenance && !isCancelled && reservation.startAt <= now && reservation.endAt > now;
+  const isFutureMaintenance = isMaintenance && !isCancelled && reservation.startAt > now;
 
   return (
     <div className="max-w-3xl mx-auto space-y-6 py-4">
@@ -264,8 +270,8 @@ export default async function ReservationPage({ params }: ReservationPageProps) 
             </span>
           </div>
 
-          {/* Cancellation Action if permitted */}
-          {isCancellable && (
+          {/* Standard Booking Cancellation Action */}
+          {!isMaintenance && isCancellable && (
             <div className="pt-4 border-t border-[#334155] flex justify-end">
               <ConfirmAction
                 title="Cancel Reservation"
@@ -300,6 +306,69 @@ export default async function ReservationPage({ params }: ReservationPageProps) 
                   <p className="text-[10px] font-mono text-slate-400">
                     Required so colleagues and managers understand why the slot was freed.
                   </p>
+                </div>
+              </ConfirmAction>
+            </div>
+          )}
+
+          {/* Maintenance Running: End Now */}
+          {isRunningMaintenance && canManageMaint && (
+            <div className="pt-4 border-t border-[#334155] flex justify-end">
+              <ConfirmAction
+                title="End Maintenance Block"
+                description={`End the maintenance block for ${reservation.resource.name} now? The schedule will be shortened to the next 15-minute slot boundary, freeing the instrument for bookings.`}
+                confirmLabel="End now"
+                action={endBlockNowAction}
+                trigger={
+                  <Button
+                    variant="outline"
+                    className="text-amber-300 hover:text-white bg-amber-950/20 hover:bg-amber-900/40 border-amber-500/40 text-xs font-mono h-9 px-4 active:scale-95 transition-all shadow-xs"
+                  >
+                    <StopCircle className="size-4 mr-2 text-amber-400" />
+                    <span>End now</span>
+                  </Button>
+                }
+              >
+                <input type="hidden" name="blockId" value={reservation.id} />
+                <input type="hidden" name="resourceId" value={reservation.resource.id} />
+              </ConfirmAction>
+            </div>
+          )}
+
+          {/* Maintenance Future: Cancel Block */}
+          {isFutureMaintenance && canManageMaint && (
+            <div className="pt-4 border-t border-[#334155] flex justify-end">
+              <ConfirmAction
+                title="Cancel Maintenance Block"
+                description={`Are you sure you want to cancel this future maintenance block for ${reservation.resource.name}? The reserved time will be immediately freed for bookings.`}
+                confirmLabel="Cancel block"
+                isDestructive
+                action={cancelMaintenanceBlockAction}
+                trigger={
+                  <Button
+                    variant="outline"
+                    className="text-rose-300 hover:text-white bg-rose-950/20 hover:bg-rose-900/40 border-rose-500/40 text-xs font-mono h-9 px-4 active:scale-95 transition-all shadow-xs"
+                  >
+                    <XCircle className="size-4 mr-2 text-rose-400" />
+                    <span>Cancel block</span>
+                  </Button>
+                }
+              >
+                <input type="hidden" name="blockId" value={reservation.id} />
+                <input type="hidden" name="resourceId" value={reservation.resource.id} />
+                <div className="space-y-1.5 pt-1 text-left">
+                  <Label htmlFor="maintCancelReason" className="text-xs font-mono text-slate-200">
+                    Reason for cancellation <span className="text-rose-400">*</span>
+                  </Label>
+                  <Input
+                    id="maintCancelReason"
+                    name="reason"
+                    required
+                    minLength={3}
+                    maxLength={200}
+                    placeholder="e.g. Service visit rescheduled by engineer"
+                    className="h-9 bg-[#060e1d] border-[#334155] text-xs font-mono text-slate-100"
+                  />
                 </div>
               </ConfirmAction>
             </div>

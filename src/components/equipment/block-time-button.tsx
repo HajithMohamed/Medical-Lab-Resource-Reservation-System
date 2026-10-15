@@ -8,7 +8,7 @@ import { canManageMaintenance, type UserLike, type ResourceLike } from "@/lib/pe
  * In accordance with task requirements, if /maintenance/new does not exist yet,
  * the button will not be rendered.
  */
-export const HAS_MAINTENANCE_NEW_ROUTE = false;
+export const HAS_MAINTENANCE_NEW_ROUTE = true;
 
 export interface BlockTimeButtonProps {
   actor: UserLike;

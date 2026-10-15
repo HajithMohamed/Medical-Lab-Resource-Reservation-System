@@ -8,7 +8,9 @@ import { Prisma } from "@/generated/prisma/client";
 export function isOverlapError(error: unknown): boolean {
   return (
     error instanceof Prisma.PrismaClientKnownRequestError &&
-    error.message.includes("reservations_no_overlap")
+    (error.message.includes("reservations_no_overlap") ||
+      error.message.includes("write conflict or a deadlock") ||
+      error.code === "P2034")
   );
 }
 
