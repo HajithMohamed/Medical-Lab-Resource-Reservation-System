@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Maintenance integration tests used a fixed date (20 October 2026) that has now passed, so all 7 failed with "You can't block a time that has already passed." They now use a Tuesday at least a week ahead.
 - Calendar no longer reloads itself in a loop (`GET /calendar` every ~400 ms). The auto-refresh timer is gone; the notification poller no longer depends on the router, so it polls once every 15 seconds and never reloads the page.
 - Dialogs for sites, sections and categories refresh the list and close after saving.
 - Booking and maintenance forms move the end time to one hour after the start time, and show "The end time must be after the start time" instead of failing on submit.
