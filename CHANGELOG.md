@@ -25,6 +25,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- README: an "At a glance" summary, CI and stack badges, six screenshots (`docs/screenshots/`) and a "How this was built" section.
+- `LICENSE` (MIT).
 - Usage dashboard (`/usage` and `/usage/export`):
   - Pure mathematical functions in `src/lib/usage.ts` (`overlapMinutes`, `standardWindows`, `standardMinutes`, `bookedStandardMinutes`, `utilisationPercent`, `minutesByHourOfDay`, `minutesBySection`, `classify`) with parameterised timezone support.
   - Server service `src/services/usage.ts` with strict site-scoping (`usageSitesFor`), date range clipping (max 92 days), standard hours available calculations, confirmed bookings and maintenance aggregates, peak hours breakdown, and section distribution.
