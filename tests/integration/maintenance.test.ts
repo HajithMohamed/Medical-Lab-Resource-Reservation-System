@@ -1,4 +1,5 @@
 import { describe, expect, it, beforeEach } from "vitest";
+import { addDays, format, nextTuesday } from "date-fns";
 import { db } from "@/lib/db";
 import { resetDatabase, createTestData } from "../helpers/db";
 import {
@@ -28,7 +29,11 @@ describe("Maintenance Service (Integration)", () => {
   let managerB: { id: string; role: Role; siteId: string; name: string };
   let resourceB: { id: string; name: string; siteId: string };
 
-  const testDate = "2026-10-20"; // Tuesday
+  // A Tuesday at least a week ahead. A fixed date would expire: the service
+  // refuses to block time that has already passed.
+  const testDay = nextTuesday(addDays(new Date(), 7));
+  const testDate = format(testDay, "yyyy-MM-dd");
+  const dayAfterTestDate = format(addDays(testDay, 1), "yyyy-MM-dd");
 
   beforeEach(async () => {
     await resetDatabase();
@@ -265,7 +270,7 @@ describe("Maintenance Service (Integration)", () => {
     });
 
     // Breakdown block starting at start of current slot (10:15)
-    const breakdownEnd = parseLabDateTime("2026-10-21", "10:15");
+    const breakdownEnd = parseLabDateTime(dayAfterTestDate, "10:15");
 
     const result = await createMaintenanceBlock(
       managerA,
