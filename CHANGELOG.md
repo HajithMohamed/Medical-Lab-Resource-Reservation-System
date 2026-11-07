@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Maintenance integration tests used a fixed date (20 October 2026) that has now passed, so all 7 failed with "You can't block a time that has already passed." They now use a Tuesday at least a week ahead.
 - Calendar no longer reloads itself in a loop (`GET /calendar` every ~400 ms). The auto-refresh timer is gone; the notification poller no longer depends on the router, so it polls once every 15 seconds and never reloads the page.
 - Dialogs for sites, sections and categories refresh the list and close after saving.
 - Booking and maintenance forms move the end time to one hour after the start time, and show "The end time must be after the start time" instead of failing on submit.
@@ -18,12 +19,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added a `SystemState` table and an atomic daily-job claim, so reminders run once a day without a cron service.
 - `src/lib/revalidate.ts` holds the `revalidatePath` helpers used by all server actions.
 
+### Security
+
+- `.env.example` no longer ships a real-looking `CRON_SECRET`. It now holds a placeholder and a command to generate one, like `SESSION_SECRET`.
+
 ### Removed
 
+- The `UI_Design changes/` folder (an exact copy of `docs/design/`) and `docs/design/ui-redesign-prompt.md`.
 - Obsolete design mock-ups (`docs/design-reference*.html`, `docs/clinical-precision-reference.html`, `docs/NEW_DESIGN_REFERENCES.md`, `public/*-preview.html`), scratch scripts, unused UI components and the unused packages `next-themes`, `@fontsource-variable/atkinson-hyperlegible-next` and `@types/bcryptjs`.
 
 ### Added
 
+- README: an "At a glance" summary, CI and stack badges, six screenshots (`docs/screenshots/`) and a "How this was built" section.
+- `LICENSE` (MIT).
 - Usage dashboard (`/usage` and `/usage/export`):
   - Pure mathematical functions in `src/lib/usage.ts` (`overlapMinutes`, `standardWindows`, `standardMinutes`, `bookedStandardMinutes`, `utilisationPercent`, `minutesByHourOfDay`, `minutesBySection`, `classify`) with parameterised timezone support.
   - Server service `src/services/usage.ts` with strict site-scoping (`usageSitesFor`), date range clipping (max 92 days), standard hours available calculations, confirmed bookings and maintenance aggregates, peak hours breakdown, and section distribution.

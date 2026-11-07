@@ -1,10 +1,45 @@
 # BenchBook — Lab Resource Reservation System
 
+[![CI](https://github.com/HajithMohamed/Medical-Lab-Resource-Reservation-System/actions/workflows/ci.yml/badge.svg?branch=develop)](https://github.com/HajithMohamed/Medical-Lab-Resource-Reservation-System/actions/workflows/ci.yml)
+![Next.js 16](https://img.shields.io/badge/Next.js-16-000000?logo=nextdotjs)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white)
+![PostgreSQL 17](https://img.shields.io/badge/PostgreSQL-17-4169E1?logo=postgresql&logoColor=white)
+![Prisma 7](https://img.shields.io/badge/Prisma-7-2D3748?logo=prisma)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 BenchBook gives everyone in a medical laboratory network one live schedule for shared instruments, biosafety cabinets, rooms and sample-transport vans. Bookings can never clash, equipment that is broken or overdue for calibration cannot be booked, people are told when something changes, and managers can see how resources are really used.
 
-**Links:** [ER diagram](docs/er-diagram-chen.svg) · [Demo video](DEMO_VIDEO_URL) · [Problem statement (PDF)](docs/problem-statement.pdf) · [Design decisions](docs/decisions.md) · [Permissions](docs/permissions.md)
+**Links:** [ER diagram](docs/er-diagram-chen.svg) · [Problem statement (PDF)](docs/problem-statement.pdf) · [Design decisions](docs/decisions.md) · [Permissions](docs/permissions.md)
+
+<!-- Add the live demo and demo video links to the line above once they are published. -->
 
 > Built for the PrimeWave Lab Software Engineering Internship technical assessment (October 2026).
+
+![BenchBook day calendar: six shared resources at the Main Laboratory, Colombo, with confirmed bookings and the current-time line](docs/screenshots/calendar.png)
+
+## At a glance
+
+|                     |                                                                                                                                                                                                                                                                                                        |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **What it is**      | A web app where staff across a lab network book shared instruments, biosafety cabinets, rooms and sample vans. Three roles: staff, manager and admin.                                                                                                                                                  |
+| **Hardest problem** | Two people booking the same instrument at the same moment. A PostgreSQL exclusion constraint (`EXCLUDE USING gist` on the booking's time range) rejects any overlap, so a clash cannot be saved even when requests arrive together ([migration](prisma/migrations/20261013034201_init/migration.sql)). |
+| **Stack**           | Next.js 16 (App Router), React 19, TypeScript, PostgreSQL 17, Prisma 7, Zod 4, Tailwind CSS 4, shadcn/ui.                                                                                                                                                                                              |
+| **Tests**           | 385 tests: 208 unit tests for the business rules, and 177 integration tests against a real PostgreSQL database that include the "not allowed" case for each role.                                                                                                                                      |
+| **CI**              | GitHub Actions on every push and pull request: lint, type check, format check, unit tests, integration tests and a production build.                                                                                                                                                                   |
+| **Security**        | bcrypt (cost 12), a signed httpOnly session cookie re-checked against the database on every request, a row-locked brute-force lockout, and authorisation checked on the server for every page and action.                                                                                              |
+| **Built**           | October 2026, solo.                                                                                                                                                                                                                                                                                    |
+
+### Screenshots
+
+| A clashing booking is refused with a clear reason                                                                                    | Find a free slot across every site                                                                                            |
+| ------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
+| ![The booking form refusing a booking that overlaps an existing one, naming who holds the slot](docs/screenshots/clash-rejected.png) | ![Find a slot: search by date, time and category, with each resource shown as free or busy](docs/screenshots/find-a-slot.png) |
+| **Usage dashboard for managers**                                                                                                     | **Equipment care: what is due today**                                                                                         |
+| ![Usage dashboard with booked hours, utilisation, peak hours and use by section](docs/screenshots/usage.png)                         | ![Maintenance and care page listing a calibration due today with mark-as-done actions](docs/screenshots/equipment-care.png)   |
+
+<p align="center"><img src="docs/screenshots/mobile-calendar.png" alt="The calendar on a phone, shown as an agenda list" width="300"></p>
+
+_The screenshots use the seeded demo accounts, with extra sample bookings added for the usage charts._
 
 ---
 
@@ -328,4 +363,12 @@ Integration tests run against a real PostgreSQL test database, never the develop
 
 ---
 
-**Author:** Hajith Mohamed · PrimeWave Lab Software Engineering Internship technical assessment, October 2026.
+## How this was built
+
+- **Solo project**, built in October 2026 for an internship technical assessment.
+- **AI-assisted, with written rules.** AI coding assistants were used under the project rules in [AGENTS.md](AGENTS.md): pinned versions, a layered architecture, server-side validation for every input, and a definition of done that requires lint, type check, format check, all tests and a production build to pass.
+- **Decisions are recorded** with their context and consequences in [docs/decisions.md](docs/decisions.md), and every change is listed in [CHANGELOG.md](CHANGELOG.md).
+
+---
+
+**Author:** Hajith Mohamed · PrimeWave Lab Software Engineering Internship technical assessment, October 2026. Licensed under the [MIT License](LICENSE).

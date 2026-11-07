@@ -15,7 +15,6 @@ const eslintConfig = defineConfig([
     "src/generated/**",
     "coverage/**",
     "docs/design/**",
-    "UI_Design changes/**",
   ]),
 ]);
 
