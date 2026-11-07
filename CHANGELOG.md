@@ -19,6 +19,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added a `SystemState` table and an atomic daily-job claim, so reminders run once a day without a cron service.
 - `src/lib/revalidate.ts` holds the `revalidatePath` helpers used by all server actions.
 
+### Security
+
+- `.env.example` no longer ships a real-looking `CRON_SECRET`. It now holds a placeholder and a command to generate one, like `SESSION_SECRET`.
+
 ### Removed
 
 - Obsolete design mock-ups (`docs/design-reference*.html`, `docs/clinical-precision-reference.html`, `docs/NEW_DESIGN_REFERENCES.md`, `public/*-preview.html`), scratch scripts, unused UI components and the unused packages `next-themes`, `@fontsource-variable/atkinson-hyperlegible-next` and `@types/bcryptjs`.
