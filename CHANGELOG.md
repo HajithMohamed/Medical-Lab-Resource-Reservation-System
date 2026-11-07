@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+- The `UI_Design changes/` folder (an exact copy of `docs/design/`) and `docs/design/ui-redesign-prompt.md`.
 - Obsolete design mock-ups (`docs/design-reference*.html`, `docs/clinical-precision-reference.html`, `docs/NEW_DESIGN_REFERENCES.md`, `public/*-preview.html`), scratch scripts, unused UI components and the unused packages `next-themes`, `@fontsource-variable/atkinson-hyperlegible-next` and `@types/bcryptjs`.
 
 ### Added
